@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PADOBROJ</title>
+<style>
+  :root{
+    --bg-deep:#332A5C;
+    --bg-frame:#251C4A;
+    --slot:#3E3268;
+    --amber:#F2A93B;
+    --amber-dim:#8a6321;
+    --amber-glow: rgba(242,169,59,0.45);
+    --board-border:#4E4080;
+    --bg-outer:#493B7C;
+    --ink:#EDE6FF;
+    --ink-dim:#B4A8DC;
+    --cell:48px;
+    --gap:6px;
+  }
+  #bg-scene{
+    position:fixed; inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:0;
+  }
+  .stage{ position:relative; z-index:1; }
+  body{ transition: background 0.6s ease; }
+
+  #lightning{
+    position:fixed; inset:0;
+    background: rgba(210,245,255,0.9);
+    opacity:0;
+    pointer-events:none;
+    z-index:100;
+  }
+  #lightning.flash{
+    animation: lightningFlash 0.45s ease-out;
+  }
+  @keyframes lightningFlash{
+    0%{ opacity:0; }
+    6%{ opacity:0.9; }
+    14%{ opacity:0.1; }
+    22%{ opacity:0.65; }
+    35%{ opacity:0; }
+    100%{ opacity:0; }
+  }
+
+  .star{
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:0.15; }
+    50%{ opacity:0.95; }
+  }
+
+  .moon, .sun{
+    position:absolute;
+    top:7%; right:9%;
+    width:64px; height:64px;
+    border-radius:50%;
+    opacity:0;
+    transition: opacity 1s ease;
+  }
+  .moon{
+    background: radial-gradient(circle at 35% 35%, #fff8e7, #d8cdaf 60%, #a89b7d 100%);
+    box-shadow: 0 0 40px rgba(255,250,230,0.45);
+  }
+  .sun{
+    background: radial-gradient(circle at 35% 35%, #fff6d0, #ffcf5c 55%, #ff9d3b 100%);
+    box-shadow: 0 0 55px rgba(255,180,60,0.55);
+  }
+  body.theme-purple .moon{ opacity:0.9; }
+  body.theme-neon .sun{ opacity:0.95; }
+
+  .rain-drop{
+    position:absolute;
+    top:-8%;
+    width:1.5px;
+    background: linear-gradient(to bottom, transparent, rgba(180,225,255,0.65));
+    opacity:0;
+    animation: rainFall linear infinite;
+    transition: opacity 0.6s ease;
+  }
+  body.theme-cyber .rain-drop{ opacity:0.75; }
+  @keyframes rainFall{
+    to{ transform: translateY(120vh); }
+  }
+
+  .snowflake{
+    position:absolute;
+    top:-6%;
+    border-radius:50%;
+    background: rgba(255,244,214,0.9);
+    opacity:0;
+    animation: snowFall linear infinite;
+    transition: opacity 0.6s ease;
+  }
+  body.theme-gold .snowflake{ opacity:0.85; }
+  @keyframes snowFall{
+    to{ transform: translateY(115vh) translateX(14px); }
+  }
+  body.theme-neon{
+    --bg-deep:#170627;
+    --bg-frame:#0d0116;
+    --slot:#2a0f45;
+    --amber:#FF2BD6;
+    --amber-dim:#7a1566;
+    --amber-glow: rgba(255,43,214,0.5);
+    --board-border:#5c1a6b;
+    --bg-outer:#3d0a52;
+    --ink:#F2E9FF;
+    --ink-dim:#c98fe0;
+  }
+  body.theme-cyber{
+    --bg-deep:#071a1c;
+    --bg-frame:#04100f;
+    --slot:#0f2e30;
+    --amber:#00E5C7;
+    --amber-dim:#0a6e60;
+    --amber-glow: rgba(0,229,199,0.45);
+    --board-border:#0f4d47;
+    --bg-outer:#0d2b2e;
+    --ink:#DFFFFB;
+    --ink-dim:#5fb8ad;
+  }
+  body.theme-gold{
+    --bg-deep:#241708;
+    --bg-frame:#180f04;
+    --slot:#3a2610;
+    --amber:#FFD469;
+    --amber-dim:#8a6321;
+    --amber-glow: rgba(255,212,105,0.5);
+    --board-border:#6b4a1a;
+    --bg-outer:#4a3210;
+    --ink:#FFF3DC;
+    --ink-dim:#c9a86a;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:
+      radial-gradient(ellipse at 50% -10%, var(--bg-outer) 0%, var(--bg-deep) 55%);
+    color:var(--ink);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .stage{
+    width:100%; max-width:420px;
+    padding:16px 14px 24px;
+    display:flex; flex-direction:column; align-items:center;
+    gap:12px;
+  }
+  .title{
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight:900;
+    letter-spacing:2px;
+    font-size:26px;
+    color:var(--amber);
+    text-shadow: 0 0 18px var(--amber-glow);
+    margin:0;
+  }
+  .title span{color:var(--ink-dim); font-style:italic; font-size:13px; font-family: system-ui; letter-spacing:0.5px; display:block; font-weight:400; margin-top:2px;}
+
+  .icon-btn{
+    position:absolute;
+    top:0; right:0;
+    width:34px; height:34px;
+    border-radius:50%;
+    background:var(--bg-frame);
+    border:1px solid var(--board-border);
+    color:var(--ink);
+    font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:5;
+  }
+  .icon-btn:active{ transform:scale(0.92); }
+
+  .settings-overlay{
+    position:fixed; inset:0;
+    background:rgba(10,6,20,0.75);
+    display:none;
+    align-items:center; justify-content:center;
+    z-index:60;
+    padding:20px;
+  }
+  .settings-overlay.show{
+    display:flex;
+    animation: overlayFadeIn 0.25s ease;
+  }
+  .settings-panel{
+    width:100%; max-width:340px;
+    background:var(--bg-frame);
+    border:2px solid var(--board-border);
+    border-radius:16px;
+    padding:20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .settings-panel h2{
+    margin:0 0 16px;
+    color:var(--amber);
+    font-size:18px;
+    letter-spacing:1.5px;
+    text-align:center;
+  }
+  .setting-row{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .setting-label{
+    font-size:13px; color:var(--ink);
+    line-height:1.35;
+  }
+  .setting-sub{ font-size:10.5px; color:var(--ink-dim); }
+
+  .segmented{
+    display:flex;
+    background:var(--slot);
+    border-radius:8px;
+    padding:3px;
+    gap:2px;
+  }
+  .segmented button{
+    border:none; background:transparent;
+    color:var(--ink-dim);
+    font-size:11px; font-weight:700;
+    padding:6px 9px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .segmented button.active{
+    background:var(--amber);
+    color:#0f0a1f;
+  }
+
+  .switch{ position:relative; display:inline-block; width:44px; height:24px; flex-shrink:0; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .switch-track{
+    position:absolute; inset:0;
+    background:var(--slot);
+    border-radius:24px;
+    transition: background 0.2s ease;
+    cursor:pointer;
+  }
+  .switch-thumb{
+    position:absolute; top:3px; left:3px;
+    width:18px; height:18px;
+    background:#fff;
+    border-radius:50%;
+    transition: transform 0.2s ease;
+  }
+  .switch input:checked + .switch-track{ background:var(--amber); }
+  .switch input:checked + .switch-track .switch-thumb{ transform:translateX(20px); }
+
+  .settings-panel .btn{
+    width:100%;
+    margin-top:14px;
+  }
+
+  .hud{
+    width:100%;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px;
+  }
+  .stat{
+    background:var(--bg-frame);
+    border:1px solid var(--board-border);
+    border-radius:10px;
+    padding:7px 10px;
+    text-align:center;
+  }
+  .stat .lbl{font-size:9.5px; letter-spacing:1.5px; color:var(--ink-dim); text-transform:uppercase;}
+  .stat .val{font-family:'Courier New', monospace; font-weight:700; font-size:19px; color:var(--ink); letter-spacing:1px;}
+  .next-cell{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .next-tile{
+    width:32px; height:32px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:14px; color:#ffffff;
+    text-shadow:
+      -1px -1px 0 rgba(0,0,0,0.55),
+       1px -1px 0 rgba(0,0,0,0.55),
+      -1px  1px 0 rgba(0,0,0,0.55),
+       1px  1px 0 rgba(0,0,0,0.55),
+       0 2px 2px rgba(0,0,0,0.4);
+    box-shadow:
+      inset 0 2px 2px rgba(255,255,255,0.4),
+      inset 0 -3px 4px rgba(0,0,0,0.3),
+      0 3px 0 rgba(0,0,0,0.3);
+    border:1px solid rgba(255,255,255,0.18);
+    transition: background 0.15s ease;
+    flex-shrink:0;
+  }
+
+  .progress-wrap{
+    width:100%;
+    display:flex; align-items:center; gap:8px;
+  }
+  .progress-track{
+    flex:1; height:6px; border-radius:4px;
+    background:#241a3d; overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; border-radius:4px;
+    background: linear-gradient(90deg, var(--amber-dim), var(--amber));
+    width:0%;
+    transition: width 0.2s ease;
+  }
+  .progress-label{ font-size:10px; color:var(--ink-dim); white-space:nowrap; letter-spacing:0.5px;}
+
+  .board-frame{
+    background:var(--bg-frame);
+    border:2px solid var(--board-border);
+    border-radius:16px;
+    padding:10px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,0,0,0.4);
+    position:relative;
+  }
+  .board{
+    display:flex;
+    gap:var(--gap);
+    position:relative;
+  }
+  .col{
+    position:relative;
+    width:var(--cell);
+    height: calc(var(--cell) * 6 + var(--gap) * 5);
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--slot) 0px, var(--slot) var(--cell),
+        transparent var(--cell), transparent calc(var(--cell) + var(--gap))
+      );
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .col::before{
+    content:'';
+    position:absolute; inset:0;
+    border-radius:8px;
+    background: rgba(255,255,255,0.02);
+    transition: background 0.15s ease;
+  }
+  .col:active::before{ background: rgba(242,169,59,0.10); }
+  .col.blocked::before{ background: rgba(244,63,94,0.10); }
+  .col.match::before{
+    background: rgba(242,169,59,0.16);
+    animation: matchPulse 1.1s ease-in-out infinite;
+  }
+  @keyframes matchPulse{
+    0%,100%{ background: rgba(242,169,59,0.10); }
+    50%{ background: rgba(242,169,59,0.28); }
+  }
+
+  .tile{
+    position:absolute;
+    top:0; left:0;
+    width:var(--cell); height:var(--cell);
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; color:#ffffff;
+    font-size:20px;
+    text-shadow:
+      -1.5px -1.5px 0 rgba(0,0,0,0.55),
+       1.5px -1.5px 0 rgba(0,0,0,0.55),
+      -1.5px  1.5px 0 rgba(0,0,0,0.55),
+       1.5px  1.5px 0 rgba(0,0,0,0.55),
+       0 1px 0 rgba(255,255,255,0.3),
+       0 3px 3px rgba(0,0,0,0.45);
+    box-shadow:
+      inset 0 3px 2px rgba(255,255,255,0.4),
+      inset 0 -5px 6px rgba(0,0,0,0.3),
+      inset 3px 0 4px rgba(255,255,255,0.12),
+      0 4px 0 rgba(0,0,0,0.35),
+      0 7px 10px rgba(0,0,0,0.35),
+      0 0 14px var(--glow, transparent);
+    border:1px solid rgba(255,255,255,0.18);
+    pointer-events:none;
+    will-change: top, left, transform, opacity;
+  }
+  .tile.pop{ animation: pop 0.26s ease; }
+  .tile.falling::before{
+    content:'';
+    position:absolute;
+    left:50%; top:0;
+    width:62%; height:220%;
+    transform: translate(-50%, -100%);
+    background: linear-gradient(to top, var(--glow, transparent) 0%, transparent 85%);
+    filter: blur(3px);
+    opacity:0.75;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:-1;
+  }
+  @keyframes pop{
+    0%{ transform:scale(1); }
+    45%{ transform:scale(1.24); }
+    100%{ transform:scale(1); }
+  }
+  .tile.merge-fade{
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    transform:scale(0.25);
+    opacity:0;
+  }
+
+  .combo-popup{
+    position:absolute;
+    pointer-events:none;
+    font-weight:900;
+    color:var(--amber);
+    text-shadow:
+      -1.5px -1.5px 0 rgba(0,0,0,0.6),
+       1.5px -1.5px 0 rgba(0,0,0,0.6),
+      -1.5px  1.5px 0 rgba(0,0,0,0.6),
+       1.5px  1.5px 0 rgba(0,0,0,0.6);
+    white-space:nowrap;
+    transform: translate(-50%, -50%);
+    animation: comboFloat 1.6s ease forwards;
+    z-index:10;
+  }
+  .combo-popup .bonus{
+    display:block;
+    font-size:0.55em;
+    color:#ffffff;
+    text-align:center;
+  }
+  @keyframes comboFloat{
+    0%{ transform: translate(-50%, -50%) scale(0.6); opacity:0; }
+    18%{ transform: translate(-50%, -120%) scale(1.15); opacity:1; }
+    70%{ transform: translate(-50%, -170%) scale(1); opacity:1; }
+    100%{ transform: translate(-50%, -240%) scale(1); opacity:0; }
+  }
+
+  .theme-toast{
+    position:fixed;
+    left:50%; bottom:24px;
+    transform: translate(-50%, 0);
+    z-index:50;
+    background: var(--bg-frame);
+    border:2px solid var(--amber);
+    border-radius:14px;
+    padding:12px 22px;
+    text-align:center;
+    box-shadow: 0 0 40px var(--amber-glow), 0 10px 30px rgba(0,0,0,0.5);
+    pointer-events:none;
+    animation: themeToast 2.2s ease forwards;
+  }
+  .theme-toast .t-label{
+    font-size:11px; letter-spacing:2px; color:var(--ink-dim); text-transform:uppercase;
+  }
+  .theme-toast .t-name{
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight:900; font-size:26px; letter-spacing:1.5px;
+    color:var(--amber);
+    text-shadow: 0 0 16px var(--amber-glow);
+  }
+  @keyframes themeToast{
+    0%{ opacity:0; transform: translate(-50%, 20px) scale(0.9); }
+    12%{ opacity:1; transform: translate(-50%, 0) scale(1); }
+    82%{ opacity:1; }
+    100%{ opacity:0; transform: translate(-50%, 0) scale(1); }
+  }
+
+  .hint{
+    font-size:11.5px; color:var(--ink-dim); text-align:center; letter-spacing:0.3px;
+    line-height:1.4;
+  }
+  .hint b{ color:var(--amber); }
+
+  .board-frame.shake{
+    animation: boardShake 0.5s ease;
+  }
+  @keyframes boardShake{
+    0%,100%{ transform:translateX(0) rotate(0); }
+    20%{ transform:translateX(-9px) rotate(-1.2deg); }
+    40%{ transform:translateX(8px) rotate(1.2deg); }
+    60%{ transform:translateX(-6px) rotate(-0.8deg); }
+    80%{ transform:translateX(5px) rotate(0.8deg); }
+  }
+
+  .overlay{
+    position:absolute; inset:0;
+    background:rgba(15,10,31,0.92);
+    border-radius:14px;
+    display:none;
+    align-items:center; justify-content:center; flex-direction:column;
+    gap:12px;
+    text-align:center;
+    padding:20px;
+  }
+  .overlay.show{
+    display:flex;
+    animation: overlayFadeIn 0.3s ease;
+  }
+  @keyframes overlayFadeIn{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+  .overlay h2{
+    margin:0; color:var(--amber); font-size:24px; letter-spacing:1px;
+    animation: gameOverPop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    animation-delay: 0.15s;
+  }
+  @keyframes gameOverPop{
+    0%{ transform:scale(0.3); opacity:0; }
+    65%{ transform:scale(1.18); opacity:1; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+  .overlay p{ margin:0; color:var(--ink-dim); font-size:14px; }
+  .overlay .final{ font-family:'Courier New', monospace; font-size:28px; font-weight:800; color:var(--ink); }
+  .btn{
+    background:var(--amber);
+    color:#0f0a1f;
+    border:none;
+    border-radius:8px;
+    padding:10px 22px;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:1px;
+    cursor:pointer;
+    box-shadow: 0 4px 0 var(--amber-dim);
+  }
+  .btn:active{ transform:translateY(2px); box-shadow: 0 2px 0 var(--amber-dim); }
+</style>
+</head>
+<body>
+<div id="bg-scene"></div>
+<div id="lightning"></div>
+<div class="stage">
+  <button id="settingsBtn" class="icon-btn" aria-label="Podešavanja">⚙</button>
+  <h1 class="title">PADOBROJ<span>brojevi padaju, jednaki se zbrajaju</span></h1>
+
+  <div class="hud">
+    <div class="stat">
+      <div class="lbl">Bodovi</div>
+      <div class="val" id="score">0</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Nivo</div>
+      <div class="val" id="level">1</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Najbolje</div>
+      <div class="val" id="best">0</div>
+    </div>
+    <div class="stat next-cell">
+      <div>
+        <div class="lbl">Sljedeći</div>
+      </div>
+      <div class="next-tile" id="nextTile">2</div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0/6</div>
+  </div>
+
+  <div class="board-frame">
+    <div class="board" id="board"></div>
+    <div class="overlay" id="overlay">
+      <h2>IGRA GOTOVA</h2>
+      <div class="final" id="finalScore">0</div>
+      <p>Tvoja tabela je puna.</p>
+      <button class="btn" id="restartBtn">IGRAJ PONOVO</button>
+    </div>
+  </div>
+
+  <div class="hint">Tapni <b>kolonu</b> da spustiš broj. Isti brojevi jedan pored/iznad drugog se <b>zbrajaju</b>. Puna kolona i dalje prima broj ako se poklapa s vrhom (žuti sjaj). Igra je gotova tek kad <b>nijedna</b> kolona ne prihvata broj na redu. Više spajanja zaredom donosi <b>combo</b> bonus poena.</div>
+
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-panel">
+      <h2>PODEŠAVANJA</h2>
+
+      <div class="setting-row">
+        <div class="setting-label">Brzina animacija</div>
+        <div class="segmented" id="speedSegmented">
+          <button type="button" data-speed="slow">Sporo</button>
+          <button type="button" data-speed="normal" class="active">Normalno</button>
+          <button type="button" data-speed="fast">Brzo</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">Tresenje ekrana<br><span class="setting-sub">(munja, game over)</span></div>
+        <label class="switch">
+          <input type="checkbox" id="shakeToggle" checked>
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <button class="btn" id="closeSettingsBtn">ZATVORI</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLS = 5, ROWS = 6;
+const CELL = 48, GAP = 6;
+const STEP = CELL + GAP;
+const LEVEL_UP_EVERY = 6;
+
+const BASE_FALL_MS = 650;
+const BASE_SLIDE_MS = 280;
+const BASE_FADE_MS = 220;
+const BASE_GRAVITY_MS = 300;
+const FALL_EASE = 'cubic-bezier(0.55, 0.06, 0.68, 0.94)';
+const SPEED_MULTIPLIER = { slow: 1.6, normal: 1, fast: 0.55 };
+
+let animSpeed = 'normal';
+let shakeEnabled = true;
+let FALL_MS = BASE_FALL_MS;
+let SLIDE_MS = BASE_SLIDE_MS;
+let FADE_MS = BASE_FADE_MS;
+let GRAVITY_MS = BASE_GRAVITY_MS;
+
+const boardEl = document.getElementById('board');
+const scoreEl = document.getElementById('score');
+const bestEl = document.getElementById('best');
+const levelEl = document.getElementById('level');
+const nextTileEl = document.getElementById('nextTile');
+const overlayEl = document.getElementById('overlay');
+const finalScoreEl = document.getElementById('finalScore');
+const restartBtn = document.getElementById('restartBtn');
+const progressFill = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsOverlay = document.getElementById('settingsOverlay');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const speedSegmented = document.getElementById('speedSegmented');
+const shakeToggle = document.getElementById('shakeToggle');
+
+let board = [];      // board[col] = array of values, index 0 = bottom
+let els = [];         // els[col] = array of DOM elements, aligned with board
+let score = 0;
+let best = 0;
+let level = 1;
+let dropsCount = 0;
+let nextValue = 2;
+let busy = false;
+let gameOver = false;
+
+const wait = (ms) => new Promise(res => setTimeout(res, ms));
+
+function getPoolForLevel(lvl){
+  const pool = [2, 4, 8];
+  if (lvl > 5){
+    const extraTiers = Math.floor((lvl - 6) / 5) + 1;
+    let val = 16;
+    for (let i = 0; i < extraTiers; i++){
+      pool.push(val);
+      val *= 2;
+    }
+  }
+  return pool;
+}
+
+let bag = [];
+let lastDispensedValue = null;
+
+function shuffle(arr){
+  for (let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickNext(){
+  const pool = getPoolForLevel(level);
+  if (bag.length === 0){
+    bag = shuffle([...pool]);
+    // avoid starting the new bag with the same number we just gave out
+    if (lastDispensedValue !== null && bag[0] === lastDispensedValue && bag.length > 1){
+      const idx = bag.findIndex((v, i) => i > 0 && v !== lastDispensedValue);
+      if (idx > 0){
+        [bag[0], bag[idx]] = [bag[idx], bag[0]];
+      }
+    }
+  }
+  const value = bag.shift();
+  lastDispensedValue = value;
+  return value;
+}
+
+const THEMES = [
+  { name: 'gold',  label: 'ZLATNA', minLevel: 30 },
+  { name: 'cyber', label: 'CYBER',  minLevel: 20 },
+  { name: 'neon',  label: 'NEON',   minLevel: 10 },
+  { name: 'purple', label: 'LJUBIČASTA', minLevel: 1 }
+];
+const THEME_HUE_BASE = { purple: 150, neon: 300, cyber: 190 };
+
+let currentTheme = 'purple';
+
+function themeForLevel(lvl){
+  return THEMES.find(t => lvl >= t.minLevel).name;
+}
+
+function triggerLightning(){
+  if (!shakeEnabled) return;
+  const el = document.getElementById('lightning');
+  el.classList.remove('flash');
+  void el.offsetWidth; // force reflow so the animation can restart
+  el.classList.add('flash');
+}
+
+function applyTheme(themeName, announce){
+  currentTheme = themeName;
+  document.body.className = 'theme-' + themeName;
+  if (announce){
+    const info = THEMES.find(t => t.name === themeName);
+    showThemeToast(info.label);
+  }
+}
+
+function showThemeToast(label){
+  const toast = document.createElement('div');
+  toast.className = 'theme-toast';
+  toast.innerHTML = `<div class="t-label">Nova tema</div><div class="t-name">${label}</div>`;
+  document.body.appendChild(toast);
+  toast.addEventListener('animationend', () => toast.remove(), { once: true });
+}
+
+function colorFor(value){
+  const t = Math.log2(value);
+  if (currentTheme === 'gold'){
+    const light = 45 + Math.min(t * 3, 25);
+    return `hsl(42, 78%, ${light.toFixed(0)}%)`;
+  }
+  const base = THEME_HUE_BASE[currentTheme] ?? 150;
+  const hue = (base + t * 42) % 360;
+  const light = value >= 512 ? 62 : 55;
+  return `hsl(${hue.toFixed(0)}, 72%, ${light}%)`;
+}
+
+function init(){
+  board = Array.from({length: COLS}, () => []);
+  els = Array.from({length: COLS}, () => []);
+  score = 0;
+  displayedScore = 0;
+  if (scoreAnimFrame){ cancelAnimationFrame(scoreAnimFrame); scoreAnimFrame = null; }
+  level = 1;
+  dropsCount = 0;
+  bag = [];
+  lastDispensedValue = null;
+  nextValue = pickNext();
+  gameOver = false;
+  busy = false;
+  overlayEl.classList.remove('show');
+  applyTheme(themeForLevel(level), false);
+  buildColumns();
+  updateHud();
+  loadBest();
+}
+
+function buildColumns(){
+  boardEl.innerHTML = '';
+  boardEl.style.position = 'relative';
+  for (let c = 0; c < COLS; c++){
+    const col = document.createElement('div');
+    col.className = 'col';
+    col.dataset.col = c;
+    col.style.height = (CELL * ROWS + GAP * (ROWS - 1)) + 'px';
+    col.addEventListener('click', () => handleDrop(c));
+    boardEl.appendChild(col);
+  }
+}
+
+function topOfRow(rowFromBottom){
+  const rowFromTop = ROWS - 1 - rowFromBottom;
+  return rowFromTop * STEP;
+}
+
+function leftOfCol(c){
+  return c * STEP;
+}
+
+function makeTileEl(value, col){
+  const tile = document.createElement('div');
+  tile.className = 'tile';
+  tile.textContent = value;
+  applyTileColor(tile, value);
+  tile.style.left = leftOfCol(col) + 'px';
+  return tile;
+}
+
+function applyTileColor(tile, value){
+  const color = colorFor(value);
+  tile.style.background = color;
+  tile.style.setProperty('--glow', color + '80');
+  const len = String(value).length;
+  tile.style.fontSize = len >= 4 ? '15px' : (len === 3 ? '18px' : '20px');
+}
+
+function updateTileValue(tile, value){
+  tile.textContent = value;
+  applyTileColor(tile, value);
+}
+
+let displayedScore = 0;
+let scoreAnimFrame = null;
+
+function animateScoreTo(target){
+  if (scoreAnimFrame) cancelAnimationFrame(scoreAnimFrame);
+  const start = displayedScore;
+  const diff = target - start;
+  if (diff === 0){
+    scoreEl.textContent = target;
+    return;
+  }
+  const startTime = performance.now();
+  const duration = 350;
+  function step(now){
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 2);
+    displayedScore = Math.round(start + diff * eased);
+    scoreEl.textContent = displayedScore;
+    if (t < 1){
+      scoreAnimFrame = requestAnimationFrame(step);
+    } else {
+      displayedScore = target;
+      scoreEl.textContent = target;
+      scoreAnimFrame = null;
+    }
+  }
+  scoreAnimFrame = requestAnimationFrame(step);
+}
+
+function updateHud(){
+  scoreEl.textContent = score;
+  bestEl.textContent = best;
+  levelEl.textContent = level;
+  nextTileEl.textContent = nextValue;
+  nextTileEl.style.background = colorFor(nextValue);
+  const progressInLevel = dropsCount % LEVEL_UP_EVERY;
+  progressFill.style.width = (progressInLevel / LEVEL_UP_EVERY * 100) + '%';
+  progressLabel.textContent = progressInLevel + '/' + LEVEL_UP_EVERY;
+  updateColumnStates();
+}
+
+async function loadBest(){
+  try{
+    const res = await window.storage.get('padobroj-best', false);
+    if (res && res.value){
+      best = parseInt(res.value, 10) || 0;
+      bestEl.textContent = best;
+    }
+  }catch(e){ /* no saved best yet */ }
+}
+
+async function saveBest(){
+  try{
+    await window.storage.set('padobroj-best', String(best), false);
+  }catch(e){ /* ignore storage errors */ }
+}
+
+function handleDrop(c){
+  if (busy || gameOver) return;
+
+  const isFull = board[c].length >= ROWS;
+  const topValue = isFull ? board[c][ROWS - 1] : undefined;
+  const dropValue = nextValue;
+  const canOverflow = isFull && topValue === dropValue;
+
+  if (isFull && !canOverflow) return; // truly stuck, no room and no match
+  busy = true;
+
+  const landingRow = isFull ? ROWS - 1 : board[c].length;
+
+  nextValue = pickNext();
+  updateHud();
+
+  const tile = makeTileEl(dropValue, c);
+  tile.style.transition = 'none';
+  tile.style.top = topOfRow(ROWS) + 'px'; // start above the board
+  tile.classList.add('falling');
+  boardEl.appendChild(tile);
+
+  tile.getBoundingClientRect(); // force reflow
+  tile.style.transition = `top ${FALL_MS}ms ${FALL_EASE}`;
+  requestAnimationFrame(() => {
+    tile.style.top = topOfRow(landingRow) + 'px';
+  });
+
+  tile.addEventListener('transitionend', async () => {
+    tile.classList.remove('falling');
+
+    if (canOverflow){
+      await mergeIntoFullColumn(c, tile, topValue);
+    } else {
+      board[c].push(dropValue);
+      els[c].push(tile);
+      await settleBoardAnimated(c);
+    }
+
+    dropsCount++;
+    if (dropsCount % LEVEL_UP_EVERY === 0){
+      level++;
+      const newTheme = themeForLevel(level);
+      if (newTheme !== currentTheme){
+        applyTheme(newTheme, true);
+      }
+      if (currentTheme === 'cyber' && level % 3 === 0){
+        triggerLightning();
+      }
+    }
+    updateHud();
+    busy = false;
+    checkGameOver();
+  }, { once: true });
+}
+
+// A column at full capacity can still accept a drop if its top tile matches
+// the falling number - it lands right on top of it and the two merge in
+// place (no extra row needed), then any further chain reaction continues
+// through the normal combo system.
+async function mergeIntoFullColumn(c, fallingTile, topValue){
+  const survivorEl = els[c][ROWS - 1];
+  const newValue = topValue * 2;
+
+  fallingTile.classList.add('merge-fade');
+  board[c][ROWS - 1] = newValue;
+  updateTileValue(survivorEl, newValue);
+  survivorEl.classList.add('pop');
+
+  const gain = newValue;
+  score += gain;
+  if (score > best){
+    best = score;
+    saveBest();
+  }
+  animateScoreTo(score);
+
+  await wait(FADE_MS);
+  fallingTile.remove();
+  survivorEl.classList.remove('pop');
+  await wait(60);
+
+  const x = leftOfCol(c) + CELL / 2;
+  const y = topOfRow(ROWS - 1) + CELL / 2;
+  await settleBoardAnimated(c, 1, gain, { x, y });
+}
+
+// Repositions every tile currently in a column to match its logical row,
+// letting the CSS transition animate any tiles that need to settle down
+// after a gap was removed lower in the stack.
+function syncColumnPositions(c){
+  for (let r = 0; r < board[c].length; r++){
+    const el = els[c][r];
+    el.style.transition = `top ${GRAVITY_MS}ms ease`;
+    el.style.top = topOfRow(r) + 'px';
+  }
+}
+
+function showComboPopup(comboCount, bonusPoints, x, y){
+  const popup = document.createElement('div');
+  popup.className = 'combo-popup';
+  const size = Math.min(15 + comboCount * 2, 30);
+  popup.style.fontSize = size + 'px';
+  popup.style.left = x + 'px';
+  popup.style.top = y + 'px';
+  popup.innerHTML = `COMBO ×${comboCount}<span class="bonus">+${bonusPoints}</span>`;
+  boardEl.appendChild(popup);
+  popup.addEventListener('animationend', () => popup.remove(), { once: true });
+}
+
+function findNextMerge(landCol){
+  // vertical: adjacent equal values within the same column (checked first,
+  // so a tile that lands directly on a match resolves before we look sideways)
+  for (let c = 0; c < COLS; c++){
+    for (let r = board[c].length - 1; r > 0; r--){
+      if (board[c][r] === board[c][r - 1]){
+        return { type: 'vertical', col: c, moverRow: r, survivorRow: r - 1 };
+      }
+    }
+  }
+  // horizontal: adjacent equal values in neighbouring columns, same row.
+  // the column the tile just landed in keeps the merged result; the other,
+  // pre-existing tile slides over into it.
+  const maxHeight = Math.max(0, ...board.map(col => col.length));
+  for (let r = 0; r < maxHeight; r++){
+    for (let c = 0; c < COLS - 1; c++){
+      const a = board[c][r];
+      const b = board[c + 1][r];
+      if (a !== undefined && b !== undefined && a === b){
+        let survivorCol = c, moverCol = c + 1;
+        if (c + 1 === landCol){ survivorCol = c + 1; moverCol = c; }
+        return { type: 'horizontal', moverCol, survivorCol, row: r };
+      }
+    }
+  }
+  return null;
+}
+
+async function processMerge(m, comboCount){
+  let moverEl, survivorEl, survivorValue, moverCol;
+
+  if (m.type === 'vertical'){
+    moverEl = els[m.col][m.moverRow];
+    survivorEl = els[m.col][m.survivorRow];
+    survivorValue = board[m.col][m.survivorRow] * 2;
+    moverCol = m.col;
+
+    moverEl.style.transition = `top ${SLIDE_MS}ms ease`;
+    moverEl.style.top = topOfRow(m.survivorRow) + 'px';
+    await wait(SLIDE_MS);
+
+    board[m.col].splice(m.moverRow, 1);
+    els[m.col].splice(m.moverRow, 1);
+  } else {
+    moverEl = els[m.moverCol][m.row];
+    survivorEl = els[m.survivorCol][m.row];
+    survivorValue = board[m.survivorCol][m.row] * 2;
+    moverCol = m.moverCol;
+
+    moverEl.style.transition = `left ${SLIDE_MS}ms ease`;
+    moverEl.style.left = leftOfCol(m.survivorCol) + 'px';
+    await wait(SLIDE_MS);
+
+    board[m.moverCol].splice(m.row, 1);
+    els[m.moverCol].splice(m.row, 1);
+  }
+
+  moverEl.classList.add('merge-fade');
+
+  const gain = survivorValue * comboCount;
+  score += gain;
+  if (score > best){
+    best = score;
+    saveBest();
+  }
+
+  board[m.type === 'vertical' ? m.col : m.survivorCol][m.type === 'vertical' ? m.survivorRow : m.row] = survivorValue;
+  updateTileValue(survivorEl, survivorValue);
+  survivorEl.classList.add('pop');
+  animateScoreTo(score);
+
+  const col = m.type === 'vertical' ? m.col : m.survivorCol;
+  const row = m.type === 'vertical' ? m.survivorRow : m.row;
+
+  await wait(FADE_MS);
+  moverEl.remove();
+  survivorEl.classList.remove('pop');
+
+  syncColumnPositions(moverCol);
+  await wait(60);
+
+  return {
+    gain,
+    x: leftOfCol(col) + CELL / 2,
+    y: topOfRow(row) + CELL / 2
+  };
+}
+
+async function settleBoardAnimated(landCol, startCombo = 0, startGain = 0, startPos = null){
+  let comboCount = startCombo;
+  let totalChainGain = startGain;
+  let lastX = startPos ? startPos.x : 0;
+  let lastY = startPos ? startPos.y : 0;
+
+  let merge = findNextMerge(landCol);
+  while (merge){
+    comboCount++;
+    const result = await processMerge(merge, comboCount);
+    totalChainGain += result.gain;
+    lastX = result.x;
+    lastY = result.y;
+    merge = findNextMerge(landCol);
+  }
+
+  if (comboCount >= 2){
+    showComboPopup(comboCount, totalChainGain, lastX, lastY);
+  }
+}
+
+function updateColumnStates(){
+  const cols = boardEl.querySelectorAll('.col');
+  cols.forEach((colEl, c) => {
+    const isFull = board[c].length >= ROWS;
+    const matches = isFull && board[c][ROWS - 1] === nextValue;
+    colEl.classList.toggle('blocked', isFull && !matches);
+    colEl.classList.toggle('match', matches);
+  });
+}
+
+function hasValidMove(){
+  for (let c = 0; c < COLS; c++){
+    if (board[c].length < ROWS) return true;
+    if (board[c][ROWS - 1] === nextValue) return true;
+  }
+  return false;
+}
+
+function checkGameOver(){
+  updateColumnStates();
+  if (!hasValidMove() && !gameOver){
+    gameOver = true;
+    triggerGameOverSequence();
+  }
+}
+
+function animateScoreCountUp(el, target, duration){
+  return new Promise(resolve => {
+    const start = performance.now();
+    function step(now){
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(eased * target);
+      if (t < 1){
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = target;
+        resolve();
+      }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+async function triggerGameOverSequence(){
+  if (shakeEnabled){
+    const frame = document.querySelector('.board-frame');
+    frame.classList.add('shake');
+    await wait(500);
+    frame.classList.remove('shake');
+  }
+
+  finalScoreEl.textContent = '0';
+  overlayEl.classList.add('show');
+  await wait(250);
+  await animateScoreCountUp(finalScoreEl, score, 700);
+}
+
+restartBtn.addEventListener('click', init);
+
+function applySpeedSetting(speed, save){
+  animSpeed = speed;
+  const m = SPEED_MULTIPLIER[speed] ?? 1;
+  FALL_MS = Math.round(BASE_FALL_MS * m);
+  SLIDE_MS = Math.round(BASE_SLIDE_MS * m);
+  FADE_MS = Math.round(BASE_FADE_MS * m);
+  GRAVITY_MS = Math.round(BASE_GRAVITY_MS * m);
+
+  speedSegmented.querySelectorAll('button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.speed === speed);
+  });
+
+  if (save){
+    try{ window.storage.set('padobroj-anim-speed', speed, false); }catch(e){ /* ignore */ }
+  }
+}
+
+function applyShakeSetting(enabled, save){
+  shakeEnabled = enabled;
+  shakeToggle.checked = enabled;
+  if (save){
+    try{ window.storage.set('padobroj-shake-enabled', String(enabled), false); }catch(e){ /* ignore */ }
+  }
+}
+
+async function loadSettings(){
+  try{
+    const speedRes = await window.storage.get('padobroj-anim-speed', false);
+    if (speedRes && speedRes.value && SPEED_MULTIPLIER[speedRes.value]){
+      applySpeedSetting(speedRes.value, false);
+    }
+  }catch(e){ /* no saved setting yet */ }
+  try{
+    const shakeRes = await window.storage.get('padobroj-shake-enabled', false);
+    if (shakeRes && shakeRes.value !== undefined){
+      applyShakeSetting(shakeRes.value === 'true', false);
+    }
+  }catch(e){ /* no saved setting yet */ }
+}
+
+settingsBtn.addEventListener('click', () => {
+  settingsOverlay.classList.add('show');
+});
+closeSettingsBtn.addEventListener('click', () => {
+  settingsOverlay.classList.remove('show');
+});
+settingsOverlay.addEventListener('click', (e) => {
+  if (e.target === settingsOverlay) settingsOverlay.classList.remove('show');
+});
+speedSegmented.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => applySpeedSetting(btn.dataset.speed, true));
+});
+shakeToggle.addEventListener('change', () => applyShakeSetting(shakeToggle.checked, true));
+
+loadSettings();
+
+function buildBackgroundScene(){
+  const scene = document.getElementById('bg-scene');
+
+  for (let i = 0; i < 55; i++){
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() < 0.15 ? 3 : (Math.random() < 0.5 ? 2 : 1);
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 65 + '%';
+    star.style.animationDelay = (Math.random() * 3).toFixed(2) + 's';
+    star.style.animationDuration = (2 + Math.random() * 3).toFixed(2) + 's';
+    scene.appendChild(star);
+  }
+
+  scene.appendChild(document.createElement('div')).className = 'moon';
+  scene.appendChild(document.createElement('div')).className = 'sun';
+
+  for (let i = 0; i < 40; i++){
+    const drop = document.createElement('div');
+    drop.className = 'rain-drop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.height = (14 + Math.random() * 16) + 'px';
+    drop.style.animationDuration = (0.5 + Math.random() * 0.45).toFixed(2) + 's';
+    drop.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+    scene.appendChild(drop);
+  }
+
+  for (let i = 0; i < 35; i++){
+    const flake = document.createElement('div');
+    flake.className = 'snowflake';
+    const size = 2 + Math.random() * 3;
+    flake.style.width = size + 'px';
+    flake.style.height = size + 'px';
+    flake.style.left = Math.random() * 100 + '%';
+    flake.style.animationDuration = (4 + Math.random() * 4).toFixed(2) + 's';
+    flake.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
+    scene.appendChild(flake);
+  }
+}
+
+buildBackgroundScene();
+init();
+</script>
+</body>
+</html>
