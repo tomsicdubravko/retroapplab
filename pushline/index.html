@@ -2417,8 +2417,34 @@
     finishMove();
   });
 
+  let mouseDown = false;
+
   boardCanvas.addEventListener('mousedown', (e)=>{
     handlePick(e.clientX, e.clientY);
+    mouseDown = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    dragRow = selected ? selected.row : null;
+  });
+
+  document.addEventListener('mousemove', (e)=>{
+    if(!mouseDown || dragStartX === null || dragRow === null || paused || gameOver || busy) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    if(Math.abs(dy) > Math.abs(dx)) return;
+    if(Math.abs(dx) >= SWIPE_STEP){
+      const dir = dx > 0 ? 1 : -1;
+      if(selected && selected.row === dragRow) moveSelectedStep(dir);
+      if(selected) dragRow = selected.row;
+      dragStartX = e.clientX; dragStartY = e.clientY;
+    }
+  });
+
+  document.addEventListener('mouseup', ()=>{
+    if(!mouseDown) return;
+    mouseDown = false;
+    dragStartX = null; dragStartY = null; dragRow = null;
+    finishMove();
   });
 
   document.addEventListener('keydown', (e)=>{
