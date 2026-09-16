@@ -3,312 +3,574 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RetroAppLab — igre i alati Tomislava Dubravka</title>
+<title>RetroAppLab — igre, eksperimenti i alati</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+
 <style>
-  :root{
-    --sea-dark:#0D1B2A;
-    --sea-mid:#16324A;
-    --marquee-amber:#F2A541;
-    --marquee-coral:#E85D4C;
-    --parchment:#F5EFE0;
-    --ink:#0D1B2A;
-    --line: rgba(245,239,224,0.16);
+  :root {
+    --bg-main: #070611;
+    --bg-card: rgba(16, 14, 34, 0.85);
+    --neon-pink: #ff007f;
+    --neon-cyan: #00f2fe;
+    --neon-purple: #9b51e0;
+    --neon-gold: #f59e0b;
+    --neon-green: #10b981;
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-dim: rgba(255, 255, 255, 0.08);
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--sea-dark);
-    color:var(--parchment);
-    font-family:'IBM Plex Sans', sans-serif;
-    line-height:1.55;
-  }
-  h1,h2,h3,.wordmark{font-family:'Space Grotesk', sans-serif;}
-  a{color:inherit;}
-  img{max-width:100%;display:block;}
 
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-
-  /* NAV */
-  nav{
-    position:sticky;top:0;z-index:20;
-    background:rgba(13,27,42,0.92);
-    backdrop-filter:blur(6px);
-    border-bottom:1px solid var(--line);
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-light);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.55;
+    background-image: 
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(155, 81, 224, 0.18), transparent 70%),
+      radial-gradient(circle 600px at 90% 20%, rgba(255, 0, 127, 0.08), transparent 60%);
+    background-attachment: fixed;
   }
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px;}
-  .wordmark{font-weight:700;font-size:1.15rem;letter-spacing:0.01em;text-decoration:none;}
-  .wordmark span{color:var(--marquee-amber);}
-  .navlinks{display:flex;gap:28px;font-size:0.92rem;}
-  .navlinks a{text-decoration:none;color:var(--parchment);opacity:0.8;transition:opacity .15s;}
-  .navlinks a:hover{opacity:1;}
-  .navtoggle{display:none;background:none;border:none;color:var(--parchment);font-size:1.5rem;cursor:pointer;}
+
+  h1, h2, h3, .brand-font { font-family: 'Orbitron', sans-serif; letter-spacing: 0.03em; }
+  .tech-font { font-family: 'Rajdhani', sans-serif; }
+  a { text-decoration: none; color: inherit; }
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+  /* NAVIGACIJA */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(7, 6, 17, 0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-dim);
+  }
+  nav .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px; padding-bottom: 14px;
+  }
+  .wordmark {
+    font-size: 1.25rem; font-weight: 900;
+    display: flex; align-items: center; gap: 8px;
+    color: #fff;
+  }
+  .wordmark span { color: var(--neon-pink); }
+  .wordmark .logo-icon { font-size: 1.2rem; }
+  .navlinks { display: flex; gap: 24px; font-size: 0.9rem; font-weight: 500; }
+  .navlinks a {
+    color: var(--text-muted); transition: color 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .navlinks a:hover { color: var(--neon-cyan); }
+  .navtoggle { display: none; background: none; border: none; color: #fff; font-size: 1.6rem; cursor: pointer; }
 
   /* HERO */
-  .hero{
-    padding:96px 0 80px;
-    position:relative;
-    overflow:hidden;
-    background:
-      radial-gradient(ellipse 900px 400px at 15% -10%, rgba(242,165,65,0.14), transparent 60%),
-      radial-gradient(ellipse 700px 400px at 100% 0%, rgba(232,93,76,0.10), transparent 60%);
+  .hero {
+    padding: 70px 0 50px;
+    position: relative;
   }
-  .hero h1{
-    font-size:clamp(2.4rem, 6vw, 4.2rem);
-    font-weight:700;
-    line-height:1.04;
-    max-width:11ch;
+  .hero-tag {
+    font-size: 0.8rem; font-family: 'Press Start 2P', monospace;
+    color: var(--neon-cyan); margin-bottom: 12px; display: block;
   }
-  .hero p{
-    margin-top:22px;
-    max-width:52ch;
-    font-size:1.08rem;
-    color:rgba(245,239,224,0.78);
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 900; line-height: 1.1; margin-bottom: 14px;
+    background: linear-gradient(135deg, #ffffff 40%, var(--neon-purple) 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  .hero .byline{
-    margin-top:28px;
-    font-size:0.85rem;
-    letter-spacing:0.03em;
-    color:var(--marquee-amber);
+  .hero-sub {
+    font-size: 1.1rem; color: var(--text-muted); max-width: 54ch; margin-bottom: 24px;
+  }
+  .hero-byline {
+    font-size: 0.85rem; color: var(--neon-gold); font-weight: 600; letter-spacing: 0.05em;
   }
 
-  section{padding:72px 0;border-top:1px solid var(--line);}
-  .section-head{max-width:60ch;margin-bottom:40px;}
-  .section-head h2{font-size:1.9rem;font-weight:600;}
-  .section-head p{margin-top:10px;color:rgba(245,239,224,0.72);font-size:1rem;}
+  /* TOP QUICK CARDS (OVERVIEW NA VRHU) */
+  .top-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 36px;
+  }
+  .quick-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid var(--border-dim);
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .quick-card.card-arcade:hover { border-color: var(--neon-pink); box-shadow: 0 0 20px rgba(255, 0, 127, 0.3); transform: translateY(-4px); }
+  .quick-card.card-chess:hover { border-color: var(--neon-gold); box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); transform: translateY(-4px); }
+  .quick-card.card-lab:hover { border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0, 242, 254, 0.3); transform: translateY(-4px); }
+  .quick-card.card-software:hover { border-color: var(--neon-green); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); transform: translateY(-4px); }
 
-  /* ARCADE GRID */
-  .arcade-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:2px;
-    background:var(--line);
-    border:1px solid var(--line);
-  }
-  .cabinet{
-    background:var(--sea-mid);
-    padding:26px 22px 22px;
-    text-decoration:none;
-    color:inherit;
-    position:relative;
-    transition:background .18s;
-    min-height:168px;
-    display:flex;flex-direction:column;justify-content:space-between;
-  }
-  .cabinet:hover{background:#1c3f5c;}
-  .cabinet .tag{
-    font-family:'Press Start 2P', monospace;
-    font-size:0.55rem;
-    color:var(--marquee-amber);
-    display:block;
-    margin-bottom:14px;
-  }
-  .cabinet h3{font-size:1.15rem;font-weight:600;margin-bottom:8px;}
-  .cabinet .desc{font-size:0.88rem;color:rgba(245,239,224,0.65);}
-  .cabinet .play{
-    margin-top:16px;
-    font-size:0.82rem;
-    color:var(--marquee-coral);
-    font-weight:500;
-  }
+  .quick-card h3 { font-size: 1.05rem; margin: 10px 0 6px; }
+  .quick-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
+  .quick-card .explore-link { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
 
-  /* CHESS SECTION — distinct parchment/marble feel */
-  #sah{
-    background:var(--parchment);
-    color:var(--ink);
-    border-top:1px solid var(--line);
+  /* SEKCIJE ZAJEDNIČKO */
+  section { padding: 64px 0; border-top: 1px solid var(--border-dim); }
+  .section-head { margin-bottom: 32px; }
+  .section-head h2 {
+    font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px;
   }
-  #sah .section-head p{color:rgba(13,27,42,0.68);}
-  .sah-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:0;
-    border-top:1px solid rgba(13,27,42,0.15);
-    border-left:1px solid rgba(13,27,42,0.15);
-  }
-  .sah-item{
-    padding:26px 24px;
-    border-right:1px solid rgba(13,27,42,0.15);
-    border-bottom:1px solid rgba(13,27,42,0.15);
-  }
-  .sah-item h3{font-size:1.05rem;font-weight:600;margin-bottom:8px;}
-  .sah-item p{font-size:0.9rem;color:rgba(13,27,42,0.68);}
-  .beta{
-    display:inline-block;
-    margin-top:12px;
-    font-size:0.72rem;
-    font-weight:600;
-    letter-spacing:0.04em;
-    color:var(--marquee-coral);
-    border:1px solid var(--marquee-coral);
-    padding:2px 8px;
-    border-radius:3px;
-  }
+  .section-head p { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; }
 
-  /* LAB SECTION — blueprint feel */
-  #lab{
-    background:
-      linear-gradient(rgba(13,27,42,0.97), rgba(13,27,42,0.97)),
-      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(245,239,224,0.05) 28px),
-      repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(245,239,224,0.05) 28px);
+  /* ARCADE SEKCIJA */
+  .arcade-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
   }
-  .lab-note{
-    max-width:60ch;
-    font-size:0.98rem;
-    color:rgba(245,239,224,0.75);
-    border-left:2px solid var(--marquee-amber);
-    padding-left:20px;
+  .arcade-card {
+    background: var(--bg-card);
+    border: 1px solid #1f1b3c;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .arcade-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.35);
+  }
+  .card-banner {
+    height: 140px;
+    background: #151329;
+    display: flex; align-items: center; justify-content: center;
+    border-bottom: 1px solid var(--border-dim);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-banner img { width: 100%; height: 100%; object-fit: cover; }
+  .card-banner .placeholder-icon { font-size: 3rem; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
+  .card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
+  .card-tag {
+    font-family: 'Press Start 2P', monospace; font-size: 0.55rem;
+    color: var(--neon-pink); margin-bottom: 8px; display: inline-block;
+  }
+  .card-body h3 { font-size: 1.2rem; margin-bottom: 6px; color: #fff; }
+  .card-body p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px; flex-grow: 1; }
+  .play-btn {
+    align-self: flex-start;
+    padding: 7px 16px; border-radius: 6px;
+    font-weight: 700; font-size: 0.8rem;
+    background: rgba(255, 0, 127, 0.15);
+    border: 1px solid var(--neon-pink);
+    color: #fff; text-transform: uppercase;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .arcade-card:hover .play-btn {
+    background: var(--neon-pink);
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
   }
 
-  /* CUSTOM SOFTWARE — utilitarian list */
-  .tool-list{list-style:none;border-top:1px solid var(--line);}
-  .tool-list li{
-    display:flex;justify-content:space-between;align-items:baseline;
-    padding:16px 0;
-    border-bottom:1px solid var(--line);
-    font-size:0.98rem;
+  /* CHESS SEKCIJA — ZLATNI / TOPLI GRAD */
+  #sah {
+    background: linear-gradient(180deg, rgba(20, 14, 10, 0.7) 0%, rgba(7, 6, 17, 0.95) 100%),
+                radial-gradient(circle at center, rgba(245, 158, 11, 0.08), transparent 70%);
   }
-  .tool-list li span.label{color:rgba(245,239,224,0.55);font-size:0.82rem;}
-
-  footer{
-    border-top:1px solid var(--line);
-    padding:44px 0 60px;
-    font-size:0.88rem;
-    color:rgba(245,239,224,0.6);
+  #sah .section-head h2 { color: var(--neon-gold); }
+  .sah-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
   }
-  footer .about{max-width:56ch;margin-bottom:18px;}
+  .sah-card {
+    background: rgba(30, 22, 16, 0.85);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 10px; padding: 22px;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .sah-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--neon-gold);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+  }
+  .sah-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 8px; }
+  .sah-card p { font-size: 0.88rem; color: #d4bda8; margin-bottom: 14px; }
+  .badge-beta {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.65rem; font-weight: 700;
+    color: #f59e0b; border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.1);
+  }
 
-  @media (max-width: 760px){
-    .navlinks{
-      position:fixed;top:57px;left:0;right:0;
-      background:var(--sea-dark);
-      flex-direction:column;gap:0;
-      border-bottom:1px solid var(--line);
-      display:none;
+  /* DVIJE KOLONE ZA LAB & SOFTWARE */
+  .lab-software-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .lab-panel {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border-dim);
+  }
+  .lab-panel.lab-tech { border-color: rgba(0, 242, 254, 0.25); }
+  .lab-panel.lab-tech:hover { box-shadow: 0 0 25px rgba(0, 242, 254, 0.2); }
+  .lab-panel.software-tech { border-color: rgba(16, 185, 129, 0.25); }
+  .lab-panel.software-tech:hover { box-shadow: 0 0 25px rgba(16, 185, 129, 0.2); }
+
+  .lab-badge {
+    float: right; font-size: 0.65rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .badge-cyan { background: rgba(0, 242, 254, 0.15); color: var(--neon-cyan); border: 1px solid var(--neon-cyan); }
+  .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
+
+  .lab-items { display: grid; gap: 12px; margin-top: 18px; }
+  .lab-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 12px 16px; border-radius: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .lab-item span.title { font-weight: 600; font-size: 0.95rem; }
+  .lab-item span.subtitle { font-size: 0.8rem; color: var(--text-muted); }
+
+  /* QUOTE / BANNER PRI DNU */
+  .lab-quote {
+    text-align: center; padding: 48px 20px;
+    margin-top: 40px; border-top: 1px solid var(--border-dim);
+  }
+  .lab-quote h3 {
+    font-size: 1.1rem; color: #fff; margin-bottom: 8px; letter-spacing: 2px;
+  }
+  .lab-quote p { font-size: 0.95rem; color: var(--text-muted); font-style: italic; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border-dim);
+    padding: 40px 0; background: #05040a;
+    font-size: 0.88rem; color: var(--text-muted);
+  }
+  .footer-flex {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
+  }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a { color: #fff; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--neon-pink); }
+
+  /* ODZIVNOST ZA MOBITEL */
+  @media (max-width: 840px) {
+    .navlinks {
+      position: fixed; top: 56px; left: 0; right: 0;
+      background: var(--bg-main); flex-direction: column; gap: 0;
+      border-bottom: 1px solid var(--border-dim); display: none;
     }
-    .navlinks.open{display:flex;}
-    .navlinks a{padding:14px 24px;border-top:1px solid var(--line);}
-    .navtoggle{display:block;}
-    .arcade-grid{grid-template-columns:1fr;}
-    .sah-grid{grid-template-columns:1fr;}
+    .navlinks.open { display: flex; }
+    .navlinks a { padding: 14px 20px; border-top: 1px solid var(--border-dim); }
+    .navtoggle { display: block; }
+    .lab-software-container { grid-template-columns: 1fr; }
+    .arcade-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
+<!-- NAVIGACIJA -->
 <nav>
   <div class="wrap">
-    <a href="#" class="wordmark">Retro<span>App</span>Lab</a>
+    <a href="#" class="wordmark">
+      <span class="logo-icon">👾</span> RETRO<span>APP</span>LAB
+    </a>
     <button class="navtoggle" onclick="document.querySelector('.navlinks').classList.toggle('open')">☰</button>
     <div class="navlinks">
-      <a href="#arkada">Retro Arcade</a>
-      <a href="#sah">Dubrovački šah</a>
-      <a href="#lab">The Lab</a>
-      <a href="#software">Custom Software</a>
+      <a href="#arkada">🕹️ Arcade</a>
+      <a href="#sah">♟️ Šah</a>
+      <a href="#lab">🧪 The Lab</a>
+      <a href="#software">⚙️ Software</a>
+      <a href="#omeni">👤 O meni</a>
     </div>
   </div>
 </nav>
 
+<!-- HERO SEKCIJA -->
 <header class="hero">
   <div class="wrap">
-    <h1>Male igre i alati, napravljeni ručno.</h1>
-    <p>RetroAppLab je zbirka browser igara, hardverskih eksperimenata i poslovnih alata koje sam sam osmislio i izgradio — od videopokera do broda koji uplovljava u dubrovačku luku.</p>
-    <div class="byline">Tomislav Dubravko · Dubrovnik</div>
+    <span class="hero-tag">GAMES • APPS • EXPERIMENTS</span>
+    <h1>MALE IGRE I ALATI, NAPRAVLJENI RUČNO.</h1>
+    <p class="hero-sub">RetroAppLab je zbirka web igara, fizičkih hardverskih eksperimenata i poslovnih rješenja — od video pokera do kormila broda u dubrovačkoj luci.</p>
+    <div class="hero-byline">Tomislav Dubravko · Dubrovnik</div>
+
+    <!-- 4 GLAVNE KARTICE KAO NA MOCKUPU -->
+    <div class="top-cards">
+      <a href="#arkada" class="quick-card card-arcade">
+        <div>
+          <div style="font-size: 1.5rem;">🕹️</div>
+          <h3>RETRO ARCADE</h3>
+          <p>Klasične igre, bezbrižna zabava i čisti retro osjećaj.</p>
+        </div>
+        <span class="explore-link" style="color: var(--neon-pink);">Istraži →</span>
+      </a>
+
+      <a href="#sah" class="quick-card card-chess">
+        <div>
+          <div style="font-size: 1.5rem;">♟️</div>
+          <h3>DUBROVNIK CHESS</h3>
+          <p>Povijest, Olimpijada 1950. i partije protiv bota.</p>
+        </div>
+        <span class="explore-link" style="color: var(--neon-gold);">Istraži →</span>
+      </a>
+
+      <a href="#lab" class="quick-card card-lab">
+        <div>
+          <div style="font-size: 1.5rem;">🧪</div>
+          <h3>THE LAB</h3>
+          <p>Fizički kontroleri, tasteri za poker i mikrokontroleri.</p>
+        </div>
+        <span class="explore-link" style="color: var(--neon-cyan);">Istraži →</span>
+      </a>
+
+      <a href="#software" class="quick-card card-software">
+        <div>
+          <div style="font-size: 1.5rem;">⚙️</div>
+          <h3>CUSTOM SOFTWARE</h3>
+          <p>Alati razvijeni za stvarne poslovne potrebe pogona.</p>
+        </div>
+        <span class="explore-link" style="color: var(--neon-green);">Istraži →</span>
+      </a>
+    </div>
   </div>
 </header>
 
+<!-- ARCADE SEKCIJA -->
 <section id="arkada">
   <div class="wrap">
     <div class="section-head">
-      <h2>Retro Arcade</h2>
-      <p>Šest igara za preglednik, svaka svoj mali svijet — od kartaškog stola do farme i utrke automobila.</p>
+      <h2>🕹️ RETRO ARCADE</h2>
+      <p>Sedam igara za preglednik — svaka svoj mali svijet, od kartaškog stola do slot automata i puzzli.</p>
     </div>
+
     <div class="arcade-grid">
-      <a class="cabinet" href="/poker/">
-        <div><span class="tag">KARTE</span><h3>Poker</h3><p class="desc">Klasični video poker s "veće/manje" gamble funkcijom.</p></div>
-        <div class="play">Igraj</div>
-      </a>
-      <a class="cabinet" href="/pcelica/">
-        <div><span class="tag">ARKADA</span><h3>Pčelica</h3><p class="desc">Flappy Bird stil igre s pčelom kao glavnim likom.</p></div>
-        <div class="play">Igraj</div>
-      </a>
-      <a class="cabinet" href="/kruzer/">
-        <div><span class="tag">SIMULACIJA</span><h3>Kapetan Kružera</h3><p class="desc">Uplovi brodom u jadranske luke, pogled s mosta broda.</p></div>
-        <div class="play">Igraj</div>
-      </a>
-      <a class="cabinet" href="/farma/">
-        <div><span class="tag">SIMULACIJA</span><h3>Moja Farma</h3><p class="desc">Polja, staje i tržnica — nadahnuto starim SimFarmom.</p></div>
-        <div class="play">Igraj</div>
-      </a>
-      <a class="cabinet" href="/arena-derby/">
-        <div><span class="tag">UTRKA</span><h3>Arena Derby 3D</h3><p class="desc">Demolicijska arena u 3D-u, kampanja i razni tipovi auta.</p></div>
-        <div class="play">Igraj</div>
-      </a>
-      <a class="cabinet" href="/padobroj/">
-        <div><span class="tag">PUZZLE</span><h3>Padobroj</h3><p class="desc">Igra spajanja brojeva koji padaju — mobilna verzija.</p></div>
-        <div class="play">Igraj</div>
-      </a>
+      <!-- POKER -->
+      <div class="arcade-card">
+        <div class="card-banner">
+          <div class="placeholder-icon">🃏</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">KARTE</span>
+          <h3>Poker 90s</h3>
+          <p>Klasični video poker iz 90-ih s autentičnom "veće / manje" gamble funkcijom i dupliranjem.</p>
+          <a href="/poker/" class="play-btn">Igraj</a>
+        </div>
+      </div>
+
+      <!-- PČELICA -->
+      <div class="arcade-card">
+        <div class="card-banner">
+          <div class="placeholder-icon">🐝</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">ARKADA</span>
+          <h3>Pčelica</h3>
+          <p>Flappy Bird stil zarazne arkade s pčelicom koja vješto leti kroz prepreke i razine.</p>
+          <a href="/pcelica/" class="play-btn">Igraj</a>
+        </div>
+      </div>
+
+      <!-- BROJOPAD -->
+      <div class="arcade-card">
+        <div class="card-banner">
+          <div class="placeholder-icon">🔢</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">PUZZLE</span>
+          <h3>Brojopad</h3>
+          <p>Igra spajanja padajućih brojeva, posebno prilagođena za brzo igranje na mobitelu.</p>
+          <a href="/brojopad/" class="play-btn">Igraj</a>
+        </div>
+      </div>
+
+      <!-- VOĆNA SALATA -->
+      <div class="arcade-card">
+        <div class="card-banner">
+          <div class="placeholder-icon">🍉</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">AUTOMAT</span>
+          <h3>Voćna Salata</h3>
+          <p>Jednoruki bandit s voćem, bonus rundama i tri teme izgleda — Vegas, Neon i Retro.</p>
+          <a href="/vocna-salata/" class="play-btn">Igraj</a>
+        </div>
+      </div>
+
+      <!-- AUTO OTPAD -->
+      <div class="arcade-card">
+        <div class="card-banner">
+          <div class="placeholder-icon">🚗</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">REFLEKSI</span>
+          <h3>Auto Otpad</h3>
+          <p>Zdrobi aute u preši u pravom trenutku — tajming igra kroz sve teže runde.</p>
+          <a href="/auto-otpad/" class="play-btn">Igraj</a>
+        </div>
+      </div>
+
+      <!-- DROP STACK -->
+      <div class="arcade-card">
+        <div class="card-banner">
+          <div class="placeholder-icon">🧱</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">PUZZLE</span>
+          <h3>Drop Stack</h3>
+          <p>Povuci blokove iz ponude na ploču, popuni retke i pazi na "garbage" redove koji rastu odozdo.</p>
+          <a href="/dropstack/" class="play-btn">Igraj</a>
+        </div>
+      </div>
+
+      <!-- PUSHLINE -->
+      <div class="arcade-card">
+        <div class="card-banner">
+          <div class="placeholder-icon">🧩</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">PUZZLE</span>
+          <h3>PushLine</h3>
+          <p>Guraj blokove na ploči da formiraš redove i kombinacije, uz comboe i sve teže razine.</p>
+          <a href="/pushline/" class="play-btn">Igraj</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- DUBROVAČKI ŠAH -->
 <section id="sah">
   <div class="wrap">
     <div class="section-head">
-      <h2>Dubrovački šah</h2>
-      <p>Šah smješten u povijest Dubrovačke Republike — od pregleda povijesti igre do partije protiv bota s figurama Olimpijade 1950.</p>
+      <h2>♟️ DUBROVAČKI ŠAH</h2>
+      <p>Povijest dubrovačkog šaha, Olimpijada 1950. i autentična partija protiv bota.</p>
     </div>
+
     <div class="sah-grid">
-      <div class="sah-item">
+      <div class="sah-card">
         <h3>Povijest šaha</h3>
-        <p>Kratki pregled razvoja igre kroz stoljeća.</p>
+        <p>Priča o razvoju igre u Dubrovniku i slavnoj Šahovskoj olimpijadi 1950. održanoj podno Srđa.</p>
+        <a href="#sah" class="play-btn" style="border-color: var(--neon-gold); color: #fff; background: rgba(245, 158, 11, 0.2);">Pročitaj</a>
       </div>
-      <div class="sah-item">
-        <h3>Igraj s botovima</h3>
-        <p>Partija protiv bota ili drugog igrača, s figurama Olimpijade 1950.</p>
+
+      <div class="sah-card">
+        <h3>Igraj protiv bota</h3>
+        <p>Odigrajte partiju protiv prilagođenog bota ili u dvoje, s vizualom slavnih figura iz 1950.</p>
+        <a href="#sah" class="play-btn" style="border-color: var(--neon-gold); color: #fff; background: rgba(245, 158, 11, 0.2);">Pokreni šah</a>
       </div>
-      <div class="sah-item">
-        <h3>Postani Knez Republike</h3>
-        <p>Strateška igra o vođenju Dubrovačke Republike.</p>
-        <span class="beta">BETA</span>
+
+      <div class="sah-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <h3>Postani Knez</h3>
+          <span class="badge-beta">BETA</span>
+        </div>
+        <p>Strateško napredovanje i šahovski izazovi kroz povijesne rangove Dubrovačke Republike.</p>
+        <a href="#sah" class="play-btn" style="border-color: var(--neon-gold); color: #fff; background: rgba(245, 158, 11, 0.2);">Uđi u igru</a>
       </div>
     </div>
   </div>
 </section>
 
+<!-- THE LAB & CUSTOM SOFTWARE (DVIJE KOLONE) -->
 <section id="lab">
   <div class="wrap">
-    <div class="section-head">
-      <h2>The Lab</h2>
-      <p>Hardverski projekti i eksperimenti izvan preglednika.</p>
+    <div class="lab-software-container">
+      
+      <!-- THE LAB PANEL -->
+      <div class="lab-panel lab-tech">
+        <span class="lab-badge badge-cyan">EXPERIMENTAL</span>
+        <h2 style="font-size: 1.4rem; color: var(--neon-cyan); margin-bottom: 6px;">🧪 THE LAB</h2>
+        <p style="color: var(--text-muted); font-size: 0.88rem;">Eksperimenti izvan ekrana i hardverska rješenja.</p>
+
+        <div class="lab-items">
+          <div class="lab-item">
+            <div>
+              <div class="title">Fizički Poker Kontroler</div>
+              <div class="subtitle">Izrada USB arkadnog tastera za lupanje "veća / manja"</div>
+            </div>
+            <span style="color: var(--neon-cyan);">WIP</span>
+          </div>
+
+          <div class="lab-item">
+            <div>
+              <div class="title">Hardware & Mikrokontroleri</div>
+              <div class="subtitle">Povezivanje prekidača, senzora i ESP32 modula</div>
+            </div>
+            <span style="color: var(--neon-cyan);">Lab</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTOM SOFTWARE PANEL -->
+      <div id="software" class="lab-panel software-tech">
+        <span class="lab-badge badge-green">PRODUCTION</span>
+        <h2 style="font-size: 1.4rem; color: var(--neon-green); margin-bottom: 6px;">⚙️ CUSTOM SOFTWARE</h2>
+        <p style="color: var(--text-muted); font-size: 0.88rem;">Alati razvijeni za svakodnevni rad i organizaciju.</p>
+
+        <div class="lab-items">
+          <div class="lab-item">
+            <div>
+              <div class="title">Dostava & Novčanik</div>
+              <div class="subtitle">Evidencija rute, pologa, novčanika i kusura vozača</div>
+            </div>
+            <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+          </div>
+
+          <div class="lab-item">
+            <div>
+              <div class="title">Smjene i Dnevnice</div>
+              <div class="subtitle">Precizno bilježenje odrađenih sati i obračun dnevnica</div>
+            </div>
+            <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+          </div>
+
+          <div class="lab-item">
+            <div>
+              <div class="title">Kilometraža i Blagajna</div>
+              <div class="subtitle">Interni sustav za stanje vozila i završno brojanje novca</div>
+            </div>
+            <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <p class="lab-note">Ova sekcija je u pripremi — ovdje će stajati opisi hardverskih projekata kad budu spremni za objavu.</p>
+
+    <!-- CITAT SA SLIKE -->
+    <div class="lab-quote">
+      <div class="brand-font" style="color: #fff; font-size: 1.1rem; margin-bottom: 6px;">MADE IN THE LAB</div>
+      <p>"Ideas start as experiments. Some become games. Some become useful tools. Some just need to exist."</p>
+    </div>
   </div>
 </section>
 
-<section id="software">
+<!-- FOOTER -->
+<footer id="omeni">
   <div class="wrap">
-    <div class="section-head">
-      <h2>Custom Software</h2>
-      <p>Alati napravljeni za svakodnevni rad pizzerije — od evidencije sati do vođenja blagajne.</p>
+    <div class="footer-flex">
+      <div>
+        <h4 class="brand-font" style="color: #fff; margin-bottom: 4px;">RetroAppLab</h4>
+        <p style="font-size: 0.82rem;">Sve na ovoj stranici izrađeno je ručno iz strasti prema kodu, mehanici i retro igrama.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#arkada">Igre</a>
+        <a href="#sah">Šah</a>
+        <a href="#lab">Lab</a>
+        <a href="https://sica.hr" target="_blank">Pizzeria Šica</a>
+      </div>
     </div>
-    <ul class="tool-list">
-      <li>Evidencija radnih sati zaposlenika <span class="label">interni alat</span></li>
-      <li>Aplikacija za dostavu <span class="label">interni alat</span></li>
-      <li>Unos dostava <span class="label">interni alat</span></li>
-      <li>Dnevnice <span class="label">interni alat</span></li>
-      <li>Brojanje blagajne <span class="label">interni alat</span></li>
-      <li>Kilometraža vozila <span class="label">interni alat</span></li>
-    </ul>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <p class="about">Sve na ovoj stranici napravio sam sâm, uz pomoć Claudea za razvoj koda. Za sustav naručivanja i blagajnu pizzerije posjeti <a href="https://sica.hr" style="text-decoration:underline;">sica.hr</a>.</p>
-    <p>© 2026 Tomislav Dubravko · RetroAppLab</p>
+    <div style="border-top: 1px solid var(--border-dim); padding-top: 16px; font-size: 0.78rem; text-align: center;">
+      © 2026 Tomislav Dubravko · RetroAppLab · Dubrovnik
+    </div>
   </div>
 </footer>
 
