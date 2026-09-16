@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Istraži Dubrovnik kroz Šah</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: linear-gradient(160deg, #1a0f04 0%, #2a1a08 60%, #1a0f04 100%);
+      font-family: 'Georgia', serif;
+      color: #e8cc80;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      text-align: center;
+      padding: 20px 16px 12px;
+    }
+    .header-sub {
+      color: #6a4a20;
+      font-size: 10px;
+      letter-spacing: 5px;
+      margin-bottom: 6px;
+    }
+    .header-title {
+      color: #e0b85a;
+      font-size: 22px;
+      letter-spacing: 4px;
+      font-weight: bold;
+      text-shadow: 0 0 30px #e0b85a44;
+    }
+    .header-hint {
+      color: #4a3010;
+      font-size: 10px;
+      letter-spacing: 2px;
+      margin-top: 8px;
+    }
+
+    /* MAP CONTAINER */
+    .map-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .map-wrap img {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+    }
+
+    /* MARKERS */
+    .marker {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      cursor: pointer;
+      z-index: 10;
+    }
+    .marker-pin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+    .marker:hover .marker-pin { transform: scale(1.15); }
+    .marker-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+      border: 2px solid rgba(255,255,255,0.15);
+    }
+    .marker-icon span {
+      transform: rotate(45deg);
+      font-size: 16px;
+    }
+    .marker-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+
+    /* TOOLTIP */
+    .marker-tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10,6,2,0.95);
+      border: 1px solid #e0b85a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      min-width: 150px;
+      max-width: 190px;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .marker:hover .marker-tooltip { opacity: 1; }
+    .tooltip-title {
+      color: #e0b85a;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+    .tooltip-sub {
+      color: #8a6838;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: linear-gradient(160deg, #1e1208, #2a1a08);
+      border: 1.5px solid #e0b85a;
+      border-radius: 16px;
+      padding: 28px 24px;
+      max-width: 360px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 0 60px #e0b85a22;
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: none;
+      border: none;
+      color: #6a4a20;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #e0b85a; }
+    .modal-icon {
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .modal-year {
+      color: #6a4a20;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .modal-title {
+      color: #e0b85a;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .modal-text {
+      color: #c0964a;
+      font-size: 12px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .modal-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #3a2510;
+      border: 1.5px solid #e0b85a;
+      border-radius: 8px;
+      color: #e0b85a;
+      font-size: 13px;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .modal-btn:hover { background: #4a3520; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-sub">ISTRA&#381;I GRAD</div>
+  <div class="header-title">DUBROVNIK KROZ &#352;AH</div>
+  <div class="header-hint">Klikni na lokaciju i otkrij pri&#269;u</div>
+</div>
+
+<div class="map-wrap">
+  <img src="dubrovnik_map.png" alt="Dubrovnik"/>
+
+  <!-- LOKRUM -->
+  <div class="marker" style="left:33%;top:20%" onclick="openModal('lokrum')">
+    <div class="marker-pin">
+      <div class="marker-tooltip">
+        <div class="tooltip-title">LOKRUM</div>
+        <div class="tooltip-sub">1192. &mdash; Richard Lavlje Srce</div>
+      </div>
+      <div class="marker-icon" style="background:#2a3a2a">
+        <span>&#9818;</span>
+      </div>
+      <div class="marker-dot" style="background:#4a8a4a"></div>
+    </div>
+  </div>
+
+
+  <!-- ALJEHIN 1936 -->
+  <div class="marker" style="left:88%;top:68%" onclick="openModal('aljehin')">
+    <div class="marker-pin">
+      <div class="marker-tooltip">
+        <div class="tooltip-title">ALJEHIN 1936.</div>
+        <div class="tooltip-sub">Simultanka &mdash; 33 pobjede</div>
+      </div>
+      <div class="marker-icon" style="background:#1a2a3a">
+        <span>&#9817;</span>
+      </div>
+      <div class="marker-dot" style="background:#5a8aaa"></div>
+    </div>
+  </div>
+
+  <!-- GRADSKA KAVANA - Sah iz prkosa - Luza/Stradun -->
+  <div class="marker" style="left:60%;top:52%" onclick="openModal('prkos')">
+    <div class="marker-pin">
+      <div class="marker-tooltip">
+        <div class="tooltip-title">GRADSKA KAVANA</div>
+        <div class="tooltip-sub">&#352;ah iz prkosa 1991.</div>
+      </div>
+      <div class="marker-icon" style="background:#1a1a2a">
+        <span>&#9820;</span>
+      </div>
+      <div class="marker-dot" style="background:#8080e0"></div>
+    </div>
+  </div>
+
+  <!-- OLIMPIJADA 1950 - malo desno od Gradske kavane -->
+  <div class="marker" style="left:69%;top:51%" onclick="openModal('olimp')">
+    <div class="marker-pin">
+      <div class="marker-tooltip">
+        <div class="tooltip-title">OLIMPIJADA 1950.</div>
+        <div class="tooltip-sub">IX. &#352;ahovska olimpijada</div>
+      </div>
+      <div class="marker-icon" style="background:#3a2a08">
+        <span>&#9819;</span>
+      </div>
+      <div class="marker-dot" style="background:#e0b85a"></div>
+    </div>
+  </div>
+
+  <!-- ORLANDOV STUP - Kasparov -->
+  <div class="marker" style="left:69%;top:64%" onclick="openModal('kasparov')">
+    <div class="marker-pin">
+      <div class="marker-tooltip">
+        <div class="tooltip-title">ORLANDOV STUP</div>
+        <div class="tooltip-sub">Kasparov 23.10.1994.</div>
+      </div>
+      <div class="marker-icon" style="background:#3a0808">
+        <span>&#9818;</span>
+      </div>
+      <div class="marker-dot" style="background:#e05050"></div>
+    </div>
+  </div>
+
+  <!-- TRIFUNOVIC - Knezev dvor area -->
+  <div class="marker" style="left:76%;top:48%" onclick="openModal('trifunovic')">
+    <div class="marker-pin">
+      <div class="marker-tooltip">
+        <div class="tooltip-title">TRIFUNOVI&#262;EV<br/>DUBROVNIK</div>
+        <div class="tooltip-sub">Rodio se 1910. u gradu</div>
+      </div>
+      <div class="marker-icon" style="background:#3a2a08">
+        <span>&#9822;</span>
+      </div>
+      <div class="marker-dot" style="background:#c8a050"></div>
+    </div>
+  </div>
+
+  <!-- LUDUS SCACCHORUM - Knezev dvor, malo desno -->
+  <div class="marker" style="left:63%;top:63%" onclick="openModal('ludus')">
+    <div class="marker-pin">
+      <div class="marker-tooltip">
+        <div class="tooltip-title">KNE&#381;EV DVOR</div>
+        <div class="tooltip-sub">Ludus Scacchorum &mdash; 14. st.</div>
+      </div>
+      <div class="marker-icon" style="background:#2a1a3a">
+        <span>&#9821;</span>
+      </div>
+      <div class="marker-dot" style="background:#c050e0"></div>
+    </div>
+  </div>
+
+</div><!-- end map-wrap -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-icon" id="modal-icon"></div>
+    <div class="modal-year" id="modal-year"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-text" id="modal-text"></div>
+    <a class="modal-btn" id="modal-btn" href="#" target="_top">OTVORI TAB U POVIJESTI &#8594;</a>
+  </div>
+</div>
+
+<div style="height:30px"></div>
+
+<script>
+var LOCATIONS = {
+  lokrum: {
+    icon: "&#9818;",
+    year: "1192.",
+    title: "LOKRUM",
+    text: "Prema legendi, engleski kralj Richard I. Lavlje Srce vra&#263;ao se iz III. kri&#382;arskog pohoda. Brodovi su ga zatekli oluja blizu Dubrovnika i pristao je na otoku Lokrumu. U znak zahvalnosti poklonio je Dubrova&#269;anima skupocjenu &#353;ahovsku garnituru.",
+    tab: "richard"
+  },
+  lovrijenac: {
+    icon: "&#9820;",
+    year: "1358. &mdash; 1808.",
+    title: "LOVRIJENAC",
+    text: "Tvr&#273;ava Lovrijenac &mdash; stra&#382;ar slobode Dubrova&#269;ke Republike. Na ulazu stoji natpis: NON BENE PRO TOTO LIBERTAS VENDITUR AURO. Sloboda se ne prodaje ni za sve zlato svijeta. Ista filozofija kojom se igralo &#353;ah u Republici.",
+    tab: "ludus"
+  },
+  aljehin: {
+    icon: "&#9817;",
+    year: "1936.",
+    title: "ALJEHIN U DUBROVNIKU",
+    text: "Lipanj 1936. Svjetski prvak Aleksandar Aljehin dolazi u Dubrovnik. Pred njim sjeda 35 dubrova&#269;kih &#353;ahista. Nije uspio nitko. 33 pobjede, 2 remija, ni jedan poraz. Dvorana je bila puna do posljednjeg mjesta.",
+    tab: "aljehin"
+  },
+  olimp: {
+    icon: "&#9819;",
+    year: "1950.",
+    title: "IX. &#352;AHOVSKA OLIMPIJADA",
+    text: "Rujan 1950. Dubrovnik ugostio je 16 nacija i 84 &#353;ahista. 480 odigranih partija. Jugoslavija je osvojila zlatnu medalju. Petar Trifunovi&#263; je na tre&#263;oj plo&#269;i pobijedio 10 od 13 partija u rodnom gradu.",
+    tab: "olimp"
+  },
+  kasparov: {
+    icon: "&#9818;",
+    year: "23.10.1994.",
+    title: "KASPAROV NA ORLANDOVOM STUPU",
+    text: "Gari Kasparov dolazi u Dubrovnik godinu i pol nakon rata. Sjeda na Orlandov stup i igra simultanku pred punim Placom. 25 protivnika. Gotovo nitko ga nije mogao zaustavi. Kasparov je kasnije rekao da mu je Dubrovnik jedan od najljep&#353;ih gradova na svijetu.",
+    tab: "kasparov"
+  },
+  prkos: {
+    icon: "&#9820;",
+    year: "17.11.1991.",
+    title: "&#352;AH IZ PRKOSA",
+    text: "Dok su granate padale na Dubrovnik, u Gradskoj kavani je odr&#382;an prvi brzopotezni turnir u ratnim uvjetima. Prva nagrada: 5 litara pitke vode. Dvorana razru&#353;ena, ali puna &#353;ahista. Nikola Bubica je pobijedio.",
+    tab: "prkos"
+  },
+  ludus: {
+    icon: "&#9821;",
+    year: "14. &mdash; 15. stolje&#263;e",
+    title: "LUDUS SCACCHORUM",
+    text: "U knjigama oporuka i inventara dubrova&#269;kih vlastelina u Arhivu Sponza, bilje&#382;nici su na latinskom popisivali imovinu pokojnika. Izme&#273;u skupocjenih tkanina i srebra stajalo je: tabula de scachis. &#352;ahovska plo&#269;a kao statusni simbol vlastele.",
+    tab: "ludus"
+  },
+  trifunovic: {
+    icon: "&#9822;",
+    year: "1910. &mdash; 1980.",
+    title: "PETAR TRIFUNOVI&#262;",
+    text: "Ro&#273;en u Dubrovniku 31. kolovoza 1910. Pet puta prvak Jugoslavije. Velemajstor. Zlatna medalja na olimpijadi u rodnom gradu 1950. Zvali su ga Tajfunovi&#263;. Jedan je od svega 11 &#353;ahista koji su remizirali s Fischerom na turniru u Bledu 1961.",
+    tab: "trifunovic"
+  }
+};
+
+function openModal(key) {
+  var loc = LOCATIONS[key];
+  document.getElementById('modal-icon').innerHTML  = loc.icon;
+  document.getElementById('modal-year').innerHTML  = loc.year;
+  document.getElementById('modal-title').innerHTML = loc.title;
+  document.getElementById('modal-text').innerHTML  = loc.text;
+  document.getElementById('modal-btn').href = 'history.html?tab=' + loc.tab;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>

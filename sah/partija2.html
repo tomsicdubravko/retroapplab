@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dubrovnik Chess - Niemela vs Trifunovic 1950</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f0804; color: #f0e5c8; font-family: 'IM Fell English', Georgia, serif; min-height: 100vh; }
+    :root {
+      --gold: #e0b85a; --mid: #2a1a08; --border: #6a4a20;
+      --txt: #e8cc80; --txt2: #c0964a; --txt3: #8a6838;
+    }
+    .header { background: linear-gradient(180deg,#1a0c04,#0f0804); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .header-back { background: none; border: 1px solid var(--border); color: var(--txt2); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 13px; }
+    .header-title { text-align: center; flex: 1; }
+    .header-title h1 { color: var(--gold); font-size: 16px; letter-spacing: 3px; }
+    .header-title p { color: var(--txt3); font-size: 10px; letter-spacing: 2px; margin-top: 2px; }
+    .players-card { display: flex; align-items: center; gap: 12px; background: #1c1208; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin: 14px 20px; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .player-info { flex: 1; }
+    .player-name { color: var(--gold); font-size: 13px; letter-spacing: 1px; font-weight: bold; }
+    .player-color { font-size: 11px; color: var(--txt3); margin-top: 2px; }
+    .player-bio { font-size: 11px; color: var(--txt2); margin-top: 4px; line-height: 1.5; }
+    .vs-badge { background: var(--border); color: var(--gold); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+    .context-card { background: #1c1208; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin: 0 20px 14px; max-width: 640px; margin-left: auto; margin-right: auto; font-size: 12px; color: var(--txt); line-height: 1.8; }
+    .ctx-title { color: var(--gold); font-size: 10px; letter-spacing: 3px; margin-bottom: 8px; }
+    .board-area { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+    .board-wrap { display: flex; flex-direction: column; align-items: center; }
+    .file-label { flex: 1; text-align: center; color: var(--txt3); font-size: 10px; padding: 3px 0; }
+    .board-labels { display: flex; padding-left: 20px; width: 100%; }
+    .board-row-wrap { display: flex; width: 100%; }
+    .rank-label { width: 20px; flex: 1; display: flex; align-items: center; justify-content: center; color: var(--txt3); font-size: 10px; flex-shrink: 0; }
+    .board-grid { flex: 1; display: flex; flex-wrap: wrap; border: 3px solid #5a3e10; border-radius: 2px; overflow: hidden; box-shadow: 0 4px 24px #00000066; }
+    .sq { width: 12.5%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; position: relative; user-select: none; overflow: hidden; }
+    .sq svg { width: 88% !important; height: 88% !important; }
+    .sq.light { background: #e8d5a3; }
+    .sq.dark  { background: #9a6b3a; }
+    .sq.hl-from { background: #cdd16f !important; }
+    .sq.hl-to   { background: #aaa23a !important; }
+    .sq.hl-key  { outline: 3px solid #e05050; outline-offset: -3px; }
+    .move-comment { background: #1c1208; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; min-height: 64px; font-size: 12px; color: var(--txt); line-height: 1.7; }
+    .mc-move { color: var(--gold); font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+    .controls { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0; }
+    .ctrl-btn { background: var(--mid); border: 1px solid var(--border); color: var(--txt2); width: 40px; height: 40px; border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+    .play-btn { width: 48px !important; height: 48px !important; background: #3a2510 !important; border-color: var(--gold) !important; color: var(--gold) !important; font-size: 20px !important; }
+    .move-counter { color: var(--txt2); font-size: 12px; min-width: 80px; text-align: center; }
+    .move-list-wrap { background: #1c1208; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 14px; max-height: 160px; overflow-y: auto; }
+    .move-list { display: flex; flex-wrap: wrap; gap: 2px; }
+    .mv-pair { display: flex; align-items: center; gap: 2px; }
+    .mv-num { color: var(--txt3); font-size: 10px; min-width: 22px; }
+    .mv-w, .mv-b { padding: 3px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; color: var(--txt2); font-family: inherit; }
+    .mv-w:hover, .mv-b:hover { background: #3a2510; color: var(--gold); }
+    .mv-w.current, .mv-b.current { background: #3a2510; color: var(--gold); font-weight: bold; }
+    .chapters-wrap { margin: 0 20px 14px; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .chapters-nav { display: flex; gap: 6px; margin-bottom: 10px; }
+    .ch-btn { flex: 1; background: #1c1208; border: 1px solid var(--border); border-radius: 8px; padding: 8px 6px; cursor: pointer; text-align: center; transition: border-color .2s, background .2s; }
+    .ch-btn:hover { border-color: var(--gold); }
+    .ch-btn.active { border-color: var(--gold); background: #2a1a08; }
+    .ch-label { display: block; color: var(--txt3); font-size: 9px; letter-spacing: 2px; margin-bottom: 3px; }
+    .ch-btn.active .ch-label { color: var(--gold); }
+    .ch-range { display: block; color: var(--txt2); font-size: 11px; }
+    .ch-btn.active .ch-range { color: var(--gold); font-weight: bold; }
+    .ch-text { background: #1c1208; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: var(--txt); font-size: 12px; line-height: 1.85; display: none; }
+    .ch-text.visible { display: block; }
+  </style>
+</head>
+<body>
+
+
+<div class="players-card">
+  <div class="player-info">
+    <div class="player-name">Aarne Niemela</div>
+    <div class="player-color">&#9814; Bijeli</div>
+    <div class="player-bio">Finska &bull; Olimpijada 1950.</div>
+  </div>
+  <div class="vs-badge">VS</div>
+  <div class="player-info" style="text-align:right">
+    <div class="player-name">Petar Trifunovi&#263;</div>
+    <div class="player-color">Crni &#9820;</div>
+    <div class="player-bio">Dubrovnik &bull; Zlatna medalja za plo&#269;u</div>
+  </div>
+</div>
+
+<div class="context-card">
+  <div class="ctx-title">DUBROVNIK, 10. RUJNA 1950.</div>
+  Posljednja runda IX. &#352;ahovske olimpijade. Petar Trifunovi&#263; igra za Jugoslaviju pred doma&#263;om publikom u rodnom gradu. Trebao je pobjedu da osigura zlatnu medalju za tre&#263;u plo&#269;u. Dobio ju je &#8212; i Jugoslavija je postala olimpijski prvak.
+  <br/><br/>
+  Partija je klasik zatvorenog &#353;aha: Trifunovi&#263; strpljivo izgradi poziciju, otkloni sve bijele prijetnje, a onda u finalu prona&#273;e besprijekornu kombinaciju koja okon&#269;ava otpor. d2 pijun koji ne mo&#382;e biti zaustavljen &#8212; Niemela se predaje.
+</div>
+
+<div class="chapters-wrap">
+  <div class="chapters-nav">
+    <div class="ch-btn" id="ch-0" onclick="selectChapter(0)">
+      <span class="ch-label">OTVARANJE</span>
+      <span class="ch-range">1—16</span>
+    </div>
+    <div class="ch-btn" id="ch-1" onclick="selectChapter(1)">
+      <span class="ch-label">NAPAD</span>
+      <span class="ch-range">17—30</span>
+    </div>
+    <div class="ch-btn" id="ch-2" onclick="selectChapter(2)">
+      <span class="ch-label">KOMBINACIJA I POBJEDA</span>
+      <span class="ch-range">31—39</span>
+    </div>
+  </div>
+  <div class="ch-text" id="ch-text"></div>
+</div>
+
+<div class="board-area">
+  <div class="board-wrap">
+    <div class="board-labels" id="files-top"></div>
+    <div class="board-row-wrap">
+      <div style="display:flex;flex-direction:column;width:20px;align-self:stretch" id="ranks-left"></div>
+      <div class="board-grid" id="board"></div>
+      <div style="display:flex;flex-direction:column;width:20px;align-self:stretch" id="ranks-right"></div>
+    </div>
+    <div class="board-labels" id="files-bottom"></div>
+  </div>
+
+  <div class="move-comment">
+    <div class="mc-move" id="mc-move-label">Po&#269;etna pozicija</div>
+    <div id="mc-text">Niemela (bijeli) vs Trifunovi&#263; (crni). Dubrovnik olimpijada, 10. rujna 1950. runda 15. Indijska obrana &#8212; Old Indian (A54). Crni pobje&#273;uje (0-1).</div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="btn-start" onclick="goToMove(0)">&#8676;</button>
+    <button class="ctrl-btn" id="btn-prev"  onclick="prevMove()">&#8592;</button>
+    <button class="ctrl-btn play-btn" id="btn-play" onclick="togglePlay()">&#9654;</button>
+    <button class="ctrl-btn" id="btn-next"  onclick="nextMove()">&#8594;</button>
+    <button class="ctrl-btn" id="btn-end"   onclick="goToMove(MOVES.length)">&#8677;</button>
+  </div>
+  <div style="text-align:center;margin-bottom:10px">
+    <span class="move-counter" id="move-counter">0 / 78</span>
+    <span style="color:var(--txt3);font-size:10px;margin-left:8px">poteza</span>
+  </div>
+
+  <div class="move-list-wrap">
+    <div class="move-list" id="move-list"></div>
+  </div>
+</div>
+
+<div style="height:30px"></div>
+
+<script src="chess-engine.js"></script>
+<script>
+function sq(s) {
+  var files = 'abcdefgh';
+  return [8 - parseInt(s[1]), files.indexOf(s[0])];
+}
+
+var MOVES = [
+  [sq("d2"),sq("d4"),  "1.d4",       "Niemela otvara s d4 &#8212; damski pijun. Klasicno, solidno otvaranje.", false],
+  [sq("g8"),sq("f6"),  "1...Sf6",    "Trifunovi&#263; odmah razvija konja i kontrolira centar.", false],
+  [sq("c2"),sq("c4"),  "2.c4",       "Engleski sustav &#8212; bijeli gradi sna&#382;an centar.", false],
+  [sq("d7"),sq("d6"),  "2...d6",     "Trifunovi&#263; priprema e5. Stara indijska obrana.", false],
+  [sq("b1"),sq("c3"),  "3.Sc3",      "Razvoj konja, podr&#353;ka centru.", false],
+  [sq("e7"),sq("e5"),  "3...e5",     "Trifunovi&#263; zauzima centar! Old Indian Defence &#8212; A54.", false],
+  [sq("d4"),sq("d5"),  "4.d5",       "Niemela zatvara centar. Sada je pozicija zatvorena &#8212; igra&#269; s boljim planom pobje&#273;uje.", false],
+  [sq("c8"),sq("f5"),  "4...Lf5",    "Trifunovi&#263; aktivira lovca prije nego ga zatvori lanac pijuna.", false],
+  [sq("c1"),sq("g5"),  "5.Lg5",      "Bijeli pin-ira konja f6.", false],
+  [sq("f8"),sq("e7"),  "5...Le7",    "Trifunovi&#263; se priprema za razmjenu na f6.", false],
+  [sq("g5"),sq("f6"),  "6.Lxf6",    "Niemela uzima konja &#8212; uklanja branitelja e5.", false],
+  [sq("e7"),sq("f6"),  "6...Lxf6",  "Trifunovi&#263; uzima lovcem, zadr&#382;ava dobar razvoj.", false],
+  [sq("e2"),sq("e4"),  "7.e4",       "Bijeli gradi veliki pijunski centar.", false],
+  [sq("f5"),sq("c8"),  "7...Lc8",   "Trifunovi&#263; povla&#269;i lovca &#8212; izgleda pasivno, ali je to dio plana!", false],
+  [sq("f1"),sq("d3"),  "8.Ld3",      "Bijeli razvija lovca.", false],
+  [sq("a7"),sq("a5"),  "8...a5",     "Trifunovi&#263; spre&#269;ava b4 i priprema Sc5.", false],
+  [sq("g1"),sq("e2"),  "9.Se2",      "Bijeli konja smje&#353;ta na e2 &#8212; solid ali pomalo pasivno.", false],
+  [sq("b8"),sq("a6"),  "9...Sa6",    "Trifunovi&#263; razvija konja prema c5 &#8212; klju&#269;no polje!", false],
+  [sq("e1"),sq("g1"),  "10.0-0",     "Bijeli rokira &#8212; sigurnost kralja.", false],
+  [sq("e8"),sq("g8"),  "10...0-0",   "Trifunovi&#263; rokira &#8212; obje strane su sigurne, borba za poziciju po&#269;inje.", false],
+  [sq("e2"),sq("g3"),  "11.Sg3",     "Bijeli konja premje&#353;ta prema kraljevom krilu.", false],
+  [sq("g7"),sq("g6"),  "11...g6",    "Trifunovi&#263; priprema Lg7 &#8212; dugoro&#269;na dijagonala prema bijelom kralju!", false],
+  [sq("d1"),sq("e2"),  "12.De2",     "Bijeli centralizira damu.", false],
+  [sq("f6"),sq("g7"),  "12...Lg7",   "KLJU&#268;NI POTEZ! Trifunovi&#263; aktivira lovca na g7 &#8212; dugorocna pritisak na d4-e5 dijagonali.", true],
+  [sq("c3"),sq("d1"),  "13.Sd1",     "Bijeli povla&#269;i konja &#8212; izgubio je tempo.", false],
+  [sq("a6"),sq("c5"),  "13...Sc5",   "Trifunovi&#263; dolazi na idealnu poziciju! Konj c5 je dominantan.", true],
+  [sq("d3"),sq("c2"),  "14.Lc2",     "Bijeli povla&#269;i lovca.", false],
+  [sq("c8"),sq("d7"),  "14...Ld7",   "Trifunovi&#263; razvija lovca koji je bio na c8 &#8212; sve crne figure su aktivne.", false],
+  [sq("d1"),sq("e3"),  "15.Se3",     "Bijeli konja poku&#353;ava aktivirati.", false],
+  [sq("d8"),sq("g5"),  "15...Dg5",   "AGRESIVNO! Trifunovi&#263; napada konja e3 i prijeti mat kombinacijama.", true],
+  [sq("b2"),sq("b3"),  "16.b3",      "Bijeli brani se.", false],
+  [sq("h7"),sq("h5"),  "16...h5",    "Trifunovi&#263; kre&#263;e h pijun naprijed &#8212; napad na kralja!", false],
+  [sq("f1"),sq("e1"),  "17.Tfe1",    "Bijeli centralizira top.", false],
+  [sq("h5"),sq("h4"),  "17...h4",    "h pijun napreduje! Trifunovi&#263; otvara linije prema bijelom kralju.", false],
+  [sq("g3"),sq("f1"),  "18.Sgf1",    "Bijeli konja se povla&#269;i u obranu.", false],
+  [sq("f7"),sq("f5"),  "18...f5",    "Trifunovi&#263; otvara f-liniju! Dvostruki napad na centru i kraljevom krilu.", true],
+  [sq("e3"),sq("d2"),  "19.Sd2",     "Bijeli reorganizira obranu.", false],
+  [sq("h4"),sq("h3"),  "19...h3",    "DRZAK POTEZ! h pijun na h3 &#8212; prijeti se kombinacijom sa Txh2!", true],
+  [sq("f1"),sq("f3"),  "20.Sf3",     "Bijeli konja napadá damu.", false],
+  [sq("g5"),sq("f6"),  "20...Df6",   "Trifunovi&#263; pomi&#269;e damu na bolju poziciju.", false],
+  [sq("e4"),sq("f5"),  "21.exf5",    "Bijeli uzima na f5.", false],
+  [sq("g6"),sq("f5"),  "21...gxf5",  "Trifunovi&#263; uzima pijunom &#8212; otvara g-liniju prema bijelom kralju!", false],
+  [sq("g2"),sq("h3"),  "22.gxh3",    "Bijeli mora uzeti &#8212; ali sad je g-linija otvorena!", false],
+  [sq("e5"),sq("e4"),  "22...e4",    "PROBOJ! Trifunovi&#263; gura e pijun naprijed &#8212; crni preuzima inicijativu!", true],
+  [sq("f3"),sq("d2"),  "23.Sd2",     "Bijeli brani e4.", false],
+  [sq("f6"),sq("h4"),  "23...Dh4",   "Trifunovi&#263; dama dolazi u napad! Prijeti Txh3.", false],
+  [sq("a1"),sq("d1"),  "24.Tad1",    "Bijeli top centralizira.", false],
+  [sq("h4"),sq("h3"),  "24...Dxh3",  "Trifunovi&#263; uzima pijun &#8212; dama je aktivna i opasna!", false],
+  [sq("f2"),sq("f4"),  "25.f4",      "Bijeli blokira e4 pijun.", false],
+  [sq("d7"),sq("e8"),  "25...Le8",   "Trifunovi&#263; premje&#353;ta lovca &#8212; priprema Lh5!", false],
+  [sq("d1"),sq("b1"),  "26.Tb1",     "Bijeli top na b-liniju.", false],
+  [sq("e8"),sq("h5"),  "26...Lh5",   "KLJU&#268;NI POTEZ! Lovac dolazi na h5 s napadom na damu e2!", true],
+  [sq("e2"),sq("f2"),  "27.Df2",     "Bijeli dama mora pobje&#263;i.", false],
+  [sq("g7"),sq("c3"),  "27...Lc3",   "Trifunovi&#263; probija s lovcem na c3 &#8212; napada Sd2!", true],
+  [sq("g1"),sq("h1"),  "28.Kh1",     "Bijeli kralj sklanja se od mogu&#263;ih &#353;ahova.", false],
+  [sq("c3"),sq("d2"),  "28...Lxd2",  "Trifunovi&#263; uzima konja! Materijalna prednost i dalje napad.", false],
+  [sq("e1"),sq("g1"),  "29.Tg1+",    "Bijeli daje &#353;ah topom na g1.", false],
+  [sq("g8"),sq("f7"),  "29...Kf7",   "Crni kralj se sklanja.", false],
+  [sq("g1"),sq("g3"),  "30.Tg3",     "Bijeli top napada damu h3.", false],
+  [sq("d2"),sq("e3"),  "30...Le3",   "Trifunovi&#263; lovac na e3 &#8212; blokira bijelu damu i prijeti!", false],
+  [sq("f2"),sq("e3"),  "31.Dxe3",    "Bijeli mora uzeti lovca.", false],
+  [sq("h3"),sq("g3"),  "31...Dxg3",  "Trifunovi&#263; uzima top! Crni vodi u materijalu.", true],
+  [sq("h2"),sq("g3"),  "32.hxg3",    "Bijeli uzima damu pijunom.", false],
+  [sq("h5"),sq("f3"),  "32...Lf3+",  "&#352;AH! Lovac f3 daje &#353;ah kralju na h1!", true],
+  [sq("h1"),sq("g1"),  "33.Kg1",     "Bijeli kralj mora pobje&#263;i.", false],
+  [sq("f8"),sq("h8"),  "33...Th8",   "Trifunovi&#263; aktivira top na h-liniju &#8212; prijetnja Th1+!", false],
+  [sq("c2"),sq("d1"),  "34.Ld1",     "Bijeli brani h1.", false],
+  [sq("h8"),sq("h1"),  "34...Th1+",  "&#352;AH! Top uzima lovca s &#353;ahom!", true],
+  [sq("g1"),sq("f2"),  "35.Kf2",     "Bijeli kralj mora oti&#263;i.", false],
+  [sq("c5"),sq("d3"),  "35...Sd3+",  "&#352;AH KONJEM! Trifunovi&#263; konja na d3 &#8212; dvostruki napad!", true],
+  [sq("e3"),sq("d3"),  "36.Dxd3",    "Bijeli mora uzeti konja damom.", false],
+  [sq("e4"),sq("d3"),  "36...exd3",  "Trifunovi&#263; uzima pijunom &#8212; d3 pijun je opasan!", false],
+  [sq("f2"),sq("f3"),  "37.Kxf3",    "Bijeli kralj uzima lovca na f3.", false],
+  [sq("a8"),sq("e8"),  "37...Te8",   "Trifunovi&#263; aktivira drugi top!", false],
+  [sq("d1"),sq("c2"),  "38.Lc2",     "Bijeli lovac brani.", false],
+  [sq("e8"),sq("b1"),  "38...Txb1",  "Trifunovi&#263; uzima bijelog topa!", false],
+  [sq("c2"),sq("b1"),  "39.Lxb1",    "Bijeli uzima top lovcem.", false],
+  [sq("d3"),sq("d2"),  "39...d2",    "FINALE! d pijun na d2 &#8212; promocija je neizbje&#382;na. Niemela se predaje. 0-1!", true],
+];
+
+// ── PIECE SVG ─────────────────────────────────────────────────────────────
+function makePieceSVG(type, color, size) {
+  size = size || 44;
+  var fill   = color === "w" ? "#f5ead0" : "#2a1a08";
+  var stroke = color === "w" ? "#8a6530" : "#c8a050";
+  var hi     = color === "w" ? "#fff8ec" : "#4a2e10";
+  var sw = 1.2;
+  var g = "";
+  if (type === "K") { g = '<ellipse cx="0" cy="0" rx="11" ry="2.5" fill="'+stroke+'" opacity="0.5"/><path d="M-11,0 Q-13,-4 -11,-8 L11,-8 Q13,-4 11,0 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-5,-8 Q-6,-16 -5,-20 L5,-20 Q6,-16 5,-8 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><ellipse cx="0" cy="-20" rx="6" ry="2" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-6,-20 Q-8,-26 -5,-30 L5,-30 Q8,-26 6,-20 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><ellipse cx="0" cy="-30" rx="5" ry="1.8" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-3,-30 L-3,-34 L3,-34 L3,-30 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="0" cy="-37" r="3.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="0" cy="-37" r="1.5" fill="'+hi+'" opacity="0.6"/>'; }
+  else if (type === "Q") { g = '<ellipse cx="0" cy="0" rx="10" ry="2.2" fill="'+stroke+'" opacity="0.5"/><path d="M-10,0 Q-12,-3 -10,-7 L10,-7 Q12,-3 10,0 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-6,-7 Q-7,-14 -5,-18 L5,-18 Q7,-14 6,-7 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><ellipse cx="0" cy="-18" rx="6" ry="2" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-6,-18 L-8,-28 L-4,-24 L0,-30 L4,-24 L8,-28 L6,-18 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="-8" cy="-28" r="2" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="0" cy="-31" r="2.2" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="8" cy="-28" r="2" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/>'; }
+  else if (type === "R") { g = '<ellipse cx="0" cy="0" rx="10" ry="2.2" fill="'+stroke+'" opacity="0.5"/><path d="M-10,0 Q-11,-3 -10,-6 L10,-6 Q11,-3 10,0 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><ellipse cx="0" cy="-6" rx="7" ry="2" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><rect x="-6" y="-22" width="12" height="16" rx="1" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><rect x="-7" y="-28" width="4" height="7" rx="0.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><rect x="-1.5" y="-28" width="3" height="7" rx="0.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><rect x="3" y="-28" width="4" height="7" rx="0.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/>'; }
+  else if (type === "B") { g = '<ellipse cx="0" cy="0" rx="9" ry="2" fill="'+stroke+'" opacity="0.5"/><path d="M-9,0 Q-11,-3 -9,-7 L9,-7 Q11,-3 9,0 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-5,-7 Q-6,-14 -4,-18 L4,-18 Q6,-14 5,-7 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><ellipse cx="0" cy="-18" rx="5" ry="1.8" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-4,-18 Q-5,-26 -3,-32 L3,-32 Q5,-26 4,-18 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><ellipse cx="0" cy="-32" rx="4" ry="1.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-3,-32 Q-2,-36 0,-38 Q2,-36 3,-32 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="0" cy="-38" r="1.8" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/>'; }
+  else if (type === "N") { g = '<ellipse cx="0" cy="0" rx="9" ry="2" fill="'+stroke+'" opacity="0.5"/><path d="M-9,0 Q-11,-3 -9,-6 L9,-6 Q11,-3 9,0 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-5,-6 Q-7,-12 -5,-20 Q-3,-24 1,-25 L5,-22 Q6,-14 5,-6 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-1,-24 Q-5,-26 -6,-31 Q-5,-37 -1,-39 Q3,-40 7,-37 Q10,-33 9,-29 Q7,-25 3,-24 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M6,-25 Q10,-27 11,-30 Q10,-34 8,-34 L7,-31 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-3,-37 Q-5,-42 -1,-42 Q1,-41 0,-37 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="3" cy="-33" r="1.4" fill="'+stroke+'"/>'; }
+  else if (type === "P") { g = '<ellipse cx="0" cy="0" rx="8" ry="1.8" fill="'+stroke+'" opacity="0.5"/><path d="M-8,0 Q-9,-3 -8,-6 L8,-6 Q9,-3 8,0 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-4,-6 Q-5,-11 -4,-14 L4,-14 Q5,-11 4,-6 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><ellipse cx="0" cy="-14" rx="4.5" ry="1.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><path d="M-2.5,-14 L-2.5,-18 L2.5,-18 L2.5,-14 Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="0" cy="-21" r="3.5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+sw+'"/><circle cx="-0.8" cy="-22" r="1.2" fill="'+hi+'" opacity="0.5"/>'; }
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 44 44" style="display:block"><g transform="translate(22,42)">'+g+'</g></svg>';
+}
+
+// ── BOARD STATE ────────────────────────────────────────────────────────────
+var PIECE_CHARS = { wK:"K",wQ:"Q",wR:"R",wB:"B",wN:"N",wP:"P", bK:"k",bQ:"q",bR:"r",bB:"b",bN:"n",bP:"p" };
+
+var boardStates = [];
+var curBoard = initBoard();
+var curEP = null;
+var curCS = { wK:true, wQ:true, bK:true, bQ:true };
+boardStates.push(curBoard.map(function(r){return r.slice();}));
+
+for (var mi = 0; mi < MOVES.length; mi++) {
+  var mv = MOVES[mi];
+  var promo = null;
+  var res = applyMove(curBoard, mv[0], mv[1], curEP, curCS);
+  curBoard = res.board; curEP = res.enPassant; curCS = res.castling;
+  if (promo) curBoard[mv[1][0]][mv[1][1]] = promo;
+  boardStates.push(curBoard.map(function(r){return r.slice();}));
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+var currentMoveIdx = 0;
+var playInterval = null;
+var PLAY_SPEED = 1400;
+
+function renderBoard(boardEl, state, fromRC, toRC) {
+  boardEl.innerHTML = "";
+  for (var r = 0; r < 8; r++) {
+    for (var c = 0; c < 8; c++) {
+      var sq = document.createElement("div");
+      sq.className = "sq " + ((r+c)%2===0 ? "light" : "dark");
+      if (fromRC && fromRC[0]===r && fromRC[1]===c) sq.classList.add("hl-from");
+      if (toRC   && toRC[0]===r   && toRC[1]===c)   sq.classList.add("hl-to");
+      var piece = state[r][c];
+      if (piece) {
+        var col  = piece[0];
+        var type = piece[1];
+        sq.innerHTML = makePieceSVG(type, col, 44);
+      }
+      boardEl.appendChild(sq);
+    }
+  }
+}
+
+function renderLabels() {
+  var files = ["a","b","c","d","e","f","g","h"];
+  var ranks = ["8","7","6","5","4","3","2","1"];
+  var ft = document.getElementById("files-top");
+  var fb = document.getElementById("files-bottom");
+  ft.innerHTML = fb.innerHTML = '<div style="width:20px"></div>';
+  files.forEach(function(f) {
+    ft.innerHTML += '<div class="file-label">'+f+'</div>';
+    fb.innerHTML += '<div class="file-label">'+f+'</div>';
+  });
+  var rl = document.getElementById("ranks-left");
+  var rr = document.getElementById("ranks-right");
+  rl.innerHTML = rr.innerHTML = "";
+  ranks.forEach(function(rk) {
+    rl.innerHTML += '<div class="rank-label">'+rk+'</div>';
+    rr.innerHTML += '<div class="rank-label" style="color:transparent">'+rk+'</div>';
+  });
+}
+
+function goToMove(idx) {
+  if (idx < 0) idx = 0;
+  if (idx > MOVES.length) idx = MOVES.length;
+  currentMoveIdx = idx;
+  var state  = boardStates[currentMoveIdx];
+  var fromRC = currentMoveIdx > 0 ? MOVES[currentMoveIdx-1][0] : null;
+  var toRC   = currentMoveIdx > 0 ? MOVES[currentMoveIdx-1][1] : null;
+  renderBoard(document.getElementById("board"), state, fromRC, toRC);
+  var label = document.getElementById("mc-move-label");
+  var text  = document.getElementById("mc-text");
+  if (currentMoveIdx === 0) {
+    label.textContent = "Po\u010detna pozicija";
+    text.textContent  = "Niemela (bijeli) vs Trifunovi\u0107 (crni). Dubrovnik olimpijada, 10. rujna 1950. runda 15. Old Indian Defence (A54). Crni pobje\u0111uje (0-1).";
+  } else {
+    var mv = MOVES[currentMoveIdx-1];
+    label.textContent = mv[2];
+    text.innerHTML    = mv[3];
+  }
+  document.getElementById("move-counter").textContent = currentMoveIdx + " / " + MOVES.length;
+  document.querySelectorAll(".mv-w, .mv-b").forEach(function(el) { el.classList.remove("current"); });
+  var el = document.getElementById("mv-" + (currentMoveIdx-1));
+  if (el) { el.classList.add("current"); el.scrollIntoView({block:"nearest"}); }
+  document.getElementById("btn-prev").disabled  = currentMoveIdx === 0;
+  document.getElementById("btn-start").disabled = currentMoveIdx === 0;
+  document.getElementById("btn-next").disabled  = currentMoveIdx >= MOVES.length;
+  document.getElementById("btn-end").disabled   = currentMoveIdx >= MOVES.length;
+}
+
+function nextMove() { if (currentMoveIdx < MOVES.length) goToMove(currentMoveIdx+1); }
+function prevMove() { if (currentMoveIdx > 0) goToMove(currentMoveIdx-1); }
+function togglePlay() {
+  if (playInterval) {
+    clearInterval(playInterval); playInterval = null;
+    document.getElementById("btn-play").textContent = "\u25B6";
+  } else {
+    if (currentMoveIdx >= MOVES.length) goToMove(0);
+    document.getElementById("btn-play").textContent = "\u23F8";
+    playInterval = setInterval(function() {
+      if (currentMoveIdx >= MOVES.length) {
+        clearInterval(playInterval); playInterval = null;
+        document.getElementById("btn-play").textContent = "\u25B6";
+      } else { nextMove(); }
+    }, PLAY_SPEED);
+  }
+}
+
+function buildMoveList() {
+  var ml = document.getElementById("move-list");
+  ml.innerHTML = "";
+  for (var i = 0; i < MOVES.length; i++) {
+    var nota = MOVES[i][2];
+    if (i % 2 === 0) {
+      var pair = document.createElement("div");
+      pair.className = "mv-pair";
+      var num = document.createElement("span");
+      num.className = "mv-num";
+      num.textContent = (Math.floor(i/2)+1) + ".";
+      pair.appendChild(num);
+      var wm = document.createElement("span");
+      wm.className = "mv-w"; wm.id = "mv-" + i;
+      wm.textContent = nota.replace(/^\d+\./, "");
+      (function(idx){ wm.onclick = function(){ goToMove(idx+1); }; })(i);
+      pair.appendChild(wm);
+      ml.appendChild(pair);
+    } else {
+      var lastPair = ml.lastElementChild;
+      var bm = document.createElement("span");
+      bm.className = "mv-b"; bm.id = "mv-" + i;
+      bm.textContent = nota.replace(/^\d+\.\.\./, "");
+      (function(idx){ bm.onclick = function(){ goToMove(idx+1); }; })(i);
+      lastPair.appendChild(bm);
+    }
+  }
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "ArrowRight") { e.preventDefault(); nextMove(); }
+  if (e.key === "ArrowLeft")  { e.preventDefault(); prevMove(); }
+  if (e.key === " ")          { e.preventDefault(); togglePlay(); }
+});
+
+var CHAPTERS = [
+  { moveIdx: 1,  text: "Niemela otvara d4, Trifunović bira Staru indijsku obranu — zatvara poziciju i strpljivo gradi. Lovac odlazi na g7, konj dolazi na c5. Idealna pozicija iz koje crni kontrolira cijelu ploču. Niemela gubi tempo, Trifunović ima plan." },
+  { moveIdx: 33, text: "Trifunović kreće h pješakom — h5, h4, h3. Otvara linije prema bijelom kralju. Na potezu 22. gura e4 i preuzima inicijativu. Dama dolazi na h4, uzima h3 pijun. Lovac probija na c3 i uzima konja na d2. Bijeli je u krizi bez jasnog odgovora." },
+  { moveIdx: 61, text: "Trifunović izvodi besprijekornu završnu kombinaciju — svaki potez je precizno odmjeren. Lxe3, Dxg3, Lf3+, Th1+, Nd3+. Bijeli nema obrane. Na kraju stoji d pješak na d2 — promocija je neizbježna. Niemela se predaje. Trifunović osvaja zlatnu medalju za treću ploču u rodnom gradu pred domaćom publikom." }
+];
+var activeChapter = -1;
+function selectChapter(idx) {
+  activeChapter = idx;
+  for (var i = 0; i < 3; i++) {
+    var btn = document.getElementById('ch-' + i);
+    if (btn) btn.classList.toggle('active', i === idx);
+  }
+  var textEl = document.getElementById('ch-text');
+  textEl.textContent = CHAPTERS[idx].text;
+  textEl.classList.add('visible');
+  goToMove(CHAPTERS[idx].moveIdx);
+}
+
+renderLabels();
+buildMoveList();
+goToMove(0);
+</script>
+</body>
+</html>
