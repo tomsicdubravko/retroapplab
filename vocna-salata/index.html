@@ -1,0 +1,3312 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voćna Salata 🥗</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Rajdhani:wght@400;600;700&family=Press+Start+2P&family=Playfair+Display:wght@700&display=swap');
+
+/* ── DEFAULT THEME (Vegas) ── */
+:root {
+  --gold: #FFD700;
+  --gold-dark: #B8860B;
+  --red: #C0392B;
+  --felt: #1a4a2e;
+  --felt-light: #236b40;
+  --neon: #ff6b35;
+  --bonus: #9b59b6;
+  --bonus-light: #d7bde2;
+  --free: #27ae60;
+
+  --bg-from: #1a1a2e;
+  --bg-to: #0d0d0d;
+  --machine-border: #B8860B;
+  --machine-bg-from: #2a2a2a;
+  --machine-bg-to: #1a1a1a;
+  --reel-bg-from: #1c3a1c;
+  --reel-bg-to: #0d200d;
+  --reel-border: #236b40;
+  --title-color: #FFD700;
+  --title-shadow: rgba(255,215,0,0.5);
+  --accent: #ff6b35;
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+}
+
+/* ── NEON THEME ── */
+body.theme-neon {
+  --gold: #00ffff;
+  --gold-dark: #00aaaa;
+  --red: #ff00aa;
+  --felt: #0a0a2a;
+  --felt-light: #1a1a5a;
+  --neon: #ff00ff;
+  --bonus: #ff00aa;
+  --bonus-light: #ffaadd;
+  --free: #00ff88;
+
+  --bg-from: #050510;
+  --bg-to: #000005;
+  --machine-border: #00ffff;
+  --machine-bg-from: #0a0a1a;
+  --machine-bg-to: #050510;
+  --reel-bg-from: #0a0a2a;
+  --reel-bg-to: #050515;
+  --reel-border: #1a1a6a;
+  --title-color: #00ffff;
+  --title-shadow: rgba(0,255,255,0.7);
+  --accent: #ff00ff;
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+}
+
+/* ── RETRO THEME ── */
+body.theme-retro {
+  --gold: #f5c518;
+  --gold-dark: #c49a14;
+  --red: #cc2200;
+  --felt: #2a1a0a;
+  --felt-light: #5a3a1a;
+  --neon: #f5c518;
+  --bonus: #cc6600;
+  --bonus-light: #ffcc88;
+  --free: #228b22;
+
+  --bg-from: #1a0f00;
+  --bg-to: #0a0700;
+  --machine-border: #c49a14;
+  --machine-bg-from: #2a1f0a;
+  --machine-bg-to: #1a1205;
+  --reel-bg-from: #2a1a0a;
+  --reel-bg-to: #1a0f05;
+  --reel-border: #5a3a1a;
+  --title-color: #f5c518;
+  --title-shadow: rgba(245,197,24,0.5);
+  --accent: #f5c518;
+  --font-display: 'Press Start 2P', monospace;
+  --font-body: 'Press Start 2P', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: radial-gradient(ellipse at center, var(--bg-from) 0%, var(--bg-to) 100%);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: var(--font-body);
+  color: white;
+  overflow-x: hidden;
+  padding: 20px;
+  transition: background 0.5s;
+}
+
+/* ── HEADER ── */
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  color: var(--title-color);
+  text-shadow: 0 0 30px var(--title-shadow), 2px 2px 0 #000;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+  text-align: center;
+  transition: color 0.4s, text-shadow 0.4s;
+}
+.subtitle {
+  color: #aaa; font-size: 0.9rem; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 25px;
+}
+
+/* ── FREE SPIN BANNER ── */
+.free-spin-banner {
+  display: none;
+  background: linear-gradient(135deg, #1a4a1a, #0d2d0d);
+  border: 2px solid var(--free);
+  border-radius: 10px;
+  padding: 8px 20px;
+  text-align: center;
+  margin-top: 10px;
+  box-shadow: 0 0 20px rgba(39,174,96,0.4);
+  animation: glow-green 1s ease-in-out infinite alternate;
+}
+.free-spin-banner.active { display: block; }
+@keyframes glow-green {
+  from { box-shadow: 0 0 10px rgba(39,174,96,0.3); }
+  to   { box-shadow: 0 0 25px rgba(39,174,96,0.7); }
+}
+.free-spin-banner span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.2rem; letter-spacing: 3px; color: #66bb6a;
+}
+.free-spin-count {
+  font-size: 2rem !important; color: #a5d6a7 !important;
+}
+
+/* ── MACHINE ── */
+.machine {
+  background: linear-gradient(145deg, var(--machine-bg-from), var(--machine-bg-to));
+  border: 3px solid var(--machine-border);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 0 40px rgba(255,215,0,0.2), inset 0 0 30px rgba(0,0,0,0.5);
+  max-width: 420px; width: 100%;
+  position: relative;
+  transition: box-shadow 0.4s, border-color 0.4s, background 0.4s;
+}
+.machine.bonus-mode {
+  border-color: var(--bonus);
+  box-shadow: 0 0 50px rgba(155,89,182,0.5), inset 0 0 30px rgba(0,0,0,0.5);
+}
+.machine.free-mode {
+  border-color: var(--free);
+  box-shadow: 0 0 50px rgba(39,174,96,0.5), inset 0 0 30px rgba(0,0,0,0.5);
+}
+.machine::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 8px; right: 8px; bottom: 8px;
+  border: 1px solid rgba(255,215,0,0.12);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+/* ── LIGHTS ── */
+.top-lights {
+  display: flex; justify-content: center; gap: 10px; margin-bottom: 18px;
+}
+.light {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--gold); box-shadow: 0 0 8px var(--gold);
+  animation: blink 1.5s ease-in-out infinite;
+}
+.light:nth-child(2) { animation-delay: 0.25s; }
+.light:nth-child(3) { animation-delay: 0.5s; }
+.light:nth-child(4) { animation-delay: 0.75s; }
+.light:nth-child(5) { animation-delay: 1s; }
+.light:nth-child(6) { animation-delay: 1.25s; }
+.light:nth-child(7) { animation-delay: 1.5s; }
+.machine.bonus-mode .light { background: var(--bonus); box-shadow: 0 0 8px var(--bonus); }
+.machine.free-mode .light  { background: var(--free);  box-shadow: 0 0 8px var(--free); }
+@keyframes blink {
+  0%,100% { opacity: 1; } 50% { opacity: 0.15; }
+}
+
+/* ── REELS ── */
+.reels-container {
+  background: linear-gradient(180deg, #0a0a0a, #111);
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 18px;
+  box-shadow: inset 0 4px 15px rgba(0,0,0,0.8);
+  position: relative;
+}
+
+.reels { display: flex; gap: 8px; justify-content: center; }
+
+.reel-wrap {
+  flex: 1;
+  background: linear-gradient(135deg, var(--reel-bg-from), var(--reel-bg-to));
+  border: 2px solid var(--reel-border);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 270px;
+  position: relative;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.4s;
+}
+
+/* Strip — vertical column of symbols that scrolls */
+.reel-strip {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  display: flex; flex-direction: column;
+  align-items: center;
+}
+.reel-strip .sym {
+  width: 100%; height: 90px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.6rem; flex-shrink: 0;
+  user-select: none;
+}
+.reel-wrap::before, .reel-wrap::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 18%;
+  z-index: 2; pointer-events: none;
+}
+.reel-wrap::before { top: 0; background: linear-gradient(to bottom, rgba(13,32,13,0.92), transparent); }
+.reel-wrap::after  { bottom: 0; background: linear-gradient(to top, rgba(13,32,13,0.92), transparent); }
+
+/* Row dividers */
+.reel-row-div {
+  position: absolute; left: 0; right: 0; height: 1px;
+  background: rgba(255,215,0,0.15); z-index: 1; pointer-events: none;
+}
+
+/* Paylines overlay */
+.paylines-overlay {
+  position: absolute; inset: 0; pointer-events: none; z-index: 3;
+}
+.pay-line {
+  position: absolute; left: -4px; right: -4px; height: 2px;
+  border-radius: 2px; opacity: 0; transition: opacity 0.3s;
+}
+.pay-line.top    { top: 89px;  background: rgba(255,80,80,0.9);  box-shadow: 0 0 8px red; }
+.pay-line.middle { top: 179px; background: rgba(80,255,120,0.9); box-shadow: 0 0 8px lime; }
+.pay-line.bottom { top: 269px; background: rgba(80,180,255,0.9); box-shadow: 0 0 8px cyan; }
+.pay-line.active { opacity: 1; }
+
+/* BONUS symbol glows */
+.reel-wrap.has-bonus .reel-window { filter: drop-shadow(0 0 12px #9b59b6); }
+
+/* Win pulse */
+.reel-wrap.win-top    { border-color: #ff5050 !important; animation: win-pulse-r 0.45s ease-in-out 4; }
+.reel-wrap.win-middle { border-color: var(--gold) !important; animation: win-pulse-g 0.45s ease-in-out 4; }
+.reel-wrap.win-bottom { border-color: #50b4ff !important; animation: win-pulse-b 0.45s ease-in-out 4; }
+.reel-wrap.win { border-color: var(--gold) !important; animation: win-pulse-g 0.45s ease-in-out 4; }
+@keyframes win-pulse-r { 0%,100% { box-shadow: 0 0 15px rgba(255,80,80,0.5); } 50% { box-shadow: 0 0 40px rgba(255,80,80,1); } }
+@keyframes win-pulse-g { 0%,100% { box-shadow: 0 0 15px rgba(255,215,0,0.5); } 50% { box-shadow: 0 0 45px rgba(255,215,0,1); } }
+@keyframes win-pulse-b { 0%,100% { box-shadow: 0 0 15px rgba(80,180,255,0.5); } 50% { box-shadow: 0 0 40px rgba(80,180,255,1); } }
+
+/* Jackpot pulse */
+.reel-wrap.jackpot-win {
+  animation: jackpot-pulse 0.3s ease-in-out 8;
+}
+@keyframes jackpot-pulse {
+  0%,100% { box-shadow: 0 0 20px rgba(255,215,0,0.6); border-color: var(--gold); }
+  50%      { box-shadow: 0 0 60px rgba(255,215,0,1), inset 0 0 30px rgba(255,215,0,0.2); border-color: #fff; }
+}
+
+/* Bonus win */
+.reel-wrap.bonus-win {
+  border-color: var(--bonus) !important;
+  animation: bonus-pulse 0.4s ease-in-out 5;
+}
+@keyframes bonus-pulse {
+  0%,100% { box-shadow: 0 0 20px rgba(155,89,182,0.5); }
+  50%      { box-shadow: 0 0 50px rgba(155,89,182,1); }
+}
+
+/* Spin animation — fast strip scroll */
+@keyframes spin-fast {
+  0%   { transform: translateY(0px);   opacity: 1;   filter: blur(0px); }
+  15%  { transform: translateY(-40px); opacity: 0.5; filter: blur(3px); }
+  35%  { transform: translateY(20px);  opacity: 0.2; filter: blur(5px); }
+  55%  { transform: translateY(-20px); opacity: 0.2; filter: blur(5px); }
+  75%  { transform: translateY(40px);  opacity: 0.5; filter: blur(3px); }
+  100% { transform: translateY(0px);   opacity: 1;   filter: blur(0px); }
+}
+.reel-window.spinning { animation: spin-fast 0.1s linear infinite; }
+
+/* Landing bounce */
+@keyframes land-bounce {
+  0%   { transform: translateY(-12px) scale(1.15); }
+  45%  { transform: translateY(5px)   scale(0.96); }
+  72%  { transform: translateY(-3px)  scale(1.02); }
+  100% { transform: translateY(0)     scale(1);    }
+}
+.reel-window.landing { animation: land-bounce 0.3s ease-out forwards; }
+
+/* ── INFO ROW ── */
+.info-row {
+  display: flex; justify-content: space-between; gap: 10px; margin-bottom: 16px;
+}
+.info-box {
+  flex: 1;
+  background: linear-gradient(135deg, #111, #1a1a1a);
+  border: 1px solid #333; border-radius: 8px;
+  padding: 8px 10px; text-align: center;
+}
+.info-label { font-size: 0.65rem; color: #888; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+.info-value {
+  font-family: 'Oswald', sans-serif; font-size: 1.4rem;
+  color: var(--gold); text-shadow: 0 0 10px rgba(255,215,0,0.4);
+  transition: transform 0.15s;
+}
+.info-value.pop { animation: val-pop 0.25s ease-out; }
+@keyframes val-pop { 0% { transform: scale(1.4); } 100% { transform: scale(1); } }
+.info-value.zetoni  { color: #4fc3f7; text-shadow: 0 0 10px rgba(79,195,247,0.4); }
+.info-value.win-val { color: #66bb6a; text-shadow: 0 0 10px rgba(102,187,106,0.4); }
+.info-value.bonus-val { color: var(--bonus-light); text-shadow: 0 0 10px rgba(155,89,182,0.5); }
+
+/* ── MULTIPLIER BADGE ── */
+.mult-badge {
+  display: none;
+  background: linear-gradient(135deg, #6a1a8a, #4a0a6a);
+  border: 2px solid var(--bonus);
+  border-radius: 8px; padding: 8px 15px;
+  text-align: center; margin-bottom: 12px;
+  font-family: 'Oswald', sans-serif; font-size: 1rem;
+  color: var(--bonus-light); letter-spacing: 2px;
+  box-shadow: 0 0 15px rgba(155,89,182,0.4);
+  animation: glow-purple 0.8s ease-in-out infinite alternate;
+}
+.mult-badge.active { display: block; }
+@keyframes glow-purple {
+  from { box-shadow: 0 0 8px rgba(155,89,182,0.3); }
+  to   { box-shadow: 0 0 25px rgba(155,89,182,0.8); }
+}
+
+/* ── BET ROW ── */
+.bet-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; margin-bottom: 16px;
+}
+.bet-btn {
+  background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+  border: 1px solid #444; color: white;
+  width: 38px; height: 38px; border-radius: 50%;
+  font-size: 1.3rem; cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.bet-btn:hover { border-color: var(--gold); color: var(--gold); transform: scale(1.1); }
+.bet-btn:active { transform: scale(0.92); }
+.bet-display {
+  font-family: 'Oswald', sans-serif; font-size: 1.2rem;
+  color: var(--neon); min-width: 110px; text-align: center;
+  background: #111; border: 1px solid #333;
+  border-radius: 8px; padding: 8px 15px;
+}
+
+/* ── SPIN BUTTON ── */
+.spin-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #c0392b, #922b21);
+  border: 3px solid #e74c3c; border-radius: 14px;
+  color: white; font-family: 'Oswald', sans-serif;
+  font-size: 1.6rem; letter-spacing: 4px; padding: 16px;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 6px 0 #7b241c, 0 0 20px rgba(192,57,43,0.4);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: 14px; position: relative;
+}
+.spin-btn.free-spin-btn {
+  background: linear-gradient(135deg, #1a6b3a, #0d4a27);
+  border-color: var(--free);
+  box-shadow: 0 6px 0 #0a3018, 0 0 20px rgba(39,174,96,0.5);
+}
+.spin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 0 #7b241c, 0 0 30px rgba(192,57,43,0.6); }
+.spin-btn.free-spin-btn:hover:not(:disabled) { box-shadow: 0 8px 0 #0a3018, 0 0 30px rgba(39,174,96,0.6); }
+.spin-btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 #7b241c; }
+.spin-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.spin-btn.auto-spin {
+  background: linear-gradient(135deg, #1a6b2a, #0d4a1a);
+  border-color: #2ecc71;
+  box-shadow: 0 6px 0 #0a3010, 0 0 25px rgba(46,204,113,0.6);
+  animation: auto-pulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes auto-pulse {
+  from { box-shadow: 0 6px 0 #0a3010, 0 0 15px rgba(46,204,113,0.4); }
+  to   { box-shadow: 0 6px 0 #0a3010, 0 0 35px rgba(46,204,113,0.9); }
+}
+
+/* ── RESULT MSG ── */
+.result-msg {
+  text-align: center; font-family: 'Oswald', sans-serif;
+  font-size: 1.1rem; letter-spacing: 2px; min-height: 30px;
+  transition: all 0.3s; color: #555;
+}
+.result-msg.jackpot {
+  color: var(--gold); text-shadow: 0 0 25px var(--gold);
+  font-size: 1.5rem; animation: jackpot-flash 0.3s ease-in-out 6;
+}
+.result-msg.win    { color: #66bb6a; }
+.result-msg.lose   { color: #e57373; }
+.result-msg.bonus  { color: var(--bonus-light); text-shadow: 0 0 20px var(--bonus); font-size: 1.3rem; animation: bonus-flash 0.4s ease-in-out 4; }
+.result-msg.free   { color: #a5d6a7; text-shadow: 0 0 20px var(--free); font-size: 1.2rem; }
+
+@keyframes jackpot-flash { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+@keyframes bonus-flash   { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* ── BONUS PICKER OVERLAY ── */
+.bonus-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 100; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.bonus-overlay.active { display: flex; }
+
+.bonus-box {
+  background: linear-gradient(145deg, #2a1a3a, #1a0a2a);
+  border: 3px solid var(--bonus);
+  border-radius: 20px; padding: 30px 25px;
+  text-align: center; max-width: 360px; width: 90%;
+  box-shadow: 0 0 60px rgba(155,89,182,0.6);
+  animation: bonus-appear 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes bonus-appear {
+  from { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.bonus-box h2 {
+  font-family: 'Oswald', sans-serif; font-size: 2rem;
+  color: var(--bonus-light); letter-spacing: 3px; margin-bottom: 8px;
+  text-shadow: 0 0 20px var(--bonus);
+}
+.bonus-box p { color: #bbb; margin-bottom: 20px; font-size: 1rem; }
+
+.bonus-chests {
+  display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.chest {
+  width: 80px; height: 80px; font-size: 3.5rem;
+  background: linear-gradient(135deg, #3a1a5a, #2a0a4a);
+  border: 2px solid var(--bonus); border-radius: 12px;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.chest:hover { transform: scale(1.12) rotate(-3deg); box-shadow: 0 0 20px var(--bonus); }
+.chest:active { transform: scale(0.95); }
+.chest.opened {
+  cursor: default; animation: chest-open 0.5s ease-out forwards;
+}
+@keyframes chest-open {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.3) rotate(10deg); }
+  60%  { transform: scale(0.9) rotate(-5deg); }
+  100% { transform: scale(1) rotate(0deg); border-color: var(--gold); }
+}
+.chest-prize {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; font-family: 'Oswald', sans-serif;
+  color: var(--gold); opacity: 0; transition: opacity 0.3s;
+  background: linear-gradient(135deg, #3a2a0a, #2a1a00);
+}
+.chest.opened .chest-prize { opacity: 1; }
+.chest.opened .chest-icon { opacity: 0; }
+.chest-icon { transition: opacity 0.3s; }
+
+.bonus-result {
+  font-family: 'Oswald', sans-serif; font-size: 1.3rem;
+  color: var(--gold); letter-spacing: 2px; min-height: 30px;
+  margin-bottom: 15px; text-shadow: 0 0 15px rgba(255,215,0,0.5);
+}
+.bonus-close {
+  background: linear-gradient(135deg, #6a1a8a, #4a0a6a);
+  border: 2px solid var(--bonus); border-radius: 10px;
+  color: white; font-family: 'Oswald', sans-serif;
+  font-size: 1rem; letter-spacing: 2px;
+  padding: 10px 25px; cursor: pointer;
+  transition: all 0.2s; display: none;
+}
+.bonus-close.visible { display: inline-block; }
+.bonus-close:hover { box-shadow: 0 0 15px var(--bonus); transform: scale(1.05); }
+
+/* ── PAYTABLE ── */
+.paytable {
+  margin-top: 22px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #333; border-radius: 10px;
+  padding: 14px; font-size: 0.78rem; color: #888;
+}
+.paytable h3 {
+  font-family: 'Oswald', sans-serif; color: var(--gold-dark);
+  letter-spacing: 2px; margin-bottom: 8px;
+  text-align: center; font-size: 0.82rem;
+}
+.pay-row {
+  display: flex; justify-content: space-between;
+  padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.pay-row:last-child { border: none; }
+.pay-symbols { font-size: 0.95rem; }
+.pay-amount { color: var(--gold); font-weight: 700; }
+.pay-amount.bonus-color { color: var(--bonus-light); }
+.pay-amount.free-color  { color: #a5d6a7; }
+
+.reset-btn {
+  background: none; border: 1px solid #444; color: #666;
+  padding: 6px 15px; border-radius: 6px; cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-size: 0.8rem;
+  letter-spacing: 1px; transition: all 0.2s;
+  display: block; margin: 10px auto 0;
+}
+.reset-btn:hover { border-color: #888; color: #aaa; }
+
+/* ── PARTICLES ── */
+.particle {
+  position: fixed; pointer-events: none; z-index: 200;
+  animation: particle-fly 1.2s ease-out forwards;
+  font-size: 1.6rem;
+}
+@keyframes particle-fly {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(var(--py)) translateX(var(--px)) rotate(var(--pr)) scale(0.3); opacity: 0; }
+}
+
+/* ── GAME OVER OVERLAY ── */
+.gameover-overlay {
+  display: none; position: fixed; inset: 0; z-index: 400;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  background: rgba(0,0,0,0);
+  pointer-events: none;
+}
+.gameover-overlay.active {
+  display: flex;
+  pointer-events: all;
+  animation: go-bg-in 0.8s ease-out forwards;
+}
+@keyframes go-bg-in {
+  from { background: rgba(0,0,0,0); }
+  to   { background: rgba(0,0,0,0.92); }
+}
+
+/* Falling fruit */
+.go-fruit {
+  position: absolute;
+  font-size: 2.4rem;
+  animation: fruit-fall linear forwards;
+  pointer-events: none;
+}
+@keyframes fruit-fall {
+  0%   { transform: translateY(-80px) rotate(0deg); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(var(--rot)); opacity: 0; }
+}
+
+/* Main card */
+.go-card {
+  background: linear-gradient(145deg, #1a0a0a, #2a0a0a);
+  border: 3px solid #c0392b;
+  border-radius: 20px;
+  padding: 40px 35px;
+  text-align: center;
+  max-width: 380px; width: 90%;
+  box-shadow: 0 0 60px rgba(192,57,43,0.5);
+  position: relative; z-index: 1;
+  opacity: 0;
+  animation: go-card-in 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.5s forwards;
+}
+@keyframes go-card-in {
+  from { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.go-emoji {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 15px;
+  animation: go-emoji-spin 1s ease-out 1.1s both;
+}
+@keyframes go-emoji-spin {
+  from { transform: rotate(-360deg) scale(0); }
+  to   { transform: rotate(0deg) scale(1); }
+}
+
+.go-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  color: #e74c3c;
+  text-shadow: 0 0 20px rgba(231,76,60,0.7);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  line-height: 1.3;
+  opacity: 0;
+  animation: go-text-in 0.5s ease-out 1s forwards;
+}
+@keyframes go-text-in {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Typewriter line */
+.go-subtitle {
+  font-size: 1rem;
+  color: #aaa;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  min-height: 1.5em;
+  font-style: italic;
+  opacity: 0;
+  animation: go-text-in 0.5s ease-out 1.4s forwards;
+}
+
+.go-stats {
+  display: flex; gap: 12px; justify-content: center;
+  margin-bottom: 25px;
+  opacity: 0;
+  animation: go-text-in 0.5s ease-out 1.7s forwards;
+}
+.go-stat {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: 'Oswald', sans-serif;
+}
+.go-stat-label { font-size: 0.65rem; color: #666; letter-spacing: 2px; text-transform: uppercase; }
+.go-stat-value { font-size: 1.3rem; color: var(--gold); }
+
+.go-btn {
+  background: linear-gradient(135deg, #c0392b, #922b21);
+  border: 2px solid #e74c3c;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+  padding: 12px 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 0 #7b241c;
+  opacity: 0;
+  animation: go-text-in 0.5s ease-out 2s forwards;
+}
+.go-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #7b241c, 0 0 20px rgba(192,57,43,0.5); }
+.go-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #7b241c; }
+
+/* ── CASHOUT BUTTON ── */
+.cashout-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #b8860b, #8B6914);
+  border: 3px solid var(--gold);
+  border-radius: 14px;
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+  padding: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 5px 0 #5a4008, 0 0 15px rgba(255,215,0,0.3);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  margin-top: 12px;
+}
+.cashout-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #5a4008, 0 0 30px rgba(255,215,0,0.6);
+}
+.cashout-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #5a4008; }
+.cashout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── COIN RAIN ── */
+.coin-rain-el {
+  position: fixed;
+  font-size: 1.8rem;
+  pointer-events: none;
+  z-index: 350;
+  animation: coin-drop linear forwards;
+}
+@keyframes coin-drop {
+  0%   { transform: translateY(-60px) rotate(0deg) scale(1); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: translateY(105vh) rotate(var(--cr)) scale(0.7); opacity: 0; }
+}
+
+/* ── CASHOUT OVERLAY ── */
+.cashout-overlay {
+  display: none; position: fixed; inset: 0; z-index: 400;
+  align-items: center; justify-content: center;
+  background: rgba(0,0,0,0);
+  pointer-events: none;
+}
+.cashout-overlay.active {
+  display: flex; pointer-events: all;
+  animation: go-bg-in 0.5s ease-out forwards;
+}
+.cashout-card {
+  background: linear-gradient(145deg, #1a1500, #2a2200);
+  border: 3px solid var(--gold);
+  border-radius: 20px;
+  padding: 35px 30px;
+  text-align: center;
+  max-width: 380px; width: 90%;
+  box-shadow: 0 0 60px rgba(255,215,0,0.4);
+  position: relative; z-index: 1;
+  opacity: 0;
+  animation: go-card-in 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.3s forwards;
+}
+.cashout-emoji { font-size: 3.5rem; display: block; margin-bottom: 12px; }
+.cashout-title {
+  font-family: 'Oswald', sans-serif; font-size: 1.8rem;
+  color: var(--gold); letter-spacing: 3px; margin-bottom: 6px;
+  text-shadow: 0 0 20px rgba(255,215,0,0.6);
+}
+.cashout-amount {
+  font-family: 'Oswald', sans-serif; font-size: 3rem;
+  color: #fff; margin-bottom: 5px;
+  text-shadow: 0 0 15px rgba(255,215,0,0.5);
+}
+.cashout-amount span { color: var(--gold); }
+.cashout-sub { color: #888; font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 20px; }
+
+/* Name input */
+.cashout-name-row {
+  display: flex; gap: 8px; margin-bottom: 18px;
+}
+.cashout-name-input {
+  flex: 1; background: #111; border: 2px solid #444;
+  border-radius: 8px; color: white;
+  font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;
+  padding: 8px 12px; outline: none; transition: border-color 0.2s;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+.cashout-name-input:focus { border-color: var(--gold); }
+.cashout-name-input::placeholder { color: #555; text-transform: none; letter-spacing: 1px; }
+.cashout-save-btn {
+  background: linear-gradient(135deg, #b8860b, #8B6914);
+  border: 2px solid var(--gold); border-radius: 8px;
+  color: white; font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem; letter-spacing: 1px; padding: 8px 16px;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.cashout-save-btn:hover { box-shadow: 0 0 12px var(--gold); }
+.cashout-save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cashout-saved-msg {
+  color: #66bb6a; font-size: 0.85rem; letter-spacing: 2px;
+  min-height: 20px; margin-bottom: 10px;
+}
+
+.cashout-close-btn {
+  background: none; border: 1px solid #555; border-radius: 10px;
+  color: #aaa; font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem; letter-spacing: 2px; padding: 8px 22px;
+  cursor: pointer; transition: all 0.2s;
+}
+.cashout-close-btn:hover { border-color: #aaa; color: #fff; }
+
+/* ── LEADERBOARD ── */
+.leaderboard-section {
+  max-width: 420px; width: 100%; margin-top: 20px;
+}
+.leaderboard-toggle {
+  width: 100%; background: rgba(0,0,0,0.4);
+  border: 1px solid #333; border-radius: 10px;
+  color: #888; font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem; letter-spacing: 2px; padding: 8px;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.leaderboard-toggle:hover { border-color: var(--gold-dark); color: var(--gold); }
+
+.leaderboard-box {
+  display: none; margin-top: 8px;
+  background: linear-gradient(145deg, #111, #1a1a1a);
+  border: 1px solid var(--gold-dark); border-radius: 12px;
+  padding: 15px; overflow: hidden;
+}
+.leaderboard-box.open { display: block; }
+.leaderboard-box h3 {
+  font-family: 'Oswald', sans-serif; font-size: 1rem;
+  color: var(--gold); letter-spacing: 3px;
+  text-align: center; margin-bottom: 12px;
+}
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px; border-radius: 6px;
+  margin-bottom: 4px; transition: background 0.2s;
+}
+.lb-row:nth-child(2) { background: rgba(255,215,0,0.08); }
+.lb-row:nth-child(3) { background: rgba(192,192,192,0.06); }
+.lb-row:nth-child(4) { background: rgba(205,127,50,0.05); }
+.lb-rank {
+  font-family: 'Oswald', sans-serif; font-size: 1.1rem;
+  width: 28px; text-align: center; color: #555;
+}
+.lb-row:nth-child(2) .lb-rank { color: var(--gold); }
+.lb-row:nth-child(3) .lb-rank { color: #c0c0c0; }
+.lb-row:nth-child(4) .lb-rank { color: #cd7f32; }
+.lb-name {
+  flex: 1; font-size: 1rem; letter-spacing: 1px;
+  color: #ccc; text-transform: uppercase; font-weight: 600;
+}
+.lb-score {
+  font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: var(--gold);
+}
+.lb-spins { font-size: 0.75rem; color: #555; }
+.lb-date { font-size: 0.7rem; color: #444; }
+.lb-empty { text-align: center; color: #555; font-size: 0.9rem; padding: 15px 0; }
+.lb-loading { text-align: center; color: #666; font-size: 0.85rem; padding: 10px 0; }
+
+/* ── NEON THEME EXTRAS ── */
+body.theme-neon h1 { animation: neon-flicker 3s ease-in-out infinite; }
+@keyframes neon-flicker {
+  0%,19%,21%,23%,25%,54%,56%,100% { text-shadow: 0 0 10px var(--title-shadow), 0 0 30px var(--title-shadow), 0 0 60px var(--title-color); }
+  20%,24%,55% { text-shadow: none; opacity: 0.8; }
+}
+body.theme-neon .machine {
+  box-shadow: 0 0 30px rgba(0,255,255,0.3), 0 0 60px rgba(0,255,255,0.1), inset 0 0 30px rgba(0,0,0,0.7);
+}
+body.theme-neon .spin-btn {
+  background: linear-gradient(135deg, #aa0088, #660055);
+  border-color: #ff00ff;
+  box-shadow: 0 5px 0 #440033, 0 0 20px rgba(255,0,255,0.5);
+}
+body.theme-neon .light { background: #00ffff; box-shadow: 0 0 10px #00ffff; }
+
+/* ── RETRO THEME EXTRAS ── */
+body.theme-retro {
+  image-rendering: pixelated;
+}
+body.theme-retro h1 {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  letter-spacing: 2px;
+  text-shadow: 3px 3px 0 #000, 0 0 20px var(--title-shadow);
+}
+body.theme-retro .subtitle { font-family: 'Press Start 2P', monospace; font-size: 0.5rem; }
+body.theme-retro .machine {
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px #000, 0 0 30px rgba(245,197,24,0.3);
+}
+body.theme-retro .reel-wrap { border-radius: 2px; }
+body.theme-retro .spin-btn {
+  border-radius: 4px; font-size: 1rem; letter-spacing: 2px;
+  font-family: 'Press Start 2P', monospace;
+}
+body.theme-retro .spin-btn { background: linear-gradient(135deg, #aa1100, #770900); }
+body.theme-retro .info-value { font-family: 'Press Start 2P', monospace; font-size: 1rem; }
+/* Scanline overlay for retro */
+body.theme-retro .reels-container::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px);
+  pointer-events: none; z-index: 10; border-radius: 12px;
+}
+
+/* ── SETTINGS BUTTON & PANEL ── */
+.settings-btn {
+  position: fixed; bottom: 20px; right: 20px;
+  background: rgba(0,0,0,0.6); border: 1px solid #555;
+  border-radius: 50%; width: 44px; height: 44px;
+  font-size: 1.3rem; cursor: pointer; z-index: 500;
+  transition: all 0.3s; color: white;
+  display: flex; align-items: center; justify-content: center;
+}
+.settings-btn:hover { border-color: var(--gold); transform: rotate(45deg); }
+.settings-btn.open { transform: rotate(90deg); border-color: var(--gold); }
+
+.settings-panel {
+  position: fixed; bottom: 74px; right: 20px;
+  background: linear-gradient(145deg, #1a1a1a, #111);
+  border: 1px solid #444; border-radius: 14px;
+  padding: 18px; width: 220px;
+  z-index: 499; box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  transform: scale(0.85) translateY(10px);
+  transform-origin: bottom right;
+  opacity: 0; pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.34,1.3,0.64,1);
+}
+.settings-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1; pointer-events: all;
+}
+.settings-panel h3 {
+  font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+  color: var(--gold); letter-spacing: 2px;
+  margin-bottom: 14px; text-align: center;
+  border-bottom: 1px solid #333; padding-bottom: 8px;
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; font-size: 0.82rem; color: #aaa;
+}
+.settings-row:last-child { margin-bottom: 0; }
+
+/* Toggle switch */
+.toggle {
+  position: relative; width: 38px; height: 20px;
+  cursor: pointer;
+}
+.toggle input { display: none; }
+.toggle-track {
+  position: absolute; inset: 0;
+  background: #333; border-radius: 20px;
+  transition: background 0.2s;
+}
+.toggle input:checked + .toggle-track { background: var(--free); }
+.toggle-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: white; transition: left 0.2s;
+}
+.toggle input:checked ~ .toggle-thumb { left: 20px; }
+
+/* Theme buttons inside settings */
+.settings-themes {
+  display: flex; gap: 6px; margin-top: 4px;
+}
+.s-theme-btn {
+  flex: 1; padding: 6px 2px;
+  border-radius: 6px; border: 1px solid #333;
+  background: rgba(0,0,0,0.4);
+  color: #666; font-size: 0.6rem;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 2px; font-family: inherit;
+}
+.s-theme-btn:hover { border-color: #666; color: #ccc; }
+.s-theme-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(255,215,0,0.08); }
+.s-theme-btn span:first-child { font-size: 1.1rem; }
+
+.settings-divider {
+  border: none; border-top: 1px solid #2a2a2a; margin: 10px 0;
+}
+
+/* ── TROPICAL BONUS SCREEN ── */
+.tropical-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 600;
+  flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.tropical-overlay.active { display: flex; }
+
+/* Animated sky/sea background */
+.tropical-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #ff7b00 0%, #ff9f43 25%, #54a0ff 55%, #2e86de 80%, #0a3d62 100%);
+  animation: tropical-bg-in 1.2s ease-out forwards;
+}
+@keyframes tropical-bg-in {
+  from { opacity: 0; transform: scale(1.05); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Sun */
+.tropical-sun {
+  position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
+  width: 90px; height: 90px; border-radius: 50%;
+  background: radial-gradient(circle, #fff7a1, #ffd32a);
+  box-shadow: 0 0 60px #ffd32a, 0 0 120px rgba(255,211,42,0.4);
+  animation: sun-rise 1s ease-out forwards, sun-pulse 3s ease-in-out 1s infinite alternate;
+}
+@keyframes sun-rise {
+  from { transform: translateX(-50%) translateY(40px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+@keyframes sun-pulse {
+  from { box-shadow: 0 0 50px #ffd32a, 0 0 100px rgba(255,211,42,0.3); }
+  to   { box-shadow: 0 0 80px #ffd32a, 0 0 160px rgba(255,211,42,0.5); }
+}
+
+/* Waves at bottom */
+.tropical-sea {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 35%;
+  background: linear-gradient(180deg, #54a0ff 0%, #2e86de 40%, #0a3d62 100%);
+  border-radius: 60% 60% 0 0 / 20px 20px 0 0;
+}
+.wave {
+  position: absolute; left: -50%; right: -50%; height: 30px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  animation: wave-roll 2.5s ease-in-out infinite;
+}
+.wave:nth-child(1) { top: 0; animation-duration: 2.5s; }
+.wave:nth-child(2) { top: 10px; animation-duration: 3.2s; animation-delay: 0.4s; opacity: 0.7; }
+.wave:nth-child(3) { top: 20px; animation-duration: 2.8s; animation-delay: 0.8s; opacity: 0.4; }
+@keyframes wave-roll {
+  0%,100% { transform: translateX(-5%) scaleY(1); }
+  50%      { transform: translateX(5%) scaleY(1.4); }
+}
+
+/* Sand strip */
+.tropical-sand {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 12%;
+  background: linear-gradient(180deg, #f9ca24, #f0932b);
+  border-radius: 40% 40% 0 0 / 15px 15px 0 0;
+}
+
+/* Palm trees */
+.palm {
+  position: absolute; bottom: 10%;
+  font-size: 5rem; line-height: 1;
+  animation: palm-sway 3s ease-in-out infinite alternate;
+  filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.3));
+  user-select: none;
+}
+.palm-left  { left: 2%;  transform-origin: bottom center; animation-delay: 0s; }
+.palm-right { right: 2%; transform-origin: bottom center; animation-delay: 0.7s; transform: scaleX(-1); }
+@keyframes palm-sway {
+  from { transform: rotate(-4deg); }
+  to   { transform: rotate(4deg); }
+}
+.palm-right { animation-name: palm-sway-right; }
+@keyframes palm-sway-right {
+  from { transform: scaleX(-1) rotate(-4deg); }
+  to   { transform: scaleX(-1) rotate(4deg); }
+}
+
+/* Flying birds */
+.bird {
+  position: absolute; font-size: 1.4rem;
+  animation: bird-fly linear infinite;
+  opacity: 0.85;
+}
+@keyframes bird-fly {
+  from { transform: translateX(-80px); }
+  to   { transform: translateX(110vw); }
+}
+
+/* Main tropical machine card */
+.tropical-card {
+  position: relative; z-index: 2;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 24px; padding: 14px 14px 10px;
+  max-width: 400px; width: 92%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  animation: card-drop 0.7s cubic-bezier(0.34,1.3,0.64,1) 0.5s both;
+  margin-top: 8px;
+  max-height: 96vh; overflow-y: auto;
+}
+@keyframes card-drop {
+  from { transform: translateY(-60px) scale(0.8); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.tropical-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: #fff; text-align: center;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4), 0 0 30px rgba(255,211,42,0.6);
+  letter-spacing: 3px; margin-bottom: 4px;
+  animation: title-pop 0.5s cubic-bezier(0.34,1.4,0.64,1) 0.9s both;
+}
+@keyframes title-pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.tropical-sub {
+  text-align: center; color: rgba(255,255,255,0.8);
+  font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 14px;
+}
+
+/* Tropical spin counter */
+.tropical-spins-left {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: rgba(0,0,0,0.25); border-radius: 10px; padding: 6px 16px;
+  margin-bottom: 10px;
+}
+.tropical-spins-label { color: rgba(255,255,255,0.7); font-size: 0.75rem; letter-spacing: 2px; }
+.tropical-spins-num {
+  font-family: 'Oswald', sans-serif; font-size: 1.8rem; color: #ffd32a;
+  text-shadow: 0 0 15px rgba(255,211,42,0.7);
+  min-width: 2ch; text-align: center;
+}
+
+/* Tropical reels */
+.tropical-reels {
+  display: flex; gap: 6px; margin-bottom: 8px;
+  position: relative;
+}
+.tropical-reel-wrap {
+  flex: 1; height: 70px; border-radius: 10px; overflow: hidden;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.4);
+  position: relative;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+.tropical-reel-wrap .reel-strip { left: 0; right: 0; }
+.tropical-reel-wrap::before, .tropical-reel-wrap::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 25%;
+  z-index: 2; pointer-events: none;
+}
+.tropical-reel-wrap::before { top: 0; background: linear-gradient(to bottom, rgba(80,160,255,0.5), transparent); }
+.tropical-reel-wrap::after  { bottom: 0; background: linear-gradient(to top, rgba(80,160,255,0.5), transparent); }
+.tropical-reel-wrap.win-top    { border-color: #ff6464; box-shadow: 0 0 20px rgba(255,100,100,0.7); }
+.tropical-reel-wrap.win-middle { border-color: #ffd32a; box-shadow: 0 0 20px rgba(255,211,42,0.7); }
+.tropical-reel-wrap.win-bottom { border-color: #64c8ff; box-shadow: 0 0 20px rgba(100,200,255,0.7); }
+
+/* Single payline in center */
+.trop-paylines { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.trop-line {
+  position: absolute; left: -4px; right: -4px; height: 2px;
+  border-radius: 2px; opacity: 0; transition: opacity 0.3s;
+}
+.trop-line.middle { top: calc(35px - 1px); background: rgba(100,255,100,0.9); box-shadow: 0 0 6px lime; }
+.trop-line.top, .trop-line.bottom { display: none; }
+.trop-line.active { opacity: 1; }
+
+/* Multiplier display */
+.tropical-mult {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: rgba(255,211,42,0.2); border: 1px solid rgba(255,211,42,0.4);
+  border-radius: 8px; padding: 5px 14px; margin-bottom: 8px;
+  font-family: 'Oswald', sans-serif; font-size: 1rem; color: #ffd32a;
+  letter-spacing: 2px;
+}
+.tropical-mult-val {
+  font-size: 1.6rem; color: #fff;
+  text-shadow: 0 0 15px rgba(255,211,42,0.8);
+  transition: transform 0.2s;
+}
+.tropical-mult-val.bump { animation: mult-bump 0.3s ease-out; }
+@keyframes mult-bump { 0% { transform: scale(1); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
+
+/* Tropical spin button */
+.tropical-spin-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #f9ca24, #f0932b);
+  border: 3px solid #fff;
+  border-radius: 14px; color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.4rem; letter-spacing: 3px; padding: 11px;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.3), 0 0 20px rgba(249,202,36,0.4);
+  text-shadow: none; margin-bottom: 8px;
+}
+.tropical-spin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(0,0,0,0.3), 0 0 30px rgba(249,202,36,0.6); }
+.tropical-spin-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
+.tropical-spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.tropical-result {
+  text-align: center; font-family: 'Oswald', sans-serif;
+  font-size: 0.82rem; letter-spacing: 1px; color: rgba(255,255,255,0.8);
+  min-height: 18px; word-break: break-word; line-height: 1.4;
+}
+.tropical-result.win  { color: #ffd32a; text-shadow: 0 0 10px rgba(255,211,42,0.6); }
+.tropical-result.done { color: #a8e6cf; font-size: 0.9rem; }
+
+/* ── BANANA TRANSITION OVERLAY ── */
+.banana-transition {
+  display: none; position: fixed; inset: 0; z-index: 700;
+  background: #1a3a0a;
+  flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.banana-transition.active { display: flex; }
+
+/* Shaking screen */
+@keyframes quake {
+  0%,100% { transform: translate(0,0) rotate(0deg); }
+  10% { transform: translate(-8px, 4px) rotate(-1deg); }
+  20% { transform: translate(8px,-4px) rotate(1deg); }
+  30% { transform: translate(-10px,6px) rotate(-1.5deg); }
+  40% { transform: translate(10px,-3px) rotate(0.5deg); }
+  50% { transform: translate(-6px,8px) rotate(-0.5deg); }
+  60% { transform: translate(8px,-6px) rotate(1deg); }
+  70% { transform: translate(-8px,4px) rotate(-0.5deg); }
+  80% { transform: translate(6px,-4px) rotate(0.5deg); }
+  90% { transform: translate(-4px,2px) rotate(0deg); }
+}
+.banana-transition.shaking { animation: quake 0.15s linear infinite; }
+
+/* Jungle background */
+.bt-jungle {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #0d2b06 0%, #1a5c0a 40%, #2d8c12 70%, #4ab520 100%);
+}
+
+/* Ground */
+.bt-ground {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 18%;
+  background: linear-gradient(180deg, #3d1f00, #5a2d00);
+  border-radius: 40% 40% 0 0 / 20px 20px 0 0;
+}
+
+/* Banana tree */
+.bt-tree {
+  position: relative; z-index: 2;
+  font-size: 10rem; line-height: 1;
+  user-select: none;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6));
+  transform-origin: bottom center;
+  margin-bottom: 20px;
+}
+@keyframes tree-shake {
+  0%,100% { transform: rotate(0deg) scaleX(1); }
+  15% { transform: rotate(-6deg) scaleX(0.97); }
+  30% { transform: rotate(8deg) scaleX(1.02); }
+  45% { transform: rotate(-10deg) scaleX(0.96); }
+  60% { transform: rotate(12deg) scaleX(1.03); }
+  75% { transform: rotate(-8deg) scaleX(0.98); }
+  90% { transform: rotate(5deg) scaleX(1.01); }
+}
+.bt-tree.shaking { animation: tree-shake 0.25s ease-in-out infinite; }
+
+/* Crack lines on screen */
+.bt-crack {
+  position: absolute; pointer-events: none; z-index: 5;
+  font-size: 4rem; opacity: 0;
+  animation: crack-appear 0.1s ease-out forwards;
+}
+@keyframes crack-appear {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 0.6; transform: scale(1); }
+}
+
+/* Falling bananas */
+.bt-banana {
+  position: absolute; top: -80px;
+  font-size: 2.2rem; pointer-events: none; z-index: 6;
+  animation: banana-fall linear forwards;
+}
+@keyframes banana-fall {
+  0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(var(--br)) scale(0.8); opacity: 0; }
+}
+
+/* Flying parrots */
+.bt-parrot {
+  position: absolute;
+  font-size: 2.5rem; pointer-events: none; z-index: 6;
+  animation: parrot-escape linear forwards;
+}
+@keyframes parrot-escape {
+  0%   { transform: translateX(0) translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  30%  { transform: translateX(var(--px)) translateY(-80px) rotate(var(--pr)) scale(1.1); }
+  100% { transform: translateX(calc(var(--px) * 3)) translateY(-200px) rotate(var(--pr)) scale(0.5); opacity: 0; }
+}
+
+/* "FREE SPINOVI" text */
+.bt-announce {
+  position: relative; z-index: 3; text-align: center;
+  opacity: 0; transform: scale(0.3);
+}
+.bt-announce.show {
+  animation: announce-pop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes announce-pop {
+  from { opacity: 0; transform: scale(0.3) rotate(-10deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.bt-announce-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  color: #ffd32a;
+  text-shadow: 0 0 30px rgba(255,211,42,0.8), 3px 3px 0 #000;
+  letter-spacing: 4px; margin-bottom: 8px;
+}
+.bt-announce-sub {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1rem, 4vw, 1.6rem);
+  color: #fff; letter-spacing: 3px;
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 20px;
+}
+.bt-announce-spins {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(3rem, 12vw, 6rem);
+  color: #fff;
+  text-shadow: 0 0 40px rgba(255,211,42,1), 3px 3px 0 #000;
+  animation: spin-count-pulse 0.5s ease-in-out infinite alternate;
+}
+@keyframes spin-count-pulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.08); }
+}
+
+/* Wipe to tropical */
+.bt-wipe {
+  position: absolute; inset: 0; z-index: 10;
+  background: #fff; transform: scaleX(0); transform-origin: left;
+  pointer-events: none;
+}
+.bt-wipe.go { animation: wipe-out 0.5s ease-in forwards; }
+@keyframes wipe-out {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ── SYMBOL BONUS OVERLAY ── */
+.sym-bonus-overlay {
+  display: none; position: fixed; inset: 0; z-index: 650;
+  flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.sym-bonus-overlay.active { display: flex; }
+
+.sb-bg {
+  position: absolute; inset: 0;
+  transition: background 0.5s;
+}
+
+/* Floating ambient particles */
+.sb-ambient {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.sb-float {
+  position: absolute; font-size: 2.5rem;
+  animation: sb-float-up linear infinite;
+  opacity: 0.25;
+}
+@keyframes sb-float-up {
+  0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.3; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+}
+
+/* Main card */
+.sb-card {
+  position: relative; z-index: 2;
+  border-radius: 24px; padding: 24px 20px;
+  max-width: 400px; width: 92%;
+  text-align: center;
+  animation: sb-card-in 0.6s cubic-bezier(0.34,1.3,0.64,1) both;
+  backdrop-filter: blur(8px);
+}
+@keyframes sb-card-in {
+  from { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.sb-icon { font-size: 4.5rem; display: block; margin-bottom: 8px; }
+.sb-title {
+  font-family: 'Oswald', sans-serif; font-size: clamp(1.6rem,5vw,2.4rem);
+  letter-spacing: 3px; margin-bottom: 4px;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+}
+.sb-subtitle { font-size: 0.9rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 16px; }
+
+/* Spin counter */
+.sb-spins-row {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  border-radius: 10px; padding: 8px 16px; margin-bottom: 14px;
+  background: rgba(0,0,0,0.25);
+}
+.sb-spins-label { font-size: 0.75rem; letter-spacing: 2px; opacity: 0.7; }
+.sb-spins-num {
+  font-family: 'Oswald', sans-serif; font-size: 2rem;
+  min-width: 2ch; text-align: center;
+}
+
+/* 3x3 reels */
+.sb-reels {
+  display: flex; gap: 6px; margin-bottom: 12px; position: relative;
+}
+.sb-reel {
+  flex: 1; height: 270px; border-radius: 10px; overflow: hidden;
+  position: relative; border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.2);
+}
+.sb-reel .reel-strip { left: 0; right: 0; }
+.sb-reel::before, .sb-reel::after {
+  content: ''; position: absolute; left: 0; right: 0; height: 18%;
+  z-index: 2; pointer-events: none;
+}
+.sb-reel-div {
+  position: absolute; left: 0; right: 0; height: 1px;
+  background: rgba(255,255,255,0.15); z-index: 1;
+}
+
+/* Paylines */
+.sb-paylines { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.sb-pline {
+  position: absolute; left: -3px; right: -3px; height: 2px;
+  border-radius: 2px; opacity: 0; transition: opacity 0.3s;
+}
+.sb-pline.top    { top: 89px; }
+.sb-pline.middle { top: 179px; }
+.sb-pline.bottom { top: 269px; }
+.sb-pline.active { opacity: 1; }
+
+.sb-reel.win { animation: sb-reel-pulse 0.4s ease-in-out 4; }
+@keyframes sb-reel-pulse {
+  0%,100% { box-shadow: none; }
+  50% { box-shadow: 0 0 25px rgba(255,255,255,0.8); }
+}
+
+/* Multiplier */
+.sb-mult {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 8px; padding: 6px 14px; margin-bottom: 12px;
+  background: rgba(255,255,255,0.15); font-family: 'Oswald', sans-serif;
+  font-size: 0.9rem; letter-spacing: 2px;
+}
+.sb-mult-val {
+  font-size: 1.8rem; font-weight: 700;
+  transition: transform 0.2s;
+}
+.sb-mult-val.bump { animation: mult-bump 0.3s ease-out; }
+
+/* Spin btn */
+.sb-spin-btn {
+  width: 100%; border-radius: 14px; border: 3px solid rgba(255,255,255,0.5);
+  font-family: 'Oswald', sans-serif; font-size: 1.4rem;
+  letter-spacing: 3px; padding: 13px; cursor: pointer;
+  transition: all 0.2s; margin-bottom: 10px;
+  background: rgba(255,255,255,0.2); color: white;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  box-shadow: 0 5px 0 rgba(0,0,0,0.25);
+}
+.sb-spin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(0,0,0,0.25), 0 0 20px rgba(255,255,255,0.2); }
+.sb-spin-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.25); }
+.sb-spin-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.sb-result {
+  font-family: 'Oswald', sans-serif; font-size: 1rem;
+  letter-spacing: 2px; min-height: 24px; text-align: center;
+  opacity: 0.9;
+}
+
+/* ── SCREEN FLASH ── */
+.screen-flash {
+  position: fixed; inset: 0; pointer-events: none; z-index: 300;
+  background: white; opacity: 0;
+  transition: opacity 0.1s;
+}
+.screen-flash.flash { animation: do-flash 0.5s ease-out; }
+@keyframes do-flash {
+  0%   { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="screen-flash" id="screenFlash"></div>
+
+<!-- 🎰 SYMBOL BONUS WORLD -->
+<div class="sym-bonus-overlay" id="symBonusOverlay">
+  <div class="sb-bg" id="sbBg"></div>
+  <div class="sb-ambient" id="sbAmbient"></div>
+  <div class="sb-card" id="sbCard">
+    <span class="sb-icon" id="sbIcon">🍋</span>
+    <div class="sb-title" id="sbTitle">LIMUNADA!</div>
+    <div class="sb-subtitle" id="sbSubtitle">5 besplatnih vrtnji</div>
+    <div class="sb-spins-row">
+      <span class="sb-spins-label">VRTNJI</span>
+      <span class="sb-spins-num" id="sbSpinsLeft">5</span>
+    </div>
+    <div class="sb-reels" id="sbReels">
+      <div class="sb-paylines" id="sbPaylines">
+        <div class="sb-pline top"    id="sbPline-top"></div>
+        <div class="sb-pline middle" id="sbPline-middle"></div>
+        <div class="sb-pline bottom" id="sbPline-bottom"></div>
+      </div>
+      <div class="sb-reel" id="sbreel0">
+        <div class="reel-strip" id="sbstrip0"></div>
+        <div class="sb-reel-div" style="top:90px"></div>
+        <div class="sb-reel-div" style="top:180px"></div>
+      </div>
+      <div class="sb-reel" id="sbreel1">
+        <div class="reel-strip" id="sbstrip1"></div>
+        <div class="sb-reel-div" style="top:90px"></div>
+        <div class="sb-reel-div" style="top:180px"></div>
+      </div>
+      <div class="sb-reel" id="sbreel2">
+        <div class="reel-strip" id="sbstrip2"></div>
+        <div class="sb-reel-div" style="top:90px"></div>
+        <div class="sb-reel-div" style="top:180px"></div>
+      </div>
+    </div>
+    <div class="sb-mult">
+      <span id="sbMultLabel">⚡ BONUS MULT</span>
+      <span class="sb-mult-val" id="sbMultVal">×1</span>
+    </div>
+    <button class="sb-spin-btn" id="sbSpinBtn" onclick="sbSpin()">▶ VRTI ◀</button>
+    <div class="sb-result" id="sbResult">Pritisni VRTI!</div>
+  </div>
+</div>
+
+<!-- 🍌 BANANA TRANSITION -->
+<div class="banana-transition" id="bananaTransition">
+  <div class="bt-jungle"></div>
+  <div class="bt-ground"></div>
+  <div class="bt-tree" id="btTree">🌳</div>
+  <div class="bt-announce" id="btAnnounce">
+    <div class="bt-announce-title">🌴 TROPSKI BONUS! 🌴</div>
+    <div class="bt-announce-sub">BESPLATNE VRTNJE</div>
+    <div class="bt-announce-spins" id="btSpinCount">5</div>
+  </div>
+  <div class="bt-wipe" id="btWipe"></div>
+</div>
+
+<!-- 🌴 TROPICAL BONUS SCREEN -->
+<div class="tropical-overlay" id="tropicalOverlay">
+  <div class="tropical-bg"></div>
+  <div class="tropical-sun"></div>
+  <div class="tropical-sea">
+    <div class="wave"></div><div class="wave"></div><div class="wave"></div>
+  </div>
+  <div class="tropical-sand"></div>
+  <div class="palm palm-left">🌴</div>
+  <div class="palm palm-right">🌴</div>
+  <!-- Birds injected by JS -->
+
+  <div class="tropical-card">
+    <div class="tropical-title">🌴 TROPSKI BONUS! 🌴</div>
+    <div class="tropical-sub">BESPLATNE VRTNJE · MULTIPLIER RASTE!</div>
+
+    <div class="tropical-spins-left">
+      <span class="tropical-spins-label">VRTNJI PREOSTALO</span>
+      <span class="tropical-spins-num" id="tropSpinsLeft">0</span>
+    </div>
+
+    <div class="tropical-reels" id="tropicalReels">
+      <div class="trop-paylines">
+        <div class="trop-line middle" id="tline-middle"></div>
+      </div>
+      <div class="tropical-reel-wrap" id="treel0">
+        <div class="reel-strip" id="tstrip0"></div>
+      </div>
+      <div class="tropical-reel-wrap" id="treel1">
+        <div class="reel-strip" id="tstrip1"></div>
+      </div>
+      <div class="tropical-reel-wrap" id="treel2">
+        <div class="reel-strip" id="tstrip2"></div>
+      </div>
+    </div>
+
+    <div class="tropical-mult">
+      <span>⚡ MULTIPLIER</span>
+      <span class="tropical-mult-val" id="tropMult">×1</span>
+    </div>
+
+    <button class="tropical-spin-btn" id="tropSpinBtn" onclick="tropSpin()">🌊 VRTI! 🌊</button>
+    <div class="tropical-result" id="tropResult">Pritisni VRTI za početak!</div>
+  </div>
+</div>
+
+<!-- Settings panel -->
+<div class="settings-panel" id="settingsPanel">
+  <h3>⚙️ POSTAVKE</h3>
+
+  <div class="settings-row">
+    <span>🔊 Zvuk</span>
+    <label class="toggle">
+      <input type="checkbox" id="soundToggle" checked onchange="toggleSound(this.checked)">
+      <div class="toggle-track"></div>
+      <div class="toggle-thumb"></div>
+    </label>
+  </div>
+
+  <div class="settings-row">
+    <span>⚡ Auto-spin hold</span>
+    <label class="toggle">
+      <input type="checkbox" id="autoToggle" checked onchange="autoHoldEnabled = this.checked">
+      <div class="toggle-track"></div>
+      <div class="toggle-thumb"></div>
+    </label>
+  </div>
+
+  <hr class="settings-divider">
+
+  <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+    <span>🎨 Tema</span>
+    <div class="settings-themes">
+      <button class="s-theme-btn active" id="s-theme-vegas" onclick="setTheme('vegas')">
+        <span>🎰</span><span>Vegas</span>
+      </button>
+      <button class="s-theme-btn" id="s-theme-neon" onclick="setTheme('neon')">
+        <span>🌈</span><span>Neon</span>
+      </button>
+      <button class="s-theme-btn" id="s-theme-retro" onclick="setTheme('retro')">
+        <span>👾</span><span>Retro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<button class="settings-btn" id="settingsBtn" onclick="toggleSettings()" title="Postavke">⚙️</button>
+
+<!-- Game Over overlay -->
+<div class="gameover-overlay" id="gameoverOverlay">
+  <div class="go-card">
+    <span class="go-emoji">🍒</span>
+    <div class="go-title">VOĆKICE SU MI<br>UNIŠTILE ŽIVOT</div>
+    <div class="go-subtitle">Igraj za zabavu, ne za novce.</div>
+    <div class="go-stats">
+      <div class="go-stat">
+        <div class="go-stat-label">Spinova</div>
+        <div class="go-stat-value" id="goSpins">0</div>
+      </div>
+      <div class="go-stat">
+        <div class="go-stat-label">Ukupno dobiveno</div>
+        <div class="go-stat-value" id="goWon">0</div>
+      </div>
+    </div>
+    <button class="go-btn" onclick="closeGameOver()">↺ POKUŠAJ OPET</button>
+  </div>
+</div>
+
+<h1>🥗 VOĆNA SALATA</h1>
+<div class="subtitle">Automat na kovanice EUR-a · v2.0</div>
+
+<div class="machine" id="machine">
+  <div class="top-lights">
+    <div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div>
+  </div>
+
+  <!-- Reels -->
+  <div class="reels-container">
+    <div class="reels" style="position:relative;">
+      <div class="paylines-overlay" id="mainPaylines">
+        <div class="pay-line top"    id="pline-top"></div>
+        <div class="pay-line middle" id="pline-middle"></div>
+        <div class="pay-line bottom" id="pline-bottom"></div>
+      </div>
+      <div class="reel-wrap" id="reel0">
+        <div class="reel-strip" id="strip0"></div>
+        <div class="reel-row-div" style="top:90px"></div>
+        <div class="reel-row-div" style="top:180px"></div>
+      </div>
+      <div class="reel-wrap" id="reel1">
+        <div class="reel-strip" id="strip1"></div>
+        <div class="reel-row-div" style="top:90px"></div>
+        <div class="reel-row-div" style="top:180px"></div>
+      </div>
+      <div class="reel-wrap" id="reel2">
+        <div class="reel-strip" id="strip2"></div>
+        <div class="reel-row-div" style="top:90px"></div>
+        <div class="reel-row-div" style="top:180px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info-row">
+    <div class="info-box">
+      <div class="info-label">Žetoni</div>
+      <div class="info-value zetoni" id="credits">100</div>
+    </div>
+    <div class="info-box">
+      <div class="info-label">Zadnja pobjeda</div>
+      <div class="info-value win-val" id="lastWin">0</div>
+    </div>
+    <div class="info-box">
+      <div class="info-label">Ukupno dobiveno</div>
+      <div class="info-value" id="totalWon">0</div>
+    </div>
+  </div>
+
+  <!-- Active multiplier badge -->
+  <div class="mult-badge" id="multBadge"></div>
+
+  <!-- Bet -->
+  <div class="bet-row">
+    <button class="bet-btn" onclick="changeBet(-1)">−</button>
+    <div class="bet-display" id="betDisplay">Ulog: 5 🪙</div>
+    <button class="bet-btn" onclick="changeBet(1)">+</button>
+  </div>
+
+  <button class="spin-btn" id="spinBtn"
+    onclick="handleSpinClick()"
+    onmousedown="startHold()"
+    onmouseup="endHold()"
+    onmouseleave="endHold()"
+    ontouchstart="startHold()"
+    ontouchend="endHold()">▶ VRTI ◀</button>
+
+  <div class="result-msg" id="resultMsg">Sretno! 🤞</div>
+
+  <!-- Free spin banner -->
+  <div class="free-spin-banner" id="freeSpinBanner">
+    <span>🎁 FREE SPINOVI</span>
+    <span class="free-spin-count" id="freeSpinCount">0</span>
+    <span>preostalo</span>
+  </div>
+
+  <!-- Paytable -->
+  <div class="paytable">
+    <h3>📋 ISPLATNA TABLICA</h3>
+    <div class="pay-row"><span class="pay-symbols">💎💎💎</span><span class="pay-amount">× 100 — JACKPOT!</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍌🍌🍌</span><span class="pay-amount">× 50</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍊🍊🍊</span><span class="pay-amount">× 20</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍇🍇🍇</span><span class="pay-amount">× 15</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍉🍉🍉</span><span class="pay-amount">× 10</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍋🍋🍋</span><span class="pay-amount">× 8</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍒🍒🍒</span><span class="pay-amount">× 5</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍒🍒 (bilo gdje)</span><span class="pay-amount">× 2</span></div>
+    <div class="pay-row"><span class="pay-symbols">🎁🎁🎁</span><span class="pay-amount bonus-color">🎲 BONUS RUNDA!</span></div>
+    <div class="pay-row"><span class="pay-symbols">🎁🎁 (bilo gdje)</span><span class="pay-amount free-color">🎰 5× FREE SPIN</span></div>
+  </div>
+
+  <button class="reset-btn" onclick="resetGame()">↺ Resetiraj igru</button>
+  <button class="cashout-btn" id="cashoutBtn" onclick="triggerCashout()">💰 ISPLATI ŽETONE</button>
+</div>
+
+<!-- Cashout overlay -->
+<div class="cashout-overlay" id="cashoutOverlay">
+  <div class="cashout-card">
+    <span class="cashout-emoji">💰</span>
+    <div class="cashout-title">ISPLATA!</div>
+    <div class="cashout-amount"><span id="cashoutCredits">0</span> 🪙</div>
+    <div class="cashout-sub">SPINOVA ODIGRANIH: <span id="cashoutSpins">0</span></div>
+    <div class="cashout-name-row">
+      <input class="cashout-name-input" id="cashoutNameInput" maxlength="12" placeholder="Upiši ime za rekord..." />
+      <button class="cashout-save-btn" id="cashoutSaveBtn" onclick="saveScore()">SPREMI</button>
+    </div>
+    <div class="cashout-saved-msg" id="cashoutSavedMsg"></div>
+    <button class="cashout-close-btn" onclick="closeCashout()">Zatvori i nastavi</button>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div class="leaderboard-section">
+  <button class="leaderboard-toggle" onclick="toggleLeaderboard()">🏆 LJESTVICA POBJEDNIKA</button>
+  <div class="leaderboard-box" id="leaderboardBox">
+    <h3>🏆 TOP IGRAČI</h3>
+    <div id="leaderboardList"><div class="lb-loading">Učitavam...</div></div>
+  </div>
+</div>
+
+<!-- Bonus overlay -->
+<div class="bonus-overlay" id="bonusOverlay">
+  <div class="bonus-box">
+    <h2>🎲 BONUS RUNDA!</h2>
+    <p>Odaberi kovčeg i osvoji nagradu!</p>
+    <div class="bonus-chests" id="bonusChests"></div>
+    <div class="bonus-result" id="bonusResult"></div>
+    <button class="bonus-close" id="bonusClose" onclick="closeBonus()">UZMI NAGRADU!</button>
+  </div>
+</div>
+
+<script>
+// ── AUDIO ENGINE ──
+let audioCtx = null;
+let soundEnabled = true;
+
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, vol = 0.3, delay = 0) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudio();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+    gain.gain.setValueAtTime(vol, ctx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+    osc.start(ctx.currentTime + delay);
+    osc.stop(ctx.currentTime + delay + duration);
+  } catch(e) {}
+}
+
+function playNoise(duration, vol = 0.15, delay = 0) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudio();
+    const bufSize = ctx.sampleRate * duration;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 800;
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(vol, ctx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+    src.start(ctx.currentTime + delay);
+    src.stop(ctx.currentTime + delay + duration);
+  } catch(e) {}
+}
+
+// Sound: lever pull / spin start
+function sndSpin() {
+  // Mechanical clunk
+  playTone(120, 'sawtooth', 0.08, 0.25);
+  playTone(80,  'square',   0.06, 0.2, 0.06);
+  // Whirring reel noise
+  for (let i = 0; i < 6; i++) playNoise(0.07, 0.08, 0.05 + i * 0.07);
+}
+
+// Sound: each reel stops (tick/thud) — call with index 0,1,2
+function sndReelStop(idx) {
+  const freqs = [220, 180, 150];
+  playTone(freqs[idx], 'square',   0.05, 0.35);
+  playTone(freqs[idx] * 0.5, 'triangle', 0.12, 0.2, 0.03);
+  playNoise(0.04, 0.2);
+}
+
+// Sound: small win
+function sndWin() {
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((f, i) => playTone(f, 'triangle', 0.18, 0.25, i * 0.1));
+}
+
+// Sound: big win (×10+)
+function sndBigWin() {
+  const melody = [523,659,784,1047,1319,1568];
+  melody.forEach((f, i) => {
+    playTone(f, 'triangle', 0.22, 0.3, i * 0.08);
+    playTone(f * 0.5, 'sine', 0.15, 0.15, i * 0.08);
+  });
+}
+
+// Sound: JACKPOT
+function sndJackpot() {
+  // Fanfare
+  const fanfare = [523,523,523,659,523,659,784];
+  fanfare.forEach((f, i) => {
+    playTone(f, 'sawtooth', 0.25, 0.4, i * 0.12);
+    playTone(f * 2, 'sine', 0.1, 0.2, i * 0.12);
+  });
+  // Bass hits
+  [0, 0.14, 0.28].forEach(d => playTone(65, 'square', 0.1, 0.3, d));
+}
+
+// Sound: lose
+function sndLose() {
+  playTone(300, 'sawtooth', 0.08, 0.15);
+  playTone(220, 'sawtooth', 0.08, 0.15, 0.1);
+  playTone(150, 'sawtooth', 0.1,  0.2,  0.22);
+}
+
+// Sound: game over (voćkice)
+function sndGameOver() {
+  const sad = [392, 370, 349, 330, 311];
+  sad.forEach((f, i) => playTone(f, 'sawtooth', 0.3, 0.35, i * 0.18));
+  playTone(196, 'sawtooth', 0.6, 0.4, sad.length * 0.18);
+}
+
+// Sound: bonus trigger
+function sndBonus() {
+  const twinkle = [784,1047,1319,1047,1319,1568,2093];
+  twinkle.forEach((f, i) => {
+    playTone(f, 'sine', 0.15, 0.3, i * 0.07);
+    if (i % 2 === 0) playTone(f * 0.5, 'triangle', 0.1, 0.15, i * 0.07);
+  });
+}
+
+// Sound: free spin trigger
+function sndFreeSpins() {
+  const chime = [1047, 1319, 1568, 2093, 1568, 1319, 1047];
+  chime.forEach((f, i) => playTone(f, 'sine', 0.2, 0.28, i * 0.09));
+}
+
+// Sound: chest open
+function sndChestOpen() {
+  playTone(440, 'triangle', 0.1, 0.3);
+  playTone(880, 'sine', 0.15, 0.25, 0.08);
+  playTone(1320,'sine', 0.12, 0.2, 0.18);
+}
+
+// Sound: button click
+function sndClick() {
+  playTone(800, 'square', 0.03, 0.15);
+}
+
+// Sound: coin (single)
+function sndCoin() {
+  playTone(1200, 'sine', 0.08, 0.2);
+  playTone(1600, 'sine', 0.06, 0.06, 0.05);
+}
+
+// ── SETTINGS ──
+let autoHoldEnabled = true;
+
+function toggleSettings() {
+  const panel = document.getElementById('settingsPanel');
+  const btn = document.getElementById('settingsBtn');
+  panel.classList.toggle('open');
+  btn.classList.toggle('open');
+  sndClick();
+}
+
+// Close settings if clicking outside
+document.addEventListener('click', e => {
+  const panel = document.getElementById('settingsPanel');
+  const btn = document.getElementById('settingsBtn');
+  if (panel.classList.contains('open') &&
+      !panel.contains(e.target) && !btn.contains(e.target)) {
+    panel.classList.remove('open');
+    btn.classList.remove('open');
+  }
+});
+
+function toggleSound(on) {
+  soundEnabled = on;
+  if (on) sndClick();
+}
+
+// ── MUTE BUTTON (injected into DOM after load) ──
+function initMuteBtn() {
+  // No longer needed — sound is in settings panel
+}
+
+// ── CONSTANTS ──
+const SYMBOLS = ['🍒','🍒','🍒','🍋','🍋','🍉','🍉','🍇','🍇','🍊','🍊','🍌','🍌','💎','🎁','🎁','🎁'];
+const PAYOUTS = {
+  '💎💎💎': 100, '🍌🍌🍌': 50, '🍊🍊🍊': 20,
+  '🍇🍇🍇': 15, '🍉🍉🍉': 10, '🍋🍋🍋': 8, '🍒🍒🍒': 5,
+};
+const BONUS_PRIZES = [
+  { label: '× 3 ulog',  mult: 3 },
+  { label: '× 5 ulog',  mult: 5 },
+  { label: '× 8 ulog',  mult: 8 },
+  { label: '× 15 ulog', mult: 15 },
+  { label: '× 25 ulog', mult: 25 },
+  { label: '+50 žetona', fixed: 50 },
+  { label: '+20 žetona', fixed: 20 },
+  { label: '+10 žetona', fixed: 10 },
+  { label: '5× FREE!',   freeSpins: 5 },
+];
+
+// ── STATE ──
+let credits = 100, bet = 5, totalWon = 0;
+let spinning = false;
+let freeSpins = 0;
+let activeMultiplier = 1;
+let bonusActive = false;
+let autoSpinActive = false;
+let holdTimer = null;
+
+// ── UI HELPERS ──
+function updateUI() {
+  document.getElementById('credits').textContent = credits;
+  document.getElementById('totalWon').textContent = totalWon;
+  document.getElementById('betDisplay').textContent = freeSpins > 0 ? `FREE SPIN 🎁` : `Ulog: ${bet} 🪙`;
+
+  const banner = document.getElementById('freeSpinBanner');
+  const machine = document.getElementById('machine');
+  const btn = document.getElementById('spinBtn');
+
+  if (freeSpins > 0) {
+    banner.classList.add('active');
+    document.getElementById('freeSpinCount').textContent = freeSpins;
+    machine.className = 'machine free-mode';
+    btn.textContent = '▶ FREE SPIN ◀';
+    btn.className = 'spin-btn free-spin-btn';
+  } else {
+    banner.classList.remove('active');
+    machine.className = activeMultiplier > 1 ? 'machine bonus-mode' : 'machine';
+    btn.textContent = '▶ VRTI ◀';
+    btn.className = 'spin-btn';
+  }
+  if (autoSpinActive) {
+    btn.classList.add('auto-spin');
+    btn.textContent = '⟳ AUTO-SPIN ⟳';
+  }
+
+  // Multiplier badge
+  const badge = document.getElementById('multBadge');
+  if (activeMultiplier > 1) {
+    badge.textContent = `⚡ BONUS MULTIPLIKATOR × ${activeMultiplier} ⚡`;
+    badge.classList.add('active');
+  } else {
+    badge.classList.remove('active');
+  }
+}
+
+function showMsg(text, cls) {
+  const el = document.getElementById('resultMsg');
+  el.textContent = text;
+  el.className = 'result-msg ' + cls;
+}
+
+function popValue(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+
+function changeBet(d) {
+  if (spinning || freeSpins > 0) return;
+  const bets = [1, 2, 5, 10, 20, 50];
+  let idx = bets.indexOf(bet) + d;
+  idx = Math.max(0, Math.min(bets.length - 1, idx));
+  bet = bets[idx];
+  updateUI();
+}
+
+// ── SCREEN FLASH ──
+function doFlash(color = 'white') {
+  const el = document.getElementById('screenFlash');
+  el.style.background = color;
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+}
+
+// ── PARTICLES ──
+function spawnParticles(emojis, count = 25) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      const x = (Math.random() - 0.5) * 400;
+      const y = -(Math.random() * 300 + 100);
+      const r = (Math.random() - 0.5) * 720;
+      p.style.setProperty('--px', x + 'px');
+      p.style.setProperty('--py', y + 'px');
+      p.style.setProperty('--pr', r + 'deg');
+      p.style.left = Math.random() * 80 + 10 + 'vw';
+      p.style.top = '60vh';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1300);
+    }, i * 45);
+  }
+}
+
+// ── BONUS ROUND ──
+function triggerBonus() {
+  const overlay = document.getElementById('bonusOverlay');
+  const chestsEl = document.getElementById('bonusChests');
+  const resultEl = document.getElementById('bonusResult');
+  const closeBtn = document.getElementById('bonusClose');
+
+  resultEl.textContent = '';
+  closeBtn.classList.remove('visible');
+  chestsEl.innerHTML = '';
+
+  // Shuffle prizes, pick 5
+  const shuffled = [...BONUS_PRIZES].sort(() => Math.random() - 0.5).slice(0, 5);
+
+  shuffled.forEach((prize, idx) => {
+    const chest = document.createElement('div');
+    chest.className = 'chest';
+    chest.innerHTML = `<span class="chest-icon">🎁</span><span class="chest-prize">${prize.label}</span>`;
+    chest.onclick = () => { sndChestOpen(); openChest(chest, prize, shuffled); };
+    chestsEl.appendChild(chest);
+  });
+
+  overlay.classList.add('active');
+  bonusActive = true;
+  doFlash('#9b59b6');
+  spawnParticles(['🎁','✨','💜','🍊'], 20);
+}
+
+function openChest(chestEl, prize, allPrizes) {
+  if (chestEl.classList.contains('opened')) return;
+
+  // Disable all chests
+  document.querySelectorAll('.chest').forEach(c => c.style.pointerEvents = 'none');
+  chestEl.classList.add('opened');
+
+  // Reveal all others after delay
+  setTimeout(() => {
+    document.querySelectorAll('.chest').forEach((c, i) => {
+      if (!c.classList.contains('opened')) {
+        c.classList.add('opened');
+      }
+    });
+  }, 600);
+
+  // Apply prize
+  let prizeText = '';
+  if (prize.mult) {
+    const won = bet * prize.mult;
+    credits += won;
+    totalWon += won;
+    prizeText = `🏆 Osvajate ${won} žetona! (× ${prize.mult})`;
+    popValue('credits');
+    for (let i = 0; i < Math.min(prize.mult, 8); i++) setTimeout(sndCoin, i * 80);
+  } else if (prize.fixed) {
+    credits += prize.fixed;
+    totalWon += prize.fixed;
+    prizeText = `🏆 Osvajate +${prize.fixed} žetona!`;
+    popValue('credits');
+    for (let i = 0; i < 5; i++) setTimeout(sndCoin, i * 80);
+  } else if (prize.freeSpins) {
+    prizeText = `🌴 Dobivate ${prize.freeSpins}× TROPSKI BONUS!`;
+    // Will trigger tropical after bonus closes
+    freeSpins += prize.freeSpins;
+    sndFreeSpins();
+  }
+
+  document.getElementById('bonusResult').textContent = prizeText;
+  document.getElementById('bonusClose').classList.add('visible');
+  document.getElementById('lastWin').textContent = prize.fixed || (prize.mult ? bet * prize.mult : 0);
+  updateUI();
+  spawnParticles(['💰','✨','🌟','🏆'], 30);
+}
+
+function closeBonus() {
+  document.getElementById('bonusOverlay').classList.remove('active');
+  bonusActive = false;
+  spinning = false;
+  document.getElementById('spinBtn').disabled = false;
+  updateUI();
+  // If free spins were awarded in bonus, enter tropical
+  if (freeSpins > 0) {
+    const spins = freeSpins;
+    freeSpins = 0;
+    setTimeout(() => enterTropicalBonus(spins), 400);
+  }
+}
+
+// ── REEL STRIP ENGINE ──
+const SYM_H = 90; // 270px / 3 rows
+
+function buildStrip(stripEl, colSymbols, extraCount) {
+  stripEl.style.transition = 'none';
+  stripEl.style.transform = 'translateY(0)';
+  stripEl.innerHTML = '';
+  const all = [];
+  for (let i = 0; i < extraCount; i++) {
+    all.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+  }
+  all.push(...colSymbols); // last 3 = top/middle/bottom
+  all.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'sym';
+    div.textContent = s;
+    stripEl.appendChild(div);
+  });
+  return all.length;
+}
+
+function animateReel(reelIdx, colSymbols, stopDelay, onDone) {
+  const strip = document.getElementById(`strip${reelIdx}`);
+  const extraCount = 12 + Math.floor(Math.random() * 4);
+  const total = buildStrip(strip, colSymbols, extraCount);
+
+  // Stop so last 3 symbols fill the 270px window
+  const finalY = -((total - 3) * SYM_H);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const phase1Duration = stopDelay / 1000;
+    strip.style.transition = `transform ${phase1Duration}s linear`;
+    strip.style.transform = `translateY(${finalY}px)`;
+
+    setTimeout(() => {
+      const overshoot = finalY - 20;
+      strip.style.transition = 'transform 0.15s ease-out';
+      strip.style.transform = `translateY(${overshoot}px)`;
+      setTimeout(() => {
+        strip.style.transition = 'transform 0.2s cubic-bezier(0.34,1.4,0.64,1)';
+        strip.style.transform = `translateY(${finalY}px)`;
+        sndReelStop(reelIdx);
+        if (colSymbols.includes('🎁')) {
+          document.getElementById(`reel${reelIdx}`).classList.add('has-bonus');
+        }
+        setTimeout(onDone, 200);
+      }, 150);
+    }, stopDelay);
+  }));
+}
+
+// ── MAIN SPIN ──
+function spin() {
+  if (spinning || bonusActive) return;
+
+  const isFree = freeSpins > 0;
+  if (!isFree && credits < bet) {
+    showMsg('Nemaš dovoljno žetona! 😢', 'lose');
+    return;
+  }
+
+  spinning = true;
+  totalSpins++;
+  if (!isFree) credits -= bet;
+  else freeSpins--;
+
+  document.getElementById('lastWin').textContent = 0;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('resultMsg').className = 'result-msg';
+  document.getElementById('resultMsg').textContent = isFree ? '🎰 FREE SPIN...' : '🎰 Vrtim...';
+  updateUI();
+
+  // Clear states
+  for (let i = 0; i < 3; i++) {
+    const reel = document.getElementById(`reel${i}`);
+    reel.classList.remove('win','win-top','win-middle','win-bottom','jackpot-win','bonus-win','has-bonus');
+  }
+  ['top','middle','bottom'].forEach(l => document.getElementById(`pline-${l}`).classList.remove('active'));
+
+  // 3x3 grid: grid[col][row], row 0=top 1=middle 2=bottom
+  const grid = Array.from({length:3}, () =>
+    Array.from({length:3}, () => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)])
+  );
+
+  sndSpin();
+
+  let settled = 0;
+  const stopDelays = [900, 1500, 2100];
+  grid.forEach((col, i) => {
+    animateReel(i, col, stopDelays[i], () => {
+      settled++;
+      if (settled === 3) setTimeout(() => evaluateResult(grid, isFree), 150);
+    });
+  });
+}
+
+function evaluateResult(grid, isFree) {
+  // grid[col][row]: 3 cols × 3 rows
+  const rows = [
+    [grid[0][0], grid[1][0], grid[2][0]], // top
+    [grid[0][1], grid[1][1], grid[2][1]], // middle
+    [grid[0][2], grid[1][2], grid[2][2]], // bottom
+  ];
+  const rowNames  = ['top','middle','bottom'];
+  const rowColors = ['jackpot-win','win-middle','win-bottom'];
+
+  let totalMultiplier = 0;
+  let winMsgs = [];
+  let isJackpot = false, isBonusTrigger = false, isFreeTrigger = false;
+  let isSymBonusTrigger = false, symBonusTriggerSym = null;
+  let msgClass = 'lose';
+
+  rows.forEach((row, ri) => {
+    const key = row.join('');
+    const bonusCount = row.filter(s => s === '🎁').length;
+    const allSame = row[0] === row[1] && row[1] === row[2];
+    const sym = row[0];
+
+    if (bonusCount === 3 && !isBonusTrigger) {
+      isBonusTrigger = true;
+    } else if (bonusCount === 2 && !isFreeTrigger && !isBonusTrigger) {
+      isFreeTrigger = true;
+      freeSpins += 5;
+    } else if (allSame && BONUS_WORLDS[sym] && !isSymBonusTrigger) {
+      // Symbol bonus world!
+      isSymBonusTrigger = true;
+      symBonusTriggerSym = sym;
+      document.getElementById(`pline-${rowNames[ri]}`).classList.add('active');
+      [0,1,2].forEach(ci => document.getElementById(`reel${ci}`).classList.add(`win-${rowNames[ri]}`));
+      winMsgs.push(`${sym}${sym}${sym} — BONUS WORLD!`);
+    } else if (PAYOUTS[key]) {
+      const m = PAYOUTS[key] * activeMultiplier;
+      totalMultiplier += m;
+      if (PAYOUTS[key] === 100) isJackpot = true;
+      // Highlight row
+      document.getElementById(`pline-${rowNames[ri]}`).classList.add('active');
+      [0,1,2].forEach(ci => document.getElementById(`reel${ci}`).classList.add(`win-${rowNames[ri]}`));
+      winMsgs.push(`${rowNames[ri] === 'top' ? '🔴' : rowNames[ri] === 'middle' ? '🟢' : '🔵'} ${row[0]}${row[1]}${row[2]}`);
+    } else {
+      // Check 2 cherries in row
+      const cherries = row.filter(s => s === '🍒').length;
+      if (cherries >= 2) {
+        totalMultiplier += 2 * activeMultiplier;
+        document.getElementById(`pline-${rowNames[ri]}`).classList.add('active');
+        [0,1,2].forEach(ci => document.getElementById(`reel${ci}`).classList.add(`win-${rowNames[ri]}`));
+        winMsgs.push(`🍒🍒 ${rowNames[ri]}`);
+      }
+    }
+  });
+
+  let msg = '';
+  if (isBonusTrigger) {
+    msg = '🎲 BONUS RUNDA! 🎲'; msgClass = 'bonus';
+  } else if (isFreeTrigger) {
+    msg = '🌴 TROPSKI BONUS! 5 FREE SPINOVA!'; msgClass = 'free';
+  } else if (totalMultiplier > 0) {
+    const winAmount = bet * totalMultiplier;
+    credits += winAmount; totalWon += winAmount;
+    document.getElementById('lastWin').textContent = winAmount;
+    popValue('credits'); popValue('lastWin');
+    activeMultiplier = 1;
+    msg = isJackpot ? '💎 JACKPOT! 💎' : `🎉 ${winMsgs.join(' | ')} = +${winAmount} 🪙`;
+    msgClass = isJackpot ? 'jackpot' : 'win';
+    if (isJackpot) { doFlash('gold'); sndJackpot(); spawnParticles(['💎','🌟','✨','💰','🏆'], 50); }
+    else if (totalMultiplier >= 10) { sndBigWin(); spawnParticles(['🪙','✨','🌟'], 30); }
+    else { sndWin(); spawnParticles(['🪙','✨'], 15); }
+  } else {
+    msg = isFree ? 'Free spin — nema pogotka.' : 'Nisi pogodio... 🤞';
+    msgClass = 'lose';
+    if (Math.random() < 0.08 && activeMultiplier === 1) {
+      activeMultiplier = [2,3][Math.floor(Math.random()*2)];
+      msg += ` (Sljedeći × ${activeMultiplier}!)`;
+    } else if (activeMultiplier > 1) { activeMultiplier = 1; }
+    sndLose();
+  }
+
+  if (isFreeTrigger) {
+    sndFreeSpins(); spawnParticles(['🌴','🥥','🍍','🌺','☀️'], 25); doFlash('#27ae60');
+  }
+
+  showMsg(msg, msgClass);
+  updateUI();
+
+  if (isBonusTrigger) {
+    for (let i = 0; i < 3; i++) document.getElementById(`reel${i}`).classList.add('bonus-win');
+    showMsg('🎲 BONUS RUNDA AKTIVIRANA! 🎲', 'bonus');
+    doFlash('#9b59b6'); sndBonus();
+    activeMultiplier = 1; autoSpinActive = false; updateAutoSpinBtn();
+    setTimeout(triggerBonus, 1000);
+  } else if (isFreeTrigger) {
+    spinning = false;
+    document.getElementById('spinBtn').disabled = false;
+    autoSpinActive = false; updateAutoSpinBtn();
+    const spinsToGive = freeSpins; freeSpins = 0; updateUI();
+    setTimeout(() => enterTropicalBonus(spinsToGive), 1000);
+  } else if (isSymBonusTrigger) {
+    showMsg(`${symBonusTriggerSym}${symBonusTriggerSym}${symBonusTriggerSym} BONUS WORLD! 🎰`, 'jackpot');
+    doFlash('#fff'); sndBigWin();
+    activeMultiplier = 1; autoSpinActive = false; updateAutoSpinBtn();
+    setTimeout(() => enterSymbolBonus(symBonusTriggerSym), 1200);
+  } else {
+    spinning = false;
+    document.getElementById('spinBtn').disabled = false;
+
+    if (credits <= 0) {
+      autoSpinActive = false;
+      updateAutoSpinBtn();
+      sndGameOver();
+      setTimeout(showGameOver, 600);
+    } else if (autoSpinActive && !isBonusTrigger && credits >= bet) {
+      setTimeout(() => { if (autoSpinActive) spin(); }, 700);
+    }
+  }
+}
+
+// ── RESET ──
+function resetGame() {
+  if (spinning || bonusActive) return;
+  credits = 100; totalWon = 0; bet = 5; freeSpins = 0; activeMultiplier = 1; autoSpinActive = false; totalSpins = 0;
+  document.getElementById('lastWin').textContent = 0;
+  for (let i = 0; i < 3; i++) {
+    const r = document.getElementById(`reel${i}`);
+    r.classList.remove('win','win-top','win-middle','win-bottom','jackpot-win','bonus-win','has-bonus');
+  }
+  ['top','middle','bottom'].forEach(l => document.getElementById(`pline-${l}`).classList.remove('active'));
+  showMsg('Nova igra! Sretno! 🎰', '');
+  updateUI();
+}
+
+// ── AUTO-SPIN ──
+function updateAutoSpinBtn() {
+  const btn = document.getElementById('spinBtn');
+  if (autoSpinActive) {
+    btn.classList.add('auto-spin');
+    btn.textContent = '⟳ AUTO-SPIN ⟳';
+  } else {
+    btn.classList.remove('auto-spin');
+    btn.textContent = freeSpins > 0 ? '▶ FREE SPIN ◀' : '▶ VRTI ◀';
+  }
+}
+
+function handleSpinClick() {
+  if (autoSpinActive) {
+    // Single click cancels auto-spin
+    autoSpinActive = false;
+    updateAutoSpinBtn();
+    showMsg('Auto-spin zaustavljen.', '');
+    return;
+  }
+  spin();
+}
+
+function startHold() {
+  if (autoSpinActive || !autoHoldEnabled) return;
+  holdTimer = setTimeout(() => {
+    holdTimer = null;
+    autoSpinActive = true;
+    updateAutoSpinBtn();
+    if (!spinning) spin();
+  }, 600); // 600ms hold = auto-spin
+}
+
+function endHold() {
+  if (holdTimer !== null) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+}
+
+
+// ── CASHOUT ──
+function triggerCashout() {
+  if (spinning || bonusActive) return;
+  if (credits <= 100 && totalWon === 0) {
+    showMsg('Nema što isplatiti — igraj prvo! 😄', 'lose');
+    return;
+  }
+  sndClick();
+
+  // Show overlay
+  document.getElementById('cashoutCredits').textContent = credits;
+  document.getElementById('cashoutSpins').textContent = totalSpins;
+  document.getElementById('cashoutSavedMsg').textContent = '';
+  document.getElementById('cashoutNameInput').value = '';
+  document.getElementById('cashoutSaveBtn').disabled = false;
+  document.getElementById('cashoutOverlay').classList.add('active');
+
+  // Coin rain animation
+  coinRain();
+}
+
+function coinRain() {
+  const coins = ['🪙','💰','💶','💵','🤑'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'coin-rain-el';
+      el.textContent = coins[Math.floor(Math.random() * coins.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.top = '-60px';
+      const dur = 1.2 + Math.random() * 1.8;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = Math.random() * 1.5 + 's';
+      el.style.setProperty('--cr', (Math.random() - 0.5) * 540 + 'deg');
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), (dur + 2) * 1000);
+    }, i * 40);
+  }
+  // Sound: rapid coins
+  for (let i = 0; i < 12; i++) setTimeout(sndCoin, i * 90);
+}
+
+function closeCashout() {
+  document.getElementById('cashoutOverlay').classList.remove('active');
+}
+
+// ── LEADERBOARD (persistent storage) ──
+async function saveScore() {
+  const nameInput = document.getElementById('cashoutNameInput');
+  const name = nameInput.value.trim().toUpperCase();
+  if (!name) { nameInput.focus(); return; }
+
+  const btn = document.getElementById('cashoutSaveBtn');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  const entry = {
+    name,
+    score: credits,
+    totalWon,
+    spins: totalSpins,
+    date: new Date().toLocaleDateString('hr-HR'),
+  };
+
+  try {
+    // Load existing scores
+    let scores = [];
+    try {
+      const res = await window.storage.get('vocna-salata-scores', true);
+      if (res) scores = JSON.parse(res.value);
+    } catch(e) { scores = []; }
+
+    scores.push(entry);
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, 20); // keep top 20
+
+    await window.storage.set('vocna-salata-scores', JSON.stringify(scores), true);
+    document.getElementById('cashoutSavedMsg').textContent = '✅ Rezultat spremen!';
+    btn.textContent = '✓';
+    renderLeaderboard(scores);
+  } catch(e) {
+    document.getElementById('cashoutSavedMsg').textContent = '❌ Greška pri spremanju.';
+    btn.textContent = 'SPREMI';
+    btn.disabled = false;
+  }
+}
+
+async function loadLeaderboard() {
+  try {
+    const res = await window.storage.get('vocna-salata-scores', true);
+    const scores = res ? JSON.parse(res.value) : [];
+    renderLeaderboard(scores);
+  } catch(e) {
+    document.getElementById('leaderboardList').innerHTML = '<div class="lb-empty">Još nema rezultata.</div>';
+  }
+}
+
+function renderLeaderboard(scores) {
+  const el = document.getElementById('leaderboardList');
+  if (!scores || scores.length === 0) {
+    el.innerHTML = '<div class="lb-empty">Još nema rezultata.<br>Isplati žetone i postavi rekord!</div>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  el.innerHTML = scores.slice(0, 10).map((s, i) => `
+    <div class="lb-row">
+      <div class="lb-rank">${medals[i] || (i + 1)}</div>
+      <div class="lb-name">${s.name}</div>
+      <div style="text-align:right">
+        <div class="lb-score">${s.score} 🪙</div>
+        <div class="lb-spins">${s.spins} spinova · ${s.date}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleLeaderboard() {
+  const box = document.getElementById('leaderboardBox');
+  box.classList.toggle('open');
+  if (box.classList.contains('open')) loadLeaderboard();
+}
+
+// ── KEYBOARD ──
+let totalSpins = 0;
+
+function showGameOver() {
+  document.getElementById('goSpins').textContent = totalSpins;
+  document.getElementById('goWon').textContent = totalWon;
+
+  const overlay = document.getElementById('gameoverOverlay');
+  overlay.classList.add('active');
+
+  // Rain fruits down the screen
+  const fruits = ['🍒','🍋','🍉','🍇','🍊','🍌','💎','🎰'];
+  let i = 0;
+  const rain = setInterval(() => {
+    if (i++ > 45) { clearInterval(rain); return; }
+    const el = document.createElement('div');
+    el.className = 'go-fruit';
+    el.textContent = fruits[Math.floor(Math.random() * fruits.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.top = '-80px';
+    const dur = 1.6 + Math.random() * 2.2;
+    el.style.animationDuration = dur + 's';
+    el.style.setProperty('--rot', (Math.random() - 0.5) * 720 + 'deg');
+    el.style.animationDelay = (Math.random() * 1.8) + 's';
+    overlay.appendChild(el);
+    setTimeout(() => el.remove(), (dur + 3) * 1000);
+  }, 70);
+}
+
+function closeGameOver() {
+  document.getElementById('gameoverOverlay').classList.remove('active');
+  resetGame();
+  sndClick();
+}
+
+// ── THEMES ──
+function setTheme(theme) {
+  document.body.classList.remove('theme-neon', 'theme-retro');
+  if (theme !== 'vegas') document.body.classList.add(`theme-${theme}`);
+  document.querySelectorAll('.s-theme-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`s-theme-${theme}`).classList.add('active');
+  sndClick();
+}
+
+// ── BANANA TRANSITION CINEMATIC ──
+function playBananaTransition(spins, onDone) {
+  const overlay = document.getElementById('bananaTransition');
+  const tree = document.getElementById('btTree');
+  const announce = document.getElementById('btAnnounce');
+  const wipe = document.getElementById('btWipe');
+
+  // Reset
+  announce.classList.remove('show');
+  wipe.classList.remove('go');
+  overlay.classList.remove('shaking');
+  tree.classList.remove('shaking');
+  overlay.querySelectorAll('.bt-banana,.bt-parrot,.bt-crack').forEach(e => e.remove());
+  document.getElementById('btSpinCount').textContent = spins;
+
+  overlay.classList.add('active');
+
+  // Phase 1 (0s): Rumble starts
+  setTimeout(() => {
+    overlay.classList.add('shaking');
+    tree.classList.add('shaking');
+
+    // Crack lines
+    ['💥','⚡','💥'].forEach((e, i) => {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'bt-crack';
+        c.textContent = e;
+        c.style.left = (15 + Math.random() * 70) + '%';
+        c.style.top  = (10 + Math.random() * 60) + '%';
+        overlay.appendChild(c);
+        setTimeout(() => c.remove(), 600);
+      }, i * 200);
+    });
+  }, 300);
+
+  // Phase 2 (0.8s): Bananas start falling
+  setTimeout(() => {
+    const fruits = ['🍌','🍌','🍌','🥥','🍍','🍌','🍌','🥭'];
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => {
+        const b = document.createElement('div');
+        b.className = 'bt-banana';
+        b.textContent = fruits[Math.floor(Math.random() * fruits.length)];
+        b.style.left = (Math.random() * 95) + '%';
+        const dur = 0.8 + Math.random() * 0.8;
+        b.style.animationDuration = dur + 's';
+        b.style.animationDelay = (Math.random() * 0.5) + 's';
+        b.style.setProperty('--br', (Math.random() - 0.5) * 720 + 'deg');
+        overlay.appendChild(b);
+        setTimeout(() => b.remove(), (dur + 1.5) * 1000);
+      }, i * 80);
+    }
+  }, 800);
+
+  // Phase 3 (1.2s): Parrots escape
+  setTimeout(() => {
+    ['🦜','🦜','🦅','🦜','🕊️','🦜'].forEach((p, i) => {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'bt-parrot';
+        el.textContent = p;
+        el.style.left = (10 + Math.random() * 80) + '%';
+        el.style.top  = (30 + Math.random() * 40) + '%';
+        const dur = 1.2 + Math.random() * 0.8;
+        el.style.animationDuration = dur + 's';
+        const dir = Math.random() < 0.5 ? 1 : -1;
+        el.style.setProperty('--px', (dir * (80 + Math.random() * 120)) + 'px');
+        el.style.setProperty('--pr', (dir * (20 + Math.random() * 30)) + 'deg');
+        overlay.appendChild(el);
+        setTimeout(() => el.remove(), (dur + 0.5) * 1000);
+      }, i * 150);
+    });
+    // Sounds
+    sndBonus();
+  }, 1200);
+
+  // Phase 4 (2.2s): Stop shaking, show announcement
+  setTimeout(() => {
+    overlay.classList.remove('shaking');
+    tree.classList.remove('shaking');
+    announce.classList.add('show');
+    // Coin sound cascade
+    for (let i = 0; i < 6; i++) setTimeout(sndCoin, i * 100);
+  }, 2200);
+
+  // Phase 5 (4s): More bananas + parrots rain as celebration
+  setTimeout(() => {
+    spawnParticles(['🍌','🥥','🍍','🌺','⭐','🌴'], 40);
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const b = document.createElement('div');
+        b.className = 'bt-banana';
+        b.textContent = ['🍌','🥥','🍍','🥭'][Math.floor(Math.random() * 4)];
+        b.style.left = (Math.random() * 95) + '%';
+        const dur = 1 + Math.random() * 0.6;
+        b.style.animationDuration = dur + 's';
+        b.style.setProperty('--br', (Math.random() - 0.5) * 540 + 'deg');
+        overlay.appendChild(b);
+        setTimeout(() => b.remove(), (dur + 1) * 1000);
+      }, i * 100);
+    }
+  }, 4000);
+
+  // Phase 6 (5.5s): White wipe to tropical screen
+  setTimeout(() => {
+    wipe.classList.add('go');
+  }, 5500);
+
+  // Phase 7 (6s): Hide transition, show tropical
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    wipe.classList.remove('go');
+    announce.classList.remove('show');
+    onDone();
+  }, 6000);
+}
+
+// ── SYMBOL BONUS WORLDS ──
+const BONUS_WORLDS = {
+  '🍒': {
+    title: 'TREŠNJIN VRT',
+    subtitle: '5 vrtnji u voćnjaku!',
+    icon: '🍒',
+    bg: 'linear-gradient(180deg, #ff9999 0%, #ff4444 40%, #cc0000 70%, #660000 100%)',
+    cardBg: 'rgba(180,0,0,0.7)',
+    cardBorder: '#ff4444',
+    titleColor: '#ffe0e0',
+    accentColor: '#ff6666',
+    plineColors: ['#ff0000','#ff6666','#ffaaaa'],
+    symbols: ['🍒','🍒','🍒','🍒','🍒','🌸','🌸','🌸','🍃','🍃'],
+    spins: 5,
+    payouts: { '🍒🍒🍒': 6, '🌸🌸🌸': 4, '🍃🍃🍃': 2 },
+    btnText: '🍒 BERI!',
+    ambientEmoji: ['🍒','🌸','🍃'],
+    winMsg: (row) => `🍒 Berba na ${row} redu!`,
+  },
+  '🍋': {
+    title: 'LIMUNADA BAR',
+    subtitle: '5 vrtnji — osvježi se!',
+    icon: '🍋',
+    bg: 'linear-gradient(180deg, #fffde7 0%, #fff176 30%, #ffee58 60%, #f9a825 100%)',
+    cardBg: 'rgba(180,140,0,0.75)',
+    cardBorder: '#ffee58',
+    titleColor: '#fff9c4',
+    accentColor: '#fff176',
+    plineColors: ['#ffff00','#ffe082','#fff9c4'],
+    symbols: ['🍋','🍋','🍋','🍋','🍋','🥤','🥤','🥤','🍦','🍦'],
+    spins: 5,
+    payouts: { '🍋🍋🍋': 6, '🥤🥤🥤': 4, '🍦🍦🍦': 2 },
+    btnText: '🥤 MIJEŠAJ!',
+    ambientEmoji: ['🍋','🥤','🌞'],
+    winMsg: (row) => `🥤 Limunade na ${row} redu!`,
+  },
+  '🍉': {
+    title: 'LUBENICA SMASH',
+    subtitle: '5 vrtnji — razbij sve!',
+    icon: '🍉',
+    bg: 'linear-gradient(180deg, #a5d6a7 0%, #66bb6a 35%, #2e7d32 70%, #1b5e20 100%)',
+    cardBg: 'rgba(30,100,30,0.8)',
+    cardBorder: '#66bb6a',
+    titleColor: '#f8bbd0',
+    accentColor: '#a5d6a7',
+    plineColors: ['#ff4081','#69f0ae','#b9f6ca'],
+    symbols: ['🍉','🍉','🍉','🍉','🍉','🔨','🔨','🔨','💦','💦'],
+    spins: 5,
+    payouts: { '🍉🍉🍉': 6, '🔨🔨🔨': 4, '💦💦💦': 2 },
+    btnText: '🔨 SMASH!',
+    ambientEmoji: ['🍉','💦','🔨'],
+    winMsg: (row) => `💥 Smash na ${row} redu!`,
+  },
+  '🍇': {
+    title: 'VINSKI PODRUM',
+    subtitle: '5 vrtnji — odaberi bačvu!',
+    icon: '🍇',
+    bg: 'linear-gradient(180deg, #6a1b9a 0%, #4a148c 40%, #311b92 70%, #1a0050 100%)',
+    cardBg: 'rgba(60,0,80,0.8)',
+    cardBorder: '#ce93d8',
+    titleColor: '#f3e5f5',
+    accentColor: '#ce93d8',
+    plineColors: ['#e040fb','#ce93d8','#f3e5f5'],
+    symbols: ['🍇','🍇','🍇','🍇','🍇','🍷','🍷','🍷','🥂','🥂'],
+    spins: 5,
+    payouts: { '🍇🍇🍇': 6, '🍷🍷🍷': 4, '🥂🥂🥂': 2 },
+    btnText: '🍷 TOČI!',
+    ambientEmoji: ['🍇','🍷','🥂'],
+    winMsg: (row) => `🍷 Vino na ${row} redu!`,
+  },
+  '🍊': {
+    title: 'NARANČA EXPRESS',
+    subtitle: '5 vrtnji — cijedimo!',
+    icon: '🍊',
+    bg: 'linear-gradient(180deg, #fff3e0 0%, #ffb74d 35%, #ff6f00 70%, #e65100 100%)',
+    cardBg: 'rgba(180,80,0,0.8)',
+    cardBorder: '#ffb74d',
+    titleColor: '#fff3e0',
+    accentColor: '#ffd54f',
+    plineColors: ['#ff6d00','#ffab40','#ffe57f'],
+    symbols: ['🍊','🍊','🍊','🍊','🍊','🧃','🧃','🧃','🌅','🌅'],
+    spins: 5,
+    payouts: { '🍊🍊🍊': 6, '🧃🧃🧃': 4, '🌅🌅🌅': 2 },
+    btnText: '🧃 CIJEDI!',
+    ambientEmoji: ['🍊','🧃','🌅'],
+    winMsg: (row) => `🧃 Sok na ${row} redu!`,
+  },
+  '🍌': {
+    title: 'BANANA SPLIT',
+    subtitle: '5 vrtnji sladoleda!',
+    icon: '🍌',
+    bg: 'linear-gradient(180deg, #e1f5fe 0%, #81d4fa 35%, #0288d1 70%, #01579b 100%)',
+    cardBg: 'rgba(1,80,150,0.8)',
+    cardBorder: '#fff176',
+    titleColor: '#fffde7',
+    accentColor: '#fff59d',
+    plineColors: ['#ffff00','#80deea','#f8bbd0'],
+    symbols: ['🍌','🍌','🍌','🍌','🍌','🍨','🍨','🍨','🍓','🍓'],
+    spins: 5,
+    payouts: { '🍌🍌🍌': 6, '🍨🍨🍨': 4, '🍓🍓🍓': 2 },
+    btnText: '🍨 SCOOP!',
+    ambientEmoji: ['🍌','🍨','🍓'],
+    winMsg: (row) => `🍨 Sladoled na ${row} redu!`,
+  },
+  '💎': {
+    title: 'DIJAMANTSKI TREZOR',
+    subtitle: '3 vrtnje — probij sef!',
+    icon: '💎',
+    bg: 'linear-gradient(180deg, #b2ebf2 0%, #4dd0e1 30%, #006064 65%, #002b2e 100%)',
+    cardBg: 'rgba(0,60,80,0.85)',
+    cardBorder: '#80deea',
+    titleColor: '#e0f7fa',
+    accentColor: '#4dd0e1',
+    plineColors: ['#00e5ff','#80deea','#b2ebf2'],
+    symbols: ['💎','💎','💎','💎','💎','🔐','🔐','🔐','🏦','🏦'],
+    spins: 3,
+    payouts: { '💎💎💎': 15, '🔐🔐🔐': 8, '🏦🏦🏦': 5 },
+    btnText: '🔐 PROBIJ!',
+    ambientEmoji: ['💎','🔐','💰'],
+    winMsg: (row) => `💎 Trezor na ${row} redu!`,
+  },
+};
+
+// State
+let sbWorld = null;
+let sbSpins = 0;
+let sbMult = 1;
+let sbTotalWon = 0;
+let sbSpinning = false;
+let sbAmbientInterval = null;
+
+function enterSymbolBonus(sym) {
+  const world = BONUS_WORLDS[sym];
+  if (!world) return;
+  sbWorld = world;
+  sbSpins = world.spins;
+  sbMult = 1;
+  sbTotalWon = 0;
+  sbSpinning = false;
+
+  // Style the overlay
+  document.getElementById('sbBg').style.background = world.bg;
+  document.getElementById('sbCard').style.background = world.cardBg;
+  document.getElementById('sbCard').style.border = `2px solid ${world.cardBorder}`;
+  document.getElementById('sbIcon').textContent = world.icon;
+  document.getElementById('sbTitle').textContent = world.title;
+  document.getElementById('sbTitle').style.color = world.titleColor;
+  document.getElementById('sbSubtitle').textContent = world.subtitle;
+  document.getElementById('sbSubtitle').style.color = world.accentColor;
+  document.getElementById('sbSpinsLeft').textContent = sbSpins;
+  document.getElementById('sbSpinsLeft').style.color = world.titleColor;
+  document.getElementById('sbMultVal').textContent = '×1';
+  document.getElementById('sbMultVal').style.color = world.accentColor;
+  document.getElementById('sbResult').textContent = 'Pritisni VRTI!';
+  document.getElementById('sbSpinBtn').textContent = world.btnText;
+  document.getElementById('sbSpinBtn').disabled = false;
+  document.getElementById('sbSpinBtn').onclick = sbSpin;
+
+  // Payline colors
+  const plines = ['top','middle','bottom'];
+  plines.forEach((p,i) => {
+    const el = document.getElementById(`sbPline-${p}`);
+    el.style.background = world.plineColors[i] || '#fff';
+    el.style.boxShadow = `0 0 8px ${world.plineColors[i] || '#fff'}`;
+    el.classList.remove('active');
+  });
+
+  // Reel gradient overlays
+  document.querySelectorAll('.sb-reel').forEach(r => {
+    r.classList.remove('win');
+    r.style.borderColor = 'rgba(255,255,255,0.3)';
+    const before = r.style;
+  });
+
+  // Init reel strips
+  ['sbstrip0','sbstrip1','sbstrip2'].forEach(id => {
+    const s = document.getElementById(id);
+    s.innerHTML = ''; s.style.transition = 'none'; s.style.transform = 'translateY(0)';
+    for (let r = 0; r < 3; r++) {
+      const div = document.createElement('div');
+      div.className = 'sym';
+      div.style.height = '90px'; div.style.fontSize = '2.2rem';
+      div.textContent = world.symbols[Math.floor(Math.random() * world.symbols.length)];
+      s.appendChild(div);
+    }
+  });
+
+  // Ambient floating emojis
+  startSbAmbient(world);
+
+  // Show overlay
+  const overlay = document.getElementById('symBonusOverlay');
+  overlay.style.opacity = '0';
+  overlay.classList.add('active');
+  requestAnimationFrame(() => {
+    overlay.style.transition = 'opacity 0.5s';
+    overlay.style.opacity = '1';
+  });
+
+  sndBonus();
+  spawnParticles([world.icon, '✨', '⭐'], 25);
+}
+
+function startSbAmbient(world) {
+  if (sbAmbientInterval) clearInterval(sbAmbientInterval);
+  const container = document.getElementById('sbAmbient');
+  container.innerHTML = '';
+
+  const addFloat = () => {
+    const el = document.createElement('div');
+    el.className = 'sb-float';
+    el.textContent = world.ambientEmoji[Math.floor(Math.random() * world.ambientEmoji.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    const dur = 4 + Math.random() * 4;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = Math.random() * 2 + 's';
+    container.appendChild(el);
+    setTimeout(() => el.remove(), (dur + 3) * 1000);
+  };
+  for (let i = 0; i < 6; i++) addFloat();
+  sbAmbientInterval = setInterval(addFloat, 1500);
+}
+
+function sbSpin() {
+  if (sbSpinning || sbSpins <= 0 || !sbWorld) return;
+  sbSpinning = true;
+  sbSpins--;
+  document.getElementById('sbSpinsLeft').textContent = sbSpins;
+  document.getElementById('sbSpinBtn').disabled = true;
+  document.getElementById('sbResult').textContent = `${sbWorld.icon} Vrtim...`;
+
+  // Clear wins
+  ['top','middle','bottom'].forEach(p => document.getElementById(`sbPline-${p}`).classList.remove('active'));
+  [0,1,2].forEach(i => document.getElementById(`sbreel${i}`).classList.remove('win'));
+
+  const world = sbWorld;
+  const grid = Array.from({length:3}, () =>
+    Array.from({length:3}, () => world.symbols[Math.floor(Math.random() * world.symbols.length)])
+  );
+
+  sndSpin();
+
+  let settled = 0;
+  [900,1500,2100].forEach((delay, i) => {
+    sbAnimateReel(i, grid[i], delay, () => {
+      settled++;
+      if (settled === 3) setTimeout(() => sbEvaluate(grid), 150);
+    });
+  });
+}
+
+function sbAnimateReel(idx, colSymbols, stopDelay, onDone) {
+  const strip = document.getElementById(`sbstrip${idx}`);
+  const extra = 12 + Math.floor(Math.random() * 4);
+  const world = sbWorld;
+
+  strip.style.transition = 'none';
+  strip.style.transform = 'translateY(0)';
+  strip.innerHTML = '';
+
+  const all = [];
+  for (let i = 0; i < extra; i++) all.push(world.symbols[Math.floor(Math.random() * world.symbols.length)]);
+  all.push(...colSymbols);
+  all.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'sym';
+    div.style.height = '90px'; div.style.fontSize = '2.2rem';
+    div.textContent = s;
+    strip.appendChild(div);
+  });
+
+  const finalY = -((all.length - 3) * SYM_H);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    strip.style.transition = `transform ${stopDelay/1000}s linear`;
+    strip.style.transform = `translateY(${finalY}px)`;
+    setTimeout(() => {
+      strip.style.transition = 'transform 0.15s ease-out';
+      strip.style.transform = `translateY(${finalY - 8}px)`;
+      setTimeout(() => {
+        strip.style.transition = 'transform 0.2s cubic-bezier(0.34,1.4,0.64,1)';
+        strip.style.transform = `translateY(${finalY}px)`;
+        sndReelStop(idx);
+        setTimeout(onDone, 150);
+      }, 150);
+    }, stopDelay);
+  }));
+}
+
+function sbEvaluate(grid) {
+  const world = sbWorld;
+  const rows = [
+    [grid[0][0],grid[1][0],grid[2][0]],
+    [grid[0][1],grid[1][1],grid[2][1]],
+    [grid[0][2],grid[1][2],grid[2][2]],
+  ];
+  const rowNames = ['top','middle','bottom'];
+
+  let totalMult = 0;
+  let winMsgs = [];
+
+  rows.forEach((row, ri) => {
+    const key = row.join('');
+    if (world.payouts[key]) {
+      const m = world.payouts[key];
+      totalMult += m;
+      document.getElementById(`sbPline-${rowNames[ri]}`).classList.add('active');
+      [0,1,2].forEach(ci => document.getElementById(`sbreel${ci}`).classList.add('win'));
+      winMsgs.push(world.winMsg(rowNames[ri]));
+    }
+  });
+
+  let resultText = '';
+  if (totalMult > 0) {
+    const won = bet * totalMult * sbMult;
+    credits += won; totalWon += won; sbTotalWon += won;
+    sbMult = Math.min(sbMult + 1, 10);
+    const mv = document.getElementById('sbMultVal');
+    mv.textContent = `×${sbMult}`; mv.classList.remove('bump');
+    void mv.offsetWidth; mv.classList.add('bump');
+    resultText = `${winMsgs.join(' | ')} = +${won} 🪙`;
+    document.getElementById('sbResult').style.color = '#fff';
+    sndWin(); spawnParticles([world.icon,'🪙','✨'], 20);
+    popValue('credits');
+  } else {
+    resultText = 'Nema pogotka... dalje!';
+    document.getElementById('sbResult').style.color = 'rgba(255,255,255,0.6)';
+    sndLose();
+  }
+
+  document.getElementById('sbResult').textContent = resultText;
+  sbSpinning = false;
+
+  if (sbSpins > 0) {
+    document.getElementById('sbSpinBtn').disabled = false;
+  } else {
+    setTimeout(exitSymbolBonus, 600);
+  }
+}
+
+function exitSymbolBonus() {
+  const won = sbTotalWon;
+  const world = sbWorld;
+  document.getElementById('sbResult').textContent =
+    won > 0 ? `${world.icon} BONUS ZAVRŠEN! +${won} 🪙` : `${world.icon} Bonus završen. Sretno!`;
+  document.getElementById('sbSpinBtn').textContent = '🏠 Natrag';
+  document.getElementById('sbSpinBtn').disabled = false;
+  document.getElementById('sbSpinBtn').onclick = closeSymbolBonus;
+  if (won > 0) spawnParticles([world.icon,'🪙','⭐','✨'], 35);
+}
+
+function closeSymbolBonus() {
+  if (sbAmbientInterval) { clearInterval(sbAmbientInterval); sbAmbientInterval = null; }
+  const overlay = document.getElementById('symBonusOverlay');
+  overlay.style.transition = 'opacity 0.5s';
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    overlay.style.transition = '';
+    overlay.style.opacity = '';
+  }, 500);
+  document.getElementById('sbSpinBtn').onclick = sbSpin;
+  spinning = false;
+  document.getElementById('spinBtn').disabled = false;
+  updateUI();
+  if (credits <= 0) { sndGameOver(); setTimeout(showGameOver, 800); }
+}
+
+// ── TROPICAL BONUS ──
+const TROP_SYMBOLS = ['🥥','🥥','🥥','🍍','🍍','🍍','🥭','🥭','🍌','🍌','🍊','🍊','🌺','🌺','🦜','🦜'];
+const TROP_PAYOUTS = {
+  '🥥🥥🥥': 20, '🍍🍍🍍': 18, '🥭🥭🥭': 15,
+  '🍌🍌🍌': 12, '🍊🍊🍊': 10, '🌺🌺🌺': 8, '🦜🦜🦜': 6,
+};
+
+let tropSpins = 0;
+let tropMultiplier = 1;
+let tropTotalWon = 0;
+let tropSpinning = false;
+let tropBirdsInterval = null;
+
+function enterTropicalBonus(spins) {
+  playBananaTransition(spins, () => startTropicalBonus(spins));
+}
+
+function startTropicalBonus(spins) {
+  tropSpins = spins;
+  tropMultiplier = 1;
+  tropTotalWon = 0;
+  tropSpinning = false;
+
+  document.getElementById('tropSpinsLeft').textContent = tropSpins;
+  document.getElementById('tropMult').textContent = `×${tropMultiplier}`;
+  document.getElementById('tropResult').textContent = 'Pritisni VRTI za početak!';
+  document.getElementById('tropResult').className = 'tropical-result';
+  document.getElementById('tropSpinBtn').disabled = false;
+
+  ['tstrip0','tstrip1','tstrip2'].forEach(id => {
+    const s = document.getElementById(id);
+    s.innerHTML = ''; s.style.transition = 'none'; s.style.transform = 'translateY(0)';
+    const div = document.createElement('div');
+    div.className = 'sym';
+    div.style.height = '70px'; div.style.fontSize = '2.2rem';
+    div.textContent = TROP_SYMBOLS[Math.floor(Math.random() * TROP_SYMBOLS.length)];
+    s.appendChild(div);
+  });
+
+  [0,1,2].forEach(i => document.getElementById(`treel${i}`).classList.remove('win-top','win-middle','win-bottom'));
+  document.getElementById('tline-middle').classList.remove('active');
+
+  // Spawn birds
+  spawnBirds();
+
+  // Show overlay with transition
+  const overlay = document.getElementById('tropicalOverlay');
+  overlay.style.opacity = '0';
+  overlay.classList.add('active');
+  requestAnimationFrame(() => {
+    overlay.style.transition = 'opacity 0.6s ease-out';
+    overlay.style.opacity = '1';
+  });
+
+  // Sound — tropical jingle
+  sndBonus();
+  spawnParticles(['🌴','🥥','🍍','🌺','☀️'], 30);
+}
+
+function spawnBirds() {
+  const overlay = document.getElementById('tropicalOverlay');
+  // Remove old birds
+  overlay.querySelectorAll('.bird').forEach(b => b.remove());
+  if (tropBirdsInterval) clearInterval(tropBirdsInterval);
+
+  const addBird = () => {
+    const b = document.createElement('div');
+    b.className = 'bird';
+    b.textContent = ['🦜','🦅','🕊️'][Math.floor(Math.random() * 3)];
+    b.style.top = (10 + Math.random() * 30) + '%';
+    const dur = 6 + Math.random() * 6;
+    b.style.animationDuration = dur + 's';
+    b.style.animationDelay = Math.random() * 2 + 's';
+    overlay.appendChild(b);
+    setTimeout(() => b.remove(), (dur + 3) * 1000);
+  };
+  addBird(); addBird();
+  tropBirdsInterval = setInterval(addBird, 4000);
+}
+
+const TROP_ROW_H = 70;
+
+function tropSpin() {
+  if (tropSpinning || tropSpins <= 0) return;
+  tropSpinning = true;
+  tropSpins--;
+  document.getElementById('tropSpinsLeft').textContent = tropSpins;
+  document.getElementById('tropSpinBtn').disabled = true;
+  document.getElementById('tropResult').textContent = '🌊 Vrtim...';
+  document.getElementById('tropResult').className = 'tropical-result';
+
+  [0,1,2].forEach(i => {
+    document.getElementById(`treel${i}`).classList.remove('win-top','win-middle','win-bottom');
+  });
+  document.getElementById('tline-middle').classList.remove('active');
+
+  // Single row — 3 symbols
+  const results = Array.from({length:3}, () => TROP_SYMBOLS[Math.floor(Math.random() * TROP_SYMBOLS.length)]);
+
+  sndSpin();
+
+  let settled = 0;
+  [900,1500,2100].forEach((delay, i) => {
+    animateTropReel(i, results[i], delay, () => {
+      settled++;
+      if (settled === 3) setTimeout(() => tropEvaluate(results), 150);
+    });
+  });
+}
+
+function animateTropReel(idx, finalSym, stopDelay, onDone) {
+  const strip = document.getElementById(`tstrip${idx}`);
+  const extra = 12 + Math.floor(Math.random() * 4);
+
+  strip.style.transition = 'none';
+  strip.style.transform = 'translateY(0)';
+  strip.innerHTML = '';
+
+  const all = [];
+  for (let i = 0; i < extra; i++) all.push(TROP_SYMBOLS[Math.floor(Math.random() * TROP_SYMBOLS.length)]);
+  all.push(finalSym);
+
+  all.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'sym';
+    div.style.height = TROP_ROW_H + 'px';
+    div.style.fontSize = '2.2rem';
+    div.textContent = s;
+    strip.appendChild(div);
+  });
+
+  const finalY = -((all.length - 1) * TROP_ROW_H);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    strip.style.transition = `transform ${stopDelay/1000}s linear`;
+    strip.style.transform = `translateY(${finalY}px)`;
+    setTimeout(() => {
+      strip.style.transition = 'transform 0.1s ease-out';
+      strip.style.transform = `translateY(${finalY - 6}px)`;
+      setTimeout(() => {
+        strip.style.transition = 'transform 0.15s cubic-bezier(0.34,1.4,0.64,1)';
+        strip.style.transform = `translateY(${finalY}px)`;
+        sndReelStop(idx);
+        setTimeout(onDone, 100);
+      }, 100);
+    }, stopDelay);
+  }));
+}
+
+function tropEvaluate(results) {
+  const key = results.join('');
+  let won = 0;
+  let msg = '';
+
+  if (TROP_PAYOUTS[key]) {
+    const mult = TROP_PAYOUTS[key];
+    won = bet * mult * tropMultiplier;
+    credits += won; totalWon += won; tropTotalWon += won;
+
+    tropMultiplier = Math.min(tropMultiplier + 1, 10);
+    const multEl = document.getElementById('tropMult');
+    multEl.textContent = `×${tropMultiplier}`;
+    multEl.classList.remove('bump'); void multEl.offsetWidth; multEl.classList.add('bump');
+
+    [0,1,2].forEach(i => document.getElementById(`treel${i}`).classList.add('win-middle'));
+    document.getElementById('tline-middle').classList.add('active');
+
+    msg = `${results[0]}${results[1]}${results[2]} ×${mult} = +${won} 🪙`;
+    document.getElementById('tropResult').className = 'tropical-result win';
+    sndWin(); spawnParticles(['🥥','🍍','🌺','🪙','⭐'], 20);
+    popValue('credits');
+  } else {
+    msg = 'Nema pogotka... dalje!';
+    document.getElementById('tropResult').className = 'tropical-result';
+    sndLose();
+  }
+
+  document.getElementById('tropResult').textContent = msg;
+  tropSpinning = false;
+
+  if (tropSpins > 0) {
+    document.getElementById('tropSpinBtn').disabled = false;
+  } else {
+    setTimeout(exitTropical, 500);
+  }
+}
+
+function exitTropical() {
+  const won = tropTotalWon;
+  document.getElementById('tropResult').textContent =
+    won > 0 ? `🌴 BONUS ZAVRŠEN! Dobiveno: +${won} 🪙` : '🌴 Bonus završen! Sretno sljedeći put!';
+  document.getElementById('tropResult').className = 'tropical-result done';
+  document.getElementById('tropSpinBtn').textContent = '🏠 Natrag';
+  document.getElementById('tropSpinBtn').disabled = false;
+  document.getElementById('tropSpinBtn').onclick = closeTropical;
+  if (won > 0) spawnParticles(['🌴','🥥','🪙','🌺','☀️'], 40);
+}
+
+function closeTropical() {
+  const overlay = document.getElementById('tropicalOverlay');
+  overlay.style.transition = 'opacity 0.5s ease-in';
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    overlay.style.transition = '';
+    overlay.style.opacity = '';
+  }, 500);
+
+  if (tropBirdsInterval) { clearInterval(tropBirdsInterval); tropBirdsInterval = null; }
+
+  document.getElementById('tropSpinBtn').textContent = '🌊 VRTI! 🌊';
+  document.getElementById('tropSpinBtn').onclick = tropSpin;
+
+  freeSpins = 0;
+  spinning = false;
+  document.getElementById('spinBtn').disabled = false;
+  updateUI();
+
+  // Check game over after returning
+  if (credits <= 0) {
+    autoSpinActive = false;
+    updateAutoSpinBtn();
+    sndGameOver();
+    setTimeout(showGameOver, 800);
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space')      { e.preventDefault(); spin(); }
+  if (e.code === 'ArrowLeft')  changeBet(-1);
+  if (e.code === 'ArrowRight') changeBet(1);
+});
+
+updateUI();
+initMuteBtn();
+
+// Init strips with 3 random symbols each
+['strip0','strip1','strip2'].forEach(id => {
+  const strip = document.getElementById(id);
+  strip.innerHTML = '';
+  strip.style.transition = 'none';
+  strip.style.transform = 'translateY(0)';
+  for (let r = 0; r < 3; r++) {
+    const div = document.createElement('div');
+    div.className = 'sym';
+    div.textContent = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+    strip.appendChild(div);
+  }
+});
+
+document.querySelectorAll('.bet-btn, .reset-btn').forEach(b => {
+  b.addEventListener('mousedown', sndClick);
+});
+</script>
+</body>
+</html>
