@@ -1,0 +1,2499 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>POKER — Video Poker Aparat</title>
+<style>
+  :root{
+    --felt-dark:#0b3d24;
+    --felt-light:#136b3e;
+    --gold:#d4af37;
+    --gold-bright:#f4d35e;
+    --led-red:#ff3b3b;
+    --cabinet:#1a1310;
+    --cabinet-light:#2e2018;
+    --wood:#3a2416;
+    --neon:#ff9a1f;
+    --neon-hot:#ffcf4d;
+    --chrome-hi:#f2f2f2;
+    --chrome-mid:#9a9a9a;
+    --chrome-lo:#4a4a4a;
+    --vfd:#ffb020;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:#0a0a0a;
+    font-family:'Courier New', monospace;
+    overflow-x:hidden;
+  }
+  body{
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh;
+    padding:10px;
+  }
+
+  .cabinet{
+    width:100%;
+    max-width:560px;
+    background:
+      repeating-linear-gradient(95deg, rgba(0,0,0,.18) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,.1) 4px, rgba(0,0,0,0) 7px),
+      linear-gradient(160deg, #4a2e1a, #1c1008 60%, #100a05);
+    border-radius:16px;
+    padding:16px 14px 20px;
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 5px var(--chrome-mid),
+      0 0 0 7px #2a2a2a,
+      0 25px 60px rgba(0,0,0,.8),
+      inset 0 0 40px rgba(0,0,0,.5);
+    border:1px solid #000;
+    position:relative;
+  }
+  .rivet{
+    position:absolute;
+    width:9px; height:9px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, var(--chrome-hi), var(--chrome-mid) 55%, #2a2a2a);
+    box-shadow: 0 1px 2px rgba(0,0,0,.9), inset 0 0 2px rgba(255,255,255,.6);
+    z-index:5;
+  }
+  .rivet.tl{ top:9px; left:9px; }
+  .rivet.tr{ top:9px; right:9px; }
+  .rivet.bl{ bottom:9px; left:9px; }
+  .rivet.br{ bottom:9px; right:9px; }
+
+  .marquee{
+    text-align:center;
+    padding:14px 8px 12px;
+    letter-spacing:6px;
+    background: linear-gradient(180deg, #170a06, #0b0503);
+    border-radius:9px;
+    margin-bottom:10px;
+    border: 3px solid #2a1a10;
+    box-shadow:
+      0 0 0 2px #000,
+      inset 0 2px 10px rgba(0,0,0,.85),
+      inset 0 0 26px rgba(255,140,0,.08);
+    position:relative;
+    overflow:hidden;
+  }
+  .marquee::before{
+    content:'';
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(to bottom, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 2px, transparent 3px);
+    pointer-events:none;
+  }
+  .marquee h1{
+    margin:0;
+    font-family:'Bungee', 'Courier New', cursive, monospace;
+    font-size:29px;
+    letter-spacing:5px;
+    color:var(--neon-hot);
+    text-shadow:
+      0 0 6px var(--neon),
+      0 0 14px var(--neon),
+      0 0 28px rgba(255,140,0,.7),
+      0 0 48px rgba(255,80,0,.35);
+    animation: neonFlicker 4.5s infinite;
+    font-weight:400;
+    transition: color .5s, text-shadow .5s;
+  }
+  .marquee.powered-off h1{
+    color:#241207;
+    text-shadow:none;
+    animation:none;
+  }
+  .marquee.powered-off p{
+    opacity:0;
+  }
+  @keyframes neonFlicker{
+    0%,18%,21%,23%,80%,100%{ opacity:1; }
+    19.5%,22%{ opacity:.82; }
+  }
+  .marquee p{
+    margin:7px 0 0;
+    transition: opacity .5s;
+    font-family:'VT323', 'Courier New', monospace;
+    color:#c9812f;
+    font-size:14px;
+    letter-spacing:4px;
+    text-shadow: 0 0 6px rgba(255,140,0,.5);
+  }
+
+  .screen{
+    background: radial-gradient(ellipse at center, var(--felt-light), var(--felt-dark) 75%);
+    border-radius:9px;
+    border:none;
+    box-shadow:
+      inset 0 0 40px rgba(0,0,0,.6),
+      inset 0 0 3px #000,
+      0 0 0 3px #050505,
+      0 0 0 6px var(--chrome-hi),
+      0 0 0 8px var(--chrome-lo),
+      0 0 0 10px #050505,
+      0 6px 18px rgba(0,0,0,.6);
+    padding:16px 10px 20px;
+    margin:0 4px 10px;
+    position:relative;
+  }
+  /* Stari CRT monitor - blagi interlaced raster preko cijelog ekrana */
+  .screen::after{
+    content:'';
+    position:absolute; inset:0;
+    border-radius:9px;
+    pointer-events:none;
+    z-index:6;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 1px,
+      rgba(0,0,0,.16) 2px,
+      rgba(0,0,0,.16) 3px
+    );
+    mix-blend-mode: multiply;
+  }
+
+  /* Paytable - poseban "printani" panel pod staklom, odvojen od filca */
+  .paytable{
+    background: linear-gradient(180deg, #f7f1de, #e7dcb8);
+    border: 3px solid #6b5220;
+    border-radius:6px;
+    padding:9px 12px 8px;
+    margin-bottom:16px;
+    font-family:'VT323', 'Courier New', monospace;
+    color:#241a08;
+    box-shadow: 0 4px 14px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.5);
+    position:relative;
+  }
+  .paytable::before{
+    content:'';
+    position:absolute; top:0; left:8%; right:8%; height:35%;
+    background: linear-gradient(180deg, rgba(255,255,255,.5), transparent);
+    border-radius:5px 5px 50% 50%;
+    pointer-events:none;
+  }
+  .paytable-title{
+    text-align:center;
+    font-size:16px;
+    letter-spacing:8px;
+    font-weight:bold;
+    color:#6b4a12;
+    border-bottom:2px solid #8a7038;
+    padding-bottom:4px;
+    margin-bottom:3px;
+    position:relative;
+  }
+  .paytable table{width:100%; border-collapse:collapse; position:relative; font-size:17px;}
+  .paytable td{padding:2.5px 2px;}
+  .paytable td.name{color:#3a2a08; letter-spacing:.5px; font-weight:600;}
+  .paytable td.mult{text-align:right; color:#6b4a12; font-weight:bold;}
+  .paytable tr:nth-child(even) td{background: rgba(138,112,56,.09);}
+  @keyframes paytableGlow{
+    0%,100%{ background:#a67c1e; box-shadow: 0 0 4px rgba(255,180,50,.3); }
+    50%{ background:#e6ac35; box-shadow: 0 0 14px 3px rgba(255,190,60,.9); }
+  }
+  .paytable tr.active td{
+    color:#fff;
+    border-radius:3px;
+    text-shadow:0 0 5px rgba(0,0,0,.5);
+    animation: paytableGlow .9s ease-in-out infinite;
+  }
+
+  /* Cards */
+  .cards-row{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin-bottom:28px;
+  }
+  .card-slot{
+    flex: 0 0 auto;
+    width: calc((100% - 24px) / 5);
+    min-width:0;
+    max-width:104px;
+    aspect-ratio: 5 / 7;
+    perspective:600px;
+  }
+  .card{
+    width:100%; height:100%;
+    position:relative;
+    border-radius:8px;
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .card.held{
+    transform:translateY(-8px);
+  }
+  .card.held .card-face{
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 14px 3px rgba(212,175,55,.65), 0 4px 10px rgba(0,0,0,.55);
+  }
+  @keyframes holdPulse{
+    0%   { transform: translateY(0) scale(1); }
+    35%  { transform: translateY(-16px) scale(1.14) rotate(-2deg); }
+    65%  { transform: translateY(-4px) scale(.97) rotate(1deg); }
+    100% { transform: translateY(-8px) scale(1) rotate(0deg); }
+  }
+  .card.held-pulse{
+    animation: holdPulse .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .card-face{
+    position:absolute; inset:0;
+    border-radius:8px;
+    background:linear-gradient(160deg,#fdfdf5,#e8e6d5);
+    border:2px solid #1a1a1a;
+    box-shadow: 0 4px 10px rgba(0,0,0,.55), inset 0 0 0 3px #fff;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    font-weight:bold;
+  }
+  .card-face.back{
+    background:
+      repeating-linear-gradient(45deg, #7a1420, #7a1420 4px, #5c0f18 4px, #5c0f18 8px);
+    border:2px solid #1a1a1a;
+    box-shadow: 0 4px 10px rgba(0,0,0,.55), inset 0 0 0 3px #3a0810;
+  }
+  .card-face.back::after{
+    content:'';
+    position:absolute; inset:7px;
+    border:1px solid var(--gold);
+    border-radius:4px;
+    opacity:.6;
+  }
+  .rank{font-size:26px; line-height:1;}
+  .suit{font-size:28px; margin-top:3px; line-height:1;}
+  .red{color:#b3142a;}
+  .black{color:#1a1a1a;}
+  .card-face .corner{
+    position:absolute; top:6px; left:7px;
+    font-size:13px; text-align:center; line-height:1.1;
+  }
+  .hold-tag{
+    position:absolute;
+    bottom:-22px; left:50%;
+    transform:translateX(-50%);
+    display:flex; align-items:center; gap:4px;
+    background:#0a0a0a;
+    border:1px solid #2a2a2a;
+    border-radius:9px;
+    padding:2px 8px 2px 6px;
+    font-family:'VT323','Courier New',monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    color:#4a3a20;
+    white-space:nowrap;
+    box-shadow: inset 0 0 4px rgba(0,0,0,.8);
+    transition: color .15s, border-color .15s;
+  }
+  .hold-tag::before{
+    content:'';
+    display:inline-block;
+    width:6px; height:6px;
+    border-radius:50%;
+    background:#4a3a20;
+  }
+  .card.held .hold-tag{
+    color:var(--vfd);
+    border-color: rgba(255,140,0,.6);
+    text-shadow: 0 0 6px rgba(255,140,0,.8);
+  }
+  .card.held .hold-tag::before{
+    background: var(--vfd);
+    box-shadow: 0 0 6px var(--vfd), 0 0 12px rgba(255,140,0,.75);
+  }
+
+  /* LED displays */
+  .leds{
+    display:flex;
+    gap:8px;
+    margin:18px 0 12px;
+  }
+  .led-box{
+    flex:1;
+    background: linear-gradient(180deg, #050505, #0e0e0e);
+    border-radius:6px;
+    border:2px solid #3a3a3a;
+    padding:10px 4px 9px;
+    text-align:center;
+    box-shadow: inset 0 0 12px rgba(0,0,0,.9), 0 3px 6px rgba(0,0,0,.5);
+    position:relative;
+    overflow:hidden;
+  }
+  .led-box::before{
+    content:'';
+    position:absolute; top:0; left:12%; right:12%; height:38%;
+    background: linear-gradient(180deg, rgba(255,255,255,.08), transparent);
+    border-radius:6px 6px 50% 50%;
+    pointer-events:none;
+  }
+  .led-box .label{
+    font-family:'VT323', 'Courier New', monospace;
+    font-size:12px; letter-spacing:3px; color:#8a6a3a;
+  }
+  .led-box .value{
+    font-family:'VT323', 'Courier New', monospace;
+    font-size:34px;
+    color:var(--vfd);
+    text-shadow:0 0 7px rgba(255,140,0,.9), 0 0 20px rgba(255,140,0,.55);
+    font-weight:normal;
+    margin-top:2px;
+    min-height:32px;
+    letter-spacing:1px;
+  }
+
+  .message{
+    text-align:center;
+    color:var(--gold-bright);
+    font-family:'VT323', 'Courier New', monospace;
+    font-size:16px;
+    letter-spacing:1px;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:12px;
+    font-weight:normal;
+    background:#050505;
+    border:2px solid #2a2a2a;
+    border-radius:5px;
+    padding:0 8px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,.85);
+    text-shadow:0 0 6px rgba(244,211,94,.6);
+    overflow:hidden;
+  }
+
+  /* Controls */
+  .controls{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    flex:1 1 auto;
+    min-width:70px;
+    padding:15px 6px;
+    border-radius:9px;
+    border:none;
+    font-family:'Bungee', 'Courier New', cursive, monospace;
+    font-weight:400;
+    font-size:11px;
+    letter-spacing:1px;
+    cursor:pointer;
+    color:#eee;
+    background:linear-gradient(180deg,#5c5c5c,#2a2a2a 60%,#1a1a1a);
+    border:1px solid #0a0a0a;
+    box-shadow:
+      0 5px 0 #0a0a0a,
+      0 7px 10px rgba(0,0,0,.55),
+      inset 0 2px 1px rgba(255,255,255,.25),
+      inset 0 -4px 7px rgba(0,0,0,.4);
+    transition:transform .06s, box-shadow .06s;
+  }
+  .btn:active{
+    transform:translateY(4px);
+    box-shadow:
+      0 1px 0 #0a0a0a,
+      inset 0 2px 5px rgba(0,0,0,.6);
+  }
+  .btn:disabled{opacity:.35; cursor:not-allowed;}
+  .btn.gold{
+    background:linear-gradient(180deg, #ffd76a, var(--gold) 55%, #8a6a1c);
+    color:#2a1e00;
+    border:1px solid #6b5010;
+    box-shadow:
+      0 5px 0 #6b5010,
+      0 7px 10px rgba(0,0,0,.55),
+      inset 0 2px 1px rgba(255,255,255,.5),
+      inset 0 -4px 7px rgba(0,0,0,.3);
+  }
+  .btn.gold:active{
+    box-shadow: 0 1px 0 #6b5010, inset 0 2px 5px rgba(0,0,0,.5);
+  }
+  .btn.red{
+    background:linear-gradient(180deg,#e6544c, #a01d1d 55%, #5c0f0f);
+    border:1px solid #3a0808;
+    box-shadow:
+      0 5px 0 #3a0808,
+      0 7px 10px rgba(0,0,0,.55),
+      inset 0 2px 1px rgba(255,255,255,.35),
+      inset 0 -4px 7px rgba(0,0,0,.4);
+  }
+  .btn.red:active{
+    box-shadow: 0 1px 0 #3a0808, inset 0 2px 5px rgba(0,0,0,.5);
+  }
+  .btn.small{flex:0 0 auto; min-width:40px; padding:8px 10px; font-size:13px;}
+
+  /* DEAL/DRAW su glavna, najveća tipka; GAMBLE/COLLECT su manje, sekundarne */
+  .btn-primary{
+    flex:2 1 0;
+    padding:19px 6px;
+    font-size:13px;
+    letter-spacing:1.5px;
+  }
+  .btn-secondary{
+    flex:1 1 0;
+    padding:12px 6px;
+    font-size:9.5px;
+  }
+
+  /* Fizičke HOLD tipke ispod svake karte, kao na pravim aparatima */
+  .hold-buttons{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin:6px 0 14px;
+    transition: opacity .2s;
+  }
+  .hold-buttons.inactive{
+    opacity:.18;
+    pointer-events:none;
+  }
+  .hold-btn{
+    flex:1 1 0;
+    max-width:104px;
+    padding:9px 2px;
+    border-radius:7px;
+    border:none;
+    font-family:'Bungee','Courier New',cursive,monospace;
+    font-size:9px;
+    letter-spacing:1px;
+    color:#8a8a8a;
+    cursor:pointer;
+    background:linear-gradient(180deg,#3a3a3a,#1c1c1c 60%,#101010);
+    border:1px solid #0a0a0a;
+    box-shadow:
+      0 3px 0 #0a0a0a,
+      0 4px 6px rgba(0,0,0,.5),
+      inset 0 1px 1px rgba(255,255,255,.15),
+      inset 0 -2px 4px rgba(0,0,0,.4);
+    transition:transform .06s, box-shadow .06s, color .15s, background .15s;
+  }
+  .hold-btn:active{
+    transform:translateY(3px);
+    box-shadow: 0 1px 0 #0a0a0a, inset 0 2px 4px rgba(0,0,0,.6);
+  }
+  .hold-btn.active{
+    color:#2a1e00;
+    background: linear-gradient(180deg, #ffd76a, var(--gold) 55%, #8a6a1c);
+    box-shadow:
+      0 3px 0 #6b5010,
+      0 0 12px 2px rgba(255,190,60,.7),
+      inset 0 1px 1px rgba(255,255,255,.5),
+      inset 0 -2px 4px rgba(0,0,0,.3);
+  }
+
+  .control-deck{
+    background: linear-gradient(180deg, #2e2e2e, #161616);
+    border-radius:9px;
+    padding:10px 8px;
+    margin:0 0 10px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.7), inset 0 -1px 0 rgba(255,255,255,.05), 0 2px 5px rgba(0,0,0,.4);
+    border:1px solid #000;
+  }
+  .bet-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+  }
+  .bet-row .btn.small{border-radius:50%; width:34px; height:34px; padding:0; display:flex; align-items:center; justify-content:center;}
+
+  /* Double up overlay */
+  .overlay{
+    position:absolute; inset:0;
+    background:rgba(4,20,10,.97);
+    border-radius:6px;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    z-index:10;
+  }
+  .overlay.show{display:flex;}
+  .overlay h2{
+    color:var(--gold-bright);
+    letter-spacing:3px;
+    font-size:16px;
+    margin:0 0 14px;
+  }
+
+  /* Karte se slažu u lepezu: nova se otvara preko prethodne, koja ostaje vidljiva sa strane.
+     NAPOMENA: overflow-x NE koristi se ovdje jer Safari zna slomiti 3D okretanje (flip) kad
+     roditelj ima overflow različit od visible - razmak se umjesto toga računa dinamički u JS-u. */
+  #cardsRow.duel-mode .card-slot{
+    flex:0 0 auto;
+    width:104px;
+    max-width:104px;
+    min-width:104px;
+  }
+  #cardsRow.duel-mode{
+    justify-content:flex-start;
+  }
+
+  /* Gumbi za gemblanje dijele isti prostor kao normalni DEAL/DRAW/GAMBLE/COLLECT red */
+  .normal-controls{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    width:100%;
+  }
+  .duel-controls{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    width:100%;
+    position:relative;
+  }
+
+  /* Kompaktni raspored dok se kocka */
+  .screen.gamble-active .hold-tag{ display:none; }
+
+  /* Tenzija kod visokog uloga - pulsira WIN displej (koji sad prikazuje i trenutni ulog za dupliranje) */
+  @keyframes ledTensionPulse{
+    0%,100%{ color: var(--vfd); text-shadow:0 0 7px rgba(255,140,0,.9), 0 0 20px rgba(255,140,0,.55); }
+    50%{ color:#ff5a5a; text-shadow:0 0 10px rgba(255,40,40,.9), 0 0 26px rgba(255,40,40,.6); }
+  }
+  .led-box.tension .value{
+    animation: ledTensionPulse .9s ease-in-out infinite;
+  }
+
+  @keyframes insufficientFlash{
+    0%,100%{ box-shadow: inset 0 0 12px rgba(0,0,0,.9), 0 3px 6px rgba(0,0,0,.5); border-color:#3a3a3a; }
+    50%{ box-shadow: inset 0 0 12px rgba(0,0,0,.9), 0 0 16px 3px rgba(255,40,40,.9); border-color:#ff4d4d; }
+  }
+  .led-box.insufficient{
+    animation: insufficientFlash .35s ease-in-out 3;
+  }
+  .led-box.insufficient .value{
+    color:#ff4d4d !important;
+    text-shadow: 0 0 8px rgba(255,60,60,.8) !important;
+  }
+
+  /* Flip-card mechanic for veće/manje duel */
+  .flip-card{
+    width:100%; height:100%;
+    perspective:700px;
+  }
+  .flip-inner{
+    position:relative;
+    width:100%; height:100%;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+  }
+  @keyframes cardFlipOpen{
+    0%   { transform: rotateY(0deg)   scale(1); }
+    50%  { transform: rotateY(90deg)  scale(1.18); }
+    100% { transform: rotateY(180deg) scale(1); }
+  }
+  @keyframes cardFlipClose{
+    0%   { transform: rotateY(180deg) scale(1); }
+    50%  { transform: rotateY(90deg)  scale(1.18); }
+    100% { transform: rotateY(0deg)   scale(1); }
+  }
+  .flip-inner.flip-anim{
+    animation: cardFlipOpen 700ms cubic-bezier(.4,.1,.2,1) forwards;
+  }
+  .flip-inner.flip-close{
+    animation: cardFlipClose 450ms cubic-bezier(.4,.1,.2,1) forwards;
+  }
+  @keyframes cardDealIn{
+    0%   { opacity:0; transform: translateY(18px) scale(.8); }
+    100% { opacity:1; transform: translateY(0) scale(1); }
+  }
+  .card-slot.deal-in{
+    animation: cardDealIn .3s ease-out both;
+  }
+  .flip-front, .flip-back{
+    position:absolute; inset:0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius:7px;
+  }
+  .flip-back{
+    transform: rotateY(180deg);
+  }
+
+  #message.win-flash{
+    font-family:'Bungee','Courier New',cursive,monospace;
+    font-size:14px;
+    letter-spacing:1px;
+    color: var(--gold-bright);
+    text-shadow: 0 0 12px rgba(255,200,50,.8), 0 0 24px rgba(255,180,50,.5);
+    animation: duelStatusPulse .5s ease-in-out infinite;
+  }
+  #message.joker-flash{
+    font-family:'Bungee','Courier New',cursive,monospace;
+    font-size:13px;
+    letter-spacing:1px;
+    color:#e066ff;
+    text-shadow: 0 0 12px rgba(224,102,255,.85), 0 0 26px rgba(180,60,255,.6);
+    animation: jokerStatusPulse .4s ease-in-out infinite;
+  }
+  @keyframes jokerStatusPulse{
+    0%,100%{ transform:scale(1) rotate(0deg); } 50%{ transform:scale(1.04) rotate(-1deg); }
+  }
+  @keyframes jokerCardFlash{
+    0%,100%{ box-shadow: 0 0 0 rgba(224,102,255,0); filter:brightness(1); }
+    50%{ box-shadow: 0 0 30px 8px rgba(224,102,255,.9); filter:brightness(1.25) hue-rotate(30deg); }
+  }
+  .card-slot.joker-win{
+    animation: jokerCardFlash .3s ease-in-out 3;
+  }
+  #message.lose-flash{
+    font-family:'Bungee','Courier New',cursive,monospace;
+    font-size:15px;
+    letter-spacing:2px;
+    color:#ff4d4d;
+    text-shadow: 0 0 12px rgba(255,60,60,.85);
+  }
+  @keyframes duelStatusPulse{
+    0%,100%{ transform:scale(1); } 50%{ transform:scale(1.04); }
+  }
+
+  /* Novčići koji ispadaju kad se uzme dio dobitka (HALVE / COLLECT) */
+  .coin-burst{
+    position:relative;
+    height:0;
+    overflow:visible;
+  }
+  .coin{
+    position:absolute;
+    left:50%; top:0;
+    width:15px; height:15px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #fff6cf, var(--gold-bright) 55%, #a9821c);
+    border:1px solid #6b5010;
+    box-shadow:0 0 5px rgba(0,0,0,.6);
+    pointer-events:none;
+    z-index:30;
+    animation: coinPop .85s ease-out forwards;
+  }
+  @keyframes coinPop{
+    0%{ opacity:1; transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+    100%{ opacity:0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.5) rotate(var(--rot)); }
+  }
+
+  /* Winning hand pulse (main cards) */
+  @keyframes cardWinPulse{
+    0%,100%{ box-shadow:0 3px 8px rgba(0,0,0,.5); transform:translateY(0) scale(1); }
+    50%{ box-shadow:0 0 20px 5px rgba(212,175,55,.85), 0 3px 8px rgba(0,0,0,.5); transform:translateY(-3px) scale(1.03); }
+  }
+  .card-face.win{
+    animation: cardWinPulse 1s ease-in-out infinite;
+    border-color: var(--gold-bright);
+  }
+  @keyframes cardFadeDim{
+    0%{ opacity:1; filter:grayscale(0) brightness(1); }
+    100%{ opacity:.3; filter:grayscale(.7) brightness(.75); }
+  }
+  .card-face.dim{
+    animation: cardFadeDim .6s ease-out forwards;
+  }
+
+  /* Tresenje karata kod velikih pobjeda (Four of a Kind i jače) */
+  @keyframes cardShake{
+    0%,100%{ transform: translateX(0) rotate(0deg); }
+    15%{ transform: translateX(-5px) rotate(-2deg); }
+    30%{ transform: translateX(5px) rotate(2deg); }
+    45%{ transform: translateX(-4px) rotate(-1.5deg); }
+    60%{ transform: translateX(4px) rotate(1.5deg); }
+    75%{ transform: translateX(-2px) rotate(-.5deg); }
+    90%{ transform: translateX(2px) rotate(.5deg); }
+  }
+  .card.shake{ animation: cardShake .5s ease-in-out; }
+  .card.shake-strong{ animation: cardShake .6s ease-in-out 2; }
+
+  /* Bljesak ekrana kod velikih pobjeda */
+  @keyframes screenFlash{
+    0%{ box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+    12%{ box-shadow: inset 0 0 90px 24px rgba(255,240,200,.85); }
+    100%{ box-shadow: inset 0 0 0 0 rgba(255,255,255,0); }
+  }
+  .screen.flash::after{
+    content:'';
+    position:absolute; inset:0;
+    border-radius:9px;
+    pointer-events:none;
+    z-index:15;
+    animation: screenFlash .55s ease-out;
+  }
+
+  @keyframes screenBustFlash{
+    0%{ box-shadow: inset 0 0 0 0 rgba(200,20,20,0); }
+    15%{ box-shadow: inset 0 0 100px 30px rgba(200,20,20,.85); }
+    100%{ box-shadow: inset 0 0 0 0 rgba(200,20,20,0); }
+  }
+  .screen.bust::after{
+    content:'';
+    position:absolute; inset:0;
+    border-radius:9px;
+    pointer-events:none;
+    z-index:15;
+    animation: screenBustFlash .65s ease-out;
+  }
+
+  /* Paytable se cijeli razgori za jackpot */
+  @keyframes paytableJackpot{
+    0%,100%{ box-shadow: 0 4px 14px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.5); border-color:#6b5220; }
+    50%{ box-shadow: 0 0 30px 8px rgba(255,190,60,.9), inset 0 0 0 1px rgba(255,255,255,.5); border-color: var(--gold-bright); }
+  }
+  .paytable.jackpot-glow{
+    animation: paytableJackpot .7s ease-in-out infinite;
+  }
+
+  /* Jackpot banner - totalni show za Royal Flush */
+  .jackpot-banner{
+    position:absolute; inset:0;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background: radial-gradient(circle, rgba(30,15,0,.94), rgba(0,0,0,.97));
+    z-index:25;
+    text-align:center;
+    padding:16px;
+    border-radius:9px;
+  }
+  .jackpot-banner.show{
+    display:flex;
+    animation: jackpotIn .3s ease-out;
+  }
+  @keyframes jackpotIn{
+    0%{ opacity:0; transform:scale(.7); }
+    100%{ opacity:1; transform:scale(1); }
+  }
+  .jackpot-stars{
+    font-size:15px;
+    letter-spacing:3px;
+    color:var(--gold-bright);
+    text-shadow:0 0 10px rgba(255,200,50,.9);
+    animation: starsTwinkle 1s infinite;
+  }
+  @keyframes starsTwinkle{
+    0%,100%{ opacity:1; } 50%{ opacity:.35; }
+  }
+  .jackpot-text{
+    font-family:'Bungee','Courier New',cursive,monospace;
+    font-size:24px;
+    letter-spacing:3px;
+    margin:10px 0 4px;
+    color:transparent;
+    background: linear-gradient(180deg, #fff7d6, var(--gold-bright) 50%, #a9821c);
+    -webkit-background-clip:text; background-clip:text;
+    filter: drop-shadow(0 0 14px rgba(255,200,50,.6));
+    animation: jackpotPulse .6s ease-in-out infinite;
+  }
+  @keyframes jackpotPulse{
+    0%,100%{ transform:scale(1); } 50%{ transform:scale(1.07); }
+  }
+  .jackpot-amount{
+    font-family:'VT323','Courier New',monospace;
+    font-size:46px;
+    color: var(--vfd);
+    text-shadow: 0 0 12px rgba(255,140,0,.9), 0 0 30px rgba(255,140,0,.6);
+  }
+
+  /* Boot sekvenca: "POWER ON ..." tekst dok se aparat pali */
+  .boot-text{
+    font-family:'VT323','Courier New',monospace;
+    font-size:28px;
+    letter-spacing:6px;
+    color: var(--vfd);
+    text-shadow: 0 0 10px rgba(255,140,0,.85), 0 0 26px rgba(255,140,0,.55);
+    text-align:center;
+    min-height:34px;
+  }
+
+  /* Kabinet se pali dio po dio - ovi elementi kreću ugašeni dok ih JS ne "upali" */
+  .paytable, #ledsRow, .cards-row, #mainControls, #betRow{
+    transition: opacity .5s ease, filter .5s ease;
+  }
+  .powered-off{
+    opacity:0 !important;
+    filter: grayscale(1);
+    pointer-events:none;
+  }
+
+  @keyframes insertBetBlink{
+    0%,100%{ opacity:1; } 50%{ opacity:.25; }
+  }
+  .message.blink{
+    animation: insertBetBlink .7s ease-in-out infinite;
+  }
+
+  /* Winning duel-card flash */
+  @keyframes slotWinFlash{
+    0%{ transform:scale(1); filter:drop-shadow(0 0 0 rgba(212,175,55,0)); }
+    40%{ transform:scale(1.12); filter:drop-shadow(0 0 14px rgba(212,175,55,.95)); }
+    100%{ transform:scale(1); filter:drop-shadow(0 0 0 rgba(212,175,55,0)); }
+  }
+  .card-slot.flip-win{
+    animation: slotWinFlash .9s ease-out;
+  }
+
+  /* Glowing button when a gamble is available */
+  @keyframes btnGlow{
+    0%,100%{ box-shadow: 0 5px 0 #6b5010, 0 7px 10px rgba(0,0,0,.55), inset 0 2px 1px rgba(255,255,255,.5), inset 0 -4px 7px rgba(0,0,0,.3); }
+    50%{ box-shadow: 0 5px 0 #6b5010, 0 0 20px 6px rgba(255,215,106,.9), inset 0 2px 1px rgba(255,255,255,.5), inset 0 -4px 7px rgba(0,0,0,.3); }
+  }
+  .btn.glow{
+    animation: btnGlow 1s ease-in-out infinite;
+  }
+
+  .double-info{
+    color:#e8e8d8;
+    font-size:11px;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  .double-info b{color:var(--gold-bright);}
+  .double-controls{display:flex; gap:6px; width:100%;}
+  #duelControls .double-controls .btn{ font-size:9.5px; padding:14px 3px; }
+
+  .duel-primary-controls{
+    display:flex;
+    gap:8px;
+    width:100%;
+    margin-bottom:8px;
+  }
+  .duel-lower, .duel-higher{
+    border-radius:10px;
+  }
+  .duel-lower{
+    background: linear-gradient(180deg, #6bb3e8, #2a6ba8 55%, #123a5c);
+    border:1px solid #0a2a45;
+    color:#fff;
+    box-shadow:
+      0 5px 0 #0a2a45,
+      0 7px 10px rgba(0,0,0,.55),
+      inset 0 2px 1px rgba(255,255,255,.35),
+      inset 0 -4px 7px rgba(0,0,0,.3);
+  }
+  .duel-lower:active{
+    box-shadow: 0 1px 0 #0a2a45, inset 0 2px 5px rgba(0,0,0,.5);
+  }
+  .duel-higher{
+    background: linear-gradient(180deg, #ffc169, #d4791c 55%, #8a4a10);
+    border:1px solid #5c2f08;
+    color:#2a1400;
+    box-shadow:
+      0 5px 0 #5c2f08,
+      0 7px 10px rgba(0,0,0,.55),
+      inset 0 2px 1px rgba(255,255,255,.45),
+      inset 0 -4px 7px rgba(0,0,0,.3);
+  }
+  .duel-higher:active{
+    box-shadow: 0 1px 0 #5c2f08, inset 0 2px 5px rgba(0,0,0,.5);
+  }
+  @keyframes duelCallToAction{
+    0%,100%{ transform:scale(1); filter:brightness(1); }
+    50%{ transform:scale(1.045); filter:brightness(1.18); }
+  }
+  .duel-lower.glow, .duel-higher.glow{
+    animation: duelCallToAction .85s ease-in-out infinite;
+  }
+
+  footer{
+    text-align:center;
+    color:#555;
+    font-size:9px;
+    letter-spacing:2px;
+    margin-top:10px;
+  }
+
+  @media (max-width:560px){
+    body{
+      padding:0;
+      align-items:stretch;
+      min-height:100vh;
+      min-height:100dvh;
+    }
+    .cabinet{
+      max-width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+      border-radius:0;
+      box-shadow:none;
+      border:none;
+      padding:10px 8px calc(12px + env(safe-area-inset-bottom));
+      display:flex;
+      flex-direction:column;
+    }
+    .rivet{ display:none; }
+    .marquee{
+      padding:8px 6px 7px;
+      margin-bottom:7px;
+    }
+    .marquee h1{ font-size:22px; letter-spacing:3px; }
+    .marquee p{ font-size:10px; letter-spacing:2px; margin-top:4px; }
+    .screen{
+      flex:1;
+      margin:0;
+      padding:10px 6px 12px;
+      box-shadow:
+        inset 0 0 30px rgba(0,0,0,.6),
+        inset 0 0 3px #000,
+        0 0 0 2px #050505,
+        0 0 0 4px var(--chrome-hi),
+        0 0 0 5px var(--chrome-lo);
+      border-radius:10px;
+    }
+    .paytable{ padding:6px 8px; margin-bottom:8px; }
+    .paytable-title{ font-size:13px; letter-spacing:5px; }
+    .paytable table{ font-size:13px; }
+    .cards-row{ margin-bottom:22px; gap:4px; }
+    .card-slot{ width: calc((100% - 16px) / 5); max-width:66px; }
+    .rank{font-size:17px;} .suit{font-size:18px; margin-top:2px;}
+    .card-face .corner{ font-size:10px; top:4px; left:5px; }
+    .hold-buttons{ margin:4px 0 10px; gap:4px; }
+    .hold-btn{ max-width:66px; padding:7px 2px; font-size:7.5px; letter-spacing:.5px; }
+    .leds{ margin:10px 0 8px; gap:6px; }
+    .led-box{ padding:6px 3px 5px; }
+    .led-box .label{ font-size:9px; letter-spacing:2px; }
+    .led-box .value{ font-size:21px; min-height:20px; }
+    .message{ font-size:12.5px; padding:4px 6px; margin-bottom:8px; }
+    .control-deck{ padding:8px 6px; }
+    .btn-primary{ padding:14px 4px; font-size:10.5px; }
+    .btn-secondary{ padding:9px 4px; font-size:8px; }
+    footer{ margin-top:6px; font-size:8px; }
+
+    .screen.gamble-active .card-slot{ max-width:52px; }
+    #cardsRow.duel-mode .card-slot{ width:66px; max-width:66px; min-width:66px; }
+  }
+
+  @media (max-width:340px){
+    .card-slot{ max-width:56px; }
+    #cardsRow.duel-mode .card-slot{ width:56px; max-width:56px; min-width:56px; }
+    .rank{font-size:14px;} .suit{font-size:15px;}
+    .marquee h1{ font-size:19px; letter-spacing:2px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cabinet">
+  <span class="rivet tl"></span><span class="rivet tr"></span><span class="rivet bl"></span><span class="rivet br"></span>
+  <div class="marquee">
+    <h1>♠ POKER ♥</h1>
+    <p>VIDEO POKER · HIGHER — LOWER</p>
+  </div>
+
+  <div class="screen" id="screen">
+
+    <div class="paytable" id="paytable">
+      <div class="paytable-title">PAYS</div>
+      <div id="paytableRows"></div>
+    </div>
+
+    <div class="cards-row" id="cardsRow"></div>
+    <div class="hold-buttons" id="holdButtons"></div>
+
+    <div class="leds" id="ledsRow">
+      <div class="led-box">
+        <div class="label">CREDIT</div>
+        <div class="value" id="ledCredit">0</div>
+      </div>
+      <div class="led-box">
+        <div class="label">BET</div>
+        <div class="value" id="ledBet">1</div>
+      </div>
+      <div class="led-box">
+        <div class="label">WIN</div>
+        <div class="value" id="ledWin">0</div>
+      </div>
+    </div>
+
+    <div class="message" id="message">WELCOME — PRESS DEAL</div>
+
+    <div class="bet-row control-deck" id="betRow">
+      <button class="btn small" id="betMinus">–</button>
+      <span style="color:#ccc; font-size:11px; letter-spacing:1px;">BET PER LINE</span>
+      <button class="btn small" id="betPlus">+</button>
+    </div>
+
+    <div class="controls control-deck" id="mainControls">
+      <div class="normal-controls" id="normalControls">
+        <button class="btn gold btn-primary" id="dealBtn" disabled>DEAL</button>
+        <button class="btn btn-primary" id="drawBtn" disabled>DRAW</button>
+        <button class="btn btn-secondary" id="doubleBtn" disabled>GAMBLE</button>
+        <button class="btn red btn-secondary" id="collectBtn" disabled>COLLECT</button>
+      </div>
+      <div class="duel-controls" id="duelControls" style="display:none;">
+        <div class="coin-burst" id="coinBurst"></div>
+        <button class="btn duel-lower btn-primary" id="lowerBtn">▼ LOWER</button>
+        <button class="btn duel-higher btn-primary" id="higherBtn">▲ HIGHER</button>
+        <button class="btn btn-secondary" id="halveBtn">½ HALVE</button>
+        <button class="btn gold btn-secondary" id="cashoutBtn">COLLECT</button>
+      </div>
+    </div>
+
+    <!-- Jackpot banner (Royal Flush) -->
+    <div class="jackpot-banner" id="jackpotBanner">
+      <div class="jackpot-stars">★★★★★★★★★★★★</div>
+      <div class="jackpot-text" id="jackpotText">ROYAL FLUSH</div>
+      <div class="jackpot-amount" id="jackpotAmount">250</div>
+      <div class="jackpot-stars">★★★★★★★★★★★★</div>
+    </div>
+
+    <!-- Game over overlay -->
+    <div class="overlay" id="gameOverOverlay">
+      <h2>OUT OF CREDITS</h2>
+      <div class="double-info" style="margin-bottom:20px;">Aparat zahvaljuje na donaciji.</div>
+      <div class="double-controls">
+        <button class="btn gold" id="newGameBtn" style="flex:1 1 auto;">🂡 NEW GAME</button>
+      </div>
+    </div>
+
+    <!-- Start menu overlay -->
+    <div class="overlay show" id="startOverlay">
+      <div id="startContent">
+        <h2>♠ POKER ♥</h2>
+        <div class="double-info" style="margin-bottom:22px; font-size:11.5px;">A classic video poker cabinet with a "higher or lower" double-up gamble.</div>
+        <div class="double-info" style="margin-top:-14px; margin-bottom:22px; font-size:9.5px; opacity:.7;">7-button layout: 1-5 hold (5 = raise bet before deal), 6 collect, 7 deal/draw — in gamble: 2 lower, 4 higher, 5 halve, 6 collect</div>
+        <div class="double-controls">
+          <button class="btn gold" id="startGameBtn" style="flex:1 1 auto;">▶ START GAME</button>
+        </div>
+      </div>
+      <div class="boot-text" id="bootText" style="display:none;"></div>
+    </div>
+
+  </div>
+
+  <footer>FOR ENTERTAINMENT ONLY · NO CASH VALUE</footer>
+</div>
+
+<script>
+(function(){
+  const SUITS = [
+    {sym:'♠', color:'black'},
+    {sym:'♥', color:'red'},
+    {sym:'♦', color:'red'},
+    {sym:'♣', color:'black'},
+  ];
+  const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const RANK_VALUE = {}; RANKS.forEach((r,i)=>RANK_VALUE[r]=i+2);
+
+  // ---- Zvuk: Web Audio square-wave bipovi, bez vanjskih .mp3 datoteka ----
+  let audioCtx = null;
+  function ensureAudio(){
+    if(!audioCtx){
+      try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return; }
+    }
+    if(audioCtx && audioCtx.state==='suspended'){ audioCtx.resume(); }
+  }
+  function beep(freq, dur, delay=0, type='square', vol=0.13){
+    if(!audioCtx) return;
+    const t0 = audioCtx.currentTime + delay;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.03);
+  }
+  function sweep(freqStart, freqEnd, dur, delay=0, vol=0.12, type='square'){
+    if(!audioCtx) return;
+    const t0 = audioCtx.currentTime + delay;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freqStart, t0);
+    osc.frequency.exponentialRampToValueAtTime(freqEnd, t0 + dur);
+    gain.gain.setValueAtTime(vol, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur + 0.05);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.08);
+  }
+  function sndClick(){ ensureAudio(); beep(520, .045, 0, 'square', .1); }
+  function sndHold(){ ensureAudio(); beep(660, .05, 0); beep(880, .06, .05); }
+  function sndFlip(){ ensureAudio(); beep(180, .04, 0, 'square', .08); }
+  function sndCoin(){ ensureAudio(); beep(1300, .045, 0, 'square', .09); }
+  function sndRelayTick(){ ensureAudio(); beep(480, .02, 0, 'square', .05); }
+  function sndRelayLock(){ ensureAudio(); beep(720, .03, 0, 'square', .09); beep(980, .035, .03, 'square', .09); }
+  function sndFanfare(){
+    ensureAudio();
+    [523,659,784,1046,1318,1046,1318,1568].forEach((f,i)=>beep(f, .15, i*.1, 'square', .13));
+  }
+  function sndJoker(){
+    ensureAudio();
+    // igriv, malo "ludi" trilling zvuk - drukčiji od normalnog dobitka
+    [660,880,660,990,880,1320].forEach((f,i)=>beep(f, .08, i*.06, 'square', .12));
+    sweep(1200, 2000, .25, .38, .1);
+  }
+  function sndDeal(){
+    ensureAudio();
+    for(let i=0;i<6;i++){
+      beep(280 + Math.random()*180, .035, i*.032, 'square', .06);
+    }
+  }
+  function sndGamble(){
+    ensureAudio();
+    beep(220, .1, 0, 'square', .09);
+    beep(330, .1, .09, 'square', .1);
+    beep(440, .15, .18, 'square', .11);
+  }
+  function sndCollect(){
+    ensureAudio();
+    beep(1046, .08, 0, 'square', .12);
+    beep(1318, .12, .06, 'square', .12);
+  }
+  function sndWin(){
+    ensureAudio();
+    [523,659,784,1046].forEach((f,i)=>beep(f, .11, i*.09, 'square', .11));
+  }
+  function sndWinBig(){
+    ensureAudio();
+    [392,523,659,784,988,1318].forEach((f,i)=>beep(f, .13, i*.075, 'square', .12));
+  }
+  function sndLose(){
+    ensureAudio();
+    beep(220, .16, 0, 'square', .1);
+    beep(146, .22, .12, 'square', .1);
+  }
+  function sndGameOver(){
+    ensureAudio();
+    [392,349,294,196].forEach((f,i)=>beep(f, .26, i*.2, 'square', .11));
+  }
+  function sndNewGame(){
+    ensureAudio();
+    [392,523,659,880].forEach((f,i)=>beep(f, .1, i*.07, 'square', .11));
+  }
+  function sndJackpot(){
+    ensureAudio();
+    const run = [392,523,659,784,988,1318,1568,1318,1568,1976];
+    run.forEach((f,i)=>beep(f, .16, i*.09, 'square', .13));
+  }
+  // Startup zvuk aparata: rastuće zavijanje napajanja pa svijetli potvrdni akord
+  function sndStartup(){
+    ensureAudio();
+    sweep(90, 680, .55, 0, .1);
+    [659,784,988,1318].forEach((f,i)=>beep(f, .13, .58 + i*.09, 'square', .12));
+  }
+
+  const PAYTABLE = [
+    {name:'JACKS OR BETTER', mult:1, test:h=>evalHand(h).rank===1 && evalHand(h).kicker>=11},
+    {name:'TWO PAIR', mult:2},
+    {name:'THREE OF A KIND', mult:3},
+    {name:'STRAIGHT', mult:4},
+    {name:'FLUSH', mult:6},
+    {name:'FULL HOUSE', mult:9},
+    {name:'FOUR OF A KIND', mult:25},
+    {name:'STRAIGHT FLUSH', mult:50},
+    {name:'ROYAL FLUSH', mult:250},
+  ];
+
+  const STARTING_CREDIT = 500;
+  let credit = 500;
+  let bet = 5;
+  const BET_STEP = 5, BET_MIN=5, BET_MAX=50;
+  let deck = [];
+  let hand = []; // {rank, suit}
+  let held = [false,false,false,false,false];
+  let stage = 'idle'; // idle -> dealt -> (after draw) result
+  let win = 0;
+  let lastWinName = null;
+  let lastWinHand = null;
+  let duelPot = 0;
+  let activeInner = null;
+  let activeFace = null;
+  let duelRounds = 0;
+  const MAX_DUEL_ROUNDS = 10;
+
+  const $ = id=>document.getElementById(id);
+  const cardsRow = $('cardsRow');
+  const holdButtons = $('holdButtons');
+  const ledCredit = $('ledCredit');
+  const ledBet = $('ledBet');
+  const ledWin = $('ledWin');
+  const message = $('message');
+  const dealBtn = $('dealBtn');
+  const drawBtn = $('drawBtn');
+  const doubleBtn = $('doubleBtn');
+  const collectBtn = $('collectBtn');
+  const paytableEl = $('paytableRows');
+  const paytablePanel = $('paytable');
+  const screenEl = $('screen');
+  const marqueeEl = document.querySelector('.marquee');
+  const ledsRow = $('ledsRow');
+  const bootText = $('bootText');
+  const startContent = $('startContent');
+  const jackpotBanner = $('jackpotBanner');
+  const jackpotText = $('jackpotText');
+  const jackpotAmount = $('jackpotAmount');
+  const betRow = $('betRow');
+  const mainControls = $('mainControls');
+  const normalControls = $('normalControls');
+  const duelControls = $('duelControls');
+  const winLedBox = ledWin.closest('.led-box');
+  const betLedBox = ledBet.closest('.led-box');
+
+  function saveCredit(){
+    try{ localStorage.setItem('poker_credit_v1', String(credit)); }catch(e){}
+  }
+  function loadCredit(){
+    try{
+      const v = localStorage.getItem('poker_credit_v1');
+      if(v!==null && !isNaN(parseInt(v,10))) credit = parseInt(v,10);
+    }catch(e){}
+  }
+
+  function buildDeck(){
+    const d = [];
+    for(const s of SUITS){
+      for(const r of RANKS){
+        d.push({rank:r, suit:s.sym, color:s.color, val:RANK_VALUE[r]});
+      }
+    }
+    return d;
+  }
+  function shuffle(d){
+    for(let i=d.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [d[i],d[j]]=[d[j],d[i]];
+    }
+    return d;
+  }
+
+  function renderPaytable(activeName){
+    let rows = '';
+    for(const p of [...PAYTABLE].reverse()){
+      const isActive = activeName===p.name;
+      const amount = p.mult * bet;
+      rows += `<tr class="${isActive?'active':''}"><td class="name">${p.name}</td><td class="mult">${amount}</td></tr>`;
+    }
+    paytableEl.innerHTML = `<table>${rows}</table>`;
+  }
+  renderPaytable(null);
+
+  function cardFaceHTML(c, faceUp){
+    if(!faceUp){
+      return `<div class="card-face back"></div>`;
+    }
+    return `<div class="card-face">
+      <div class="corner ${c.color}">${c.rank}<br>${c.suit}</div>
+      <div class="rank ${c.color}">${c.rank}</div>
+      <div class="suit ${c.color}">${c.suit}</div>
+    </div>`;
+  }
+
+  function setCardHeldVisual(i, isHeld){
+    const slot = cardsRow.children[i];
+    const cardEl = slot ? slot.querySelector('.card') : null;
+    if(cardEl) cardEl.classList.toggle('held', isHeld);
+    const holdBtnEl = holdButtons.children[i];
+    if(holdBtnEl){
+      holdBtnEl.classList.toggle('active', isHeld);
+      holdBtnEl.textContent = isHeld ? 'HELD' : 'HOLD';
+    }
+  }
+
+  function toggleHold(i, faceUp){
+    const nowHeld = !held[i];
+    held[i] = nowHeld;
+    setCardHeldVisual(i, nowHeld);
+    if(nowHeld){
+      const el = cardsRow.children[i].querySelector('.card');
+      el.classList.add('held-pulse');
+      setTimeout(()=>el.classList.remove('held-pulse'), 500);
+      sndHold();
+    } else {
+      sndClick();
+    }
+  }
+
+  function renderHand(faceUp){
+    cardsRow.innerHTML = '';
+    hand.forEach((c, i)=>{
+      const slot = document.createElement('div');
+      slot.className = 'card-slot';
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'card' + (held[i] ? ' held':'');
+      cardDiv.innerHTML = cardFaceHTML(c, faceUp[i]) + `<div class="hold-tag">HOLD</div>`;
+      if(stage==='dealt'){
+        cardDiv.addEventListener('click', ()=> toggleHold(i, faceUp));
+      }
+      slot.appendChild(cardDiv);
+      cardsRow.appendChild(slot);
+    });
+  }
+
+  function renderHoldButtons(faceUp){
+    const active = stage==='dealt';
+    holdButtons.classList.toggle('inactive', !active);
+    holdButtons.innerHTML = '';
+    for(let i=0;i<5;i++){
+      const btn = document.createElement('button');
+      btn.className = 'hold-btn' + (held[i] ? ' active' : '');
+      btn.textContent = held[i] ? 'HELD' : 'HOLD';
+      if(active){
+        btn.addEventListener('click', ()=> toggleHold(i, faceUp));
+      } else {
+        btn.disabled = true;
+      }
+      holdButtons.appendChild(btn);
+    }
+  }
+
+  function cardFaceContent(c){
+    return `<div class="corner ${c.color}">${c.rank}<br>${c.suit}</div>
+      <div class="rank ${c.color}">${c.rank}</div>
+      <div class="suit ${c.color}">${c.suit}</div>`;
+  }
+
+  function flipOpen(innerEl, faceEl, card){
+    innerEl.classList.remove('flip-anim','flip-close');
+    void innerEl.offsetWidth; // force reflow so the animation restarts every time
+    faceEl.innerHTML = cardFaceContent(card);
+    innerEl.classList.add('flip-anim');
+    sndFlip();
+  }
+  function flipCloseThen(innerEl, faceEl, callback){
+    innerEl.classList.remove('flip-anim');
+    void innerEl.offsetWidth;
+    innerEl.classList.add('flip-close');
+    setTimeout(()=>{
+      innerEl.classList.remove('flip-close');
+      faceEl.innerHTML = '';
+      if(callback) callback();
+    }, CLOSE_MS);
+  }
+  function resetCardInstant(innerEl, faceEl){
+    innerEl.classList.remove('flip-anim','flip-close');
+    faceEl.innerHTML = '';
+  }
+
+  // Vraća indekse karata koje stvarno čine dobitnu kombinaciju (za isticanje/zatamnjivanje)
+  function getWinningIndices(cards){
+    const e = evalHand(cards);
+    const groups = {};
+    cards.forEach((c,i)=>{ (groups[c.val] = groups[c.val] || []).push(i); });
+    const groupEntries = Object.values(groups)
+      .map(idxs=>({val: cards[idxs[0]].val, idxs}))
+      .sort((a,b)=> b.idxs.length - a.idxs.length || b.val - a.val);
+
+    if(e.rank===9 || e.rank===8 || e.rank===5 || e.rank===4 || e.rank===6){
+      return [0,1,2,3,4]; // royal/skala u boji/boja/skala/full -> svih 5 doprinosi
+    }
+    if(e.rank===7){ return groupEntries.find(g=>g.idxs.length===4).idxs; }
+    if(e.rank===3){ return groupEntries.find(g=>g.idxs.length===3).idxs; }
+    if(e.rank===2){ return groupEntries.filter(g=>g.idxs.length===2).flatMap(g=>g.idxs); }
+    if(e.rank===1 && e.kicker>=11){ return groupEntries.find(g=>g.idxs.length===2).idxs; }
+    return [];
+  }
+
+  function highlightWin(){
+    const winIdx = new Set(getWinningIndices(hand));
+    document.querySelectorAll('#cardsRow .card-face').forEach((el,i)=>{
+      if(winIdx.has(i)){
+        el.classList.add('win');
+        el.style.animationDelay = (i*0.08)+'s';
+      } else {
+        el.classList.add('dim');
+      }
+    });
+    doubleBtn.classList.add('glow');
+  }
+  function clearWin(){
+    doubleBtn.classList.remove('glow');
+    document.querySelectorAll('#cardsRow .card').forEach(el=>{
+      el.classList.remove('shake','shake-strong');
+    });
+    screenEl.classList.remove('flash');
+    paytablePanel.classList.remove('jackpot-glow');
+    jackpotBanner.classList.remove('show');
+  }
+
+  function shakeCards(strong){
+    document.querySelectorAll('#cardsRow .card').forEach(el=>{
+      el.classList.add(strong ? 'shake-strong' : 'shake');
+    });
+    setTimeout(()=>{
+      document.querySelectorAll('#cardsRow .card').forEach(el=>{
+        el.classList.remove('shake','shake-strong');
+      });
+    }, strong ? 1300 : 600);
+  }
+
+  // Glatki prijelaz između normalnih (DEAL/DRAW/...) i gemblanje (LOWER/HIGHER/...) gumba
+  function switchControls(toDuel){
+    const hide = toDuel ? normalControls : duelControls;
+    const show = toDuel ? duelControls : normalControls;
+    hide.style.transition = 'opacity .18s ease-out';
+    hide.style.opacity = '0';
+    setTimeout(()=>{
+      hide.style.display = 'none';
+      show.style.display = '';
+      show.style.opacity = '0';
+      void show.offsetWidth;
+      show.style.transition = 'opacity .25s ease-in';
+      show.style.opacity = '1';
+    }, 180);
+  }
+
+  function flashBust(){
+    screenEl.classList.remove('bust');
+    void screenEl.offsetWidth;
+    screenEl.classList.add('bust');
+    setTimeout(()=>screenEl.classList.remove('bust'), 650);
+  }
+
+  function flashScreen(times){
+    let n = 0;
+    const fire = ()=>{
+      screenEl.classList.remove('flash');
+      void screenEl.offsetWidth;
+      screenEl.classList.add('flash');
+      n++;
+      if(n < times) setTimeout(fire, 300);
+    };
+    fire();
+  }
+
+  function showJackpot(name, amount){
+    jackpotText.textContent = name;
+    jackpotAmount.textContent = amount;
+    jackpotBanner.classList.add('show');
+    paytablePanel.classList.add('jackpot-glow');
+    setTimeout(()=>{
+      jackpotBanner.classList.remove('show');
+      paytablePanel.classList.remove('jackpot-glow');
+    }, 3400);
+  }
+
+  // Slavlje razmjerno jačini pobjede: mala pobjeda -> zlatni pulse i zvuk;
+  // Four of a Kind / Full House -> jači flash i tresenje karata;
+  // Straight Flush -> još jače; Royal Flush -> totalni show
+  function celebrateWin(mult, winAmount){
+    if(mult >= 250){
+      sndJackpot();
+      shakeCards(true);
+      flashScreen(3);
+      showJackpot('ROYAL FLUSH', winAmount);
+    } else if(mult >= 50){
+      sndWinBig();
+      shakeCards(true);
+      flashScreen(2);
+    } else if(mult >= 9){
+      sndWinBig();
+      shakeCards(false);
+      flashScreen(1);
+    } else {
+      sndWin();
+    }
+  }
+
+  function emptyHandDisplay(){
+    cardsRow.innerHTML = '';
+    for(let i=0;i<5;i++){
+      const slot = document.createElement('div');
+      slot.className = 'card-slot';
+      slot.innerHTML = `<div class="card"><div class="card-face back"></div></div>`;
+      cardsRow.appendChild(slot);
+    }
+  }
+  emptyHandDisplay();
+  renderHoldButtons([true,true,true,true,true]);
+
+  let displayedCredit = credit;
+  let creditAnimating = false;
+  let displayedWin = 0;
+  let winAnimating = false;
+
+  function updateLeds(){
+    if(!creditAnimating){
+      displayedCredit = credit;
+      ledCredit.textContent = displayedCredit;
+    }
+    ledBet.textContent = bet;
+    if(!winAnimating){
+      displayedWin = win;
+      ledWin.textContent = displayedWin;
+    }
+  }
+  updateLeds();
+
+  // Krediti se ne stope odjednom nego kucaju jedan po jedan, uz zvuk novčića
+  let creditTickTimer = null;
+  let creditTickOnDone = null;
+
+  function tickCreditTo(target, onDone){
+    if(creditAnimating) return;
+    const start = displayedCredit;
+    const diff = target - start;
+    if(diff === 0){ if(onDone) onDone(); return; }
+    creditAnimating = true;
+    creditTickOnDone = onDone;
+    const steps = Math.min(24, Math.max(6, Math.round(Math.abs(diff)/2)));
+    let count = 0;
+    const stepMs = 55;
+    creditTickTimer = setInterval(()=>{
+      count++;
+      displayedCredit = Math.round(start + (diff * count / steps));
+      ledCredit.textContent = displayedCredit;
+      sndCoin();
+      if(count >= steps){
+        finishCreditTick();
+      }
+    }, stepMs);
+  }
+
+  function finishCreditTick(){
+    if(creditTickTimer){ clearInterval(creditTickTimer); creditTickTimer = null; }
+    displayedCredit = credit;
+    ledCredit.textContent = credit;
+    creditAnimating = false;
+    const cb = creditTickOnDone;
+    creditTickOnDone = null;
+    if(cb) cb();
+  }
+
+  // Igrač može "lupiti START" da prekine kucanje bodova i odmah prebaci sve
+  function skipCreditTick(){
+    if(creditAnimating){
+      sndClick();
+      finishCreditTick();
+    }
+  }
+
+  // WIN displej broji prema gore od 0 do osvojenog iznosa, uz zvuk
+  function tickWinTo(target, onDone){
+    if(winAnimating) return;
+    const start = displayedWin;
+    const diff = target - start;
+    if(diff === 0){ if(onDone) onDone(); return; }
+    winAnimating = true;
+    const steps = Math.min(20, Math.max(8, Math.round(Math.abs(diff)/2)));
+    let count = 0;
+    const stepMs = 45;
+    const timer = setInterval(()=>{
+      count++;
+      displayedWin = Math.round(start + (diff * count / steps));
+      ledWin.textContent = displayedWin;
+      sndCoin();
+      if(count >= steps){
+        clearInterval(timer);
+        displayedWin = target;
+        ledWin.textContent = target;
+        winAnimating = false;
+        if(onDone) onDone();
+      }
+    }, stepMs);
+  }
+
+  // ---- Hand evaluation ----
+  function evalHand(cards){
+    const vals = cards.map(c=>c.val).sort((a,b)=>a-b);
+    const suits = cards.map(c=>c.suit);
+    const counts = {};
+    vals.forEach(v=>counts[v]=(counts[v]||0)+1);
+    const countArr = Object.entries(counts).map(([v,c])=>({v:parseInt(v),c})).sort((a,b)=> b.c-a.c || b.v-a.v);
+
+    const isFlush = suits.every(s=>s===suits[0]);
+    let uniqueVals = [...new Set(vals)];
+    let isStraight = false;
+    if(uniqueVals.length===5){
+      if(uniqueVals[4]-uniqueVals[0]===4) isStraight = true;
+      // wheel: A,2,3,4,5
+      if(uniqueVals.join(',')==='2,3,4,5,14') isStraight = true;
+    }
+
+    let rank = 0; // 0 nothing,1 pair,2 twopair,3 trips,4 straight,5 flush,6 full,7 quads,8 sf,9 royal
+    let kicker = countArr[0].v;
+
+    if(isStraight && isFlush){
+      const topVal = uniqueVals.join(',')==='2,3,4,5,14' ? 5 : uniqueVals[4];
+      rank = (topVal===14 && uniqueVals[0]===10) ? 9 : 8;
+    } else if(countArr[0].c===4){
+      rank = 7;
+    } else if(countArr[0].c===3 && countArr[1] && countArr[1].c===2){
+      rank = 6;
+    } else if(isFlush){
+      rank = 5;
+    } else if(isStraight){
+      rank = 4;
+    } else if(countArr[0].c===3){
+      rank = 3;
+    } else if(countArr[0].c===2 && countArr[1] && countArr[1].c===2){
+      rank = 2;
+    } else if(countArr[0].c===2){
+      rank = 1;
+      kicker = countArr[0].v;
+    } else {
+      rank = 0;
+    }
+    return {rank, kicker};
+  }
+
+  // Auto-Hold: stroga tablica prioriteta s pravih kafanskih aparata.
+  // Vraća [bool,bool,bool,bool,bool] - koje karte automatski zadržati.
+  function autoHoldSuggestion(cards){
+    const held = [false,false,false,false,false];
+    const vals = cards.map(c=>c.val);
+    const suits = cards.map(c=>c.suit);
+
+    const groups = {};
+    cards.forEach((c,i)=>{ (groups[c.val] = groups[c.val] || []).push(i); });
+    const groupEntries = Object.values(groups)
+      .map(idxs=>({val: cards[idxs[0]].val, idxs}))
+      .sort((a,b)=> b.idxs.length - a.idxs.length || b.val - a.val);
+
+    const e = evalHand(cards);
+
+    // 1) Gotove dobitne kombinacije (dva para ili bolje)
+    if(e.rank>=2){
+      if(e.rank===9 || e.rank===8 || e.rank===5 || e.rank===4){
+        return [true,true,true,true,true]; // royal/skala u boji/boja/skala -> svih 5
+      }
+      if(e.rank===7){ // poker (4 iste) -> drži 4
+        groupEntries.find(g=>g.idxs.length===4).idxs.forEach(i=>held[i]=true);
+        return held;
+      }
+      if(e.rank===6){ return [true,true,true,true,true]; } // full -> svih 5
+      if(e.rank===3){ // tris -> drži 3
+        groupEntries.find(g=>g.idxs.length===3).idxs.forEach(i=>held[i]=true);
+        return held;
+      }
+      if(e.rank===2){ // dva para -> drži oba para (4 karte)
+        groupEntries.filter(g=>g.idxs.length===2).forEach(g=>g.idxs.forEach(i=>held[i]=true));
+        return held;
+      }
+    }
+
+    // 2) Visoki par (J,Q,K,A) i 3) Mali par (2-10) -> uvijek drži par, odbaci ostatak
+    if(e.rank===1){
+      groupEntries.find(g=>g.idxs.length===2).idxs.forEach(i=>held[i]=true);
+      return held;
+    }
+
+    // 4) 4-to-a-Flush -> drži 4 iste boje
+    const bySuit = {};
+    cards.forEach((c,i)=>{ (bySuit[c.suit] = bySuit[c.suit] || []).push(i); });
+    const flushDraw = Object.values(bySuit).find(idxs=>idxs.length===4);
+    if(flushDraw){
+      flushDraw.forEach(i=>held[i]=true);
+      return held;
+    }
+
+    // 5) 4-to-a-Straight, samo OTVORENA skala (inside straight se ne drži)
+    const uniqueVals = [...new Set(vals)];
+    if(uniqueVals.length>=4){
+      for(let leaveOut=0; leaveOut<5; leaveOut++){
+        const subsetIdx = [0,1,2,3,4].filter(i=>i!==leaveOut);
+        const subsetVals = subsetIdx.map(i=>vals[i]);
+        if(new Set(subsetVals).size!==4) continue;
+        const sorted = [...subsetVals].sort((a,b)=>a-b);
+        const isConsecutive = sorted.every((v,idx)=> idx===0 || v===sorted[idx-1]+1);
+        if(isConsecutive){
+          const low = sorted[0], high = sorted[3];
+          if(low>=3 && high<=13){ // otvorena s obje strane (npr. 6-7-8-9)
+            subsetIdx.forEach(i=>held[i]=true);
+            return held;
+          }
+        }
+      }
+    }
+
+    // 6) Dvije ili tri visoke karte (J,Q,K,A) - po mogućnosti iste boje, inače max dvije nepovezane
+    const highIdx = [0,1,2,3,4].filter(i=>vals[i]>=11);
+    if(highIdx.length>=2){
+      const highBySuit = {};
+      highIdx.forEach(i=>{ (highBySuit[suits[i]] = highBySuit[suits[i]] || []).push(i); });
+      const suitedHigh = Object.values(highBySuit).find(idxs=>idxs.length>=2);
+      if(suitedHigh){
+        suitedHigh.slice(0,2).forEach(i=>held[i]=true);
+        return held;
+      }
+      highIdx.slice().sort((a,b)=> vals[b]-vals[a]).slice(0,2).forEach(i=>held[i]=true);
+      return held;
+    }
+    if(highIdx.length===1){
+      held[highIdx[0]] = true;
+      return held;
+    }
+
+    // 7) Ništa -> prazno, mijenjaju se svih 5
+    return held;
+  }
+
+  function handResultName(cards){
+    const e = evalHand(cards);
+    switch(e.rank){
+      case 9: return 'ROYAL FLUSH';
+      case 8: return 'STRAIGHT FLUSH';
+      case 7: return 'FOUR OF A KIND';
+      case 6: return 'FULL HOUSE';
+      case 5: return 'FLUSH';
+      case 4: return 'STRAIGHT';
+      case 3: return 'THREE OF A KIND';
+      case 2: return 'TWO PAIR';
+      case 1: return e.kicker>=11 ? 'JACKS OR BETTER' : null;
+      default: return null;
+    }
+  }
+
+  function payoutFor(cards){
+    const name = handResultName(cards);
+    if(!name) return {name:null, mult:0};
+    const p = PAYTABLE.find(p=>p.name===name);
+    return {name, mult:p.mult};
+  }
+
+  // ---- Game flow ----
+  const gameOverOverlay = $('gameOverOverlay');
+  const newGameBtn = $('newGameBtn');
+  const startOverlay = $('startOverlay');
+  const startGameBtn = $('startGameBtn');
+
+  function checkBroke(){
+    if(credit < BET_MIN){
+      dealBtn.disabled = true;
+      if(!gameOverOverlay.classList.contains('show')){
+        sndGameOver();
+      }
+      gameOverOverlay.classList.add('show');
+      return true;
+    }
+    return false;
+  }
+
+  newGameBtn.addEventListener('click', ()=>{
+    sndNewGame();
+    credit = STARTING_CREDIT;
+    bet = 5;
+    saveCredit();
+    gameOverOverlay.classList.remove('show');
+    resetRound();
+    message.textContent = 'NEW GAME — SELECT BET AND PRESS DEAL';
+  });
+
+  // Kabinet kreće "ugašen" dok se ne pokrene boot sekvenca
+  marqueeEl.classList.add('powered-off');
+  paytablePanel.classList.add('powered-off');
+  ledsRow.classList.add('powered-off');
+  cardsRow.classList.add('powered-off');
+  mainControls.classList.add('powered-off');
+  betRow.classList.add('powered-off');
+
+  function sndPowerStep(){ ensureAudio(); beep(720, .05, 0, 'square', .07); }
+
+  startGameBtn.addEventListener('click', ()=>{
+    sndStartup();
+    startContent.style.display = 'none';
+    bootText.style.display = 'block';
+    runBootText();
+  });
+
+  // "POWER ON ..." tekst prije nego se aparat stvarno upali
+  function runBootText(){
+    const lines = ['POWER ON', 'P O W E R   O N .', 'P O W E R   O N . .', 'P O W E R   O N . . .'];
+    let i = 0;
+    (function nextLine(){
+      if(i < lines.length){
+        bootText.textContent = lines[i];
+        i++;
+        setTimeout(nextLine, 380);
+      } else {
+        bootText.textContent = '';
+        startOverlay.classList.remove('show');
+        revealCabinet();
+      }
+    })();
+  }
+
+  // Kabinet se pali dio po dio: naslov, paytable, displeji, karte, tipke
+  function revealCabinet(){
+    const steps = [
+      ()=> marqueeEl.classList.remove('powered-off'),
+      ()=> paytablePanel.classList.remove('powered-off'),
+      ()=> ledsRow.classList.remove('powered-off'),
+      ()=> cardsRow.classList.remove('powered-off'),
+      ()=> { mainControls.classList.remove('powered-off'); betRow.classList.remove('powered-off'); },
+    ];
+    const STEP_MS = 360;
+    steps.forEach((fn, idx)=>{
+      setTimeout(()=>{ fn(); sndPowerStep(); }, idx*STEP_MS);
+    });
+
+    setTimeout(()=>{
+      if(checkBroke()) return;
+      message.textContent = 'INSERT BET';
+      message.classList.add('blink');
+      setTimeout(()=>{
+        message.classList.remove('blink');
+        playIntroAnimation();
+      }, 1100);
+    }, steps.length*STEP_MS + 250);
+  }
+
+  // Uvodna animacija: 5 zatvorenih karata se redom otvore, ostanu trenutak otvorene, pa se zatvore i igra je spremna
+  function playIntroAnimation(){
+    dealBtn.disabled = true;
+    message.textContent = 'WELCOME...';
+
+    const introCards = shuffle(buildDeck()).slice(0,5);
+    cardsRow.innerHTML = '';
+    for(let i=0;i<5;i++){
+      const slot = document.createElement('div');
+      slot.className = 'card-slot';
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'card';
+      cardDiv.innerHTML = `<div class="flip-card"><div class="flip-inner" id="introInner${i}">
+          <div class="flip-front card-face back"></div>
+          <div class="flip-back card-face" id="introFace${i}"></div>
+        </div></div>`;
+      slot.appendChild(cardDiv);
+      cardsRow.appendChild(slot);
+    }
+
+    const OPEN_STAGGER = 150;
+    const CLOSE_STAGGER = 120;
+    const lastOpenStart = (introCards.length-1) * OPEN_STAGGER;
+    const opensDoneAt = 200 + lastOpenStart + OPEN_MS;
+    const closeStartAt = opensDoneAt + 650;
+    const lastCloseStart = (introCards.length-1) * CLOSE_STAGGER;
+    const closesDoneAt = closeStartAt + lastCloseStart + CLOSE_MS;
+
+    introCards.forEach((c,i)=>{
+      setTimeout(()=>{
+        flipOpen(document.getElementById('introInner'+i), document.getElementById('introFace'+i), c);
+      }, 200 + i*OPEN_STAGGER);
+    });
+
+    introCards.forEach((c,i)=>{
+      setTimeout(()=>{
+        const inner = document.getElementById('introInner'+i);
+        const face = document.getElementById('introFace'+i);
+        if(inner) flipCloseThen(inner, face, ()=>{});
+      }, closeStartAt + i*CLOSE_STAGGER);
+    });
+
+    setTimeout(()=>{
+      emptyHandDisplay();
+      dealBtn.disabled = false;
+      message.textContent = 'SELECT BET AND PRESS DEAL';
+    }, closesDoneAt + 200);
+  }
+
+  function resetRound(){
+    stage = 'idle';
+    held = [false,false,false,false,false];
+    win = 0;
+    updateLeds();
+    dealBtn.disabled = false;
+    drawBtn.disabled = true;
+    doubleBtn.disabled = true;
+    collectBtn.disabled = true;
+    renderPaytable(null);
+    clearWin();
+    renderHoldButtons([true,true,true,true,true]);
+    cardsRow.classList.remove('duel-mode');
+    emptyHandDisplay();
+    winLedBox.classList.remove('tension');
+    checkBroke();
+  }
+
+  dealBtn.addEventListener('click', ()=>{
+    if(creditAnimating){ skipCreditTick(); return; }
+    if(stage==='idle'){
+      if(credit < bet){
+        message.textContent = 'NOT ENOUGH CREDITS — LOWER YOUR BET';
+        sndLose();
+        betLedBox.classList.remove('insufficient');
+        void betLedBox.offsetWidth;
+        betLedBox.classList.add('insufficient');
+        setTimeout(()=>betLedBox.classList.remove('insufficient'), 1100);
+        return;
+      }
+      sndDeal();
+      credit -= bet;
+      saveCredit();
+      win = 0;
+      clearWin();
+      deck = shuffle(buildDeck());
+      hand = deck.splice(0,5);
+      held = [false,false,false,false,false];
+      stage = 'dealing';
+      dealBtn.disabled = true;
+      drawBtn.disabled = true;
+      updateLeds();
+      message.textContent = 'DEALING...';
+      renderPaytable(null);
+      dealCardsAnimated();
+    }
+  });
+
+  // Dijeljenje: svaka karta uleti na stol i okrene se, jedna za drugom, uz zvuk
+  function dealCardsAnimated(){
+    cardsRow.innerHTML = '';
+    for(let i=0;i<5;i++){
+      const slot = document.createElement('div');
+      slot.className = 'card-slot deal-in';
+      slot.style.animationDelay = (i*130) + 'ms';
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'card';
+      cardDiv.innerHTML = `<div class="flip-card"><div class="flip-inner" id="dealInner${i}">
+          <div class="flip-front card-face back"></div>
+          <div class="flip-back card-face" id="dealFace${i}"></div>
+        </div></div>`;
+      slot.appendChild(cardDiv);
+      cardsRow.appendChild(slot);
+    }
+
+    const STAGGER_MS = 130;
+    hand.forEach((c,i)=>{
+      setTimeout(()=>{
+        flipOpen(document.getElementById('dealInner'+i), document.getElementById('dealFace'+i), c);
+      }, 160 + i*STAGGER_MS);
+    });
+
+    const totalWait = 160 + 4*STAGGER_MS + OPEN_MS + 150;
+    setTimeout(()=>{
+      stage = 'dealt';
+      held = [false,false,false,false,false];
+      renderHand([true,true,true,true,true]);
+      renderHoldButtons([true,true,true,true,true]);
+      message.textContent = 'AUTO-HOLD...';
+      runAutoHoldSweep(autoHoldSuggestion(hand));
+      drawBtn.disabled = false;
+    }, totalWait);
+  }
+
+  // Auto-Hold ne pali sve lampice odjednom - "protrči" slijeva nadesno uz relej zvuk (tak-tak)
+  function runAutoHoldSweep(suggestion){
+    const SWEEP_STEP_MS = 110;
+    suggestion.forEach((shouldHold, i)=>{
+      setTimeout(()=>{
+        if(shouldHold){
+          held[i] = true;
+          setCardHeldVisual(i, true);
+          sndRelayLock();
+        } else {
+          sndRelayTick();
+        }
+        if(i===suggestion.length-1){
+          message.textContent = 'SELECT CARDS TO HOLD AND PRESS DRAW';
+        }
+      }, i*SWEEP_STEP_MS);
+    });
+  }
+
+  drawBtn.addEventListener('click', ()=>{
+    if(stage!=='dealt') return;
+    sndClick();
+    drawBtn.disabled = true;
+    dealBtn.disabled = true;
+    stage = 'revealing';
+    renderHoldButtons([true,true,true,true,true]);
+
+    const replaceIdx = [];
+    for(let i=0;i<5;i++){
+      if(!held[i]){
+        hand[i] = deck.shift();
+        replaceIdx.push(i);
+      }
+    }
+
+    // Prikaži ruku: zadržane karte ostaju otvorene i mirne, ostale kreću zatvorene
+    cardsRow.innerHTML = '';
+    hand.forEach((c, i)=>{
+      const slot = document.createElement('div');
+      slot.className = 'card-slot';
+      const cardDiv = document.createElement('div');
+      if(held[i]){
+        cardDiv.className = 'card held';
+        cardDiv.innerHTML = cardFaceHTML(c, true) + `<div class="hold-tag">HOLD</div>`;
+      } else {
+        cardDiv.className = 'card';
+        cardDiv.innerHTML = `<div class="flip-card"><div class="flip-inner" id="handInner${i}">
+            <div class="flip-front card-face back"></div>
+            <div class="flip-back card-face" id="handFace${i}"></div>
+          </div></div>`;
+      }
+      slot.appendChild(cardDiv);
+      cardsRow.appendChild(slot);
+    });
+
+    if(replaceIdx.length===0){
+      message.textContent = 'YOU HELD ALL CARDS...';
+      setTimeout(finishDraw, 350);
+      return;
+    }
+
+    message.textContent = 'DRAWING NEW CARDS...';
+    const STAGGER_MS = 170;
+    replaceIdx.forEach((i, order)=>{
+      setTimeout(()=>{
+        const inner = document.getElementById('handInner'+i);
+        const face = document.getElementById('handFace'+i);
+        flipOpen(inner, face, hand[i]);
+      }, 250 + order*STAGGER_MS);
+    });
+
+    const totalWait = 250 + (replaceIdx.length-1)*STAGGER_MS + OPEN_MS + 150;
+    setTimeout(finishDraw, totalWait);
+  });
+
+  function finishDraw(){
+    stage = 'result';
+    renderHand([true,true,true,true,true]); // makni ostatke flip-card 3D omota nakon izvlačenja
+    const res = payoutFor(hand);
+    if(res.mult>0){
+      win = res.mult * bet;
+      message.textContent = res.name + '! WIN ' + win + ' — GAMBLE OR COLLECT';
+      renderPaytable(res.name);
+      lastWinName = res.name;
+      lastWinHand = hand.slice();
+      doubleBtn.disabled = false;
+      collectBtn.disabled = false;
+      highlightWin();
+      displayedWin = 0;
+      ledWin.textContent = 0;
+      tickWinTo(win);
+      celebrateWin(res.mult, win);
+    } else {
+      win = 0;
+      message.textContent = 'NO WIN — TRY AGAIN';
+      renderPaytable(null);
+      sndLose();
+      setTimeout(()=>{ resetRound(); message.textContent='SELECT BET AND PRESS DEAL'; }, 900);
+    }
+    updateLeds();
+    held = [false,false,false,false,false];
+  }
+
+  collectBtn.addEventListener('click', ()=>{
+    if(win>0){
+      sndCollect();
+      credit += win;
+      saveCredit();
+      message.textContent = 'COLLECTED ' + win + ' CREDITS';
+      win = 0;
+      clearWin();
+      displayedWin = 0;
+      ledWin.textContent = 0;
+      dealBtn.disabled = false;
+      tickCreditTo(credit, ()=>{
+        setTimeout(()=>{ resetRound(); message.textContent='SELECT BET AND PRESS DEAL'; }, 250);
+      });
+    } else {
+      win = 0;
+      clearWin();
+      updateLeds();
+      setTimeout(()=>{ resetRound(); message.textContent='SELECT BET AND PRESS DEAL'; }, 700);
+    }
+  });
+
+  // ---- Double up (veće/manje) s animiranim okretanjem karata ----
+  const higherBtn = $('higherBtn');
+  const lowerBtn = $('lowerBtn');
+  const halveBtn = $('halveBtn');
+  const cashoutBtn = $('cashoutBtn');
+  const OPEN_MS = 700;
+  const CLOSE_MS = 450;
+  const HIGH_ROLLER_THRESHOLD = 100; // od ove cifre ulog za dupliranje počinje pulsirati crveno
+
+  function updateTension(){
+    if(duelPot >= HIGH_ROLLER_THRESHOLD){
+      winLedBox.classList.add('tension');
+    } else {
+      winLedBox.classList.remove('tension');
+    }
+  }
+
+  doubleBtn.addEventListener('click', ()=>{
+    if(win<=0) return;
+    sndGamble();
+    duelPot = win;
+    startDuel();
+  });
+
+  function setDuelButtonsEnabled(on){
+    higherBtn.disabled = !on;
+    lowerBtn.disabled = !on;
+    halveBtn.disabled = !on;
+    cashoutBtn.disabled = !on;
+    higherBtn.classList.toggle('glow', on);
+    lowerBtn.classList.toggle('glow', on);
+  }
+
+  // Otvara aparat: gemblanje koristi ISTI prostor za karte (cardsRow) i gumbe (mainControls) kao normalna igra,
+  // tako da se ekran ne pomiče kad se uđe u veće/manje
+  function startDuel(pendingGuess){
+    switchControls(true);
+    screenEl.classList.add('gamble-active');
+    cardsRow.classList.add('duel-mode');
+    cardsRow.innerHTML = '';
+    duelRounds = 0;
+    message.classList.remove('win-flash','lose-flash','joker-flash');
+    updateTension();
+
+    // Odmah stavi zatvorenu kartu (praznu) da red za karte rezervira svoju visinu
+    // već od početka gemblanja - gumbi ispod se onda ne pomiču kad se prva karta otvori
+    const placeholder = appendStackCard();
+    activeInner = placeholder.inner;
+    activeFace = placeholder.face;
+
+    deck = deck.length>4 ? deck : shuffle(buildDeck());
+
+    if(pendingGuess){
+      setDuelButtonsEnabled(false);
+      resolveDuel(pendingGuess);
+    } else {
+      message.textContent = guessPrompt();
+      setDuelButtonsEnabled(true);
+    }
+  }
+
+  // Svaki klik VEĆE/MANJE: nova zatvorena karta se doda na kraj lepeze i otvori se preko prethodne,
+  // koja ostaje vidljiva sa strane (kao dokaz cijelog niza pogodaka)
+  function resolveDuel(guess){
+    sndClick();
+    setDuelButtonsEnabled(false);
+    message.textContent = 'NEXT CARD...';
+
+    const next = deck.length>0 ? deck.shift() : shuffle(buildDeck()).shift();
+    // Ako trenutna kartica već stoji otvorena (prethodni pogodak), dodaj novu na kraj lepeze.
+    // Inače (prva karta ove sesije) samo iskoristi već postavljenu zatvorenu karticu.
+    const card = activeInner.classList.contains('flip-anim')
+      ? appendStackCard()
+      : { inner: activeInner, face: activeFace };
+
+    setTimeout(()=>{
+      activeInner = card.inner;
+      activeFace = card.face;
+      flipOpen(activeInner, activeFace, next);
+
+      setTimeout(()=>{
+        const isJoker = next.rank === '7';
+        let outcome;
+        if(isJoker){
+          outcome = 'win'; // Džoker! uvijek pobjeđuje, bez obzira na potez
+        } else if(duelGroup(next)==='low'){
+          outcome = guess==='lower' ? 'win' : 'lose';
+        } else {
+          outcome = guess==='higher' ? 'win' : 'lose';
+        }
+
+        if(outcome==='win'){
+          duelPot *= 2;
+          win = duelPot;
+          duelRounds++;
+          tickWinTo(win);
+          if(isJoker){
+            message.textContent = '🃏 JOKER! ULOG UDVOSTRUČEN NA ' + duelPot;
+            message.classList.add('joker-flash');
+            pulseJokerCard(activeInner);
+            sndJoker();
+          } else {
+            message.textContent = 'WIN! ' + duelPot;
+            message.classList.add('win-flash');
+            pulseWinCard(activeInner);
+            duelPot >= HIGH_ROLLER_THRESHOLD ? sndWinBig() : sndWin();
+          }
+          updateTension();
+          setTimeout(()=>{
+            message.classList.remove('win-flash','joker-flash');
+            if(duelRounds >= MAX_DUEL_ROUNDS){
+              message.textContent = 'MAX ' + MAX_DUEL_ROUNDS + ' ROUNDS — AUTO COLLECT';
+              sndFanfare();
+              setTimeout(()=>{
+                cashoutBtn.disabled = false;
+                cashoutBtn.click();
+              }, 1300);
+            } else {
+              message.textContent = guessPrompt();
+              setDuelButtonsEnabled(true);
+            }
+          }, 900);
+        } else {
+          duelPot = 0;
+          win = 0;
+          updateLeds();
+          message.textContent = 'GAME OVER';
+          message.classList.add('lose-flash');
+          sndLose();
+          winLedBox.classList.remove('tension');
+          flashBust();
+          setTimeout(()=>{
+            message.classList.remove('lose-flash');
+            screenEl.classList.remove('gamble-active');
+            cardsRow.classList.remove('duel-mode');
+            switchControls(false);
+            resetRound();
+            message.textContent = 'SELECT BET AND PRESS DEAL';
+          }, 1200);
+        }
+      }, OPEN_MS);
+    }, 150);
+  }
+
+  // Svaka karta se ocjenjuje sama: A-6 = manja skupina, 8-K = veća skupina, 7 = džoker (rukuje se posebno)
+  function duelGroup(card){
+    if(card.rank==='A') return 'low';
+    return card.val <= 6 ? 'low' : 'high';
+  }
+
+  function pulseWinCard(innerEl){
+    const slot = innerEl.closest('.card-slot');
+    slot.classList.add('flip-win');
+    setTimeout(()=>slot.classList.remove('flip-win'), 900);
+  }
+
+  function pulseJokerCard(innerEl){
+    const slot = innerEl.closest('.card-slot');
+    slot.classList.add('joker-win');
+    setTimeout(()=>slot.classList.remove('joker-win'), 1200);
+  }
+
+  function guessPrompt(){
+    return 'GUESS: LOWER (A-6) OR HIGHER (8-K)?';
+  }
+
+  function spawnCoins(count){
+    const burst = $('coinBurst');
+    if(!burst) return;
+    for(let i=0;i<count;i++){
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      const angle = Math.random()*Math.PI*2;
+      const dist = 35 + Math.random()*55;
+      const dx = Math.cos(angle)*dist;
+      const dy = Math.sin(angle)*dist - 25;
+      coin.style.setProperty('--dx', dx.toFixed(1)+'px');
+      coin.style.setProperty('--dy', dy.toFixed(1)+'px');
+      coin.style.setProperty('--rot', (Math.random()*360-180).toFixed(0)+'deg');
+      coin.style.animationDelay = (Math.random()*0.12).toFixed(2)+'s';
+      burst.appendChild(coin);
+      setTimeout(()=>coin.remove(), 1000);
+    }
+  }
+
+  // Dodaje novu zatvorenu karticu na kraj lepeze; prethodne ostaju vidljive sa strane
+  function appendStackCard(){
+    const slot = document.createElement('div');
+    slot.className = 'card-slot';
+    slot.innerHTML = `<div class="flip-card"><div class="flip-inner">
+        <div class="flip-front card-face back"></div>
+        <div class="flip-back card-face"></div>
+      </div></div>`;
+    cardsRow.appendChild(slot);
+    layoutDuelStack();
+    return {
+      inner: slot.querySelector('.flip-inner'),
+      face: slot.querySelector('.flip-back')
+    };
+  }
+  // Umjesto scrolla (koji na Safariju kvari 3D okretanje karata), razmak lepeze se
+  // dinamički stisne tako da se sve karte uvijek uklope u vidljivu širinu retka
+  function layoutDuelStack(){
+    const slots = cardsRow.querySelectorAll('.card-slot');
+    const n = slots.length;
+    if(n===0) return;
+    const cardWidth = slots[0].getBoundingClientRect().width || 104;
+    slots[0].style.marginLeft = '0px';
+    if(n===1) return;
+    const preferredIncrement = cardWidth * 0.4; // uvijek preklopi ~60% karte, vidljivo ~40%
+    const containerWidth = (cardsRow.clientWidth || (cardWidth*5)) - 10;
+    const fitIncrement = (containerWidth - cardWidth) / (n - 1);
+    let increment = Math.min(preferredIncrement, fitIncrement);
+    increment = Math.max(10, increment);
+    slots.forEach((slot, i)=>{
+      if(i===0) return;
+      slot.style.marginLeft = (increment - cardWidth) + 'px';
+    });
+  }
+
+  higherBtn.addEventListener('click', ()=>resolveDuel('higher'));
+  lowerBtn.addEventListener('click', ()=>resolveDuel('lower'));
+  cashoutBtn.addEventListener('click', ()=>{
+    setDuelButtonsEnabled(false);
+    winLedBox.classList.remove('tension');
+    if(duelPot>0){
+      sndCollect();
+      const payout = duelPot;
+      credit += payout;
+      saveCredit();
+      message.textContent = 'COLLECTED ' + payout + ' CREDITS';
+      duelPot = 0;
+      win = 0;
+      displayedWin = 0;
+      ledWin.textContent = 0;
+      dealBtn.disabled = false;
+      tickCreditTo(credit, ()=>{
+        setTimeout(()=>{
+          screenEl.classList.remove('gamble-active');
+          cardsRow.classList.remove('duel-mode');
+          switchControls(false);
+          resetRound();
+          message.textContent = 'SELECT BET AND PRESS DEAL';
+        }, 250);
+      });
+    } else {
+      duelPot = 0;
+      win = 0;
+      updateLeds();
+      setTimeout(()=>{
+        screenEl.classList.remove('gamble-active');
+        cardsRow.classList.remove('duel-mode');
+        switchControls(false);
+        resetRound();
+        message.textContent = 'SELECT BET AND PRESS DEAL';
+      }, 500);
+    }
+  });
+
+  // Uzmi pola: srednja opcija između punog rizika (GAMBLE) i punog povlačenja (COLLECT)
+  // Uzmi pola: pola trenutnog uloga ide na kredit, s preostalom polovicom se nastavlja kockati
+  halveBtn.addEventListener('click', ()=>{
+    if(duelPot<=0) return;
+    setDuelButtonsEnabled(false);
+    sndCollect();
+    spawnCoins(12);
+
+    const half = Math.floor(duelPot / 2);
+    const remaining = duelPot - half;
+
+    credit += half;
+    saveCredit();
+    duelPot = remaining;
+    win = duelPot;
+    displayedWin = win;
+    ledWin.textContent = win;
+    message.textContent = 'TOOK ' + half + ' — CONTINUING WITH ' + remaining;
+
+    tickCreditTo(credit, ()=>{
+      updateTension();
+      setTimeout(()=>{
+        message.textContent = guessPrompt();
+        setDuelButtonsEnabled(true);
+      }, 900);
+    });
+  });
+
+  // ---- Bet controls ----
+  $('betMinus').addEventListener('click', ()=>{
+    if(stage!=='idle') return;
+    bet = Math.max(BET_MIN, bet - BET_STEP);
+    sndClick();
+    updateLeds();
+    renderPaytable(null);
+  });
+  $('betPlus').addEventListener('click', ()=>{
+    if(stage!=='idle') return;
+    bet = Math.min(BET_MAX, bet + BET_STEP);
+    sndClick();
+    updateLeds();
+    renderPaytable(null);
+  });
+
+  // ---- Tipkovnica / USB arkadni gumbi (potvrđeni 7-gumb raspored s pravog aparata) ----
+  // Prije dijeljenja (stage idle): 5 = PODIGNI ULOG (bet+)
+  // Nakon dijeljenja (stage dealt): 1-5 = HOLD · 6 = COLLECT · 7 = DEAL/DRAW
+  // U gemblanju: 2 = LOWER · 4 = HIGHER · 5 = HALVE (uzmi pola) · 6 = COLLECT · 1,3,7 = ništa
+  // Pritisak na 2 ili 4 PRIJE ulaska u gemblanje odmah pokreće gemblanje i taj potez kao prvi pogodak
+  // Dodatno za testiranje na PC-u: SPACE/ENTER, G, C, strelice, +/-
+  document.addEventListener('keydown', (e)=>{
+    const key = e.key;
+    const inDuel = screenEl.classList.contains('gamble-active');
+
+    if(key==='7' || key==='Enter'){
+      e.preventDefault();
+      if(startOverlay.classList.contains('show')){ startGameBtn.click(); return; }
+      if(gameOverOverlay.classList.contains('show')){ newGameBtn.click(); return; }
+      if(!dealBtn.disabled){ dealBtn.click(); return; }
+      if(!drawBtn.disabled){ drawBtn.click(); return; }
+      return;
+    }
+
+    if(key===' '){
+      e.preventDefault();
+      if(startOverlay.classList.contains('show')){ startGameBtn.click(); return; }
+      if(gameOverOverlay.classList.contains('show')){ newGameBtn.click(); return; }
+      if(!dealBtn.disabled){ dealBtn.click(); return; }
+      if(!drawBtn.disabled){ drawBtn.click(); return; }
+      if(!collectBtn.disabled){ collectBtn.click(); return; }
+      return;
+    }
+
+    if(key==='6'){
+      if(inDuel){ if(!cashoutBtn.disabled) cashoutBtn.click(); return; }
+      if(!collectBtn.disabled){ collectBtn.click(); }
+      return;
+    }
+
+    if(key==='2' || key==='4'){
+      const guess = key==='2' ? 'lower' : 'higher';
+      if(inDuel){
+        if(guess==='lower' && !lowerBtn.disabled) lowerBtn.click();
+        else if(guess==='higher' && !higherBtn.disabled) higherBtn.click();
+        return;
+      }
+      if(stage==='dealt'){
+        toggleHold(parseInt(key,10)-1, [true,true,true,true,true]);
+      } else if(!doubleBtn.disabled){
+        sndGamble();
+        duelPot = win;
+        startDuel(guess);
+      }
+      return;
+    }
+
+    if(key==='5'){
+      if(inDuel){ if(!halveBtn.disabled) halveBtn.click(); return; }
+      if(stage==='dealt'){ toggleHold(4, [true,true,true,true,true]); return; }
+      if(stage==='idle'){ $('betPlus').click(); return; }
+      return;
+    }
+
+    if(key==='1' || key==='3'){
+      if(inDuel) return;
+      if(stage==='dealt'){
+        toggleHold(parseInt(key,10)-1, [true,true,true,true,true]);
+      }
+      return;
+    }
+
+    if(key==='g' || key==='G'){ if(!doubleBtn.disabled) doubleBtn.click(); return; }
+    if(key==='c' || key==='C'){
+      if(!collectBtn.disabled){ collectBtn.click(); return; }
+      if(!cashoutBtn.disabled){ cashoutBtn.click(); return; }
+      return;
+    }
+
+    if(key==='ArrowUp' || key==='h' || key==='H'){
+      e.preventDefault();
+      if(!higherBtn.disabled) higherBtn.click();
+      return;
+    }
+    if(key==='ArrowDown' || key==='l' || key==='L'){
+      e.preventDefault();
+      if(!lowerBtn.disabled) lowerBtn.click();
+      return;
+    }
+
+    if(key==='ArrowRight' || key==='+' || key==='='){
+      e.preventDefault();
+      $('betPlus').click();
+      return;
+    }
+    if(key==='ArrowLeft' || key==='-' || key==='_'){
+      e.preventDefault();
+      $('betMinus').click();
+      return;
+    }
+  });
+
+  loadCredit();
+  updateLeds();
+})();
+</script>
+
+</body>
+</html>
