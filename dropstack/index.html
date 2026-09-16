@@ -45,7 +45,7 @@
 
   .topbar{
     width:100%;
-    max-width:320px;
+    max-width:440px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -194,7 +194,7 @@
 
   .garbage-bar-wrap{
     width:100%;
-    max-width:320px;
+    max-width:440px;
     margin-top:8px;
   }
   .garbage-bar-label{
@@ -223,7 +223,7 @@
 
   .tray-panel{
     width:100%;
-    max-width:320px;
+    max-width:440px;
     background:linear-gradient(180deg,#232c5e,#1a2150);
     border:1px solid rgba(255,255,255,0.08);
     border-radius:12px;
@@ -274,18 +274,19 @@
     border:1px solid rgba(255,255,255,0.08);
     box-shadow:0 10px 26px rgba(0,0,0,0.4);
     position:relative;
-    max-width:calc(100vw - 28px);
+    width:calc(100vw - 28px);
+    max-width:440px;
   }
   canvas#board{
     display:block;
     border-radius:6px;
-    max-width:100%;
+    width:100%;
     height:auto;
   }
 
   .incoming-wrap{
     width:100%;
-    max-width:calc(100vw - 28px);
+    max-width:min(304px, calc(100vw - 28px));
     margin-top:10px;
     background:linear-gradient(180deg,#2e1f1f,#1a1414);
     border:1px solid rgba(255,90,60,0.35);
