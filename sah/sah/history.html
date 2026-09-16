@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dubrovnik Chess — Baština</title>
+  <style>
+    body { margin:0; min-height:100vh; background:#0f0804; color:#f0e5c8; font-family:Georgia,serif; }
+    #root { min-height:100vh; }
+    #boot-status { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; box-sizing:border-box; background:linear-gradient(160deg,#0f0804 0%,#2a1a08 62%,#0f0804 100%); color:#e0b85a; font-family:Georgia,serif; text-align:center; z-index:9999; }
+    #boot-status.boot-hidden { display:none; }
+    #boot-status strong { display:block; margin-bottom:10px; font-size:20px; letter-spacing:2px; }
+    #boot-status span { display:block; max-width:520px; color:#c0964a; font-size:14px; line-height:1.55; }
+    button { font-family:Georgia,serif; }
+    .tab-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+    .tab-scroll::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="boot-status" role="status" aria-live="polite">
+    <div>
+      <strong>Dubrovnik Chess</strong>
+      <span>Ucitavanje bastine...</span>
+    </div>
+  </div>
+  <script src="vendor/react.production.min.js"></script>
+  <script src="vendor/react-dom.production.min.js"></script>
+  <script>
+    (function() {
+      var status = document.getElementById("boot-status");
+      if (!status) return;
+      var msg = status.querySelector("span");
+      function setBootMessage(text) {
+        if (msg) msg.textContent = text;
+      }
+      window.hideBootStatus = function() {
+        status.className = "boot-hidden";
+      };
+      window.addEventListener("error", function(event) {
+        if (!event || !event.message) return;
+        setBootMessage("Bastina se nije mogla pokrenuti: " + event.message);
+      });
+      setTimeout(function() {
+        if (document.getElementById("root").childElementCount > 0) {
+          window.hideBootStatus();
+          return;
+        }
+        var missing = [];
+        if (!window.React) missing.push("React");
+        if (!window.ReactDOM) missing.push("ReactDOM");
+        if (missing.length) {
+          setBootMessage("Nedostaje " + missing.join(", ") + ". Provjeri mapu vendor pokraj history.html.");
+        } else {
+          setBootMessage("Biblioteke su ucitane, ali stranica se nije prikazala. Otvori konzolu preglednika za detalje greske.");
+        }
+      }, 2000);
+    })();
+  </script>
+
+  <script src="history-app.js"></script>
+</body>
+</html>

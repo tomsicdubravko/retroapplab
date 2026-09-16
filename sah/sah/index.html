@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dubrovnik Chess</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0f0804;
+      color: #f0e5c8;
+      font-family: Georgia, serif;
+    }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+    .typing-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      background: #e0b85a;
+      border-radius: 50%;
+      margin: 0 3px;
+      animation: typingBounce 1.1s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.18s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes fadeInComment { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .comment-fade { animation: fadeInComment 0.4s ease-out forwards; }
+    #root {
+      min-height: 100vh;
+    }
+    #boot-status {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+      background: linear-gradient(160deg, #0f0804 0%, #2a1a08 62%, #0f0804 100%);
+      color: #e0b85a;
+      font-family: Georgia, serif;
+      text-align: center;
+      z-index: 9999;
+    }
+    #boot-status.boot-hidden {
+      display: none;
+    }
+    #boot-status strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 20px;
+      letter-spacing: 2px;
+    }
+    #boot-status span {
+      display: block;
+      max-width: 520px;
+      color: #c0964a;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    button {
+      font-family: Georgia, serif;
+    }
+    @keyframes pulseDest {
+      0%   { background: rgba(224,184,90,0.82); }
+      100% { background: rgba(224,184,90,0); }
+    }
+    @keyframes pulseSrc {
+      0%   { background: rgba(224,184,90,0.45); }
+      100% { background: rgba(224,184,90,0); }
+    }
+    .sq-anim-dest { animation: pulseDest 1.1s ease-out forwards; }
+    .sq-anim-src  { animation: pulseSrc  0.85s ease-out forwards; }
+    @keyframes fadeInResult {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+  <script src="chess-engine.js"></script></head>
+<body>
+  <div id="root"></div>
+  <div id="boot-status" role="status" aria-live="polite">
+    <div>
+      <strong>Dubrovnik Chess</strong>
+      <span>Ucitavanje igre...</span>
+    </div>
+  </div>
+
+  <script src="vendor/react.production.min.js"></script>
+  <script src="vendor/react-dom.production.min.js"></script>
+
+  <script>
+    (function() {
+      var status = document.getElementById("boot-status");
+      if (!status) return;
+      var msg = status.querySelector("span");
+      function setBootMessage(text) {
+        if (msg) msg.textContent = text;
+      }
+      window.hideBootStatus = function() {
+        status.className = "boot-hidden";
+      };
+      window.addEventListener("error", function(event) {
+        if (!event || !event.message) return;
+        setBootMessage("Igra se nije mogla pokrenuti: " + event.message);
+      });
+      setTimeout(function() {
+        if (document.getElementById("root").childElementCount > 0) {
+          window.hideBootStatus();
+          return;
+        }
+        var missing = [];
+        if (!window.React) missing.push("React");
+        if (!window.ReactDOM) missing.push("ReactDOM");
+        if (missing.length) {
+          setBootMessage("Nedostaje " + missing.join(", ") + ". Provjeri mapu vendor pokraj index.html.");
+        } else {
+          setBootMessage("Biblioteke su ucitane, ali aplikacija se nije prikazala. Otvori konzolu preglednika za detalje greske.");
+        }
+      }, 2000);
+    })();
+  </script>
+
+  <script src="app.js"></script>
+</body>
+</html>
