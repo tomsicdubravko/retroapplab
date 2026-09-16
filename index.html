@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetroAppLab — igre i alati Tomislava Dubravka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea-dark:#0D1B2A;
+    --sea-mid:#16324A;
+    --marquee-amber:#F2A541;
+    --marquee-coral:#E85D4C;
+    --parchment:#F5EFE0;
+    --ink:#0D1B2A;
+    --line: rgba(245,239,224,0.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--sea-dark);
+    color:var(--parchment);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.55;
+  }
+  h1,h2,h3,.wordmark{font-family:'Space Grotesk', sans-serif;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  /* NAV */
+  nav{
+    position:sticky;top:0;z-index:20;
+    background:rgba(13,27,42,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px;}
+  .wordmark{font-weight:700;font-size:1.15rem;letter-spacing:0.01em;text-decoration:none;}
+  .wordmark span{color:var(--marquee-amber);}
+  .navlinks{display:flex;gap:28px;font-size:0.92rem;}
+  .navlinks a{text-decoration:none;color:var(--parchment);opacity:0.8;transition:opacity .15s;}
+  .navlinks a:hover{opacity:1;}
+  .navtoggle{display:none;background:none;border:none;color:var(--parchment);font-size:1.5rem;cursor:pointer;}
+
+  /* HERO */
+  .hero{
+    padding:96px 0 80px;
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 900px 400px at 15% -10%, rgba(242,165,65,0.14), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 100% 0%, rgba(232,93,76,0.10), transparent 60%);
+  }
+  .hero h1{
+    font-size:clamp(2.4rem, 6vw, 4.2rem);
+    font-weight:700;
+    line-height:1.04;
+    max-width:11ch;
+  }
+  .hero p{
+    margin-top:22px;
+    max-width:52ch;
+    font-size:1.08rem;
+    color:rgba(245,239,224,0.78);
+  }
+  .hero .byline{
+    margin-top:28px;
+    font-size:0.85rem;
+    letter-spacing:0.03em;
+    color:var(--marquee-amber);
+  }
+
+  section{padding:72px 0;border-top:1px solid var(--line);}
+  .section-head{max-width:60ch;margin-bottom:40px;}
+  .section-head h2{font-size:1.9rem;font-weight:600;}
+  .section-head p{margin-top:10px;color:rgba(245,239,224,0.72);font-size:1rem;}
+
+  /* ARCADE GRID */
+  .arcade-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:2px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .cabinet{
+    background:var(--sea-mid);
+    padding:26px 22px 22px;
+    text-decoration:none;
+    color:inherit;
+    position:relative;
+    transition:background .18s;
+    min-height:168px;
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .cabinet:hover{background:#1c3f5c;}
+  .cabinet .tag{
+    font-family:'Press Start 2P', monospace;
+    font-size:0.55rem;
+    color:var(--marquee-amber);
+    display:block;
+    margin-bottom:14px;
+  }
+  .cabinet h3{font-size:1.15rem;font-weight:600;margin-bottom:8px;}
+  .cabinet .desc{font-size:0.88rem;color:rgba(245,239,224,0.65);}
+  .cabinet .play{
+    margin-top:16px;
+    font-size:0.82rem;
+    color:var(--marquee-coral);
+    font-weight:500;
+  }
+
+  /* CHESS SECTION — distinct parchment/marble feel */
+  #sah{
+    background:var(--parchment);
+    color:var(--ink);
+    border-top:1px solid var(--line);
+  }
+  #sah .section-head p{color:rgba(13,27,42,0.68);}
+  .sah-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:0;
+    border-top:1px solid rgba(13,27,42,0.15);
+    border-left:1px solid rgba(13,27,42,0.15);
+  }
+  .sah-item{
+    padding:26px 24px;
+    border-right:1px solid rgba(13,27,42,0.15);
+    border-bottom:1px solid rgba(13,27,42,0.15);
+  }
+  .sah-item h3{font-size:1.05rem;font-weight:600;margin-bottom:8px;}
+  .sah-item p{font-size:0.9rem;color:rgba(13,27,42,0.68);}
+  .beta{
+    display:inline-block;
+    margin-top:12px;
+    font-size:0.72rem;
+    font-weight:600;
+    letter-spacing:0.04em;
+    color:var(--marquee-coral);
+    border:1px solid var(--marquee-coral);
+    padding:2px 8px;
+    border-radius:3px;
+  }
+
+  /* LAB SECTION — blueprint feel */
+  #lab{
+    background:
+      linear-gradient(rgba(13,27,42,0.97), rgba(13,27,42,0.97)),
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(245,239,224,0.05) 28px),
+      repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(245,239,224,0.05) 28px);
+  }
+  .lab-note{
+    max-width:60ch;
+    font-size:0.98rem;
+    color:rgba(245,239,224,0.75);
+    border-left:2px solid var(--marquee-amber);
+    padding-left:20px;
+  }
+
+  /* CUSTOM SOFTWARE — utilitarian list */
+  .tool-list{list-style:none;border-top:1px solid var(--line);}
+  .tool-list li{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:16px 0;
+    border-bottom:1px solid var(--line);
+    font-size:0.98rem;
+  }
+  .tool-list li span.label{color:rgba(245,239,224,0.55);font-size:0.82rem;}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:44px 0 60px;
+    font-size:0.88rem;
+    color:rgba(245,239,224,0.6);
+  }
+  footer .about{max-width:56ch;margin-bottom:18px;}
+
+  @media (max-width: 760px){
+    .navlinks{
+      position:fixed;top:57px;left:0;right:0;
+      background:var(--sea-dark);
+      flex-direction:column;gap:0;
+      border-bottom:1px solid var(--line);
+      display:none;
+    }
+    .navlinks.open{display:flex;}
+    .navlinks a{padding:14px 24px;border-top:1px solid var(--line);}
+    .navtoggle{display:block;}
+    .arcade-grid{grid-template-columns:1fr;}
+    .sah-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#" class="wordmark">Retro<span>App</span>Lab</a>
+    <button class="navtoggle" onclick="document.querySelector('.navlinks').classList.toggle('open')">☰</button>
+    <div class="navlinks">
+      <a href="#arkada">Retro Arcade</a>
+      <a href="#sah">Dubrovački šah</a>
+      <a href="#lab">The Lab</a>
+      <a href="#software">Custom Software</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Male igre i alati, napravljeni ručno.</h1>
+    <p>RetroAppLab je zbirka browser igara, hardverskih eksperimenata i poslovnih alata koje sam sam osmislio i izgradio — od videopokera do broda koji uplovljava u dubrovačku luku.</p>
+    <div class="byline">Tomislav Dubravko · Dubrovnik</div>
+  </div>
+</header>
+
+<section id="arkada">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Retro Arcade</h2>
+      <p>Šest igara za preglednik, svaka svoj mali svijet — od kartaškog stola do farme i utrke automobila.</p>
+    </div>
+    <div class="arcade-grid">
+      <a class="cabinet" href="/poker/">
+        <div><span class="tag">KARTE</span><h3>Poker</h3><p class="desc">Klasični video poker s "veće/manje" gamble funkcijom.</p></div>
+        <div class="play">Igraj</div>
+      </a>
+      <a class="cabinet" href="/pcelica/">
+        <div><span class="tag">ARKADA</span><h3>Pčelica</h3><p class="desc">Flappy Bird stil igre s pčelom kao glavnim likom.</p></div>
+        <div class="play">Igraj</div>
+      </a>
+      <a class="cabinet" href="/kruzer/">
+        <div><span class="tag">SIMULACIJA</span><h3>Kapetan Kružera</h3><p class="desc">Uplovi brodom u jadranske luke, pogled s mosta broda.</p></div>
+        <div class="play">Igraj</div>
+      </a>
+      <a class="cabinet" href="/farma/">
+        <div><span class="tag">SIMULACIJA</span><h3>Moja Farma</h3><p class="desc">Polja, staje i tržnica — nadahnuto starim SimFarmom.</p></div>
+        <div class="play">Igraj</div>
+      </a>
+      <a class="cabinet" href="/arena-derby/">
+        <div><span class="tag">UTRKA</span><h3>Arena Derby 3D</h3><p class="desc">Demolicijska arena u 3D-u, kampanja i razni tipovi auta.</p></div>
+        <div class="play">Igraj</div>
+      </a>
+      <a class="cabinet" href="/padobroj/">
+        <div><span class="tag">PUZZLE</span><h3>Padobroj</h3><p class="desc">Igra spajanja brojeva koji padaju — mobilna verzija.</p></div>
+        <div class="play">Igraj</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="sah">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Dubrovački šah</h2>
+      <p>Šah smješten u povijest Dubrovačke Republike — od pregleda povijesti igre do partije protiv bota s figurama Olimpijade 1950.</p>
+    </div>
+    <div class="sah-grid">
+      <div class="sah-item">
+        <h3>Povijest šaha</h3>
+        <p>Kratki pregled razvoja igre kroz stoljeća.</p>
+      </div>
+      <div class="sah-item">
+        <h3>Igraj s botovima</h3>
+        <p>Partija protiv bota ili drugog igrača, s figurama Olimpijade 1950.</p>
+      </div>
+      <div class="sah-item">
+        <h3>Postani Knez Republike</h3>
+        <p>Strateška igra o vođenju Dubrovačke Republike.</p>
+        <span class="beta">BETA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>The Lab</h2>
+      <p>Hardverski projekti i eksperimenti izvan preglednika.</p>
+    </div>
+    <p class="lab-note">Ova sekcija je u pripremi — ovdje će stajati opisi hardverskih projekata kad budu spremni za objavu.</p>
+  </div>
+</section>
+
+<section id="software">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Custom Software</h2>
+      <p>Alati napravljeni za svakodnevni rad pizzerije — od evidencije sati do vođenja blagajne.</p>
+    </div>
+    <ul class="tool-list">
+      <li>Evidencija radnih sati zaposlenika <span class="label">interni alat</span></li>
+      <li>Aplikacija za dostavu <span class="label">interni alat</span></li>
+      <li>Unos dostava <span class="label">interni alat</span></li>
+      <li>Dnevnice <span class="label">interni alat</span></li>
+      <li>Brojanje blagajne <span class="label">interni alat</span></li>
+      <li>Kilometraža vozila <span class="label">interni alat</span></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="about">Sve na ovoj stranici napravio sam sâm, uz pomoć Claudea za razvoj koda. Za sustav naručivanja i blagajnu pizzerije posjeti <a href="https://sica.hr" style="text-decoration:underline;">sica.hr</a>.</p>
+    <p>© 2026 Tomislav Dubravko · RetroAppLab</p>
+  </div>
+</footer>
+
+</body>
+</html>
