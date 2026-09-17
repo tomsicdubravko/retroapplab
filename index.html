@@ -299,6 +299,9 @@
     background: rgba(255,255,255,0.05); border-radius: 8px;
   }
   .lab-icon svg { width: 20px; height: 20px; }
+  .lab-item-links { display: flex; gap: 14px; margin-top: 10px; font-size: 0.78rem; }
+  .lab-item-links a { color: var(--neon-green); font-weight: 600; }
+  .lab-item-links a:hover { text-decoration: underline; }
   .lab-item span.title { font-weight: 600; font-size: 0.95rem; }
   .lab-item span.subtitle { font-size: 0.8rem; color: var(--text-muted); }
 
@@ -306,7 +309,7 @@
   .lab-quote {
     text-align: center; padding: 90px 20px 70px;
     margin-top: 40px; border-top: 1px solid var(--border-dim);
-    background-image: linear-gradient(180deg, rgba(7,6,17,0.15) 0%, rgba(7,6,17,0.55) 70%, rgba(7,6,17,0.95) 100%), url('footer-sunset.jpg');
+    background-image: linear-gradient(180deg, rgba(7,6,17,0.15) 0%, rgba(7,6,17,0.6) 70%, rgba(5,4,10,1) 100%), url('footer-sunset.jpg');
     background-size: cover;
     background-position: center 60%;
   }
@@ -317,7 +320,6 @@
 
   /* FOOTER */
   footer {
-    border-top: 1px solid var(--border-dim);
     padding: 48px 0 24px; background: #05040a;
     font-size: 0.88rem; color: var(--text-muted);
   }
@@ -657,6 +659,16 @@
             </div>
             <span style="color: var(--neon-cyan);">Lab</span>
           </div>
+          <div class="lab-item">
+            <div class="lab-item-main">
+              <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l2 5v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l2-5z"/><path d="M4 9h16"/><circle cx="12" cy="14" r="2.5"/></svg></div>
+              <div>
+                <div class="title">Arkadni Kabinet</div>
+                <div class="subtitle">Izrada kućišta za fizičku arkadnu jedinicu s ekranom i kontrolama</div>
+              </div>
+            </div>
+            <span style="color: var(--neon-cyan);">WIP</span>
+          </div>
         </div>
       </div>
 
@@ -698,6 +710,23 @@
               </div>
             </div>
             <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+          </div>
+
+          <div class="lab-item" style="flex-direction: column; align-items: stretch; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="lab-item-main">
+                <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/><path d="M8 19h4"/></svg></div>
+                <div>
+                  <div class="title">Evidencija Radnog Vremena</div>
+                  <div class="subtitle">Usklađena sa Zakonom o radu — brzi dnevni unos dolaska/odlaska, automatski prepoznaje praznike i Uskrs, javlja upozorenja nakon unosa (prekovremeni, noćni sati), mjesečni izvještaj i izvoz u Excel. Besplatna za preuzimanje.</div>
+                </div>
+              </div>
+              <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+            </div>
+            <div class="lab-item-links">
+              <a href="/evidencija-rada/" target="_blank">Isprobaj →</a>
+              <a href="evidencija-rada.html" download>Preuzmi besplatno ↓</a>
+            </div>
           </div>
         </div>
       </div>
