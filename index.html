@@ -23,7 +23,9 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; cursor: url('cursor-bee.png') 20 20, auto; }
+  input, textarea, select { cursor: text; }
+  a, button, .play-btn, .explore-link { cursor: url('cursor-bee.png') 20 20, pointer; }
   body {
     background-color: var(--bg-main);
     color: var(--text-light);
@@ -35,7 +37,108 @@
     background-attachment: fixed;
   }
 
-  /* SPLASH SCREEN */
+  /* DOT NAVIGACIJA */
+  #dotNav {
+    position: fixed;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+  }
+  #dotNav a {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #dotNav .dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    object-fit: contain;
+    opacity: 0.35;
+    filter: grayscale(60%);
+    transition: opacity 0.25s, filter 0.25s, transform 0.25s;
+  }
+  #dotNav a.active .dot {
+    opacity: 1;
+    filter: grayscale(0%) drop-shadow(0 0 8px rgba(255,0,127,0.7));
+    transform: scale(1.15);
+  }
+  #dotNav .dot-label {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.68rem;
+    color: #fff;
+    background: rgba(7,6,17,0.9);
+    border: 1px solid var(--border-dim);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  #dotNav a:hover .dot-label {
+    opacity: 1;
+  }
+  @media (max-width: 840px) {
+    #dotNav { right: 8px; }
+    #dotNav .dot-label { display: none; }
+    #dotNav .dot { width: 22px; height: 22px; }
+  }
+
+  /* FEATURED */
+  .featured-wrap { padding: 0 0 8px; }
+  .featured-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem; color: var(--neon-gold);
+    letter-spacing: 0.15em; margin-bottom: 14px; display: block;
+  }
+  .featured-card {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items: stretch;
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 0, 127, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(255, 0, 127, 0.12);
+  }
+  .featured-media {
+    background-image: url('shot-pcelica.jpg');
+    background-size: cover;
+    background-position: top center;
+    min-height: 280px;
+  }
+  .featured-content { padding: 32px 34px; display: flex; flex-direction: column; justify-content: center; }
+  .featured-content h3 {
+    font-size: 1.7rem; font-weight: 800; color: #fff; margin-bottom: 12px;
+  }
+  .featured-content p {
+    font-size: 0.95rem; color: var(--text-muted); margin-bottom: 22px; line-height: 1.6;
+  }
+  .featured-content .play-btn {
+    align-self: flex-start; font-size: 0.85rem; padding: 10px 22px;
+  }
+  @media (max-width: 840px) {
+    .featured-card { grid-template-columns: 1fr; }
+    .featured-media { min-height: 200px; }
+    .featured-content { padding: 24px; }
+    .featured-content h3 { font-size: 1.3rem; }
+  }
+
+  .featured-label .fl-cursor {
+    animation: splashBlink 1s steps(1) infinite;
+  }
   #splash{
     position: fixed; inset: 0; z-index: 999;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -81,6 +184,21 @@
     margin-top: 14px;
     font-size: 0.75rem;
     color: var(--text-muted);
+  }
+  @keyframes powerOnFlicker{
+    0%   { opacity: 0; filter: brightness(3) saturate(0); }
+    8%   { opacity: 1; filter: brightness(0.4) saturate(0); }
+    12%  { opacity: 0.2; }
+    20%  { opacity: 1; filter: brightness(2) saturate(0.5); }
+    28%  { opacity: 0.4; }
+    36%  { opacity: 1; filter: brightness(1) saturate(1); }
+    100% { opacity: 1; filter: brightness(1) saturate(1); }
+  }
+  body.power-on-active .hero,
+  body.power-on-active .featured-wrap,
+  body.power-on-active nav,
+  body.power-on-active #dotNav {
+    animation: powerOnFlicker 0.7s steps(2, end) 1;
   }
 
   h1, h2, h3, .brand-font { font-family: 'Orbitron', sans-serif; letter-spacing: 0.03em; }
@@ -236,24 +354,45 @@
     background-position: center 40%;
   }
   #sah .section-head h2 { color: var(--neon-gold); }
+
+  /* CHESS TIMELINE — suptilan, ne "stari papir" */
+  .sah-timeline-header {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin-bottom: 32px;
+    font-family: Georgia, serif; letter-spacing: 0.08em;
+    font-size: 0.82rem; color: var(--neon-gold);
+    flex-wrap: wrap;
+  }
+  .sah-timeline-header .tl-dash { color: rgba(245,158,11,0.35); font-weight: 300; }
   .sah-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 18px;
   }
   .sah-card {
-    background: rgba(30, 22, 16, 0.85);
-    border: 1px solid rgba(245, 158, 11, 0.25);
-    border-radius: 10px; padding: 22px;
-    transition: transform 0.25s, box-shadow 0.25s;
+    background:
+      radial-gradient(circle at 30% 0%, rgba(245,158,11,0.06), transparent 60%),
+      rgba(20, 14, 8, 0.75);
+    border: 1px solid rgba(245, 158, 11, 0.22);
+    border-top: 2px solid rgba(245, 158, 11, 0.5);
+    border-radius: 8px; padding: 24px 20px;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    text-align: center;
   }
   .sah-card:hover {
     transform: translateY(-4px);
     border-color: var(--neon-gold);
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+    box-shadow: 0 0 22px rgba(245, 158, 11, 0.25);
   }
-  .sah-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 8px; }
-  .sah-card p { font-size: 0.88rem; color: #d4bda8; margin-bottom: 14px; }
+  .sah-card .sah-icon-wrap { margin-bottom: 14px; }
+  .sah-card img { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; }
+  .sah-card .sah-era {
+    font-family: Georgia, serif; font-style: italic;
+    font-size: 0.78rem; color: rgba(245,158,11,0.7); margin-bottom: 6px;
+  }
+  .sah-card h3 { font-family: Georgia, serif; font-size: 1.1rem; color: #fff; margin-bottom: 8px; }
+  .sah-card p { font-size: 0.85rem; color: #c9b389; margin-bottom: 16px; line-height: 1.5; }
+
   .badge-beta {
     display: inline-block; padding: 2px 8px; border-radius: 4px;
     font-size: 0.65rem; font-weight: 700;
@@ -285,7 +424,10 @@
   .badge-cyan { background: rgba(0, 242, 254, 0.15); color: var(--neon-cyan); border: 1px solid var(--neon-cyan); }
   .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--neon-green); border: 1px solid var(--neon-green); }
 
-  .lab-items { display: grid; gap: 12px; margin-top: 18px; }
+  .lab-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 14px; margin-top: 8px; align-items: start; }
+  .featured-tool { grid-column: 1 / -1; }
+  #lab .section-head h2 { color: var(--neon-cyan); }
+  #software .section-head h2 { color: var(--neon-green); }
   .lab-item {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -319,6 +461,35 @@
   .lab-quote p { font-size: 0.95rem; color: var(--text-muted); font-style: italic; }
 
   /* FOOTER */
+  .featured-tool {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+    background: rgba(16, 185, 129, 0.06);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .featured-tool img { width: 100%; border-radius: 6px; display: block; }
+  .featured-tool .ft-badge {
+    display: inline-block; font-size: 0.62rem; font-weight: 700;
+    color: var(--neon-green); border: 1px solid var(--neon-green);
+    padding: 1px 7px; border-radius: 4px; margin-bottom: 6px;
+  }
+  .featured-tool h4 { font-size: 1rem; color: #fff; margin-bottom: 6px; }
+  .featured-tool .ft-features {
+    display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0;
+  }
+  .featured-tool .ft-features span {
+    font-size: 0.7rem; background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.3); color: var(--neon-green);
+    padding: 3px 8px; border-radius: 12px;
+  }
+  @media (max-width: 500px) {
+    .featured-tool { grid-template-columns: 1fr; }
+    .featured-tool img { max-width: 160px; margin: 0 auto; }
+  }
+
   footer {
     padding: 48px 0 24px; background: #05040a;
     font-size: 0.88rem; color: var(--text-muted);
@@ -351,7 +522,7 @@
     animation: splashBlink 1s steps(1) infinite;
   }
   .footer-copyright {
-    font-size: 0.72rem; opacity: 0.55; padding-top: 12px;
+    font-size: 0.72rem; opacity: 0.55; padding-top: 12px; line-height: 1.7;
     border-top: 1px solid var(--border-dim); width: 100%; max-width: 320px;
   }
 
@@ -376,6 +547,8 @@
     .quick-card .explore-link { font-size: 0.7rem; }
     .card-banner { height: 70px; }
     .card-banner .placeholder-icon svg { width: 32px; height: 32px; }
+    .sah-timeline-header { font-size: 0.68rem; gap: 6px; }
+    .sah-timeline-header .tl-dash { display: none; }
     .card-body { padding: 10px 12px; }
     .card-body h3 { font-size: 0.9rem; margin-bottom: 4px; }
     .card-body p { font-size: 0.72rem; margin-bottom: 10px; }
@@ -397,13 +570,64 @@
 <script>
   (function(){
     var splash = document.getElementById('splash');
-    function enter(){
-      splash.classList.add('hidden');
-      document.removeEventListener('keydown', enter);
-      splash.removeEventListener('click', enter);
+    var SEEN_KEY = 'retroapplab_seen_splash';
+
+    function triggerPowerOn(){
+      document.body.classList.add('power-on-active');
+      setTimeout(function(){ document.body.classList.remove('power-on-active'); }, 750);
     }
-    splash.addEventListener('click', enter);
-    document.addEventListener('keydown', enter);
+
+    // Ako je korisnik već vidio splash, preskoči ga bez animacije i bez klika
+    if(localStorage.getItem(SEEN_KEY)){
+      splash.classList.add('hidden');
+      splash.style.display = 'none';
+    } else {
+      function enter(){
+        splash.classList.add('hidden');
+        localStorage.setItem(SEEN_KEY, '1');
+        triggerPowerOn();
+        document.removeEventListener('keydown', enter);
+        splash.removeEventListener('click', enter);
+      }
+      splash.addEventListener('click', enter);
+      document.addEventListener('keydown', enter);
+    }
+  })();
+</script>
+
+<!-- DOT NAVIGACIJA -->
+<div id="dotNav">
+  <a href="#arkada" data-target="arkada"><img class="dot" src="icon-arcade.jpg" alt=""><span class="dot-label">Arcade</span></a>
+  <a href="#sah" data-target="sah"><img class="dot" src="icon-chess.jpg" alt=""><span class="dot-label">Šah</span></a>
+  <a href="#lab" data-target="lab"><img class="dot" src="icon-lab.jpg" alt=""><span class="dot-label">The Lab</span></a>
+  <a href="#software" data-target="software"><img class="dot" src="icon-software.jpg" alt=""><span class="dot-label">Software</span></a>
+</div>
+
+<script>
+  (function(){
+    var sections = ['arkada','sah','lab','software'].map(function(id){ return document.getElementById(id); });
+    var dots = document.querySelectorAll('#dotNav a');
+    function setActive(id){
+      dots.forEach(function(d){
+        d.classList.toggle('active', d.getAttribute('data-target') === id);
+      });
+    }
+    var observer = new IntersectionObserver(function(entries){
+      var visible = entries.filter(function(e){ return e.isIntersecting; });
+      if(visible.length){
+        visible.sort(function(a,b){ return b.intersectionRatio - a.intersectionRatio; });
+        setActive(visible[0].target.id);
+      }
+    }, { threshold: [0.2, 0.4, 0.6] });
+    sections.forEach(function(s){ if(s) observer.observe(s); });
+
+    dots.forEach(function(d){
+      d.addEventListener('click', function(e){
+        e.preventDefault();
+        var target = document.getElementById(d.getAttribute('data-target'));
+        if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
   })();
 </script>
 
@@ -430,7 +654,7 @@
     <span class="hero-tag">GAMES • APPS • EXPERIMENTS</span>
     <h1>MALE IGRE I ALATI, NAPRAVLJENI RUČNO.</h1>
     <p class="hero-sub">RetroAppLab je zbirka web igara, fizičkih hardverskih eksperimenata i poslovnih rješenja — od video pokera do dubrovačkog šaha nadahnutog poviješću grada.</p>
-    <div class="hero-byline">Dubo · Dubrovnik</div>
+    <div class="hero-byline">RETRO APP LAB · DUBROVNIK</div>
 
     <!-- 4 GLAVNE KARTICE KAO NA MOCKUPU -->
     <div class="top-cards">
@@ -473,6 +697,19 @@
   </div>
 </header>
 
+<!-- FEATURED -->
+<div class="wrap featured-wrap">
+  <span class="featured-label">NOW IN THE LAB<span class="fl-cursor">_</span></span>
+  <div class="featured-card">
+    <div class="featured-media"></div>
+    <div class="featured-content">
+      <h3>Pčelica</h3>
+      <p>Leti kroz nebo, zaroni u podvodnu medenu špilju kroz vrtlog, ili se popni u oblačno kraljevstvo kroz čudne oblake — svaki svijet ima svoje opasnosti (podmornica, avion). Flappy Bird mehanika, ali s dva skrivena svijeta koja tek trebaš otkriti.</p>
+      <a href="/pcelica/" class="play-btn">Igraj →</a>
+    </div>
+  </div>
+</div>
+
 <!-- ARCADE SEKCIJA -->
 <section id="arkada">
   <div class="wrap">
@@ -484,101 +721,73 @@
     <div class="arcade-grid">
       <!-- POKER -->
       <div class="arcade-card">
-        <div class="card-banner">
-          <div class="placeholder-icon">
-            <img src="icon-poker.jpg" alt="Poker" style="width:64px;height:64px;object-fit:contain;border-radius:8px;">
-          </div>
-        </div>
+        <div class="card-banner" style="background-image:url('shot-poker.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">KARTE</span>
           <h3>Poker 90s</h3>
-          <p>Klasični video poker iz 90-ih s autentičnom "veće / manje" gamble funkcijom i dupliranjem.</p>
+          <p>Povratak kafićkom video pokeru 90-ih — HOLD, VEĆA/MANJA, GAMBLE i COLLECT.</p>
           <a href="/poker/" class="play-btn">Igraj</a>
         </div>
       </div>
 
       <!-- PČELICA -->
       <div class="arcade-card">
-        <div class="card-banner">
-          <div class="placeholder-icon">
-            <img src="icon-pcelica.jpg" alt="Pčelica" style="width:64px;height:64px;object-fit:contain;border-radius:8px;">
-          </div>
-        </div>
+        <div class="card-banner" style="background-image:url('shot-pcelica.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">ARKADA</span>
           <h3>Pčelica</h3>
-          <p>Flappy Bird stil zarazne arkade s pčelicom koja vješto leti kroz prepreke i razine.</p>
+          <p>Nebo, more i medeni svijet — koliko daleko možeš odletjeti?</p>
           <a href="/pcelica/" class="play-btn">Igraj</a>
         </div>
       </div>
 
       <!-- BROJOPAD -->
       <div class="arcade-card">
-        <div class="card-banner">
-          <div class="placeholder-icon">
-            <img src="icon-brojopad.jpg" alt="Brojopad" style="width:64px;height:64px;object-fit:contain;border-radius:8px;">
-          </div>
-        </div>
+        <div class="card-banner" style="background-image:url('shot-brojopad.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">PUZZLE</span>
           <h3>Brojopad</h3>
-          <p>Igra spajanja padajućih brojeva, posebno prilagođena za brzo igranje na mobitelu.</p>
+          <p>Brojevi padaju u stupce i zbrajaju se kad se poklope — nižeš li combo zaredom, nosiš bonus bodove.</p>
           <a href="/brojopad/" class="play-btn">Igraj</a>
         </div>
       </div>
 
       <!-- VOĆNA SALATA -->
       <div class="arcade-card">
-        <div class="card-banner">
-          <div class="placeholder-icon">
-            <img src="icon-vocna-salata.jpg" alt="Voćna Salata" style="width:64px;height:64px;object-fit:contain;border-radius:8px;">
-          </div>
-        </div>
+        <div class="card-banner" style="background-image:url('shot-vocna-salata.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">AUTOMAT</span>
           <h3>Voćna Salata</h3>
-          <p>Jednoruki bandit s voćem, bonus rundama i tri teme izgleda — Vegas, Neon i Retro.</p>
+          <p>Tri simbola, tri teme (Vegas, Neon, Retro) — pogodi kombinaciju i zgrni žetone.</p>
           <a href="/vocna-salata/" class="play-btn">Igraj</a>
         </div>
       </div>
 
       <!-- AUTO OTPAD -->
       <div class="arcade-card">
-        <div class="card-banner">
-          <div class="placeholder-icon">
-            <img src="icon-auto-otpad.jpg" alt="Auto Otpad" style="width:64px;height:64px;object-fit:contain;border-radius:8px;">
-          </div>
-        </div>
+        <div class="card-banner" style="background-image:url('shot-auto-otpad.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">REFLEKSI</span>
           <h3>Auto Otpad</h3>
-          <p>Zdrobi aute u preši u pravom trenutku — tajming igra kroz sve teže runde.</p>
+          <p>Dizalica spušta auto ravno u prešu dok vjetar mrsi ciljanje — deset rundi, sve veći pritisak.</p>
           <a href="/auto-otpad/" class="play-btn">Igraj</a>
         </div>
       </div>
 
       <!-- DROP STACK -->
       <div class="arcade-card">
-        <div class="card-banner">
-          <div class="placeholder-icon">
-            <img src="icon-dropstack.jpg" alt="Drop Stack" style="width:64px;height:64px;object-fit:contain;border-radius:8px;">
-          </div>
-        </div>
+        <div class="card-banner" style="background-image:url('shot-dropstack.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">PUZZLE</span>
           <h3>Drop Stack</h3>
-          <p>Povuci blokove iz ponude na ploču, popuni retke i pazi na "garbage" redove koji rastu odozdo.</p>
+          <p>Spuštaj blokove u redove i pazi da garbage red ne prijeđe vrh — posebne kockice (bomba, munja, duga) čiste ploču.</p>
           <a href="/dropstack/" class="play-btn">Igraj</a>
         </div>
       </div>
 
       <!-- PUSHLINE -->
       <div class="arcade-card">
-        <div class="card-banner">
-          <div class="placeholder-icon">
-            <img src="icon-pushline.jpg" alt="PushLine" style="width:64px;height:64px;object-fit:contain;border-radius:8px;">
-          </div>
-        </div>
+        <div class="card-banner" style="background-image:url('shot-pushline.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">PUZZLE</span>
           <h3>PushLine</h3>
@@ -598,29 +807,33 @@
       <p>Povijest dubrovačkog šaha, Olimpijada 1950. i autentična partija protiv bota.</p>
     </div>
 
+    <div class="sah-timeline-header">
+      <span>1950</span><span class="tl-dash">─────────</span><span>DANAS</span><span class="tl-dash">─────────</span><span>BUDUĆNOST</span>
+    </div>
+
     <div class="sah-grid">
       <div class="sah-card">
-        <img src="icon-sah-povijest.jpg" alt="Povijest šaha" style="width:56px;height:56px;object-fit:contain;border-radius:8px;margin-bottom:12px;">
-        <h3>Povijest šaha</h3>
-        <p>Priča o razvoju igre u Dubrovniku i slavnoj Šahovskoj olimpijadi 1950. održanoj podno Srđa.</p>
-        <a href="/sah/history.html" class="play-btn" style="border-color: var(--neon-gold); color: #fff; background: rgba(245, 158, 11, 0.2);">Pročitaj</a>
+        <div class="sah-icon-wrap"><img src="icon-sah-povijest.jpg" alt="Olimpijada 1950"></div>
+        <div class="sah-era">1950.</div>
+        <h3>🏆 Olimpijada</h3>
+        <p>Dubrovnik 1950. — priča o Šahovskoj olimpijadi održanoj podno Srđa.</p>
+        <a href="/sah/history.html" class="play-btn">Pročitaj →</a>
       </div>
 
       <div class="sah-card">
-        <img src="icon-sah-bot.jpg" alt="Igraj protiv bota" style="width:56px;height:56px;object-fit:contain;border-radius:8px;margin-bottom:12px;">
-        <h3>Igraj protiv bota</h3>
-        <p>Odigrajte partiju protiv prilagođenog bota ili u dvoje, s vizualom slavnih figura iz 1950.</p>
-        <a href="/sah/" class="play-btn" style="border-color: var(--neon-gold); color: #fff; background: rgba(245, 158, 11, 0.2);">Pokreni šah</a>
+        <div class="sah-icon-wrap"><img src="icon-sah-bot.jpg" alt="Igraj protiv bota"></div>
+        <div class="sah-era">DANAS</div>
+        <h3>♟️ Igraj protiv bota</h3>
+        <p>Šahovska partija protiv prilagođenog bota ili u dvoje, s figurama iz 1950.</p>
+        <a href="/sah/" class="play-btn">Pokreni šah →</a>
       </div>
 
       <div class="sah-card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-          <img src="icon-sah-knez.jpg" alt="Postani Knez" style="width:56px;height:56px;object-fit:contain;border-radius:8px;margin-bottom:12px;">
-          <span class="badge-beta">BETA</span>
-        </div>
-        <h3>Postani Knez</h3>
-        <p>Strateško napredovanje i šahovski izazovi kroz povijesne rangove Dubrovačke Republike.</p>
-        <a href="#sah" class="play-btn" style="border-color: var(--neon-gold); color: #fff; background: rgba(245, 158, 11, 0.2);">Uđi u igru</a>
+        <div class="sah-icon-wrap"><img src="icon-sah-knez.jpg" alt="Postani Knez"></div>
+        <div class="sah-era">BUDUĆNOST</div>
+        <h3>👑 Postani Knez</h3>
+        <p>BETA · Dubrovnik kroz igru — strateško napredovanje kroz povijesne rangove Republike.</p>
+        <a href="#sah" class="play-btn">Uđi u igru →</a>
       </div>
     </div>
   </div>
@@ -629,108 +842,118 @@
 <!-- THE LAB & CUSTOM SOFTWARE (DVIJE KOLONE) -->
 <section id="lab">
   <div class="wrap">
-    <div class="lab-software-container">
-      
-      <!-- THE LAB PANEL -->
-      <div class="lab-panel lab-tech">
-        <span class="lab-badge badge-cyan">EXPERIMENTAL</span>
-        <h2 style="font-size: 1.4rem; color: var(--neon-cyan); margin-bottom: 6px;">🧪 THE LAB</h2>
-        <p style="color: var(--text-muted); font-size: 0.88rem;">Eksperimenti izvan ekrana i hardverska rješenja.</p>
+    <div class="section-head">
+      <h2>🧪 THE LAB</h2>
+      <p>HARDWARE · EXPERIMENTS · WIP — eksperimenti izvan ekrana i hardverska rješenja.</p>
+    </div>
 
-        <div class="lab-items">
-          <div class="lab-item">
-            <div class="lab-item-main">
-              <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="9" rx="2"/><circle cx="9" cy="13.5" r="1.3" fill="#00f2fe" stroke="none"/><circle cx="15" cy="13.5" r="1.3" fill="#00f2fe" stroke="none"/><path d="M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/></svg></div>
-              <div>
-                <div class="title">Fizički Poker Kontroler</div>
-                <div class="subtitle">Izrada USB arkadnog tastera za lupanje "veća / manja"</div>
-              </div>
-            </div>
-            <span style="color: var(--neon-cyan);">WIP</span>
+    <div class="lab-items">
+      <div class="lab-item">
+        <div class="lab-item-main">
+          <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="9" rx="2"/><circle cx="9" cy="13.5" r="1.3" fill="#00f2fe" stroke="none"/><circle cx="15" cy="13.5" r="1.3" fill="#00f2fe" stroke="none"/><path d="M8 9V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/></svg></div>
+          <div>
+            <div class="title">Fizički Poker Kontroler</div>
+            <div class="subtitle">Izrada USB arkadnog tastera za lupanje "veća / manja"</div>
           </div>
+        </div>
+        <span style="color: var(--neon-cyan);">WIP</span>
+      </div>
 
-          <div class="lab-item">
-            <div class="lab-item-main">
-              <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M18 6l-2 2M6 18l2-2M18 18l-2-2"/></svg></div>
-              <div>
-                <div class="title">Hardware & Mikrokontroleri</div>
-                <div class="subtitle">Povezivanje prekidača, senzora i ESP32 modula</div>
-              </div>
-            </div>
-            <span style="color: var(--neon-cyan);">Lab</span>
+      <div class="lab-item">
+        <div class="lab-item-main">
+          <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M18 6l-2 2M6 18l2-2M18 18l-2-2"/></svg></div>
+          <div>
+            <div class="title">Hardware & Mikrokontroleri</div>
+            <div class="subtitle">Povezivanje prekidača, senzora i ESP32 modula</div>
           </div>
-          <div class="lab-item">
-            <div class="lab-item-main">
-              <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l2 5v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l2-5z"/><path d="M4 9h16"/><circle cx="12" cy="14" r="2.5"/></svg></div>
-              <div>
-                <div class="title">Arkadni Kabinet</div>
-                <div class="subtitle">Izrada kućišta za fizičku arkadnu jedinicu s ekranom i kontrolama</div>
-              </div>
-            </div>
-            <span style="color: var(--neon-cyan);">WIP</span>
+        </div>
+        <span style="color: var(--neon-cyan);">Lab</span>
+      </div>
+      <div class="lab-item">
+        <div class="lab-item-main">
+          <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12l2 5v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9l2-5z"/><path d="M4 9h16"/><circle cx="12" cy="14" r="2.5"/></svg></div>
+          <div>
+            <div class="title">Arkadni Kabinet</div>
+            <div class="subtitle">Izrada kućišta za fizičku arkadnu jedinicu s ekranom i kontrolama</div>
+          </div>
+        </div>
+        <span style="color: var(--neon-cyan);">WIP</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="software">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>⚙️ CUSTOM SOFTWARE</h2>
+      <p>Alati razvijeni za svakodnevni rad i organizaciju.</p>
+    </div>
+
+    <div class="lab-items">
+      <div class="lab-item">
+        <div class="lab-item-main">
+          <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17V9a2 2 0 0 1 2-2h8v10"/><path d="M13 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg></div>
+          <div>
+            <div class="title">Dostava & Novčanik</div>
+            <div class="subtitle">Evidencija rute, pologa, novčanika i kusura vozača</div>
+          </div>
+        </div>
+        <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+      </div>
+
+      <div class="lab-item">
+        <div class="lab-item-main">
+          <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg></div>
+          <div>
+            <div class="title">Smjene i Dnevnice</div>
+            <div class="subtitle">Precizno bilježenje odrađenih sati i obračun dnevnica</div>
+          </div>
+        </div>
+        <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+      </div>
+
+      <div class="lab-item">
+        <div class="lab-item-main">
+          <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 11h18"/><path d="M7 15h2"/></svg></div>
+          <div>
+            <div class="title">Kilometraža i Blagajna</div>
+            <div class="subtitle">Interni sustav za stanje vozila i završno brojanje novca</div>
+          </div>
+        </div>
+        <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
+      </div>
+
+      <div class="featured-tool">
+        <img src="shot-evidencija.jpg" alt="Evidencija Radnog Vremena">
+        <div>
+          <span class="ft-badge">ISTAKNUTO · AKTIVNO</span>
+          <h4>Evidencija Radnog Vremena</h4>
+          <p style="font-size:0.85rem;color:var(--text-muted);">Usklađena sa Zakonom o radu. Unosiš djelatnika, biraš mjesec, i alat sam vodi evidenciju uz automatski prepoznate praznike.</p>
+          <div class="ft-features">
+            <span>⚠️ Upozorenja (prekovremeni, noćni)</span>
+            <span>📅 Praznici i Uskrs automatski</span>
+            <span>📊 Excel i PDF izvoz</span>
+          </div>
+          <div class="lab-item-links" style="margin-top:4px;">
+            <a href="/evidencija-rada/evidencija-rada.html" target="_blank">Isprobaj →</a>
+            <a href="/evidencija-rada/evidencija-rada.html" download>Preuzmi besplatno ↓</a>
           </div>
         </div>
       </div>
 
-      <!-- CUSTOM SOFTWARE PANEL -->
-      <div id="software" class="lab-panel software-tech">
-        <span class="lab-badge badge-green">PRODUCTION</span>
-        <h2 style="font-size: 1.4rem; color: var(--neon-green); margin-bottom: 6px;">⚙️ CUSTOM SOFTWARE</h2>
-        <p style="color: var(--text-muted); font-size: 0.88rem;">Alati razvijeni za svakodnevni rad i organizaciju.</p>
-
-        <div class="lab-items">
-          <div class="lab-item">
-            <div class="lab-item-main">
-              <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17V9a2 2 0 0 1 2-2h8v10"/><path d="M13 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg></div>
-              <div>
-                <div class="title">Dostava & Novčanik</div>
-                <div class="subtitle">Evidencija rute, pologa, novčanika i kusura vozača</div>
-              </div>
-            </div>
-            <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
-          </div>
-
-          <div class="lab-item">
-            <div class="lab-item-main">
-              <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg></div>
-              <div>
-                <div class="title">Smjene i Dnevnice</div>
-                <div class="subtitle">Precizno bilježenje odrađenih sati i obračun dnevnica</div>
-              </div>
-            </div>
-            <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
-          </div>
-
-          <div class="lab-item">
-            <div class="lab-item-main">
-              <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 11h18"/><path d="M7 15h2"/></svg></div>
-              <div>
-                <div class="title">Kilometraža i Blagajna</div>
-                <div class="subtitle">Interni sustav za stanje vozila i završno brojanje novca</div>
-              </div>
-            </div>
-            <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
-          </div>
-
-          <div class="lab-item" style="flex-direction: column; align-items: stretch; gap: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div class="lab-item-main">
-                <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/><path d="M8 19h4"/></svg></div>
-                <div>
-                  <div class="title">Evidencija Radnog Vremena</div>
-                  <div class="subtitle">Usklađena sa Zakonom o radu — brzi dnevni unos dolaska/odlaska, automatski prepoznaje praznike i Uskrs, javlja upozorenja nakon unosa (prekovremeni, noćni sati), mjesečni izvještaj i izvoz u Excel. Besplatna za preuzimanje.</div>
-                </div>
-              </div>
-              <span style="color: var(--neon-green); font-size: 0.8rem;">Aktivno</span>
-            </div>
-            <div class="lab-item-links">
-              <a href="/evidencija-rada/evidencija-rada.html" target="_blank">Isprobaj →</a>
-              <a href="/evidencija-rada/evidencija-rada.html" download>Preuzmi besplatno ↓</a>
+      <div class="lab-item" style="flex-direction: column; align-items: stretch; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="lab-item-main">
+            <div class="lab-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5L20 20"/><path d="M8 10h4"/></svg></div>
+            <div>
+              <div class="title">Konto Detektiv</div>
+              <div class="subtitle">Učitaš dvije konto kartice (PDF) i alat automatski usporedi iznose, brojeve računa i datume te javi koji računi nedostaju. Radi samo s digitalno kreiranim PDF-ovima (ne skeniranim/fotografiranim dokumentima). Dostupan za korištenje online, trenutno nije za preuzimanje.</div>
             </div>
           </div>
+          <span style="color: var(--neon-gold); font-size: 0.8rem;">WIP</span>
         </div>
       </div>
-
     </div>
 
     <!-- CITAT SA SLIKE -->
@@ -746,13 +969,13 @@
     <div class="footer-brand-name">RetroAppLab</div>
     <p class="footer-tagline">Ručno izrađeno s ljubavlju prema kodu, mehanici i retro igrama.</p>
     <nav class="footer-nav">
-      <a href="#arkada">Igre</a>
-      <a href="#sah">Šah</a>
-      <a href="#lab">Lab</a>
       <a href="https://sica.hr" target="_blank">Pizzeria Šica</a>
+      <a href="https://www.blagdani.com" target="_blank">Blagdani</a>
+      <a href="https://du-sportivo.hr" target="_blank">Du Sportivo</a>
+      <a href="https://www.psp-dubrovnik.hr" target="_blank">PSP Dubrovnik</a>
     </nav>
     <div class="footer-status-line">IN PROGRESS · ALWAYS<span class="fs-cursor">_</span></div>
-    <div class="footer-copyright">© 2026 Dubo · RetroAppLab · Dubrovnik</div>
+    <div class="footer-copyright">© 2026 RetroAppLab · Dubrovnik<br>Built by Dubo · Dubrovnik</div>
   </div>
 </footer>
 
