@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="hr-HR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompenzacija</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/hr.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; padding: 10px; line-height: 1.6; margin: 0; }
+        .container { max-width: 1050px; margin: auto; background: white; padding: 20px 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; margin-top: 0; }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; padding: 10px; line-height: 1.6; margin: 0; }
+
+        /* ── Navigacija ── */
+        .nav { max-width: 1000px; margin: 0 auto 15px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .nav-btn { flex: 1; min-width: 150px; padding: 11px 8px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 13px; background: #dce3ea; color: #555; transition: all 0.15s; text-align: center; }
+        .nav-btn.active { background: #2c3e50; color: white; }
+        .nav-btn:hover:not(.active) { background: #c8d0d8; }
+
+        /* ── Container ── */
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .modul { display: none; }
+        .modul.aktivan { display: block; }
+
+        /* ── Gumbi ── */
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        .btn-main { background: #2c3e50; color: white; }
+        .btn-main:hover:not(:disabled) { background: #1a252f; }
+        .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-compare { background: #e67e22; color: white; display: none; }
+        .btn-compare:hover { background: #ca6f1e; }
+        .btn-export { background: #27ae60; color: white; display: none; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 10px; }
+        .btn-export:hover { background: #1e8449; }
+        .btn-print { background: #8e44ad; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; margin-bottom: 10px; display: none; }
+        .btn-print:hover { background: #7d3c98; }
+
+        /* ── Upload ── */
+        .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .upload-box { background: #f8f9fa; padding: 15px; border-radius: 10px; border: 2px solid #dee2e6; transition: border-color 0.2s; }
+        .upload-box.detected-1200 { border-color: #27ae60; }
+        .upload-box.detected-2200 { border-color: #2980b9; }
+        .upload-box.detected-sken { border-color: #e67e22; }
+        .upload-box strong { display: block; margin-bottom: 8px; }
+        .konto-badge { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .badge-1200 { background: #d5f5e3; color: #1e8449; }
+        .badge-2200 { background: #d6eaf8; color: #1a5276; }
+        .badge-warn { background: #fdebd0; color: #a04000; }
+        .badge-sken { background: #fef9e7; color: #7d6608; }
+        .manual-box { display: none; margin-top: 12px; background: #fffbea; border: 1px solid #f0c040; border-radius: 8px; padding: 14px; }
+        .manual-box p { margin: 0 0 10px; font-size: 13px; color: #7d6608; }
+        .manual-konto { display: flex; gap: 8px; }
+        .manual-konto button { flex: 1; padding: 8px; border: 2px solid #ccc; background: white; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.15s; }
+        .manual-konto button.active-1200 { border-color: #27ae60; background: #d5f5e3; color: #1e8449; }
+        .manual-konto button.active-2200 { border-color: #2980b9; background: #d6eaf8; color: #1a5276; }
+
+        /* ── Stat kartice ── */
+        .header-box { display: none; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .stat-card { padding: 15px; border-radius: 8px; border: 1px solid #ddd; background: #fff; text-align: center; }
+        .stat-card small { font-size: 11px; color: #999; display: block; margin-top: 4px; }
+        .val { font-size: 1.2em; font-weight: bold; display: block; margin-top: 5px; }
+        .bad { color: #e74c3c; }
+        .good { color: #27ae60; }
+
+        /* ── Tablice ── */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #34495e; color: white; padding: 11px 12px; text-align: left; font-size: 13px; }
+        td { border: 1px solid #eee; padding: 9px 12px; font-size: 13px; }
+        tr:hover td { background: #f9f9f9; }
+        .row-err { background: #fff5f5 !important; font-weight: bold; color: #c0392b; cursor: pointer; }
+        .row-err:hover td { background: #ffe8e8 !important; }
+        .row-ok { color: #27ae60; opacity: 0.8; }
+        .row-only { color: #bbb; }
+        .detalji-row { display: none; }
+        .detalji-row td { background: #fdf2f2 !important; padding: 0; border-top: none; }
+        .detalji-inner { padding: 10px 15px; }
+        .detalji-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .detalji-col h4 { font-size: 12px; font-weight: bold; color: #7f8c8d; margin: 0 0 6px; text-transform: uppercase; }
+        .detalji-stavka { font-size: 12px; padding: 4px 0; border-bottom: 1px solid #f5c6c6; color: #444; }
+        .detalji-stavka:last-child { border-bottom: none; }
+        .detalji-stavka span { float: right; font-weight: bold; }
+
+        /* ── Kompenzacija ── */
+        .komp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        @media (max-width: 600px) { .komp-grid { grid-template-columns: 1fr; } .upload-grid { grid-template-columns: 1fr; } .komp-summary { grid-template-columns: 1fr; } }
+        .komp-strana { background: #f8f9fa; border-radius: 10px; padding: 15px; border: 2px solid #dee2e6; }
+        .komp-strana h3 { margin: 0 0 12px; font-size: 15px; color: #2c3e50; }
+        .komp-strana.strana-a { border-color: #2980b9; }
+        .komp-strana.strana-b { border-color: #e67e22; }
+        .komp-input-red { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+        .komp-input-red input { padding: 6px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; width: 100%; }
+        .komp-input-red button { padding: 6px 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .btn-dodaj { background: #2980b9; color: white; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; margin-top: 5px; }
+        .btn-dodaj.naranca { background: #e67e22; }
+        .btn-dodaj:hover { opacity: 0.85; }
+        .komp-firma { margin-bottom: 10px; }
+        .komp-firma label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 3px; }
+        .komp-firma input { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+        .komp-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .komp-card { padding: 12px 15px; border-radius: 8px; text-align: center; }
+        .komp-card.plava { background: #d6eaf8; }
+        .komp-card.naranca { background: #fdebd0; }
+        .komp-card.zelena { background: #d5f5e3; }
+        .komp-card .naziv { font-size: 11px; color: #666; }
+        .komp-card .broj { font-size: 1.3em; font-weight: bold; margin-top: 3px; }
+        .komp-card.plava .broj { color: #1a5276; }
+        .komp-card.naranca .broj { color: #784212; }
+        .komp-card.zelena .broj { color: #1e8449; }
+        .tab-header { display: flex; gap: 6px; margin: 15px 0 0; }
+        .tab-btn { padding: 7px 16px; border: 1px solid #ccc; background: #f8f9fa; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .tab-btn.aktivan { background: #2c3e50; color: white; border-color: #2c3e50; }
+        .pdf-ucitaj-btn { background: #8e44ad; color: white; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; margin-left: 8px; }
+
+        /* ── Dokument za ispis ── */
+        #dokumentPrint { display: none; }
+        @media print {
+            body > * { display: none !important; }
+            #evidencijaPrint { display: block !important; }
+            #dokumentPrint { display: block !important; font-family: 'Times New Roman', serif; }
+            #dokumentPrint h2 { text-align: center; }
+            #dokumentPrint table { width: 100%; border-collapse: collapse; }
+            #dokumentPrint td, #dokumentPrint th { border: 1px solid #000; padding: 6px; font-size: 12px; }
+            #dokumentPrint .potpis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 60px; }
+            #dokumentPrint .potpis-line { border-top: 1px solid #000; padding-top: 5px; font-size: 12px; }
+        }
+
+        #progress { margin-top: 10px; font-size: 13px; color: #555; min-height: 20px; }
+        #upozorenje { display: none; background: #fef9e7; border: 1px solid #f9ca24; border-radius: 8px; padding: 12px 15px; margin-top: 10px; font-size: 13px; color: #7d6608; }
+        .hint { font-size: 11px; color: #999; margin-top: 5px; font-style: italic; }
+        .debug-box { margin-top: 20px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; font-size: 11px; font-family: monospace; display: none; max-height: 400px; overflow-y: auto; white-space: pre; }
+        .putni-label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 3px; color: #555; }
+        .putni-input { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+        .trosak-red { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-bottom: 6px; align-items: center; }
+        .trosak-red input { padding: 6px 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; width: 100%; }
+        .trosak-red button { padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .vozac-card { background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+        .vozac-avatar { width: 42px; height: 42px; border-radius: 50%; background: #2c3e50; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0; }
+        .vozac-info { flex: 1; }
+        .vozac-ime { font-weight: bold; font-size: 14px; color: #2c3e50; }
+        .vozac-detalji { font-size: 12px; color: #666; margin-top: 2px; }
+        .vozac-akcije { display: flex; gap: 6px; }
+        .vozac-akcije button { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .sekcija-naslov { font-weight: bold; font-size: 14px; margin: 20px 0 8px; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 4px; }
+
+        @media print {
+            body > * { display: none !important; }
+            #dokumentPrint { display: block !important; font-family: 'Times New Roman', serif; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<div id="modul-kompenzacija">
+    <h2 style="text-align:center;margin-top:0;">🤝 Kompenzacija</h2>
+
+    <!-- Firme -->
+    <div class="komp-grid">
+        <div class="komp-firma">
+            <label>🔵 VJEROVNIK (naša firma):</label>
+            <div style="margin-bottom:6px;">
+                <input type="text" id="kompOibA" placeholder="OIB (11 znamenki)" maxlength="11" inputmode="numeric"
+                    style="width:100%;padding:9px 12px;border:2px solid #2980b9;border-radius:8px;font-size:15px;margin-bottom:6px;"
+                    oninput="azurirajGumbSudreg('A')">
+                <button id="sudregBtnA" onclick="otvoriSudreg('A')"
+                    style="width:100%;padding:9px;background:#2980b9;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:bold;">
+                    🔗 Otvori Sudski registar
+                </button>
+            </div>
+            <div id="oibStatusA" style="font-size:11px;color:#666;margin-bottom:4px;min-height:16px;">Unesi OIB i klikni gumb — otvorit će se Sudski registar</div>
+            <input type="text" id="kompFirmaA" placeholder="Naziv firme" style="width:100%;margin-bottom:4px;">
+            <input type="text" id="kompAdresaA" style="width:100%;margin-bottom:4px;" placeholder="Adresa">
+            <input type="text" id="kompMjestoA" style="width:100%;margin-bottom:4px;" placeholder="Mjesto">
+        </div>
+        <div class="komp-firma">
+            <label>🟠 DUŽNIK (partner firma):</label>
+            <div style="margin-bottom:6px;">
+                <input type="text" id="kompOibB" placeholder="OIB (11 znamenki)" maxlength="11" inputmode="numeric"
+                    style="width:100%;padding:9px 12px;border:2px solid #e67e22;border-radius:8px;font-size:15px;margin-bottom:6px;"
+                    oninput="azurirajGumbSudreg('B')">
+                <button id="sudregBtnB" onclick="otvoriSudreg('B')"
+                    style="width:100%;padding:9px;background:#e67e22;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:bold;">
+                    🔗 Otvori Sudski registar
+                </button>
+            </div>
+            <div id="oibStatusB" style="font-size:11px;color:#666;margin-bottom:4px;min-height:16px;">Unesi OIB i klikni gumb — otvorit će se Sudski registar</div>
+            <input type="text" id="kompFirmaB" style="width:100%;margin-bottom:4px;" placeholder="Naziv firme">
+            <input type="text" id="kompAdresaB" style="width:100%;margin-bottom:4px;" placeholder="Adresa">
+            <input type="text" id="kompMjestoB" style="width:100%;margin-bottom:4px;" placeholder="Mjesto">
+        </div>
+    </div>
+    <div style="display:flex;gap:15px;margin-bottom:10px;align-items:center;">
+        <div style="flex:1;">
+            <label style="font-size:13px;font-weight:bold;display:block;margin-bottom:3px;">📍 Mjesto izdavanja:</label>
+            <input type="text" id="kompMjesto" placeholder="npr. Dubrovnik" style="width:100%;padding:7px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;">
+        </div>
+        <div style="flex:1;">
+            <label style="font-size:13px;font-weight:bold;display:block;margin-bottom:3px;">📅 Datum:</label>
+            <input type="date" id="kompDatum" style="width:100%;padding:7px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;">
+        </div>
+    </div>
+
+    <!-- Tab odabir načina unosa -->
+    <div class="tab-header">
+        <button class="tab-btn aktivan" onclick="prikaziTab('rucni')">✏️ Ručni unos</button>
+        <button class="tab-btn" onclick="prikaziTab('pdf')">📄 Učitaj iz PDF-a</button>
+    </div>
+
+    <!-- Tab: Ručni unos -->
+    <div id="tab-rucni" style="background:#f8f9fa;border:1px solid #dee2e6;border-top:none;border-radius:0 0 10px 10px;padding:15px;">
+        <div class="komp-grid">
+            <!-- Firma A duguje B -->
+            <div class="komp-strana strana-a">
+                <h3>🔵 Mi dugujemo partneru (naši dugovi)</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:4px;margin-bottom:4px;">
+                    <small style="color:#666;">Broj računa</small>
+                    <small style="color:#666;">Datum</small>
+                    <small style="color:#666;">Iznos (€)</small>
+                    <span></span>
+                </div>
+                <div id="redasciA"></div>
+                <button class="btn-dodaj" onclick="dodajRedak('A')">+ Dodaj račun</button>
+            </div>
+            <!-- Firma B duguje A -->
+            <div class="komp-strana strana-b">
+                <h3>🟠 Partner duguje nama (njihovi dugovi)</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:4px;margin-bottom:4px;">
+                    <small style="color:#666;">Broj računa</small>
+                    <small style="color:#666;">Datum</small>
+                    <small style="color:#666;">Iznos (€)</small>
+                    <span></span>
+                </div>
+                <div id="redasciB"></div>
+                <button class="btn-dodaj naranca" onclick="dodajRedak('B')">+ Dodaj račun</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: PDF unos -->
+    <div id="tab-pdf" style="display:none;background:#f8f9fa;border:1px solid #dee2e6;border-top:none;border-radius:0 0 10px 10px;padding:15px;">
+        <div class="komp-grid">
+            <div>
+                <strong style="display:block;margin-bottom:8px;">🔵 Naša konto kartica (naši dugovi prema partneru):</strong>
+                <input type="file" id="kompPdfA" accept=".pdf">
+                <button class="pdf-ucitaj-btn" onclick="ucitajKompPDF('A')">Učitaj</button>
+                <div id="kompStatusA" style="font-size:12px;color:#888;margin-top:5px;"></div>
+            </div>
+            <div>
+                <strong style="display:block;margin-bottom:8px;">🟠 Njihova konto kartica (njihovi dugovi prema nama):</strong>
+                <input type="file" id="kompPdfB" accept=".pdf">
+                <button class="pdf-ucitaj-btn" style="background:#e67e22;" onclick="ucitajKompPDF('B')">Učitaj</button>
+                <div id="kompStatusB" style="font-size:12px;color:#888;margin-top:5px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-main" style="margin-top:15px;" onclick="izracunajKompenzaciju()">IZRAČUNAJ KOMPENZACIJU</button>
+
+    <!-- Rezultat kompenzacije -->
+    <div id="kompRezultat" style="display:none;">
+        <div class="sekcija-naslov">📋 Pregled kompenzacije</div>
+
+        <div class="komp-summary">
+            <div class="komp-card plava">
+                <div class="naziv">Mi dugujemo partneru</div>
+                <div class="broj" id="kompUkupnoA">0,00 €</div>
+            </div>
+            <div class="komp-card naranca">
+                <div class="naziv">Partner duguje nama</div>
+                <div class="broj" id="kompUkupnoB">0,00 €</div>
+            </div>
+            <div class="komp-card zelena">
+                <div class="naziv">Iznos kompenzacije</div>
+                <div class="broj" id="kompIznos">0,00 €</div>
+            </div>
+        </div>
+
+        <div id="kompPreostalo" style="text-align:center;font-size:14px;margin-bottom:15px;"></div>
+
+        <div class="sekcija-naslov">Računi koji se kompenziraju</div>
+        <div id="kompTablica"></div>
+
+        <button class="btn-print" id="btnPrint" onclick="ispisDokumenta()">🖨️ Generiraj dokument za potpis</button>
+    </div>
+</div>
+
+</div>
+
+<!-- Dokument za ispis -->
+<div id="dokumentPrint"></div>
+
+<script>
+// KOMPENZACIJA
+// ══════════════════════════════════════════════════════════════
+
+let racuniA = [], racuniB = [];
+
+function fmt(n){ return (n||0).toLocaleString('hr-HR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
+function fmtBroj(n){ return (n||0).toLocaleString('hr-HR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function prikaziTab(tab){
+    document.getElementById('tab-rucni').style.display = tab === 'rucni' ? 'block' : 'none';
+    document.getElementById('tab-pdf').style.display = tab === 'pdf' ? 'block' : 'none';
+    document.querySelectorAll('.tab-btn').forEach((b,i) => {
+        b.classList.toggle('aktivan', (tab === 'rucni' && i === 0) || (tab === 'pdf' && i === 1));
+    });
+}
+
+// ── OIB / Sudski registar ──
+function azurirajGumbSudreg(strana){
+    let oib = document.getElementById('kompOib' + strana).value.replace(/\D/g,'');
+    let statusEl = document.getElementById('oibStatus' + strana);
+    if(oib.length === 11){
+        statusEl.textContent = 'OIB ispravan (11 znamenki) — klikni gumb za pretragu na Sudskom registru';
+        statusEl.style.color = '#27ae60';
+    } else {
+        statusEl.textContent = 'Unesi OIB i klikni gumb — otvorit će se Sudski registar';
+        statusEl.style.color = '#666';
+    }
+}
+
+function otvoriSudreg(strana){
+    let oib = document.getElementById('kompOib' + strana).value.replace(/\D/g,'');
+    let statusEl = document.getElementById('oibStatus' + strana);
+    if(oib.length !== 11){
+        alert('OIB mora imati točno 11 znamenki.');
+        return;
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(oib).catch(function(){});
+    }
+    window.open('https://sudreg.pravosudje.hr/registar', '_blank');
+    statusEl.textContent = 'OIB ' + oib + ' kopiran u međuspremnik — zalijepi (Ctrl+V) u tražilicu Sudskog registra';
+    statusEl.style.color = '#2980b9';
+}
+
+function dodajRedak(strana) {
+    let container = document.getElementById('redasci' + strana);
+    let div = document.createElement('div');
+    div.className = 'komp-input-red';
+    div.innerHTML = `
+        <input type="text" placeholder="Br. računa" class="komp-brrac">
+        <input type="text" placeholder="dd.mm.yyyy" class="komp-datum">
+        <input type="text" placeholder="0,00" class="komp-iznos">
+        <button onclick="this.parentElement.remove()">✕</button>`;
+    container.appendChild(div);
+}
+
+function parsirajIznos(s) {
+    if (!s) return 0;
+    s = s.trim().replace(/\s/g,'');
+    if (s.includes(',')) s = s.replace(/\./g,'').replace(',','.');
+    return Math.abs(parseFloat(s) || 0);
+}
+
+function dohvatiRedove(strana) {
+    let redovi = [];
+    document.querySelectorAll('#redasci' + strana + ' .komp-input-red').forEach(red => {
+        let brrac  = red.querySelector('.komp-brrac').value.trim();
+        let datum  = red.querySelector('.komp-datum').value.trim();
+        let iznos  = parsirajIznos(red.querySelector('.komp-iznos').value);
+        if (iznos > 0) redovi.push({ brrac, datum, iznos });
+    });
+    return redovi;
+}
+
+async function ucitajKompPDF(strana) {
+    let file = document.getElementById('kompPdf' + strana).files[0];
+    if (!file) { alert('Odaberi PDF datoteku!'); return; }
+    let statusEl = document.getElementById('kompStatus' + strana);
+    statusEl.textContent = 'Čitam PDF...';
+
+    try {
+        let stavke = await citajPDF(file, 'PDF ' + strana);
+        let racuni = [];
+        stavke.filter(s => !s.ps).forEach(s => {
+            let brMatch = s.tekst.match(/(?:RN[:\s]+|rn[.:\s]+)([A-Za-z0-9\/\-]+)/i);
+            let brrac = brMatch ? brMatch[1] : '';
+            racuni.push({ brrac, datum: s.d, iznos: Math.abs(s.i) });
+        });
+
+        if (strana === 'A') racuniA = racuni;
+        else racuniB = racuni;
+
+        let container = document.getElementById('redasci' + strana);
+        container.innerHTML = '';
+        racuni.forEach(r => {
+            let div = document.createElement('div');
+            div.className = 'komp-input-red';
+            div.innerHTML = `
+                <input type="text" placeholder="Br. računa" class="komp-brrac" value="${r.brrac}">
+                <input type="text" placeholder="dd.mm.yyyy" class="komp-datum" value="${r.datum}">
+                <input type="text" placeholder="0,00" class="komp-iznos" value="${fmtBroj(r.iznos)}">
+                <button onclick="this.parentElement.remove()">✕</button>`;
+            container.appendChild(div);
+        });
+
+        prikaziTab('rucni');
+        statusEl.textContent = `✓ Učitano ${racuni.length} stavki`;
+    } catch(e) {
+        statusEl.textContent = 'Greška: ' + e.message;
+    }
+}
+
+function izracunajKompenzaciju() {
+    let rowsA = dohvatiRedove('A');
+    let rowsB = dohvatiRedove('B');
+
+    if (!rowsA.length && !rowsB.length) {
+        alert('Unesi barem jedan račun s obje strane!');
+        return;
+    }
+
+    let ukupnoA = rowsA.reduce((s, r) => s + r.iznos, 0);
+    let ukupnoB = rowsB.reduce((s, r) => s + r.iznos, 0);
+    let iznos   = Math.min(ukupnoA, ukupnoB);
+    let razlika = ukupnoA - ukupnoB;
+
+    document.getElementById('kompUkupnoA').textContent = fmt(ukupnoA);
+    document.getElementById('kompUkupnoB').textContent = fmt(ukupnoB);
+    document.getElementById('kompIznos').textContent   = fmt(iznos);
+
+    let preostaloEl = document.getElementById('kompPreostalo');
+    if (Math.abs(razlika) < 0.01) {
+        preostaloEl.innerHTML = `<span style="color:#27ae60;font-weight:bold;">✅ Kompenzacija je potpuna — nema ostatka!</span>`;
+    } else if (razlika > 0) {
+        preostaloEl.innerHTML = `<span style="color:#e67e22;">Nakon kompenzacije <b>mi preostajemo dugujemo ${fmt(razlika)}</b> partneru.</span>`;
+    } else {
+        preostaloEl.innerHTML = `<span style="color:#2980b9;">Nakon kompenzacije <b>partner preostaje duguje nama ${fmt(Math.abs(razlika))}</b>.</span>`;
+    }
+
+    let html = `<div class="komp-grid">`;
+
+    html += `<div>
+        <div class="sekcija-naslov" style="color:#1a5276;">🔵 Naši dugovi (kompenziramo)</div>
+        <table>
+            <tr><th>Br. računa</th><th>Datum</th><th>Iznos</th></tr>`;
+    rowsA.forEach(r => {
+        html += `<tr><td>${r.brrac||'—'}</td><td>${r.datum||'—'}</td><td>${fmt(r.iznos)}</td></tr>`;
+    });
+    html += `<tr style="background:#eaf2fb;font-weight:bold;">
+        <td colspan="2">UKUPNO</td><td>${fmt(ukupnoA)}</td></tr>
+    </table></div>`;
+
+    html += `<div>
+        <div class="sekcija-naslov" style="color:#784212;">🟠 Dugovi partnera (kompenziramo)</div>
+        <table>
+            <tr><th>Br. računa</th><th>Datum</th><th>Iznos</th></tr>`;
+    rowsB.forEach(r => {
+        html += `<tr><td>${r.brrac||'—'}</td><td>${r.datum||'—'}</td><td>${fmt(r.iznos)}</td></tr>`;
+    });
+    html += `<tr style="background:#fef5e7;font-weight:bold;">
+        <td colspan="2">UKUPNO</td><td>${fmt(ukupnoB)}</td></tr>
+    </table></div>`;
+
+    html += `</div>`;
+
+    document.getElementById('kompTablica').innerHTML = html;
+    document.getElementById('kompRezultat').style.display = 'block';
+    document.getElementById('btnPrint').style.display = 'block';
+}
+
+function ispisDokumenta() {
+    let firmaA   = document.getElementById('kompFirmaA').value || 'Firma A';
+    let adresaA  = document.getElementById('kompAdresaA').value || '';
+    let mjestoA  = document.getElementById('kompMjestoA').value || '';
+    let oibA     = document.getElementById('kompOibA').value || '';
+    let firmaB   = document.getElementById('kompFirmaB').value || 'Firma B';
+    let adresaB  = document.getElementById('kompAdresaB').value || '';
+    let mjestoB  = document.getElementById('kompMjestoB').value || '';
+    let oibB     = document.getElementById('kompOibB').value || '';
+    let mjesto   = document.getElementById('kompMjesto').value || 'Dubrovnik';
+    let datumVal = document.getElementById('kompDatum').value;
+    let datum    = datumVal ? new Date(datumVal).toLocaleDateString('hr-HR') : new Date().toLocaleDateString('hr-HR');
+
+    let rowsA   = dohvatiRedove('A');
+    let rowsB   = dohvatiRedove('B');
+    let ukupnoA = rowsA.reduce((s,r) => s+r.iznos, 0);
+    let ukupnoB = rowsB.reduce((s,r) => s+r.iznos, 0);
+    let razlika = ukupnoA - ukupnoB;
+
+    let brA = 0, brB = 0;
+    let redoviA = rowsA.map(r => `<tr><td style="text-align:center;">${++brA}</td><td>${r.brrac||'—'}</td><td>${r.datum||'—'}</td><td style="text-align:right;">${fmtBroj(r.iznos)} EUR</td></tr>`).join('');
+    let redoviB = rowsB.map(r => `<tr><td style="text-align:center;">${++brB}</td><td>${r.brrac||'—'}</td><td>${r.datum||'—'}</td><td style="text-align:right;">${fmtBroj(r.iznos)} EUR</td></tr>`).join('');
+
+    let razlikaTekst = '';
+    if (Math.abs(razlika) < 0.01) {
+        razlikaTekst = `<strong>0,00 EUR</strong> — kompenzacija je potpuna`;
+    } else if (razlika > 0) {
+        razlikaTekst = `<strong>${fmtBroj(razlika)} EUR</strong> — ostatak duguje DUŽNIK (${firmaB}) VJEROVNIKU (${firmaA})`;
+    } else {
+        razlikaTekst = `<strong>${fmtBroj(Math.abs(razlika))} EUR</strong> — ostatak duguje VJEROVNIK (${firmaA}) DUŽNIKU (${firmaB})`;
+    }
+
+    document.getElementById('dokumentPrint').innerHTML = `<div style="font-family:'Times New Roman',serif;max-width:800px;margin:0 auto;padding:20px;">
+        <h2 style="text-align:center;font-size:16px;margin-bottom:5px;">IZJAVA O PRIJEBOJU ( KOMPENZACIJI )</h2>
+        <p style="text-align:center;margin-bottom:20px;font-size:13px;">Dajemo izjavu da obavljamo prijeboj ( kompenzaciju ) sljedećih međusobno dospjelih NOVČANIH potraživanja:</p>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px;">
+            <tr>
+                <td style="width:50%;padding:10px;vertical-align:top;border:1px solid #000;">
+                    <strong>VJEROVNIK</strong><br>
+                    <strong>${firmaA}</strong><br>
+                    ${adresaA ? adresaA + '<br>' : ''}
+                    ${mjestoA ? mjestoA + '<br>' : ''}
+                    ${oibA ? 'OIB: ' + oibA : ''}
+                </td>
+                <td style="width:50%;padding:10px;vertical-align:top;border:1px solid #000;">
+                    <strong>DUŽNIK</strong><br>
+                    <strong>${firmaB}</strong><br>
+                    ${adresaB ? adresaB + '<br>' : ''}
+                    ${mjestoB ? mjestoB + '<br>' : ''}
+                    ${oibB ? 'OIB: ' + oibB : ''}
+                </td>
+            </tr>
+        </table>
+
+        <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:15px;">
+            <tr>
+                <td style="width:50%;vertical-align:top;padding-right:8px;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <tr style="background:#f0f0f0;">
+                            <td colspan="4" style="padding:6px;border:1px solid #000;font-weight:bold;text-align:center;">
+                                VJEROVNIKOVE DOSPJELE OBVEZE PREMA DUŽNIKU
+                            </td>
+                        </tr>
+                        <tr style="background:#f0f0f0;">
+                            <th style="border:1px solid #000;padding:5px;text-align:center;">Br.</th>
+                            <th style="border:1px solid #000;padding:5px;">Broj računa</th>
+                            <th style="border:1px solid #000;padding:5px;">Datum</th>
+                            <th style="border:1px solid #000;padding:5px;text-align:right;">Iznos</th>
+                        </tr>
+                        ${redoviA}
+                        <tr style="font-weight:bold;">
+                            <td colspan="3" style="border:1px solid #000;padding:5px;text-align:right;">UKUPNO</td>
+                            <td style="border:1px solid #000;padding:5px;text-align:right;">${fmtBroj(ukupnoA)} EUR</td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width:50%;vertical-align:top;padding-left:8px;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <tr style="background:#f0f0f0;">
+                            <td colspan="4" style="padding:6px;border:1px solid #000;font-weight:bold;text-align:center;">
+                                DUŽNIKOVE DOSPJELE OBVEZE PREMA VJEROVNIKU
+                            </td>
+                        </tr>
+                        <tr style="background:#f0f0f0;">
+                            <th style="border:1px solid #000;padding:5px;text-align:center;">Br.</th>
+                            <th style="border:1px solid #000;padding:5px;">Broj računa</th>
+                            <th style="border:1px solid #000;padding:5px;">Datum</th>
+                            <th style="border:1px solid #000;padding:5px;text-align:right;">Iznos</th>
+                        </tr>
+                        ${redoviB}
+                        <tr style="font-weight:bold;">
+                            <td colspan="3" style="border:1px solid #000;padding:5px;text-align:right;">UKUPNO</td>
+                            <td style="border:1px solid #000;padding:5px;text-align:right;">${fmtBroj(ukupnoB)} EUR</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;">
+            <tr>
+                <td style="border:1px solid #000;padding:8px;font-weight:bold;">
+                    RAZLIKA ( kol. 3 manje kol. 6 ili kol. 6 manje kol. 3 ):
+                </td>
+                <td style="border:1px solid #000;padding:8px;text-align:right;">
+                    ${razlikaTekst}
+                </td>
+            </tr>
+        </table>
+
+        <p style="font-size:13px;margin-bottom:30px;">U ${mjesto}, ${datum}.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <tr>
+                <td style="width:50%;padding:10px;text-align:center;vertical-align:top;">
+                    <strong>VJEROVNIK</strong><br>
+                    <strong>${firmaA}</strong><br><br><br><br>
+                    ............................................<br>
+                    <small>Potpis i pečat</small>
+                </td>
+                <td style="width:50%;padding:10px;text-align:center;vertical-align:top;">
+                    <strong>DUŽNIK</strong><br>
+                    <strong>${firmaB}</strong><br><br><br><br>
+                    ............................................<br>
+                    <small>Potpis i pečat</small>
+                </td>
+            </tr>
+        </table>
+    </div>`;
+
+    window.print();
+}
+
+window.addEventListener('load', function() {
+    dodajRedak('A');
+    dodajRedak('B');
+
+    if(document.querySelector('.datum-input')){
+        flatpickr('.datum-input', {
+            dateFormat: 'd.m.Y',
+            locale: 'hr',
+            allowInput: false
+        });
+    }
+});
+</script>
+</body>
+</html>
