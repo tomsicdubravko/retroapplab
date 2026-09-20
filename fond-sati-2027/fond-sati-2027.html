@@ -67,11 +67,19 @@
     margin: 32px 0;
   }
   .stat-card {
+    position: relative; overflow: hidden;
     background: var(--bg-card); border: 1px solid var(--border-dim);
     border-radius: 10px; padding: 18px; text-align: center;
   }
-  .stat-card .num { font-size: 1.7rem; font-weight: 800; color: var(--neon-gold); }
-  .stat-card .label { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+  .stat-card::after {
+    content: ''; position: absolute; width: 90px; height: 90px;
+    right: -40px; bottom: -45px; border-radius: 50%;
+    background: rgba(0,242,254,0.07);
+  }
+  .stat-card:nth-child(2)::after { background: rgba(245,158,11,0.08); }
+  .stat-card:nth-child(3)::after { background: rgba(255,0,127,0.07); }
+  .stat-card .num { position: relative; z-index: 1; font-size: 1.7rem; font-weight: 800; color: var(--neon-gold); }
+  .stat-card .label { position: relative; z-index: 1; font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
 
   table {
     width: 100%; border-collapse: collapse; margin: 20px 0 40px;
@@ -80,7 +88,7 @@
   th, td { padding: 12px 14px; text-align: left; font-size: 0.9rem; }
   th {
     background: rgba(0,242,254,0.08); color: var(--neon-cyan);
-    font-weight: 600; font-size: 0.78rem; letter-spacing: 0.04em;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.07em; text-transform: uppercase;
     border-bottom: 1px solid var(--border-dim);
   }
   td { border-bottom: 1px solid var(--border-dim); color: var(--text-light); }
@@ -119,6 +127,14 @@
     table { font-size: 0.8rem; }
     th, td { padding: 9px 8px; }
     .cta-btn { margin-left: 0; width: 100%; text-align: center; }
+  }
+  @media (max-width: 430px) {
+    .back-link {
+      font-size: 0; width: 34px; height: 34px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border-dim); border-radius: 8px;
+    }
+    .back-link::after { content: '←'; font-size: 1rem; color: var(--neon-cyan); }
   }
 </style>
 </head>
@@ -170,7 +186,7 @@
       <tr><td>Listopad</td><td class="num">21</td><td class="num">168</td><td class="num">0</td><td class="num">168</td></tr>
       <tr><td>Studeni</td><td class="num">20</td><td class="num">160</td><td class="num">2</td><td class="num">176</td></tr>
       <tr><td>Prosinac</td><td class="num">23</td><td class="num">184</td><td class="num">0</td><td class="num">184</td></tr>
-      <tr class="total-row"><td>UKUPNO 2027.</td><td class="num">253</td><td class="num">2 024</td><td class="num">8</td><td class="num">2 088</td></tr>
+      <tr class="total-row"><td>UKUPNO 2027.</td><td class="num">253</td><td class="num">2.024</td><td class="num">8</td><td class="num">2.088</td></tr>
     </tbody>
   </table>
 
