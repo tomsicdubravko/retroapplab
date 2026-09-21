@@ -341,11 +341,18 @@
   const finalScore = document.getElementById('finalScore');
 
   let W, H, DPR;
-  const GAME_W = 400, GAME_H = 700; // fixed logical resolution used by ALL gameplay math
+  const GAME_H = 700; // fixed logical height used by ALL gameplay math (keeps multiplayer worlds in sync)
+  let GAME_W = 400;
+  function computeGameW() {
+    const aspect = window.innerWidth / window.innerHeight;
+    // widen for landscape/desktop screens, but never narrower than the original mobile-portrait width
+    return Math.max(400, Math.min(900, Math.round(GAME_H * aspect)));
+  }
   function resize() {
     DPR = Math.min(window.devicePixelRatio || 1, 2);
+    GAME_W = computeGameW();
     W = GAME_W; H = GAME_H;
-    // fit the fixed logical canvas into the actual viewport (letterboxed), like object-fit:contain
+    // fit the logical canvas into the actual viewport (letterboxed), like object-fit:contain
     const scale = Math.min(window.innerWidth / GAME_W, window.innerHeight / GAME_H);
     canvas.style.width = Math.floor(GAME_W * scale) + 'px';
     canvas.style.height = Math.floor(GAME_H * scale) + 'px';
