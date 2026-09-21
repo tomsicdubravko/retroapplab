@@ -98,24 +98,24 @@ body {
   font-family: var(--font-body);
   color: white;
   overflow-x: hidden;
-  padding: 20px;
+  padding: 10px;
   transition: background 0.5s;
 }
 
 /* ── HEADER ── */
 h1 {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(1.4rem, 4vw, 2.5rem);
   color: var(--title-color);
   text-shadow: 0 0 30px var(--title-shadow), 2px 2px 0 #000;
   letter-spacing: 4px;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
   text-align: center;
   transition: color 0.4s, text-shadow 0.4s;
 }
 .subtitle {
-  color: #aaa; font-size: 0.9rem; letter-spacing: 3px;
-  text-transform: uppercase; margin-bottom: 25px;
+  color: #aaa; font-size: 0.75rem; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 10px;
 }
 
 /* ── FREE SPIN BANNER ── */
@@ -148,7 +148,7 @@ h1 {
   background: linear-gradient(145deg, var(--machine-bg-from), var(--machine-bg-to));
   border: 3px solid var(--machine-border);
   border-radius: 20px;
-  padding: 25px;
+  padding: 12px;
   box-shadow: 0 0 40px rgba(255,215,0,0.2), inset 0 0 30px rgba(0,0,0,0.5);
   max-width: 420px; width: 100%;
   position: relative;
@@ -173,7 +173,7 @@ h1 {
 
 /* ── LIGHTS ── */
 .top-lights {
-  display: flex; justify-content: center; gap: 10px; margin-bottom: 18px;
+  display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;
 }
 .light {
   width: 12px; height: 12px; border-radius: 50%;
@@ -197,8 +197,8 @@ h1 {
   background: linear-gradient(180deg, #0a0a0a, #111);
   border: 2px solid #333;
   border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 18px;
+  padding: 8px;
+  margin-bottom: 10px;
   box-shadow: inset 0 4px 15px rgba(0,0,0,0.8);
   position: relative;
 }
@@ -211,7 +211,7 @@ h1 {
   border: 2px solid var(--reel-border);
   border-radius: 8px;
   overflow: hidden;
-  height: 270px;
+  height: 201px;
   position: relative;
   box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
   transition: border-color 0.3s, box-shadow 0.3s, background 0.4s;
@@ -225,9 +225,9 @@ h1 {
   align-items: center;
 }
 .reel-strip .sym {
-  width: 100%; height: 90px;
+  width: 100%; height: 67px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 2.6rem; flex-shrink: 0;
+  font-size: 2rem; flex-shrink: 0;
   user-select: none;
 }
 .reel-wrap::before, .reel-wrap::after {
@@ -251,9 +251,9 @@ h1 {
   position: absolute; left: -4px; right: -4px; height: 2px;
   border-radius: 2px; opacity: 0; transition: opacity 0.3s;
 }
-.pay-line.top    { top: 89px;  background: rgba(255,80,80,0.9);  box-shadow: 0 0 8px red; }
-.pay-line.middle { top: 179px; background: rgba(80,255,120,0.9); box-shadow: 0 0 8px lime; }
-.pay-line.bottom { top: 269px; background: rgba(80,180,255,0.9); box-shadow: 0 0 8px cyan; }
+.pay-line.top    { top: 66px;  background: rgba(255,80,80,0.9);  box-shadow: 0 0 8px red; }
+.pay-line.middle { top: 133px; background: rgba(80,255,120,0.9); box-shadow: 0 0 8px lime; }
+.pay-line.bottom { top: 200px; background: rgba(80,180,255,0.9); box-shadow: 0 0 8px cyan; }
 .pay-line.active { opacity: 1; }
 
 /* BONUS symbol glows */
@@ -309,17 +309,17 @@ h1 {
 
 /* ── INFO ROW ── */
 .info-row {
-  display: flex; justify-content: space-between; gap: 10px; margin-bottom: 16px;
+  display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px;
 }
 .info-box {
   flex: 1;
   background: linear-gradient(135deg, #111, #1a1a1a);
   border: 1px solid #333; border-radius: 8px;
-  padding: 8px 10px; text-align: center;
+  padding: 5px 8px; text-align: center;
 }
-.info-label { font-size: 0.65rem; color: #888; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+.info-label { font-size: 0.6rem; color: #888; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
 .info-value {
-  font-family: 'Oswald', sans-serif; font-size: 1.4rem;
+  font-family: 'Oswald', sans-serif; font-size: 1.2rem;
   color: var(--gold); text-shadow: 0 0 10px rgba(255,215,0,0.4);
   transition: transform 0.15s;
 }
@@ -350,7 +350,7 @@ h1 {
 /* ── BET ROW ── */
 .bet-row {
   display: flex; align-items: center; justify-content: center;
-  gap: 10px; margin-bottom: 16px;
+  gap: 10px; margin-bottom: 8px;
 }
 .bet-btn {
   background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
@@ -375,11 +375,11 @@ h1 {
   background: linear-gradient(135deg, #c0392b, #922b21);
   border: 3px solid #e74c3c; border-radius: 14px;
   color: white; font-family: 'Oswald', sans-serif;
-  font-size: 1.6rem; letter-spacing: 4px; padding: 16px;
+  font-size: 1.4rem; letter-spacing: 4px; padding: 10px;
   cursor: pointer; transition: all 0.2s;
   box-shadow: 0 6px 0 #7b241c, 0 0 20px rgba(192,57,43,0.4);
   text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-  margin-bottom: 14px; position: relative;
+  margin-bottom: 8px; position: relative;
 }
 .spin-btn.free-spin-btn {
   background: linear-gradient(135deg, #1a6b3a, #0d4a27);
@@ -1375,7 +1375,7 @@ body.theme-retro .reels-container::after {
   display: flex; gap: 6px; margin-bottom: 12px; position: relative;
 }
 .sb-reel {
-  flex: 1; height: 270px; border-radius: 10px; overflow: hidden;
+  flex: 1; height: 201px; border-radius: 10px; overflow: hidden;
   position: relative; border: 2px solid rgba(255,255,255,0.3);
   background: rgba(0,0,0,0.2);
 }
@@ -1395,9 +1395,9 @@ body.theme-retro .reels-container::after {
   position: absolute; left: -3px; right: -3px; height: 2px;
   border-radius: 2px; opacity: 0; transition: opacity 0.3s;
 }
-.sb-pline.top    { top: 89px; }
-.sb-pline.middle { top: 179px; }
-.sb-pline.bottom { top: 269px; }
+.sb-pline.top    { top: 66px; }
+.sb-pline.middle { top: 133px; }
+.sb-pline.bottom { top: 200px; }
 .sb-pline.active { opacity: 1; }
 
 .sb-reel.win { animation: sb-reel-pulse 0.4s ease-in-out 4; }
@@ -1476,18 +1476,18 @@ body.theme-retro .reels-container::after {
       </div>
       <div class="sb-reel" id="sbreel0">
         <div class="reel-strip" id="sbstrip0"></div>
-        <div class="sb-reel-div" style="top:90px"></div>
-        <div class="sb-reel-div" style="top:180px"></div>
+        <div class="sb-reel-div" style="top:67px"></div>
+        <div class="sb-reel-div" style="top:134px"></div>
       </div>
       <div class="sb-reel" id="sbreel1">
         <div class="reel-strip" id="sbstrip1"></div>
-        <div class="sb-reel-div" style="top:90px"></div>
-        <div class="sb-reel-div" style="top:180px"></div>
+        <div class="sb-reel-div" style="top:67px"></div>
+        <div class="sb-reel-div" style="top:134px"></div>
       </div>
       <div class="sb-reel" id="sbreel2">
         <div class="reel-strip" id="sbstrip2"></div>
-        <div class="sb-reel-div" style="top:90px"></div>
-        <div class="sb-reel-div" style="top:180px"></div>
+        <div class="sb-reel-div" style="top:67px"></div>
+        <div class="sb-reel-div" style="top:134px"></div>
       </div>
     </div>
     <div class="sb-mult">
@@ -1640,18 +1640,18 @@ body.theme-retro .reels-container::after {
       </div>
       <div class="reel-wrap" id="reel0">
         <div class="reel-strip" id="strip0"></div>
-        <div class="reel-row-div" style="top:90px"></div>
-        <div class="reel-row-div" style="top:180px"></div>
+        <div class="reel-row-div" style="top:67px"></div>
+        <div class="reel-row-div" style="top:134px"></div>
       </div>
       <div class="reel-wrap" id="reel1">
         <div class="reel-strip" id="strip1"></div>
-        <div class="reel-row-div" style="top:90px"></div>
-        <div class="reel-row-div" style="top:180px"></div>
+        <div class="reel-row-div" style="top:67px"></div>
+        <div class="reel-row-div" style="top:134px"></div>
       </div>
       <div class="reel-wrap" id="reel2">
         <div class="reel-strip" id="strip2"></div>
-        <div class="reel-row-div" style="top:90px"></div>
-        <div class="reel-row-div" style="top:180px"></div>
+        <div class="reel-row-div" style="top:67px"></div>
+        <div class="reel-row-div" style="top:134px"></div>
       </div>
     </div>
   </div>
@@ -2133,7 +2133,7 @@ function closeBonus() {
 }
 
 // ── REEL STRIP ENGINE ──
-const SYM_H = 90; // 270px / 3 rows
+const SYM_H = 67; // 201px / 3 rows
 
 function buildStrip(stripEl, colSymbols, extraCount) {
   stripEl.style.transition = 'none';
@@ -2867,7 +2867,7 @@ function enterSymbolBonus(sym) {
     for (let r = 0; r < 3; r++) {
       const div = document.createElement('div');
       div.className = 'sym';
-      div.style.height = '90px'; div.style.fontSize = '2.2rem';
+      div.style.height = '67px'; div.style.fontSize = '2rem';
       div.textContent = world.symbols[Math.floor(Math.random() * world.symbols.length)];
       s.appendChild(div);
     }
@@ -2952,7 +2952,7 @@ function sbAnimateReel(idx, colSymbols, stopDelay, onDone) {
   all.forEach(s => {
     const div = document.createElement('div');
     div.className = 'sym';
-    div.style.height = '90px'; div.style.fontSize = '2.2rem';
+    div.style.height = '67px'; div.style.fontSize = '2rem';
     div.textContent = s;
     strip.appendChild(div);
   });
@@ -3088,7 +3088,7 @@ function startTropicalBonus(spins) {
     s.innerHTML = ''; s.style.transition = 'none'; s.style.transform = 'translateY(0)';
     const div = document.createElement('div');
     div.className = 'sym';
-    div.style.height = '70px'; div.style.fontSize = '2.2rem';
+    div.style.height = '70px'; div.style.fontSize = '2rem';
     div.textContent = TROP_SYMBOLS[Math.floor(Math.random() * TROP_SYMBOLS.length)];
     s.appendChild(div);
   });
@@ -3180,7 +3180,7 @@ function animateTropReel(idx, finalSym, stopDelay, onDone) {
     const div = document.createElement('div');
     div.className = 'sym';
     div.style.height = TROP_ROW_H + 'px';
-    div.style.fontSize = '2.2rem';
+    div.style.fontSize = '2rem';
     div.textContent = s;
     strip.appendChild(div);
   });
