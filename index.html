@@ -9,7 +9,9 @@
 <meta property="og:description" content="Besplatne browser igre, hardverski eksperimenti i poslovni alati napravljeni ručno u Dubrovniku.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://retroapplab.com/">
-<meta property="og:image" content="https://retroapplab.com/hero-arcade.jpg">
+<meta property="og:image" content="https://retroapplab.com/og-image.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="twitter:card" content="summary_large_image">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6830707036064247"
      crossorigin="anonymous"></script>
@@ -170,6 +172,10 @@
     text-align: center;
   }
   #splash .splash-logo span{ color: var(--neon-pink); }
+  #splash .splash-logo-img{
+    width: min(300px, 62vw); height: auto; display: block;
+    mix-blend-mode: screen; /* tamna pozadina slike nestaje, ostaje samo neon */
+  }
   #splash .splash-tag{
     margin-top: 10px;
     font-family: 'Press Start 2P', monospace;
@@ -233,7 +239,7 @@
     color: #fff;
   }
   .wordmark span { color: var(--neon-pink); }
-  .wordmark .logo-icon { font-size: 1.2rem; }
+  .wordmark .logo-icon { width: 30px; height: 30px; display: block; mix-blend-mode: screen; }
   .navlinks { display: flex; gap: 24px; font-size: 0.9rem; font-weight: 500; }
   .navlinks a {
     color: var(--text-muted); transition: color 0.2s;
@@ -609,7 +615,7 @@
 
 <!-- SPLASH / POČETNI EKRAN -->
 <div id="splash">
-  <div class="splash-logo">RETRO<span>APP</span>LAB</div>
+  <img class="splash-logo-img" src="logo-full.jpg" alt="RetroAppLab">
   <div class="splash-tag">GAMES • APPS • EXPERIMENTS</div>
   <div class="splash-start">PRITISNI ZA POČETAK</div>
   <div class="splash-hint">ili dodirni ekran</div>
@@ -683,7 +689,7 @@
 <nav>
   <div class="wrap">
     <a href="#" class="wordmark">
-      <span class="logo-icon">👾</span> RETRO<span>APP</span>LAB
+      <img class="logo-icon" src="apple-touch-icon.png" alt=""> RETRO<span>APP</span>LAB
     </a>
     <button class="navtoggle" onclick="document.querySelector('.navlinks').classList.toggle('open')">☰</button>
     <div class="navlinks">
@@ -874,7 +880,7 @@
         <div class="sah-era">DANAS</div>
         <h3>♟️ Igraj protiv bota</h3>
         <p>Šahovska partija protiv prilagođenog bota ili u dvoje, s figurama iz 1950.</p>
-        <a href="/sah/" class="play-btn">Pokreni šah →</a>
+        <a href="/sah/splash.html" class="play-btn">Pokreni šah →</a>
       </div>
 
       <div class="sah-card">
