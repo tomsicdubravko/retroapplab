@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pčelica</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game"></canvas>
+  <div id="hud"><span id="scoreVal">0</span> 🌼<span id="distSep"> · </span><span id="distVal">0</span>m</div>
+  <div id="livesHud"><span id="livesVal">❤️❤️</span></div>
+  <div id="invertBadge" class="hidden">🌑 OBRNUTO! <span id="invertTime">5.0</span>s</div>
+  <div id="shieldBadge" class="hidden">🛡️ ŠTIT <span id="shieldTime">8.0</span>s</div>
+  <div id="pepperBadge" class="hidden">🌶️ FEFERON! <span id="pepperTime">11.0</span>s</div>
+  <div id="overlay">
+    <h1>🐝 Pčelica</h1>
+    <p>Dodirni ili klikni ekran da pčelica poskoči.<br>Imaš 2 života - udarac te samo omami na par sekundi!<br>Skupljaj cvjetove za bodove (20 = bonus život!), <b>leptiriće</b> (noću <b>krijesnice</b>) da te prate! 🦋<br><b>Crni cvijet</b> obrne komande, <b>zlatni</b> daje štit! 🌑🛡️<br>Zaroni u <b>vrtlog</b> 🍯 - pazi na podmornicu! Med kupuje štit (20) ili život (50)!<br>Dodirni <b>čudne oblake</b> ☁️ za oblačno kraljevstvo - pazi na avion!<br>Doleti do <b>velikog cvijeta</b> 🌸 - pčelica na njemu zaspi i budi se u noćnom svijetu! 🌙<br>Na kraju noći te čeka <b>portal u pustinju</b> 🏜️, iza pustinje <b>ledenjak</b> ❄️, a na kraju <b>vulkan</b> 🌋!</p>
+    <div class="score-line hidden" id="finalScore"></div>
+    <button id="startBtn">Start</button>
+    <button id="mpBtn">👥 Igraj u dvoje</button>
+  </div>
+
+  <div id="mpOverlay" class="hidden">
+    <div id="mpPanel">
+      <h2>👥 Multiplayer</h2>
+      <p class="mpNote">Oba igrača trebaju biti online u isto vrijeme dok igraju.</p>
+      <div id="mpChoice">
+        <button id="mpCreateBtn">Kreiraj sobu</button>
+        <div class="mpJoinRow">
+          <input id="mpCodeInput" maxlength="4" placeholder="KOD">
+          <button id="mpJoinBtn">Pridruži se</button>
+        </div>
+        <p id="mpError" class="hidden"></p>
+        <button id="mpBackBtn" class="mpLink">Nazad</button>
+      </div>
+      <div id="mpWaiting" class="hidden">
+        <p>Pošalji ovaj kod prijatelju:</p>
+        <div id="mpCodeDisplay">----</div>
+        <p id="mpStatus">Čekam protivnika…</p>
+        <button id="mpCancelBtn" class="mpLink">Odustani</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mpScoreboard" class="hidden">
+    <div class="mpRow mpMe">🐝 Ti: <span id="mpMyScore">0</span>🌼 <span id="mpMyDist">0</span>m</div>
+    <div class="mpRow mpOpp">🐝 Protivnik: <span id="mpOppScore">0</span>🌼 <span id="mpOppDist">0</span>m <span id="mpOppStatus"></span></div>
+  </div>
+
+  <div id="mpToast" class="hidden"></div>
+
+  <div id="spectatorBanner" class="hidden">👻 Gledaš protivnika uživo dok ne završi…</div>
+
+  <div id="countdownOverlay" class="hidden">
+    <div id="countdownNum">3</div>
+  </div>
+</div>
+
+<!-- redoslijed je bitan: sve skripte dijele globalni opseg, main.js pokreće igru -->
+<script src="js/core.js"></script>
+<script src="js/world1.js"></script>
+<script src="js/world2.js"></script>
+<script src="js/world3.js"></script>
+<script src="js/world4.js"></script>
+<script src="js/world5.js"></script>
+<script src="js/multiplayer.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
