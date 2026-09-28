@@ -307,6 +307,10 @@
   .section-head h2 {
     font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px;
   }
+  .section-head .section-icon {
+    width: 1.6em; height: 1.6em; flex-shrink: 0; border-radius: 8px;
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+  }
   .section-head p { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; }
 
   /* ARCADE SEKCIJA */
@@ -345,6 +349,11 @@
     color: var(--neon-pink); margin-bottom: 8px; display: inline-block;
   }
   .card-body h3 { font-size: 1.2rem; margin-bottom: 6px; color: #fff; }
+  .game-title { display: flex; align-items: center; gap: 10px; }
+  .game-icon {
+    width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 60, 200, 0.35);
+  }
   .card-body p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px; flex-grow: 1; }
   .play-btn {
     align-self: flex-start;
@@ -575,6 +584,9 @@
     -webkit-text-fill-color: #f9a8d4;
     animation: splashBlink 1s steps(1) infinite;
   }
+  .footer-copyright .fc-cursor {
+    animation: splashBlink 1s steps(1) infinite;
+  }
   .footer-copyright {
     font-size: 0.72rem; opacity: 0.55; padding-top: 12px; line-height: 1.7;
     border-top: 1px solid var(--border-dim); width: 100%; max-width: 320px;
@@ -605,6 +617,8 @@
     .sah-timeline-header .tl-dash { display: none; }
     .card-body { padding: 10px 12px; }
     .card-body h3 { font-size: 0.9rem; margin-bottom: 4px; }
+    .card-body .game-title { gap: 6px; }
+    .card-body .game-icon { width: 24px; height: 24px; border-radius: 5px; }
     .card-body p { font-size: 0.72rem; margin-bottom: 10px; }
     .card-tag { font-size: 0.45rem; margin-bottom: 4px; }
     .play-btn { padding: 4px 10px; font-size: 0.65rem; }
@@ -707,7 +721,7 @@
 <header class="hero">
   <div class="wrap">
     <span class="hero-tag">GAMES • APPS • EXPERIMENTS</span>
-    <h1>MALE IGRE I ALATI, NAPRAVLJENI RUČNO.</h1>
+    <h1>OD PRVOG PIXELA DO ZADNJEG VIJKA.</h1>
     <p class="hero-sub">RetroAppLab je zbirka web igara, fizičkih hardverskih eksperimenata i poslovnih rješenja — od video pokera do dubrovačkog šaha nadahnutog poviješću grada.</p>
     <div class="hero-byline">RETRO APP LAB · DUBROVNIK</div>
 
@@ -758,7 +772,7 @@
   <div class="featured-card">
     <div class="featured-media"></div>
     <div class="featured-content">
-      <h3>Pčelica</h3>
+      <h3 class="game-title"><img class="game-icon" src="icon-pcelica.jpg" alt="" aria-hidden="true">Pčelica</h3>
       <p>Leti kroz nebo, zaroni u podvodnu medenu špilju kroz vrtlog, ili se popni u oblačno kraljevstvo kroz čudne oblake — svaki svijet ima svoje opasnosti (podmornica, avion). Flappy Bird mehanika, ali s dva skrivena svijeta koja tek trebaš otkriti.</p>
       <a href="/pcelica/" class="play-btn">Igraj →</a>
     </div>
@@ -770,7 +784,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2>🕹️ RETRO ARCADE</h2>
-      <p>Sedam igara za preglednik — svaka svoj mali svijet, od kartaškog stola do slot automata i puzzli.</p>
+      <p>IGRE KOJE TE NATJERAJU DA KAŽEŠ: „SAMO&nbsp;JOŠ&nbsp;JEDNA.“</p>
     </div>
 
     <div class="arcade-grid">
@@ -779,7 +793,7 @@
         <div class="card-banner" style="background-image:url('shot-poker.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">KARTE</span>
-          <h3>Poker 90s</h3>
+          <h3 class="game-title"><img class="game-icon" src="icon-poker.jpg" alt="" aria-hidden="true">Poker 90s</h3>
           <p>Povratak kafićkom video pokeru 90-ih — HOLD, VEĆA/MANJA, GAMBLE i COLLECT.</p>
           <a href="/poker/" class="play-btn">Igraj</a>
         </div>
@@ -790,7 +804,7 @@
         <div class="card-banner" style="background-image:url('shot-pcelica.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">ARKADA</span>
-          <h3>Pčelica</h3>
+          <h3 class="game-title"><img class="game-icon" src="icon-pcelica.jpg" alt="" aria-hidden="true">Pčelica</h3>
           <p>Nebo, more i medeni svijet — koliko daleko možeš odletjeti?</p>
           <a href="/pcelica/" class="play-btn">Igraj</a>
         </div>
@@ -801,7 +815,7 @@
         <div class="card-banner" style="background-image:url('shot-brojopad.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">PUZZLE</span>
-          <h3>Brojopad</h3>
+          <h3 class="game-title"><img class="game-icon" src="icon-brojopad.jpg" alt="" aria-hidden="true">Brojopad</h3>
           <p>Brojevi padaju u stupce i zbrajaju se kad se poklope — nižeš li combo zaredom, nosiš bonus bodove.</p>
           <a href="/brojopad/" class="play-btn">Igraj</a>
         </div>
@@ -812,7 +826,7 @@
         <div class="card-banner" style="background-image:url('shot-vocna-salata.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">AUTOMAT</span>
-          <h3>Voćna Salata</h3>
+          <h3 class="game-title"><img class="game-icon" src="icon-vocna-salata.jpg" alt="" aria-hidden="true">Voćna Salata</h3>
           <p>Tri simbola, tri teme (Vegas, Neon, Retro) — pogodi kombinaciju i zgrni žetone.</p>
           <a href="/vocna-salata/" class="play-btn">Igraj</a>
         </div>
@@ -823,7 +837,7 @@
         <div class="card-banner" style="background-image:url('shot-auto-otpad.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">REFLEKSI</span>
-          <h3>Auto Otpad</h3>
+          <h3 class="game-title"><img class="game-icon" src="icon-auto-otpad.jpg" alt="" aria-hidden="true">Auto Otpad</h3>
           <p>Dizalica spušta auto ravno u prešu dok vjetar mrsi ciljanje — deset rundi, sve veći pritisak.</p>
           <a href="/auto-otpad/" class="play-btn">Igraj</a>
         </div>
@@ -834,7 +848,7 @@
         <div class="card-banner" style="background-image:url('shot-dropstack.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">PUZZLE</span>
-          <h3>Drop Stack</h3>
+          <h3 class="game-title"><img class="game-icon" src="icon-dropstack.jpg" alt="" aria-hidden="true">Drop Stack</h3>
           <p>Spuštaj blokove u redove i pazi da garbage red ne prijeđe vrh — posebne kockice (bomba, munja, duga) čiste ploču.</p>
           <a href="/dropstack/" class="play-btn">Igraj</a>
         </div>
@@ -845,7 +859,7 @@
         <div class="card-banner" style="background-image:url('shot-pushline.jpg');background-size:cover;background-position:top center;"></div>
         <div class="card-body">
           <span class="card-tag">PUZZLE</span>
-          <h3>PushLine</h3>
+          <h3 class="game-title"><img class="game-icon" src="icon-pushline.jpg" alt="" aria-hidden="true">PushLine</h3>
           <p>Guraj blokove na ploči da formiraš redove i kombinacije, uz comboe i sve teže razine.</p>
           <a href="/pushline/" class="play-btn">Igraj</a>
         </div>
@@ -858,8 +872,8 @@
 <section id="sah">
   <div class="wrap">
     <div class="section-head">
-      <h2>♟️ DUBROVAČKI ŠAH</h2>
-      <p>Povijest dubrovačkog šaha, Olimpijada 1950. i autentična partija protiv bota.</p>
+      <h2><img class="section-icon" src="icon-sah-skakac.jpg" alt="" aria-hidden="true">DUBROVAČKI ŠAH</h2>
+      <p>JEDAN GRAD. JEDNA OLIMPIJADA. JEDNA ŠAHOVSKA PRIČA.</p>
     </div>
 
     <div class="sah-timeline-header">
@@ -899,7 +913,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2>🧪 THE LAB</h2>
-      <p>HARDWARE · EXPERIMENTS · WIP — eksperimenti izvan ekrana i hardverska rješenja.</p>
+      <p>HARDWARE · EXPERIMENTS · WIP<br>KAD KOD VIŠE NIJE DOVOLJAN — KRENEŠ ŠARAFAT.</p>
     </div>
 
     <div class="lab-items">
@@ -970,7 +984,7 @@
   <div class="wrap">
     <div class="section-head">
       <h2>⚙️ CUSTOM SOFTWARE</h2>
-      <p>Alati razvijeni za svakodnevni rad i organizaciju.</p>
+      <p>KAD GOTOVO RJEŠENJE NE POSTOJI — NAPRAVIŠ GA.</p>
     </div>
 
     <div class="lab-items">
@@ -1092,7 +1106,7 @@
 <footer id="omeni">
   <div class="wrap footer-stack">
     <div class="footer-brand-name">RetroAppLab</div>
-    <p class="footer-tagline">Ručno izrađeno s ljubavlju prema kodu, mehanici i retro igrama.</p>
+    <p class="footer-tagline">PIXELI, KOD I VIJCI. SVE OSTALO JE EKSPERIMENT.</p>
     <nav class="footer-nav">
       <a href="https://sica.hr" target="_blank">Pizzeria Šica</a>
       <a href="https://www.blagdani.com" target="_blank">Blagdani</a>
@@ -1101,7 +1115,7 @@
       <a href="/privatnost.html">Privatnost</a>
     </nav>
     <div class="footer-status-line">IN PROGRESS · ALWAYS<span class="fs-cursor">_</span></div>
-    <div class="footer-copyright">© 2026 RetroAppLab · Dubrovnik<br>Built by Dubo · Dubrovnik</div>
+    <div class="footer-copyright">© DUBO'S LAB · DUBROVNIK<span class="fc-cursor">_</span></div>
   </div>
 </footer>
 
