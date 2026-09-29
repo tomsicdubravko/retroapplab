@@ -532,7 +532,13 @@
   #kontakt .contact-wrap {
     max-width: 560px; margin: 0 auto; text-align: center;
   }
-  #kontakt h2 { margin-bottom: 10px; }
+  #kontakt h2 {
+    margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  #kontakt .section-icon {
+    width: 1.6em; height: 1.6em; flex-shrink: 0; border-radius: 8px;
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.35);
+  }
   #kontakt .contact-sub { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 28px; }
   .contact-form {
     display: flex; flex-direction: column; gap: 14px;
@@ -1099,7 +1105,7 @@
 <!-- KONTAKT -->
 <section id="kontakt">
   <div class="wrap contact-wrap">
-    <h2>📬 Kontakt</h2>
+    <h2><img class="section-icon" src="icon-kontakt.jpg" alt="" aria-hidden="true">Kontakt</h2>
     <p class="contact-sub">Imaš ideju, ponudu ili pitanje? Javi se.</p>
     <form class="contact-form" action="https://formspree.io/f/mgavkloe" method="POST">
       <input type="text" name="name" placeholder="Ime" required>
