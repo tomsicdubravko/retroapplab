@@ -452,6 +452,9 @@
   .featured-tool { grid-column: 1 / -1; }
   #lab .section-head h2 { color: var(--neon-cyan); }
   #software .section-head h2 { color: var(--neon-green); }
+  #arkada .section-icon { box-shadow: 0 0 12px rgba(255, 0, 127, 0.35); }
+  #lab .section-icon { box-shadow: 0 0 12px rgba(0, 242, 254, 0.35); }
+  #software .section-icon { box-shadow: 0 0 12px rgba(16, 185, 129, 0.35); }
   .lab-item {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -565,7 +568,7 @@
   }
   .footer-tagline {
     font-size: 0.82rem; color: var(--text-muted); margin: 8px 0 20px;
-    max-width: 46ch;
+    max-width: 52ch;
   }
   .footer-nav {
     display: flex; flex-wrap: wrap; justify-content: center;
@@ -583,6 +586,12 @@
   .footer-status-line .fs-cursor {
     -webkit-text-fill-color: #f9a8d4;
     animation: splashBlink 1s steps(1) infinite;
+  }
+  .footer-tagline .nowrap { white-space: nowrap; }
+  .nowrap { white-space: nowrap; }
+  .neon-emoji {
+    display: inline-block; width: 1.5em; height: 1.5em; vertical-align: -0.4em;
+    filter: drop-shadow(0 0 6px rgba(255, 0, 127, 0.55));
   }
   .footer-copyright .fc-cursor {
     animation: splashBlink 1s steps(1) infinite;
@@ -721,8 +730,8 @@
 <header class="hero">
   <div class="wrap">
     <span class="hero-tag">GAMES • APPS • EXPERIMENTS</span>
-    <h1>OD PRVOG PIXELA DO ZADNJEG VIJKA.</h1>
-    <p class="hero-sub">RetroAppLab je zbirka web igara, fizičkih hardverskih eksperimenata i poslovnih rješenja — od video pokera do dubrovačkog šaha nadahnutog poviješću grada.</p>
+    <h1>OD PRVOG PIXELA DO ZADNJEG ŠARAFA.</h1>
+    <p class="hero-sub">Igre, programi, hardver i nekoliko ideja koje su malo pobjegle <span class="nowrap">kontroli.&nbsp;<img class="neon-emoji" src="icon-smjesko.png" alt="😄"></span></p>
     <div class="hero-byline">RETRO APP LAB · DUBROVNIK</div>
 
     <!-- 4 GLAVNE KARTICE KAO NA MOCKUPU -->
@@ -731,7 +740,7 @@
         <div>
           <div><img src="icon-arcade.jpg" alt="Retro Arcade" style="width:40px;height:40px;object-fit:contain;border-radius:6px;"></div>
           <h3>RETRO ARCADE</h3>
-          <p>Klasične igre, bezbrižna zabava i čisti retro osjećaj.</p>
+          <p>Igre koje sam htio igrati. Pa sam ih <span class="nowrap">napravio.&nbsp;<img class="neon-emoji" src="icon-smijeh.png" alt="🤣"></span></p>
         </div>
         <span class="explore-link" style="color: var(--neon-pink);">Istraži →</span>
       </a>
@@ -740,7 +749,7 @@
         <div>
           <div><img src="icon-chess.jpg" alt="Dubrovnik Chess" style="width:40px;height:40px;object-fit:contain;border-radius:6px;"></div>
           <h3>DUBROVNIK CHESS</h3>
-          <p>Povijest, Olimpijada 1950. i partije protiv bota.</p>
+          <p>Dubrovački šah. <span class="nowrap">Priča koja još traje.</span></p>
         </div>
         <span class="explore-link" style="color: var(--neon-gold);">Istraži →</span>
       </a>
@@ -749,7 +758,7 @@
         <div>
           <div><img src="icon-lab.jpg" alt="The Lab" style="width:40px;height:40px;object-fit:contain;border-radius:6px;"></div>
           <h3>THE LAB</h3>
-          <p>Fizički kontroleri, tasteri za poker i mikrokontroleri.</p>
+          <p>Kad igra iz ekrana <span class="nowrap">poželi izać.</span></p>
         </div>
         <span class="explore-link" style="color: var(--neon-cyan);">Istraži →</span>
       </a>
@@ -758,7 +767,7 @@
         <div>
           <div><img src="icon-software.jpg" alt="Custom Software" style="width:40px;height:40px;object-fit:contain;border-radius:6px;"></div>
           <h3>CUSTOM SOFTWARE</h3>
-          <p>Alati razvijeni za stvarne poslovne potrebe pogona.</p>
+          <p>Svaki posao ima <span class="nowrap">svoje probleme.</span> <span class="nowrap">Neki dobiju i svoj software.</span></p>
         </div>
         <span class="explore-link" style="color: var(--neon-green);">Istraži →</span>
       </a>
@@ -783,7 +792,7 @@
 <section id="arkada">
   <div class="wrap">
     <div class="section-head">
-      <h2>🕹️ RETRO ARCADE</h2>
+      <h2><img class="section-icon" src="icon-arcade.jpg" alt="" aria-hidden="true">RETRO ARCADE</h2>
       <p>IGRE KOJE TE NATJERAJU DA KAŽEŠ: „SAMO&nbsp;JOŠ&nbsp;JEDNA.“</p>
     </div>
 
@@ -912,7 +921,7 @@
 <section id="lab">
   <div class="wrap">
     <div class="section-head">
-      <h2>🧪 THE LAB</h2>
+      <h2><img class="section-icon" src="icon-lab.jpg" alt="" aria-hidden="true">THE LAB</h2>
       <p>HARDWARE · EXPERIMENTS · WIP<br>KAD KOD VIŠE NIJE DOVOLJAN — KRENEŠ ŠARAFAT.</p>
     </div>
 
@@ -983,7 +992,7 @@
 <section id="software">
   <div class="wrap">
     <div class="section-head">
-      <h2>⚙️ CUSTOM SOFTWARE</h2>
+      <h2><img class="section-icon" src="icon-software.jpg" alt="" aria-hidden="true">CUSTOM SOFTWARE</h2>
       <p>KAD GOTOVO RJEŠENJE NE POSTOJI — NAPRAVIŠ GA.</p>
     </div>
 
@@ -1106,7 +1115,7 @@
 <footer id="omeni">
   <div class="wrap footer-stack">
     <div class="footer-brand-name">RetroAppLab</div>
-    <p class="footer-tagline">PIXELI, KOD I VIJCI. SVE OSTALO JE EKSPERIMENT.</p>
+    <p class="footer-tagline"><span class="nowrap">PIXELI, KOD I ŠARAFI.</span> <span class="nowrap">SVE OSTALO JE EKSPERIMENT.</span></p>
     <nav class="footer-nav">
       <a href="https://sica.hr" target="_blank">Pizzeria Šica</a>
       <a href="https://www.blagdani.com" target="_blank">Blagdani</a>
