@@ -1,5 +1,7 @@
 // ===== Košarka 2 na 2 - način: brza igra 2 na 2, izbornik, pauza =====
 'use strict';
+// naslov izbornika iz IME_IGRE
+{ const h=$('menuNaslov'), em=document.createElement('em'); h.textContent=IME_IGRE; em.textContent=T('splash.podnaslov'); h.appendChild(em); }
 // brza igra: JAY + DRE protiv SARA + KAI na krovu, težina i bodovi iz izbornika
 function brzaIgra(){ const R=TOUR[2];
   return {plavi:mojaEkipa(), crveni:R.pl.map(P=>opisIgraca(P,false)), boje:{crveni:R.col}, teren:'krov',
@@ -11,7 +13,7 @@ function startGame(){
 function krajBrzeIgre(r){
   if(game.mp) $('overCards').innerHTML=''; else renderCards($('overCards'));
   const win=r.pobjeda;
-  $('overTitle').textContent=win?'Pobjeda':'Poraz';
+  $('overTitle').textContent=T(win?'opce.pobjeda':'opce.poraz');
   $('overTitle').style.color=win?'var(--amber)':'var(--muted)';
   $('overScore').textContent=r.bodovi[0]+' : '+r.bodovi[1];
   $('over').classList.remove('hidden'); $('touch').style.display='none';

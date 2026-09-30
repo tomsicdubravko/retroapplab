@@ -1,6 +1,7 @@
 // ===== Košarka 2 na 2 - pokretanje: gradnja scene i glavna petlja (učitava se zadnje) =====
 'use strict';
 buildArena(); buildAmbience(); buildHoop(); resize(); setupCheck(0); game.mode='menu';
+$('target').textContent=T('hud.do',{n:game.target});
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>fontJobs.forEach(f=>f()));
 
 let last=performance.now(), time=0;
@@ -25,3 +26,5 @@ function frame(now){
   clearEdges();
 }
 requestAnimationFrame(frame);
+// igra je spremna kad se učita sve (i fontovi, slike): splash tada nudi TAP TO PLAY
+if(document.readyState==='complete') Splash.spremno(); else addEventListener('load',()=>Splash.spremno());

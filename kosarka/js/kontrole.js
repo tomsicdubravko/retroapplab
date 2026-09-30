@@ -51,7 +51,7 @@ function srcIn(s){
   if(s==='k1') return {x:input.kx,z:input.kz,sprint:!!CODES.ShiftLeft,sd:input.shootDown,su:input.shootUp,pd:input.passDown,pu:input.passUp,ad:input.alleyDown,st:input.stealDown};
   if(s==='k2') return {x:input2.kx,z:input2.kz,sprint:!!CODES.ShiftRight,sd:input2.shootDown,su:input2.shootUp,pd:input2.passDown,pu:input2.passUp,ad:input2.alleyDown,st:input2.stealDown};
   const p=PADS[+s.slice(1)]; return p&&p.on?p:{x:0,z:0}; }
-const SRC_NAME={k1:'Tipkovnica A',k2:'Tipkovnica B',g0:'Kontroler 1',g1:'Kontroler 2',g2:'Kontroler 3',g3:'Kontroler 4'};
+const SRC_NAME={k1:T('izvor.k1'),k2:T('izvor.k2'),g0:T('izvor.g0'),g1:T('izvor.g1'),g2:T('izvor.g2'),g3:T('izvor.g3')};
 
 
 const isTouch=(window.matchMedia&&matchMedia('(pointer:coarse)').matches)||navigator.maxTouchPoints>0;
@@ -68,6 +68,7 @@ const ICONS={
   shoot:'<svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="24" cy="24" r="17"/><path d="M7 24h34M24 7v34M12 11c6 6 6 20 0 26M36 11c-6 6-6 20 0 26"/></svg>',
   jump:'<svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M24 38V12M13 22l11-11 11 11"/><path d="M14 42h20" opacity=".6"/></svg>',
   pass:'<svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="33" r="6"/><path d="M20 27l16-14M25 12h11v11"/></svg>',
+  cmd:'<svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h32v18H22l-9 8v-8H8z"/><path d="M18 21h12" stroke-width="3"/></svg>',
   swap:'<svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 18h26l-7-7M38 30H12l7 7"/></svg>',
   drib:'<svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 38l10-10-6-6 12-12"/><path d="M17 10h7v7"/><circle cx="34" cy="34" r="7" stroke-width="3"/></svg>',
   steal:'<svg viewBox="0 0 48 48" fill="#fff"><path d="M14 26V14a3 3 0 016 0v9h1V10a3 3 0 016 0v13h1V12a3 3 0 016 0v12h1v-7a3 3 0 016 0v12c0 9-6 15-14 15h-2c-5 0-9-3-12-8l-5-8a3 3 0 015-3z"/></svg>'};
@@ -111,8 +112,14 @@ function updateHuman(p,I,dt){
   if(I.pd){
     if(game.solo){}
     else if(holder&&!p.shooting&&!p.dunking&&!p.gather){ p.passHolding=true; p.passHold=0; }
+    else if(game.naredbe){ p.cmdHolding=true; p.cmdHold=0; }
     else if(!game.mp&&!game.local&&(!ball.holder||ball.holder.team!==p.team)) setControlled(mateOf(p));
   }
+  // karijera: naredbe botu (kratki dodir "Daj loptu!" / u obrani "Pritisni!", držanje "Šutiraj!")
+  if(p.cmdHolding){ p.cmdHold+=dt;
+    if(holder||!game.naredbe) p.cmdHolding=false;
+    else if(I.pu){ p.cmdHolding=false; naredi(p,'dodir'); }
+    else if(p.cmdHold>=0.35){ p.cmdHolding=false; naredi(p,'drzi'); } }
   if(p.passHolding){
     if(!holder||p.shooting||p.dunking) p.passHolding=false;
     else { p.passHold+=dt;
@@ -123,5 +130,18 @@ function updateHuman(p,I,dt){
   if(I.st){ if(holder) dribbleMove(p,ix,iz); else userSteal(p); }
 }
 
+
+function naredi(p,kako){ const bot=mateOf(p), h=ball.holder;
+  if(h&&h.team!==p.team){ bot.ai.pressT=5; bot.ai.cmd=null; oblacic(bot,T('naredba.pritisni')); return; }   // obrana
+  if(kako==='drzi'){ bot.ai.cmd={k:'sut',t:3}; oblacic(bot,T('naredba.sutiraj')); }
+  else { bot.ai.cmd={k:'lopta',t:2.5}; oblacic(bot,T('naredba.dajLoptu')); } }
+// oblačić iznad igrača (naredbe botu, alley-oop poziv)
+const oblEl=document.createElement('div'); oblEl.id='oblacic'; document.body.appendChild(oblEl);
+let oblT=0, oblP=null;
+function oblacic(p,text){ oblEl.textContent=text; oblP=p; oblT=1.4; oblEl.classList.add('show'); }
+function updateOblacic(dt){ if(oblT<=0) return; oblT-=dt;
+  if(oblT<=0||game.mode==='menu'||game.mode==='over'){ oblT=0; oblEl.classList.remove('show'); return; }
+  _p.set(oblP.pos.x,oblP.y+3.0,oblP.pos.z).project(camera);
+  oblEl.style.left=((_p.x+1)/2*innerWidth)+'px'; oblEl.style.top=((1-_p.y)/2*innerHeight)+'px'; }
 
 function localIn(){ return {x:input.kx+input.jx,z:input.kz+input.jz,sprint:!!(K.shift||input.jSprint),sd:input.shootDown,su:input.shootUp,pd:input.passDown,pu:input.passUp,ad:input.alleyDown,st:input.stealDown}; }
