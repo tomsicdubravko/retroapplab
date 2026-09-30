@@ -9,9 +9,9 @@ const PERFECT_BONUS=1;                      // savršen šut dodaje sekundu na s
 let diffIdx=1, MODE=MODES[1];
 const HOOP=new V3(0,0,HOOP_Z);
 const STATIONS=[
-  {name:'Lijevi kut',x:-6.95,z:1.25,rack:[-6.95,2.4],axis:'x',cam:[-9.0,3.5,5.6]},
-  {name:'Sredina',x:0,z:HOOP_Z+7.3,rack:[1.2,HOOP_Z+7.3],axis:'z',cam:[1.7,3.3,14.1]},
-  {name:'Desni kut',x:6.95,z:1.25,rack:[6.95,2.4],axis:'x',cam:[9.0,3.5,5.6]}];
+  {name:T('trice.stalak.0'),x:-6.95,z:1.25,rack:[-6.95,2.4],axis:'x',cam:[-9.0,3.5,5.6]},
+  {name:T('trice.stalak.1'),x:0,z:HOOP_Z+7.3,rack:[1.2,HOOP_Z+7.3],axis:'z',cam:[1.7,3.3,14.1]},
+  {name:T('trice.stalak.2'),x:6.95,z:1.25,rack:[6.95,2.4],axis:'x',cam:[9.0,3.5,5.6]}];
 
 // lopte
 const TEX_BALL=ballTex();
@@ -87,7 +87,7 @@ function startContest(o){
     m.querySelector('.z').style[a]=(50-g)+'%'; m.querySelector('.z').style[b]=(2*g)+'%';
     m.querySelector('.z2').style[a]=(50-2*g)+'%'; m.querySelector('.z2').style[b]=(4*g)+'%'; }
   ['menu','over','pauseOv','tOver'].forEach(id=>$(id).classList.add('hidden')); enter();
-  flash('Spremni?','1. pritisak: smjer (X) · 2. pritisak: daljina (Y)',1.6);
+  flash(T('trice.spremni'),T('trice.upute'),1.6);
 }
 function beginPickup(){
   const st=STATIONS[S.st], rb=st.balls[S.idx];
@@ -105,15 +105,15 @@ function release(){
   const ox=A.xu*0.06/g+rand(-0.01,0.01), oy=A.yu*0.06/g+rand(-0.01,0.01);
   const off=right.multiplyScalar(ox).addScaledVector(toS,-oy);
   const qs=[A.xq,A.yq];
-  if(qs[0]==='g'&&qs[1]==='g'){ S.perfect++; if(S.mode==='play'){ S.time+=PERFECT_BONUS; S.plusT=0.8; } feedback('PERFECT! +'+PERFECT_BONUS+' s','#5fe08b'); }
-  else { const wx=Math.abs(A.xu)>=Math.abs(A.yu), hint=wx?(A.xu<0?'lijevo':'desno'):(A.yu>0?'predugo':'prekratko');
-    feedback((qs.includes('r')?'MISS · ':'GOOD · ')+hint,qs.includes('r')?'#ff8a5c':'#ffd23f'); }
+  if(qs[0]==='g'&&qs[1]==='g'){ S.perfect++; if(S.mode==='play'){ S.time+=PERFECT_BONUS; S.plusT=0.8; } feedback(T('trice.perfect',{n:PERFECT_BONUS}),'#5fe08b'); }
+  else { const wx=Math.abs(A.xu)>=Math.abs(A.yu), hint=T(wx?(A.xu<0?'trice.lijevo':'trice.desno'):(A.yu>0?'trice.predugo':'trice.prekratko'));
+    feedback(T(qs.includes('r')?'trice.miss':'trice.good')+hint,qs.includes('r')?'#ff8a5c':'#ffd23f'); }
   A.ph='';
   const tgt=new V3(off.x,RIM_Y+0.02,HOOP_Z+off.z);
   const dir=new V3(-p.pos.x,0,HOOP_Z-p.pos.z).normalize();
   const p0=new V3(p.pos.x,2.65+p.y,p.pos.z).addScaledVector(dir,0.28);
-  const d=hoopDist(p.pos), T=0.78+d*0.07;
-  const b={mesh:p.hand,pos:p0.clone(),vel:ballistic(p0,tgt,T),money:p.handMoney,value:p.handMoney?2:1,touched:false,scored:false,resolved:false,life:0,st,idx};
+  const d=hoopDist(p.pos), tLet=0.78+d*0.07;   // vrijeme leta (ne T – T() su tekstovi)
+  const b={mesh:p.hand,pos:p0.clone(),vel:ballistic(p0,tgt,tLet),money:p.handMoney,value:p.handMoney?2:1,touched:false,scored:false,resolved:false,life:0,st,idx};
   b.mesh.position.copy(b.pos); balls.push(b);
   p.hand=null; p.follow=0.45; p.state='air';
   setDot(st,idx,'air'); S.results[st][idx]='air';
@@ -128,8 +128,8 @@ function onScore(b){
   const swish=!b.touched;
   if(swish) burst(0,RIM_Y-0.35,HOOP_Z,16,1.6,[0x9ff0ff,0xffffff]);
   resolve(b,true);
-  if(b.money){ flash('MONEY BALL!','+2',1,'money'); crowd('arms',1.4); sfx.cheer(); burst(0,RIM_Y,HOOP_Z,30,3.5,[0xffd23f,0xffffff,0x2f6bff,0xe33b2f]); }
-  else flash(swish?'SWISH!':'KOŠ!','+1',0.8,swish?'swish':'score');
+  if(b.money){ flash(T('trice.moneyBall'),'+2',1,'money'); crowd('arms',1.4); sfx.cheer(); burst(0,RIM_Y,HOOP_Z,30,3.5,[0xffd23f,0xffffff,0x2f6bff,0xe33b2f]); }
+  else flash(T(swish?'poruka.swish':'poruka.kos'),'+1',0.8,swish?'swish':'score');
 }
 function stepBall(b,dt){
   const n=5,h=dt/n;
@@ -159,16 +159,16 @@ function flightsDone(){ return balls.every(b=>b.resolved); }
 function endContest(){
   S.mode='over';
   const rec=S.score>S.best; if(rec){ S.best=S.score; saveBest(S.score); }
-  const sc=S.score, rate=sc>=18?'Savršeno!':sc>=14?'Vatra!':sc>=10?'Snajperist':sc>=6?'Solidno':'Treba još treninga';
+  const sc=S.score, rate=T('trice.ocjena.'+(sc>=18?18:sc>=14?14:sc>=10?10:sc>=6?6:0));
   $('tResPts').innerHTML=sc+'<small> / 18</small>'+(sc>=18?' 🔥':''); $('tResRate').textContent=rate;
-  $('tResInfo').textContent=`Pogođeno ${S.made} od 15 lopti · PERFECT ×${S.perfect}`+(S.time<=0?'':` · preostalo ${S.time.toFixed(1)} s`);
+  $('tResInfo').textContent=T('trice.info',{m:S.made,p:S.perfect})+(S.time<=0?'':T('trice.preostalo',{s:S.time.toFixed(1)}));
   $('tResRec').classList.toggle('hidden',!rec||sc===0);
   // lokalni TOP 10 (kasnije se ista lista može slati na online ljestvicu)
   const me={s:sc,m:S.made,p:S.perfect,t:Date.now()}, top=loadTop(); top.push(me);
   top.sort((a,b)=>b.s-a.s||b.m-a.m||a.t-b.t); const keep=top.slice(0,10); saveTop(keep);
   const day=t=>{ const d=new Date(t); return d.getDate()+'.'+(d.getMonth()+1)+'.'; };
-  $('tTop').innerHTML=`<div class="ttl">LOCAL BEST · TOP 10 · ${['Lako','Normalno','Teško'][diffIdx]}</div><ol>`+
-    keep.map((e,i)=>`<li class="${e===me?'me':''}"><span>${i+1}.</span><b>${e.s}/18${e.s>=18?' 🔥':''}</b><small>${e.m}/15 · perfect ${e.p||0} · ${day(e.t)}</small></li>`).join('')+'</ol>';
+  $('tTop').innerHTML=`<div class="ttl">${T('trice.top',{tezina:T('tezina.'+diffIdx)})}</div><ol>`+
+    keep.map((e,i)=>`<li class="${e===me?'me':''}"><span>${i+1}.</span><b>${e.s}/18${e.s>=18?' 🔥':''}</b><small>${T('trice.redak',{m:e.m,p:e.p||0,dan:day(e.t)})}</small></li>`).join('')+'</ol>';
   $('tOver').classList.remove('hidden');
   if(sc>=10){ crowd('jump',3); sfx.cheer(); }
   if(onEnd) onEnd({bodovi:sc,pogodaka:S.made,savrseno:S.perfect});
@@ -176,11 +176,11 @@ function endContest(){
 
 function update(dt){
   const p=shooter;
-  if(S.mode==='intro'){ S.introT-=dt; if(S.introT<=0){ S.mode='play'; flash('Kreni!','',0.7); sfx.whistle(); beginPickup(); } }
+  if(S.mode==='intro'){ S.introT-=dt; if(S.introT<=0){ S.mode='play'; flash(T('poruka.kreni'),'',0.7); sfx.whistle(); beginPickup(); } }
   if(S.mode==='play'){
     S.time-=dt;
     const sec=Math.ceil(S.time); if(S.time<=5&&sec<S.lastBeep&&sec>0){ S.lastBeep=sec; tone(880,0.1,'square',0.05); }
-    if(S.time<=0){ S.time=0; sfx.buzzer(); flash('Vrijeme!','',1.2);
+    if(S.time<=0){ S.time=0; sfx.buzzer(); flash(T('trice.vrijeme'),'',1.2);
       if(p.hand&&p.state!=='air'){ const st=STATIONS[S.st]; scene.remove(p.hand); p.hand=null; st.balls[S.idx]&&(st.balls[S.idx].visible=true); p.state='idle'; }
       S.aim.ph='';
       S.mode='ending'; S.endT=0; }
@@ -218,7 +218,7 @@ function update(dt){
 
 // animacija strijelca
 function poseShooter(dt,time){
-  const p=shooter, M=p.mesh; M.g.position.set(p.pos.x,p.y,p.pos.z); M.g.scale.setScalar(PSCALE);
+  const p=shooter, M=p.mesh; M.g.position.set(p.pos.x,p.y,p.pos.z); M.g.scale.set(PSCALE*0.88,PSCALE,PSCALE*0.9);   // probno: uži u širinu, visina ista
   const sp=Math.hypot(p.vel.x,p.vel.z);
   let fx,fz; if(p.state==='move'&&sp>0.5){ fx=p.vel.x; fz=p.vel.z; } else { fx=HOOP.x-p.pos.x; fz=HOOP.z-p.pos.z; }
   p.face=angLerp(p.face,Math.atan2(fx,fz),1-Math.exp(-12*dt)); M.g.rotation.y=p.face;
@@ -229,7 +229,7 @@ function poseShooter(dt,time){
   for(let i=0;i<2;i++){ const Lg=M.legs[i], s=(i?-1:1)*sw;
     if(air){ Lg.thigh.rotation.set(-0.35,0,(i?1:-1)*0.05); Lg.knee.rotation.x=0.55; Lg.foot.rotation.x=0.4; }
     else { Lg.thigh.rotation.set(-a+s*0.8,0,(i?1:-1)*p.crouch*0.14); Lg.knee.rotation.x=2*a+Math.max(0,s)*1.3; Lg.foot.rotation.x=-(Lg.thigh.rotation.x+Lg.knee.rotation.x)*0.85; } }
-  M.hips.position.y=HIP_H-(air?0:2*LEG_L*(1-Math.cos(a))+run*0.04*Math.abs(Math.sin(p.phase*2)));
+  M.hips.position.y=M.hipH-(air?0:2*M.legL*(1-Math.cos(a))+run*0.04*Math.abs(Math.sin(p.phase*2)));
   M.torso.rotation.x=air?-0.06:p.crouch*(p.state==='pickup'?0.55:0.3)+run*0.18;
   M.head.rotation.x=-M.torso.rotation.x*0.7;
   const [R,Lf]=M.arms;

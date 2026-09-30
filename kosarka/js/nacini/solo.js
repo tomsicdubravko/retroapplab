@@ -9,5 +9,5 @@ function startSolo(){
   audio(); setSolo(true); game.paused=false; D=DIFFS[game.diffIdx]; game.soloMade=0; game.soloShots=0; game.score=[0,0];
   ['menu','over','pauseOv','tOver'].forEach(id=>$(id).classList.add('hidden'));
   if(isTouch) $('touch').style.display='block';
-  setupCheck(0); flash('Solo trening','Šutiraj, zakucavaj i driblaj koliko želiš',1.4);
+  setupCheck(0); flash(T('solo.naslov'),T('solo.pod'),1.4);
 }

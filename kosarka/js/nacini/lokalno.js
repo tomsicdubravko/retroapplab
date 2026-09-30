@@ -8,10 +8,10 @@ function closeLocal(){ LOC.open=false; $('locOv').classList.add('hidden'); }
 function renderLoc(){
   const tc=t=>LOC.joined.filter(j=>j.team===t);
   $('locTeams').innerHTML=[0,1].map(t=>{ const arr=tc(t);
-    return `<div class="lt ${t?'red':'blue'}"><b>${t?'Crveni':'Plavi'}</b>${[0,1].map(i=>{ const j=arr[i], tag=players[t*2+i].info.tag;
-      return `<div class="ls${j?' on':''}"><span>${tag}</span>${j?SRC_NAME[j.src]:'Računalo'}</div>`; }).join('')}</div>`; }).join('');
+    return `<div class="lt ${t?'red':'blue'}"><b>${T(t?'opce.crveni':'opce.plavi')}</b>${[0,1].map(i=>{ const j=arr[i], tag=players[t*2+i].info.tag;
+      return `<div class="ls${j?' on':''}"><span>${tag}</span>${j?SRC_NAME[j.src]:T('opce.racunalo')}</div>`; }).join('')}</div>`; }).join('');
   $('locGo').disabled=!LOC.joined.length;
-  $('locMsg').textContent=LOC.joined.length?`${LOC.joined.length} ${LOC.joined.length===1?'igrač':'igrača'} · Enter ili Start za početak`:'Pritisni šut na svojoj tipkovnici ili kontroleru';
+  $('locMsg').textContent=LOC.joined.length?T(LOC.joined.length===1?'lokalno.igrac1':'lokalno.igraca',{n:LOC.joined.length}):T('lokalno.pritisni');
 }
 function locTick(){ if(!LOC.open) return; let ch=false;
   const srcs=['k1','k2']; PADS.forEach((p,i)=>{ if(p&&p.on) srcs.push('g'+i); });
@@ -33,7 +33,7 @@ function locStart(){ if(!LOC.open||!LOC.joined.length) return;
     if(!game.localMain){ game.localMain=p; game.ctrlIn=()=>srcIn(src); } else game.humans.set(p,()=>srcIn(src)); }));
   game.local=true; closeLocal(); startGame();
   const side=t=>teams[t].map(p=>isHuman(p)?p.info.tag:'AI').join(' + ');
-  flash('LOKALNO!',`${side(0)} protiv ${side(1)}`,1.8); }
+  flash(T('lokalno.naslovIgre'),side(0)+T('opce.protiv')+side(1),1.8); }
 function endLocal(){ game.local=false; game.humans=new Map(); game.localMain=null; game.ctrlIn=null; }
 
 $('localBtn').onclick=openLocal; $('locGo').onclick=locStart; $('locBack').onclick=()=>{ closeLocal(); $('menu').classList.remove('hidden'); };

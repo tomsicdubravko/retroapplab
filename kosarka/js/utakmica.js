@@ -5,18 +5,19 @@
 //   teren:'dan'|'most'|'krov', doBodova:21, tezina:0|1|2,
 //   kraj(rezultat)                              // poziva se kad utakmica završi
 // })
-// igrač po želji ima i {osobnost, uloga, koza, kosa, zensko, nadimak, recenica, ulaz}; što nije zadano uzima se od
+// igrač po želji ima i {osobnost, uloga, koza, kosa, frizura, tijelo, zensko, nadimak, recenica, ulaz}; što nije zadano uzima se od
 //   izvornog igrača na tom mjestu (JAY, DRE, SARA, KAI). arhetip: 'brzi'|'zakucavac'|'suter'|'obrambeni' (ili 'speed'|'power'|'shooter'|'defense')
 // covjek: jedan čovjek na plavima = obična igra (kontrola se prebacuje između plavih igrača);
 //   više ljudi na jednom uređaju: svaki osim prvog treba ulaz() koji vraća njegove kontrole (vidi srcIn u kontrole.js).
 //   Online i lokalni lobby sami postavljaju ljude, pa se covjek tada ne primjenjuje.
-// dodatne opcije: boje {plavi,crveni: {j,s,css}}, kolo (bonus REP-a u turniru), pripremi() prije početka, uvod() odmah nakon početka
+// dodatne opcije: boje {plavi,crveni: {j,s,css}}, kolo (bonus REP-a u turniru), pripremi() prije početka, uvod() odmah nakon početka,
+//   naredbe (karijera: uvijek upravljaš prvim plavim igračem, a gumbom Dodaj bez lopte daješ naredbe botu)
 // rezultat: {pobjeda, bodovi:[plavi,crveni], trajanje (s igre),
 //   statistika:{poIgracu:{IME:{poeni,trice,zakucavanja,kradje,blokovi,asistencije,ankleBreakeri}}}, rep, mvp}
 const Utakmica=(()=>{
   const TEREN={dan:0,most:1,krov:2};
   const ARHETIP={brzi:'speed',zakucavac:'power',suter:'shooter',obrambeni:'defense',speed:'speed',power:'power',shooter:'shooter',defense:'defense'};
-  const ULOGA={speed:'Brzi dribler',power:'Zakucavač',shooter:'Šuter',defense:'Obrambeni'};
+  const ULOGA={speed:T('uloga.brziDribler'),power:T('uloga.zakucavac'),shooter:T('uloga.suter'),defense:T('uloga.obrambeni')};
   const IZVORNI=ROSTER.map(t=>t.map(i=>({...i})));   // izgled igrača prije bilo kakvog presvlačenja
   let tek=null;                                     // opcije utakmice u tijeku
   let izbornik=null;                                // težina i bodovi iz izbornika prije prve utakmice (vraća ih vratiIzbornik)
@@ -24,13 +25,18 @@ const Utakmica=(()=>{
   // opis igrača → interni oblik (isti kao u TOUR)
   function unutarnji(d,t,i){ const o=IZVORNI[t][i], arch=ARHETIP[d.arhetip]||o.arch;
     return {name:d.ime||o.name, arch, pers:d.osobnost||(d.arhetip?undefined:o.pers), role:d.uloga||(d.arhetip?ULOGA[arch]:o.role),
-      skin:d.koza!=null?d.koza:o.skin, hairCol:d.kosa||o.hairCol, she:d.zensko!=null?!!d.zensko:!!o.she, nick:d.nadimak, line:d.recenica,
+      skin:d.koza!=null?d.koza:o.skin, hairCol:d.kosa||o.hairCol, hair:d.frizura||o.hair, she:d.zensko!=null?!!d.zensko:!!o.she, nick:d.nadimak, line:d.recenica, tijelo:d.tijelo,
       st:d.osobine?osobineUSt(arch,d.osobine):null}; }   // osobine 0–100 (karijera) → brojke arhetipa
   // presvuci igrača (dres samo ako su zadane boje ekipe)
-  function obuci(p,P,col){ const m=p.mesh.mats;
+  function obuci(p,P,col){
+    // druga frizura: model igrača se gradi ponovno (kapa, traka, rep su dio modela)
+    if(P.hair&&P.hair!==p.info.hair){ p.info.hair=P.hair; p.info.skin=P.skin; p.info.hairCol=P.hairCol; p.info.arch=P.arch;
+      const vis=p.mesh.g.visible; scene.remove(p.mesh.g); p.mesh.g.traverse(o=>{ if(o.geometry) o.geometry.dispose(); });
+      p.mesh=buildPlayer(p.info,p.team); p.mesh.g.visible=vis; scene.add(p.mesh.g); }
+    const m=p.mesh.mats;
     if(col){ m.jer.color.setHex(col.j); m.jer.emissive.setHex(col.j); m.shorts.color.setHex(col.s); }
     m.skin.color.setHex(P.skin); m.skin.emissive.setHex(P.skin); m.hair.color.set(P.hairCol);
-    p.info.name=P.name; p.info.skin=P.skin; p.info.hairCol=P.hairCol; p.info.arch=P.arch; p.info.she=!!P.she; p.info.role=P.role; p.info.pers=P.pers; p.st=P.st||ARCH[P.arch]; p.rival=null;
+    p.info.name=P.name; p.info.skin=P.skin; p.info.hairCol=P.hairCol; p.info.arch=P.arch; p.info.she=!!P.she; p.info.role=P.role; p.info.pers=P.pers; p.info.tijelo=P.tijelo; p.st=P.st||ARCH[P.arch]; p.rival=null; primijeniTijelo(p.mesh,tijeloZa(p.info));
     const card=cardEls[players.indexOf(p)]; drawAvatar(card.querySelector('canvas'),p.info,p.team); card.querySelector('b').textContent=P.name; card.querySelector('u').textContent=P.role; }
 
   // tko je čovjek (samo kad kontrole već nisu postavili online ili lokalni lobby)
@@ -45,13 +51,15 @@ const Utakmica=(()=>{
     audio(); setSolo(false); $('tOver').classList.add('hidden');
     game.score=[0,0]; game.paused=false; game.clock=0; resetStats();
     D=DIFFS[game.diffIdx];
-    $('target').textContent='DO '+game.target;
+    $('target').textContent=T('hud.do',{n:game.target});
     $('menu').classList.add('hidden'); $('over').classList.add('hidden'); $('pauseOv').classList.add('hidden');
     if(isTouch) $('touch').style.display='block';
-    setupCheck(0); flash('Kreni!','Vaša lopta',1); }
+    setupCheck(0); flash(T('poruka.kreni'),T('poruka.vasaLopta'),1); }
 
   function pokreni(o){
     tek=o;
+    // naredbe: karijera s botom suigračem (fiksna kontrola prvog plavog igrača, naredbe gumbom Dodaj)
+    game.naredbe=!!o.naredbe; for(const p of players){ p.ai.cmd=null; p.ai.pressT=0; p.cmdHolding=false; }
     if(o.plavi) teams[0].forEach((p,i)=>{ if(o.plavi[i]) obuci(p,unutarnji(o.plavi[i],0,i),o.boje&&o.boje.plavi); });
     if(o.crveni){ const col=(o.boje&&o.boje.crveni)||TOUR[2].col; COLS[1].css=col.css; teams[1].forEach((p,i)=>{ if(o.crveni[i]) obuci(p,unutarnji(o.crveni[i],1,i),col); }); }
     if(o.pripremi) o.pripremi();
@@ -79,7 +87,7 @@ const Utakmica=(()=>{
   // uz opciju vratiIzgled (karijera) vraća i zadane igrače: JAY/DRE, SARA/KAI na krovu
   function vratiIzbornik(){ if(izbornik){ game.diffIdx=izbornik.diffIdx; game.target=izbornik.target; izbornik=null; }
     if(tek&&tek.vratiIzgled){ teams[0].forEach((p,i)=>obuci(p,unutarnji({},0,i))); resetLook(); }
-    tek=null; }
+    game.naredbe=false; tek=null; }
   return {pokreni, zavrsi, rezultat, vratiIzbornik, obuci, unutarnji};
 })();
 

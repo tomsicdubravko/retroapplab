@@ -58,7 +58,7 @@ function updateHUD(dt){
   if(flashT>0){ flashT-=dt; } $('flashOv').style.opacity=Math.max(0,flashT)/0.22*0.55;
   drawMinimap();
   const scv=Math.max(0,game.shotClock), se=$('shot'); se.textContent=(scv<10?'0':'')+scv.toFixed(1); se.classList.toggle('low',scv<=4&&!game.solo);
-  if(game.solo){ $('s0').textContent=game.soloMade; $('s1').textContent=game.soloShots; se.textContent=game.soloShots?Math.round(game.soloMade/game.soloShots*100)+'%':'—'; $('target').textContent='SOLO · POGOCI / ŠUTEVI'; }
+  if(game.solo){ $('s0').textContent=game.soloMade; $('s1').textContent=game.soloShots; se.textContent=game.soloShots?Math.round(game.soloMade/game.soloShots*100)+'%':'—'; $('target').textContent=T('hud.solo'); }
   const sb=$('scbar'), fr=scv/SHOT_CLOCK, fl=sb.querySelector('.fl');
   sb.classList.toggle('on',game.mode==='play'||game.mode==='dead'); sb.classList.toggle('low',scv<=3&&game.mode==='play');
   fl.style.width=(fr*100)+'%'; const col=fr>0.5?'#35c46b':fr>0.25?'#ffb020':'#ff3b30'; fl.style.background=col; fl.style.color=col;
@@ -70,10 +70,10 @@ function updateHUD(dt){
     const w=Math.min(4,c.st.win*(c.st.win3&&isThree(c.pos.x,c.pos.z)?c.st.win3:1)), mz=$('mz'); mz.style.left=(50-9*w)+'%'; mz.style.width=(18*w)+'%'; }
   $('hint').style.display=(game.mode==='play'&&ball.state==='held'&&c&&h.team===c.team&&game.needsClear[h.team])?'block':'none';
   if(isTouch&&c){
-    setBtn($('bShoot'),h===c?'shoot':'jump',h===c?'Šut':'Skok');
-    setBtn($('bPass'),h===c?'pass':'swap',h===c?'Dodaj':'Igrač');
-    setBtn($('bSteal'),h===c?'drib':'steal',h===c?'Dribling':'Kradi');
-    $('bPass').querySelector('.hold circle').style.strokeDashoffset=c.passHolding?302*(1-Math.min(1,c.passHold/0.3)):302;
+    setBtn($('bShoot'),h===c?'shoot':'jump',T(h===c?'gumb.sut':'gumb.skok'));
+    setBtn($('bPass'),h===c?'pass':game.naredbe?'cmd':'swap',T(h===c?'gumb.dodaj':game.naredbe?'gumb.naredba':'gumb.igrac'));
+    setBtn($('bSteal'),h===c?'drib':'steal',T(h===c?'gumb.dribling':'gumb.kradi'));
+    $('bPass').querySelector('.hold circle').style.strokeDashoffset=c.passHolding?302*(1-Math.min(1,c.passHold/0.3)):c.cmdHolding?302*(1-Math.min(1,c.cmdHold/0.35)):302;
     $('bPass').classList.toggle('off',game.solo);
     $('bSteal').classList.toggle('off',!(h&&(h.team!==c.team||(h===c&&c.moveCd<=0&&!c.shooting&&!c.dunking))));
   }

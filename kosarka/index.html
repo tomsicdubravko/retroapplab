@@ -3,13 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Košarka 2 na 2</title>
+<title></title>
+<script src="js/ime-igre.js"></script>
+<script src="js/tekstovi.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/stil.css">
 </head>
 <body>
+<div id="splash">
+  <div class="sp-sadrzaj">
+    <div class="sp-zoom"><img class="sp-img" src="img/splash-landscape.webp" alt=""><div class="sp-glow"></div></div>
+    <div class="sp-crno"></div>
+    <div class="sp-naslov"></div>
+    <div class="sp-pod"></div>
+    <div class="sp-tap"><b></b><small></small></div>
+    <div class="sp-bar"><i></i></div>
+  </div>
+</div>
+<script src="js/splash.js"></script>
 <div id="game"></div>
 
 <div id="hud">
@@ -17,7 +30,7 @@
     <div class="cards blue" id="cardsBlue"></div>
     <div id="board">
       <div class="sc"><span id="s0">0</span></div>
-      <div class="mid"><span id="shot">14</span><span id="target">DO 21</span></div>
+      <div class="mid"><span id="shot">14</span><span id="target"></span></div>
       <div class="sc red"><span id="s1">0</span></div>
     </div>
     <div class="cards red" id="cardsRed"></div>
@@ -30,72 +43,56 @@
 <div id="edge"></div>
 <div id="flashOv"></div>
 <canvas id="minimap" width="260" height="244"></canvas>
-<div id="scbar"><span>Vrijeme napada</span><div class="tr"><div class="fl"></div></div></div>
-<div id="legend"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><b>Kretanje</b><span><kbd>Razmak</kbd></span><b>Šut / blok</b><span><kbd>E</kbd></span><b>Dodaj (drži: alley-oop)</b><span><kbd>Q</kbd></span><b>Dribling / kradi</b><span><kbd>Shift</kbd></span><b>Sprint</b></div>
-<div id="hint">Iznesi loptu iza linije za 3!</div>
+<div id="scbar"><span data-t="hud.vrijemeNapada"></span><div class="tr"><div class="fl"></div></div></div>
+<div id="legend"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><b data-t="legenda.kretanje"></b><span><kbd data-t="legenda.razmak"></kbd></span><b data-t="legenda.sutBlok"></b><span><kbd>E</kbd></span><b data-t="legenda.dodaj"></b><span><kbd>Q</kbd></span><b data-t="legenda.dribling"></b><span><kbd>Shift</kbd></span><b data-t="legenda.sprint"></b></div>
+<div id="hint" data-t="hud.iznesiLoptu"></div>
 <div id="meter"><div id="mz"></div><div id="mf"></div></div>
 <div id="fb" class="bb"></div>
 
-<button id="muteBtn" class="icon" aria-label="Zvuk">🔊</button>
-<button id="pauseBtn" class="icon" aria-label="Pauza">❚❚</button>
+<button id="muteBtn" class="icon" data-t-aria="hud.zvuk">🔊</button>
+<button id="pauseBtn" class="icon" data-t-aria="hud.pauza">❚❚</button>
 
 <div id="touch">
   <div id="joyZone"><div id="joyBase"><div id="joyKnob"></div><i></i><i></i><i></i><i></i></div></div>
   <div id="btns">
-    <button id="bSteal" class="tb red" aria-label="Kradi"><b class="ic"></b><span>Kradi</span></button>
-    <button id="bPass" class="tb blue" aria-label="Dodaj"><svg class="hold" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg><b class="ic"></b><span>Dodaj</span></button>
-    <button id="bShoot" class="tb orange" aria-label="Šut"><b class="ic"></b><span>Šut</span></button>
+    <button id="bSteal" class="tb red" data-t-aria="gumb.kradi"><b class="ic"></b><span data-t="gumb.kradi"></span></button>
+    <button id="bPass" class="tb blue" data-t-aria="gumb.dodaj"><svg class="hold" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg><b class="ic"></b><span data-t="gumb.dodaj"></span></button>
+    <button id="bShoot" class="tb orange" data-t-aria="gumb.sut"><b class="ic"></b><span data-t="gumb.sut"></span></button>
   </div>
 </div>
 
 <div id="menu" class="overlay">
   <div class="card">
-    <h1 class="bb">Košarka<em>2 na 2</em></h1>
-    <p>Pola terena, dva na dva, sa zakucavanjima, fintama i alley-oopom. Ti vodiš plave, računalo igra za suigrača i za crvene.</p>
-    <p style="margin-top:-4px"><b style="color:var(--fg)">JAY</b> brzi dribler · <b style="color:var(--fg)">DRE</b> zakucavač<br><b style="color:var(--fg)">SARA</b> šuterica · <b style="color:var(--fg)">KAI</b> obrambeni (blok i krađa)</p>
-    <div class="row"><span class="l">Težina</span>
-      <div class="seg" id="segDiff"><button data-v="0">Lako</button><button data-v="1" class="on">Normalno</button><button data-v="2">Teško</button></div></div>
-    <div class="row"><span class="l">Igra se do</span>
+    <h1 class="bb" id="menuNaslov"></h1>
+    <p data-t="izbornik.opis"></p>
+    <p style="margin-top:-4px" data-t-html="izbornik.ekipe"></p>
+    <div class="row"><span class="l" data-t="izbornik.tezina"></span>
+      <div class="seg" id="segDiff"><button data-v="0" data-t="tezina.0"></button><button data-v="1" class="on" data-t="tezina.1"></button><button data-v="2" data-t="tezina.2"></button></div></div>
+    <div class="row"><span class="l" data-t="izbornik.igraSeDo"></span>
       <div class="seg" id="segTarget"><button data-v="11">11</button><button data-v="21" class="on">21</button><button data-v="31">31</button></div></div>
-    <button class="big" id="startBtn">Igraj 2 na 2</button>
-    <button class="big" id="tourBtn">🏆 Ulični turnir</button>
-    <button class="big" id="karBtn">⭐ Karijera</button>
-    <div class="modes"><button class="big alt" id="triceBtn">🎯 Gađanje trica</button><button class="big alt" id="soloBtn">🏀 Solo trening</button></div>
-    <div class="modes"><button class="big alt" id="mpBtn">👥 Online 2 na 2</button><button class="big alt" id="localBtn">🎮 Lokalno 2 na 2</button></div>
-    <div class="help" id="helpKeys">
-      <b>Kretanje</b> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ili strelice<br>
-      <b>Šut</b> drži <kbd>Razmak</kbd> i pusti na vrhu skoka (zelena zona). U obrani razmak je skok za blok.<br>
-      <b>Finta</b> samo kratko kucni <kbd>Razmak</kbd>, branič često skoči u prazno.<br>
-      <b>Zakucavanje</b> zaleti se prema košu i pritisni <kbd>Razmak</kbd> blizu obruča.<br>
-      <b>Dodaj</b> <kbd>E</kbd>, a drži <kbd>E</kbd> ili pritisni <kbd>R</kbd> za alley-oop suigraču. U obrani <kbd>E</kbd> mijenja igrača.<br>
-      <b>Dribling</b> <kbd>Q</kbd> s loptom: sa smjerom je krosover na tu stranu, bez smjera spin pored braniča, a sa smjerom unatrag (od koša) lopta ide kroz noge i igrač se odmakne za šut. Branič često ostane posađen, a nakon lopte kroz noge zna i pasti.<br>
-      <b>Kradi</b> <kbd>Q</kbd> u obrani, ali pazi, previše pokušaja donosi faul<br>
-      <b>Sprint</b> drži <kbd>Shift</kbd>, dok traje snaga<br>
-      Nakon ukradene lopte ili skoka u obrani loptu treba iznijeti iza linije za 3.<br>
-      <b>Igraj s prijateljem:</b> preko koda igre, zajedno protiv računala ili jedan protiv drugoga. <b>Ulični turnir:</b> tri utakmice na tri terena (dan, pod mostom, noćni krov), sve jači protivnici. <b>Gađanje trica:</b> tri stalka po 5 lopti. Prvi pritisak šuta zaustavlja nišan lijevo/desno (X), drugi daljinu (Y). Oba u zelenom = PERFECT. <b>Solo trening:</b> sam na terenu, bez protivnika i sata.
-    </div>
-    <div class="help" id="helpTouch" style="display:none">
-      <b>Lijevi palac</b> kretanje. <b>Šut</b> drži i pusti na vrhu skoka (zelena zona), u obrani je skok za blok.
-      Kratki dodir Šuta je finta, a Šut u zaletu prema košu je zakucavanje.
-      <b>Dodaj</b> kratko za dodavanje, drži za alley-oop. U obrani mijenja igrača. Joystick do kraja je sprint. <b>Dribling</b> (isti gumb kao Kradi, kad imaš loptu): s joystickom krosover, bez njega spin, a joystick povučen prema sebi (od koša) je lopta kroz noge s odmakom. <b>Kradi</b> oprezno, previše pokušaja donosi faul.<br>
-      Nakon ukradene lopte ili skoka u obrani loptu treba iznijeti iza linije za 3.
-    </div>
+    <button class="big" id="startBtn" data-t="izbornik.igraj"></button>
+    <button class="big" id="tourBtn" data-t="izbornik.turnir"></button>
+    <button class="big" id="karBtn" data-t="izbornik.karijera"></button>
+    <div class="modes"><button class="big alt" id="triceBtn" data-t="izbornik.trice"></button><button class="big alt" id="soloBtn" data-t="izbornik.solo"></button></div>
+    <div class="modes"><button class="big alt" id="mpBtn" data-t="izbornik.online"></button><button class="big alt" id="localBtn" data-t="izbornik.lokalno"></button></div>
+    <div class="help" id="helpKeys" data-t-html="izbornik.pomocTipke"></div>
+    <div class="help" id="helpTouch" style="display:none" data-t-html="izbornik.pomocDodir"></div>
   </div>
 </div>
 
 <div id="pauseOv" class="overlay hidden">
-  <div class="card">
-    <h1 class="bb">Pauza</h1>
-    <button class="big" id="resumeBtn">Nastavi</button>
-    <button class="big alt" id="quitBtn">Izbornik</button>
+  <div class="car">
+    <h1 class="bb" data-t="pauza.naslov"></h1>
+    <button class="big" id="resumeBtn" data-t="opce.nastavi"></button>
+    <button class="big alt" id="quitBtn" data-t="opce.izbornik"></button>
   </div>
 </div>
 
 <div id="tHud" class="hidden">
   <div id="tBoard">
-    <div class="sc"><span id="tPts">0</span><small>bodovi</small></div>
-    <div class="mid"><span id="tClock">32.0</span><small id="tStName">Lijevi kut</small></div>
-    <div class="sc gold"><span id="tBest">0</span><small>rekord</small></div>
+    <div class="sc"><span id="tPts">0</span><small data-t="trice.bodovi"></small></div>
+    <div class="mid"><span id="tClock">32.0</span><small id="tStName" data-t="trice.stalak.0"></small></div>
+    <div class="sc gold"><span id="tBest">0</span><small data-t="trice.rekord"></small></div>
   </div>
   <div id="tRacks"></div>
 </div>
@@ -103,60 +100,60 @@
   <div id="tMeterX" class="tm"><div class="z2"></div><div class="z"></div><div class="f"></div><b>X</b></div>
   <div id="tMeterY" class="tm v"><div class="z2"></div><div class="z"></div><div class="f"></div><b>Y</b></div>
 </div>
-<button id="tShoot" class="hidden" aria-hidden="true" tabindex="-1"><svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="24" cy="24" r="17"/><path d="M7 24h34M24 7v34M12 11c6 6 6 20 0 26M36 11c-6 6-6 20 0 26"/></svg><span>Šut</span></button>
+<button id="tShoot" class="hidden" aria-hidden="true" tabindex="-1"><svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><circle cx="24" cy="24" r="17"/><path d="M7 24h34M24 7v34M12 11c6 6 6 20 0 26M36 11c-6 6-6 20 0 26"/></svg><span data-t="gumb.sut"></span></button>
 <div id="tOver" class="overlay hidden">
   <div class="card" style="text-align:center">
     <div id="tResPts" class="bb">0<small> / 18</small></div>
-    <div id="tResRate" class="bb">Solidno</div>
+    <div id="tResRate" class="bb"></div>
     <div id="tResInfo"></div>
-    <div id="tResRec" class="hidden">Novi rekord!</div>
+    <div id="tResRec" class="hidden" data-t="trice.noviRekord"></div>
     <div id="tTop"></div>
-    <button class="big" id="tAgain">Opet</button>
-    <button class="big alt" id="tMenuBtn">Izbornik</button>
+    <button class="big" id="tAgain" data-t="trice.opet"></button>
+    <button class="big alt" id="tMenuBtn" data-t="opce.izbornik"></button>
   </div>
 </div>
 <div id="mpOv" class="overlay hidden">
   <div class="card">
-    <h1 class="bb" style="font-size:42px">👥 Igraj s prijateljem</h1>
+    <h1 class="bb" style="font-size:42px" data-t="online.naslov"></h1>
     <p id="mpStatus"></p>
     <div id="mpHost">
-      <div class="row"><span class="l">Način igre</span>
-        <div class="seg" id="segMp"><button data-v="coop" class="on">Zajedno protiv računala</button><button data-v="vs">1 na 1 + AI</button><button data-v="team">2 na 2 (do 4)</button></div></div>
-      <button class="big" id="mpHostBtn">Napravi igru</button>
+      <div class="row"><span class="l" data-t="online.nacin"></span>
+        <div class="seg" id="segMp"><button data-v="coop" class="on" data-t="online.coop"></button><button data-v="vs" data-t="online.vs"></button><button data-v="team" data-t="online.team"></button></div></div>
+      <button class="big" id="mpHostBtn" data-t="online.napravi"></button>
     </div>
     <div id="mpCodeBox" class="hidden" style="text-align:center;margin-top:6px">
-      <span class="l">Kod igre</span>
+      <span class="l" data-t="online.kodIgre"></span>
       <div id="mpCode" class="bb" style="font-size:68px;letter-spacing:.22em;color:var(--amber);line-height:1">----</div>
-      <button class="big alt" id="mpShare">📤 Pošalji poziv</button>
+      <button class="big alt" id="mpShare" data-t="online.posalji"></button>
     </div>
     <div id="mpJoin" style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px">
-      <span class="l">Imaš kod od prijatelja?</span>
-      <div style="display:flex;gap:8px"><input id="mpCodeIn" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="npr. KX7P" aria-label="Kod igre"
+      <span class="l" data-t="online.imasKod"></span>
+      <div style="display:flex;gap:8px"><input id="mpCodeIn" maxlength="4" autocomplete="off" autocapitalize="characters" data-t-ph="online.primjer" data-t-aria="online.kodIgre"
         style="flex:1;min-width:0;height:52px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--fg);font:400 30px 'Bebas Neue',Impact,sans-serif;letter-spacing:.2em;text-align:center;text-transform:uppercase">
-        <button class="big" id="mpJoinBtn" style="margin:0;width:auto;padding:0 18px;font-size:22px">Pridruži se</button></div>
+        <button class="big" id="mpJoinBtn" style="margin:0;width:auto;padding:0 18px;font-size:22px" data-t="online.pridruzi"></button></div>
     </div>
-    <button class="big hidden" id="mpGo">Kreni!</button>
-    <button class="big alt" id="mpBack">Natrag</button>
+    <button class="big hidden" id="mpGo" data-t="opce.kreni"></button>
+    <button class="big alt" id="mpBack" data-t="opce.natrag"></button>
   </div>
 </div>
 <div id="locOv" class="overlay hidden">
   <div class="card">
-    <h1 class="bb" style="font-size:42px">🎮 Lokalno 2 na 2</h1>
-    <p>Do 4 igrača na jednom uređaju. Svatko pritisne <b>šut</b> na svojim kontrolama da se pridruži, <b>lijevo/desno</b> bira ekipu, <b>dribling</b> izlazi. Prazna mjesta igra računalo.</p>
+    <h1 class="bb" style="font-size:42px" data-t="lokalno.naslov"></h1>
+    <p data-t-html="lokalno.opis"></p>
     <div id="locTeams"></div>
     <div id="locMsg"></div>
     <div class="lkeys">
-      <div><b>Tipkovnica A</b> WASD · <kbd>Space</kbd> šut · <kbd>E</kbd> dodaj · <kbd>Q</kbd> dribling · <kbd>R</kbd> alley · lijevi <kbd>Shift</kbd> sprint</div>
-      <div><b>Tipkovnica B</b> strelice · <kbd>J</kbd> šut · <kbd>K</kbd> dodaj · <kbd>L</kbd> dribling · <kbd>U</kbd> alley · desni <kbd>Shift</kbd> sprint</div>
-      <div><b>Kontroler</b> palica · <kbd>A</kbd> šut · <kbd>X</kbd> dodaj · <kbd>B</kbd> dribling · <kbd>Y</kbd> alley · <kbd>RB</kbd> sprint · <kbd>Start</kbd> kreni</div>
+      <div data-t-html="lokalno.tipkeA"></div>
+      <div data-t-html="lokalno.tipkeB"></div>
+      <div data-t-html="lokalno.kontroler"></div>
     </div>
-    <button class="big" id="locGo">Kreni!</button>
-    <button class="big alt" id="locBack">Natrag</button>
+    <button class="big" id="locGo" data-t="opce.kreni"></button>
+    <button class="big alt" id="locBack" data-t="opce.natrag"></button>
   </div>
 </div>
 <div id="karOv" class="overlay hidden">
   <div class="card">
-    <h1 class="bb" style="font-size:40px">⭐ Karijera</h1>
+    <h1 class="bb" style="font-size:40px" data-t="karijera.naslov"></h1>
     <div id="karBody"></div>
   </div>
 </div>
@@ -165,7 +162,7 @@
     <div class="kr-t bb"></div>
     <div class="kr-l"></div>
     <div class="kr-p"></div>
-    <button class="big" id="karNastavi">Nastavi</button>
+    <button class="big" id="karNastavi" data-t="opce.nastavi"></button>
   </div>
 </div>
 <div id="tourOv" class="overlay hidden">
@@ -175,23 +172,24 @@
     <div class="pcards" id="tourCards"></div>
     <div id="repBox"></div>
     <div id="tourBracket"></div>
-    <button class="big" id="tourPlay">Igraj</button>
-    <button class="big alt" id="tourMenu">Izbornik</button>
+    <button class="big" id="tourPlay" data-t="turnir.igraj"></button>
+    <button class="big alt" id="tourMenu" data-t="opce.izbornik"></button>
   </div>
 </div>
 <div id="over" class="overlay hidden">
   <div class="card" style="text-align:center">
-    <div id="overTitle" class="bb">Pobjeda</div>
-    <div id="overScore" class="bb">21 : 15</div>
+    <div id="overTitle" class="bb"></div>
+    <div id="overScore" class="bb"></div>
     <div class="pcards" id="overCards" style="margin-top:12px"></div>
-    <button class="big" id="againBtn">Nova igra</button>
-    <button class="big alt" id="menuBtn">Izbornik</button>
+    <button class="big" id="againBtn" data-t="kraj.novaIgra"></button>
+    <button class="big alt" id="menuBtn" data-t="opce.izbornik"></button>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <!-- redoslijed je bitan: sve skripte dijele globalni opseg, main.js pokreće igru -->
 <script src="js/osnova.js"></script>
+<script src="js/botovi.js"></script>
 <script src="js/profil.js"></script>
 <script src="js/scena.js"></script>
 <script src="js/igraci.js"></script>

@@ -20,6 +20,32 @@ html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--
 #game canvas{display:block;width:100%;height:100%;}
 .bb{font-family:'Bebas Neue',Impact,'Arial Narrow',sans-serif;letter-spacing:.04em;}
 
+/* splash uvod (js/splash.js): slika cover, neon kruna, naslov, TAP TO PLAY */
+#splash{position:fixed;inset:0;z-index:200;background:#000;overflow:hidden;cursor:pointer;transition:opacity .4s ease}
+#splash.izlaz{opacity:0;pointer-events:none}
+#splash .sp-sadrzaj{position:absolute;inset:0}
+#splash .sp-zoom{position:absolute;inset:0;transform:scale(1.1);transform-origin:50% 50%;will-change:transform}
+#splash .sp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#splash .sp-glow{position:absolute;border-radius:50%;opacity:0;mix-blend-mode:screen;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,120,220,.95) 0%,rgba(255,60,190,.55) 28%,rgba(255,40,170,.18) 55%,rgba(255,40,170,0) 72%)}
+#splash .sp-crno{position:absolute;inset:0;background:#000}
+#splash .sp-naslov{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 5vh);display:flex;flex-direction:column;align-items:center;opacity:0;
+  font:italic 400 min(15vh,25vw)/.84 'Bebas Neue',Impact,sans-serif;letter-spacing:.04em;color:#fff;
+  text-shadow:0 0 14px rgba(255,150,40,.95),0 0 38px rgba(255,110,20,.75),0 4px 0 rgba(90,30,0,.55)}
+#splash .sp-pod{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 5vh + min(15vh,25vw)*1.72);text-align:center;opacity:0;
+  font:italic 700 min(3.8vh,5.6vw) 'Barlow',sans-serif;letter-spacing:.12em;padding-left:.12em;color:#ffe2bf;text-shadow:0 0 12px rgba(255,120,30,.8),0 2px 6px rgba(0,0,0,.6)}
+#splash .sp-tap{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 3vh);display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0;transition:opacity .5s;pointer-events:none}
+#splash .sp-tap.on{opacity:1}
+#splash .sp-tap b{font:400 min(5.2vh,8vw) 'Bebas Neue',Impact,sans-serif;letter-spacing:.22em;padding-left:.22em;color:#fff;text-shadow:0 0 14px rgba(255,140,40,.9),0 2px 8px rgba(0,0,0,.7)}
+#splash .sp-tap.on b{animation:spPuls 1.6s ease-in-out infinite}
+#splash .sp-tap small{font:600 13px 'Barlow',sans-serif;color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(0,0,0,.8)}
+#splash .sp-tap small:empty{display:none}
+#splash .sp-bar{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 6vh);width:min(240px,50vw);height:3px;transform:translateX(-50%);border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden;opacity:0;transition:opacity .3s}
+#splash .sp-bar.on{opacity:1}
+#splash .sp-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff3fa4,#ffa126);box-shadow:0 0 8px #ff8a1a}
+@keyframes spPuls{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@media (prefers-reduced-motion: reduce){ #splash .sp-tap.on b{animation:none} }
+
 #hud{position:fixed;left:0;right:0;top:0;padding-top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;flex-direction:column;align-items:center;pointer-events:none;z-index:5;}
 #topbar{display:flex;align-items:flex-start;justify-content:center;gap:14px}
 .cards{display:flex;gap:8px}
@@ -88,7 +114,10 @@ body.touch #legend{display:none}
 /* rival: oblačić s provokacijom iznad protivnika */
 #taunt{position:fixed;z-index:6;left:0;top:0;transform:translate(-50%,-100%);background:#fff;color:#1d1b17;font:700 15px 'Barlow',sans-serif;padding:6px 12px;border-radius:14px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .2s;box-shadow:0 4px 14px rgba(0,0,0,.35);border:2px solid #ff2f5a}
 #taunt::after{content:'';position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);border:6px solid transparent;border-top-color:#ff2f5a}
-#taunt.show{opacity:1} #hype.block{--c:#ff3b5c;--c2:#2fd3ff} #hype.red{--c:#ef3b2f;--c2:#2a0b0b}
+#taunt.show{opacity:1}
+#oblacic{position:fixed;z-index:6;left:0;top:0;transform:translate(-50%,-100%);background:#fff;color:#10245e;font:800 15px 'Barlow',sans-serif;padding:5px 11px;border-radius:14px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .15s;box-shadow:0 4px 14px rgba(0,0,0,.35);border:2px solid #2f6bff}
+#oblacic::after{content:'';position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);border:6px solid transparent;border-top-color:#2f6bff}
+#oblacic.show{opacity:1} #hype.block{--c:#ff3b5c;--c2:#2fd3ff} #hype.red{--c:#ef3b2f;--c2:#2a0b0b}
 #edge{position:fixed;inset:0;pointer-events:none;z-index:5;opacity:0;box-shadow:inset 0 0 90px 30px var(--c,#ffd23f)}
 @media (prefers-reduced-motion: reduce){ #hype .ray{animation:none} #hype.go .t,#hype.go .s,#hype.wob .t{animation:none} }
 #hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 150px);background:var(--amber);color:#1d1b17;font-weight:700;padding:6px 14px;border-radius:999px;font-size:15px;display:none;z-index:6;white-space:nowrap;pointer-events:none}
@@ -240,7 +269,7 @@ body.solo .cards, body.solo #scbar{display:none!important}
 .kar-card .kc-h span{font:400 20px 'Bebas Neue',Impact,sans-serif;color:#ffd23f}
 .kar-card small{color:#9fb0d8;font-size:12px}
 .kar-card .kc-os{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-top:8px}
-.kar-card .kc-os div{display:grid;grid-template-columns:78px 1fr 24px;align-items:center;gap:6px;font-size:12px}
+.kar-card .kc-os>div{display:grid;grid-template-columns:78px 1fr 24px;align-items:center;gap:6px;font-size:12px}
 .kar-card .kc-os span{color:#9fb0d8;font-weight:700}
 .kar-card .kc-os b{text-align:right;font-variant-numeric:tabular-nums}
 .kb{height:7px;border-radius:4px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:4px}
@@ -261,6 +290,37 @@ body.solo .cards, body.solo #scbar{display:none!important}
 #karRez .kr-l .sum{font-weight:800;font-size:17px;border-bottom:0}
 #karRez .kr-l .sum b{color:var(--amber)}
 #karRez .kr-p div{margin-top:6px;font-weight:700}
+/* karijera: suigrač i ekipa botova */
+.kar-sui{margin:10px 0 4px}
+.kar-sui .ks-h{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700}
+.kar-sui .lnk{background:none;border:1px solid var(--line);border-radius:10px;color:inherit;font:700 13px 'Barlow',sans-serif;padding:4px 10px;cursor:pointer}
+.kar-sui .ks-l{display:flex;gap:6px;overflow-x:auto;padding:6px 0 2px}
+.ks-b{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:74px;padding:5px 6px;border-radius:12px;border:2px solid var(--line);background:rgba(255,255,255,.04);color:inherit;cursor:pointer;font-family:'Barlow',sans-serif}
+.ks-b canvas{width:60px;height:44px;border-radius:8px;border-bottom:3px solid var(--rc)}
+.ks-b b{font:400 17px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.04em}
+.ks-b small{font-size:11px;opacity:.75;white-space:nowrap}
+.ks-b.on{border-color:#ffd23f;background:rgba(255,210,63,.12)}
+.kar-ek-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.kar-ek-h b{font:400 30px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.05em}
+.kar-ek-h span{color:var(--muted);font-weight:700;font-size:14px}
+.bot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:8px;margin-bottom:10px}
+.bot-grid .kar-card{margin:0;padding:9px}
+.bot-k{border:2px solid var(--rc);cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.bot-k.on{box-shadow:0 0 0 2px #ffd23f,0 0 16px rgba(255,210,63,.35)}
+.bot-k canvas{width:84px;height:62px;border-radius:9px;align-self:center}
+.bot-k .bk-h{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.bot-k .bk-h b{font:400 23px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.04em}
+.bot-k .bk-h em{font-style:normal;font-weight:800;font-size:10px;color:var(--rc);text-transform:uppercase;letter-spacing:.05em}
+.bot-k small{font-size:11px}
+.bot-k .kc-os{grid-template-columns:1fr;gap:1px;margin-top:4px}
+.bot-k .kc-os>div{grid-template-columns:62px 1fr 20px;gap:4px;font-size:10.5px}
+.bot-k .kc-os .kb{height:5px}
+.bot-k p{margin:4px 0 0;font-size:12px;line-height:1.3;font-style:italic;color:#dfe6f7}
+.bot-k .bk-tip{color:#ffd23f}
+.bot-k b.ok{color:#5fe08b}
+.bot-k.zak{cursor:default;background:linear-gradient(160deg,#20242f,#0a0c12 80%)}
+.bot-k.zak .bk-h b{color:#8a93a8}
+.bot-k .bk-lock{margin-top:6px;font-weight:800;font-size:14px;color:#ffd23f}
 @media (max-width:420px){ .kar-card .kc-os{grid-template-columns:1fr} }
 /* razvojni panel */
 #devOv{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px}
@@ -270,6 +330,7 @@ body.solo .cards, body.solo #scbar{display:none!important}
 #devOv pre{margin:0;overflow:auto;flex:1;min-height:120px;background:#070910;border-radius:8px;padding:10px;font-size:12px}
 #devOv .devBtns{display:flex;gap:8px;flex-wrap:wrap}
 #devOv button{font:700 13px 'Barlow',sans-serif;padding:8px 12px;border-radius:8px;border:1px solid #3a4260;background:#1c2234;color:#fff;cursor:pointer}
+#devOv select{font:700 13px 'Barlow',sans-serif;padding:8px;border-radius:8px;border:1px solid #3a4260;background:#1c2234;color:#fff;flex:1 1 180px}
 #devOv button.danger{border-color:#ef3b2f;color:#ff8a7a}
 #devOv small{color:#8a93a8}
 #tClock.plus{color:#5fe08b;text-shadow:0 0 12px #35c46b}

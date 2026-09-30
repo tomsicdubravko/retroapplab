@@ -8,18 +8,19 @@ const Profil=(()=>{
   const KLJUC='kosarka-profil', VERZIJA=1;
   const zadano=()=>({
     verzija:VERZIJA,
-    igrac:{ ime:'IGRAČ',
+    igrac:{ ime:T('profil.zadanoIme'),
       izgled:{ koza:0x8d5524, kosa:'#15100c', frizura:'band', broj:'7' },
       osobine:{ sut:40, trica:40, zakucavanje:40, brzina:40, dribling:40, kradja:40, blok:40, skok:40 },
       razina:1, xp:0 },
     novcici:200,
     rep:0,
-    botovi:{},
-    odabraniBot:null,
+    // botovi suigrači (botovi.js): {id:{otkljucan, naljepnice, razina 1–5}}; na početku samo BOT_POCETNI (Dre)
+    botovi:Object.fromEntries(BOTOVI.map(b=>[b.id,{otkljucan:b.id===BOT_POCETNI,naljepnice:0,razina:1}])),
+    odabraniBot:BOT_POCETNI,   // zadnji odabrani suigrač u karijeri
     trening:{ dan:'', odradeno:0 },
     karijera:{ liga:'kvart', bodovi:0, sljedeci:0 },   // sljedeci: koji je par u ligi idući protivnik
     statistika:{ utakmice:0, pobjede:0, poeni:0, trice:0, zakucavanja:0, kradje:0, blokovi:0 },
-    postavke:{ zvuk:true, tezina:1 },
+    postavke:{ zvuk:true, tezina:1, jezik:'hr' },   // jezik: ključ u JEZICI (tekstovi.js); vrijedi nakon ponovnog učitavanja
     rivali:{},
     trice:{ rekordi:[0,0,0], top10:[[],[],[]] }
   });

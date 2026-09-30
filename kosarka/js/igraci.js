@@ -25,13 +25,39 @@ function osobineUSt(arch,o){ const b=ARCH[arch]||ARCH.speed, v=k=>(o&&o[k]!=null
     stl:b.stl*m(v('kradja'),0.01), blk:b.blk*m(v('blok'),0.01), def:b.def*m((v('kradja')+v('blok'))/2,0.006),
     jump:b.jump*m(v('skok'),0.003) }); }
 const ROSTER=[
-  [{name:'JAY',tag:'P1',arch:'speed',pers:'streetballer',role:'Brzi dribler',skin:0x8d5524,hair:'band',hairCol:'#15100c',num:'7',bands:'white'},{name:'DRE',tag:'P2',arch:'power',pers:'slasher',role:'Zakucavač',skin:0xc68642,hair:'cap',hairCol:'#1d3f9e',num:'23',kneePad:true}],
-  [{name:'SARA',tag:'P3',she:true,arch:'shooter',pers:'sniper',role:'Šuterica',skin:0xe8b98a,hair:'pony',hairCol:'#1a1210',num:'11',bands:'team'},{name:'KAI',tag:'P4',arch:'defense',pers:'defender',role:'Obrambeni',skin:0xb07a4f,hair:'cap',hairCol:'#b3221b',num:'32',beard:true,sleeve:true}]];
+  [{name:'JAY',tag:'P1',arch:'speed',pers:'streetballer',role:T('uloga.brziDribler'),skin:0x8d5524,hair:'band',hairCol:'#15100c',num:'7',bands:'white'},{name:'DRE',tag:'P2',arch:'power',pers:'slasher',role:T('uloga.zakucavac'),skin:0xc68642,hair:'cap',hairCol:'#1d3f9e',num:'23',kneePad:true}],
+  [{name:'SARA',tag:'P3',she:true,arch:'shooter',pers:'sniper',role:T('uloga.suterica'),skin:0xe8b98a,hair:'pony',hairCol:'#1a1210',num:'11',bands:'team'},{name:'KAI',tag:'P4',arch:'defense',pers:'defender',role:T('uloga.obrambeni'),skin:0xb07a4f,hair:'cap',hairCol:'#b3221b',num:'32',beard:true,sleeve:true}]];
 const COLS=[{j:0x2463f0,s:0x161b2c,sole:0x2f6bff,css:'#2f6bff'},{j:0xd62b24,s:0x221416,sole:0xff3b30,css:'#ef3b2f'}];
 function numTex(num){ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d');
   x.fillStyle='#fff'; x.font='bold 40px sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.lineWidth=5; x.strokeStyle='rgba(0,0,0,.35)'; x.strokeText(num,32,35); x.fillText(num,32,35); return new THREE.CanvasTexture(c); }
 const OUTLINE=new THREE.MeshBasicMaterial({color:0x07080d,side:THREE.BackSide});
 const HIP_H=1.03, LEG_L=0.5;
+// ---------- TIJELO: proporcije igrača na jednom mjestu (samo izgled, igra ostaje ista) ----------
+// ramena, struk, kukovi: širina · ruke, noge: debljina · nogeL: duljina nogu · dubina: debljina trupa sprijeda-straga
+// visina: visina ramena, tj. gdje su ruke i lopta (1 = ista; samo centar smije do 1.05) · vrat: pomak glave gore/dolje (m)
+// Rame ostaje na istoj visini: dulje noge = kraći trup, kraće noge = dulji trup (a niža glava).
+const TIJELO={
+  sut:       {ramena:0.90,struk:0.88,kukovi:0.90,ruke:0.86,noge:0.88,nogeL:1.03,dubina:0.92,visina:1.00,vrat: 0.02},   // vitak
+  allround:  {ramena:1.00,struk:1.00,kukovi:1.00,ruke:1.00,noge:1.00,nogeL:1.00,dubina:1.00,visina:1.00,vrat: 0.00},   // srednji
+  centar:    {ramena:1.16,struk:1.14,kukovi:1.12,ruke:1.14,noge:1.14,nogeL:1.05,dubina:1.10,visina:1.04,vrat: 0.04},   // širok i malo viši
+  branic:    {ramena:1.04,struk:1.04,kukovi:1.02,ruke:1.04,noge:1.04,nogeL:0.88,dubina:1.04,visina:1.00,vrat:-0.06},   // niži, zbijen
+  zakucavac: {ramena:1.06,struk:0.97,kukovi:0.97,ruke:1.05,noge:0.98,nogeL:1.14,dubina:1.02,visina:1.00,vrat: 0.02}};  // duge noge
+// arhetip → tijelo (info.tijelo može odabrati bilo koje, npr. 'centar')
+const ARCH_TIJELO={shooter:'sut',speed:'allround',defense:'branic',power:'zakucavac'};
+const tijeloZa=info=>TIJELO[info.tijelo]||TIJELO[ARCH_TIJELO[info.arch]]||TIJELO.allround;
+function primijeniTijelo(M,Tj){
+  const legL=LEG_L*Tj.nogeL, hipH=HIP_H+2*(legL-LEG_L), dub=Tj.dubina;
+  const rame=(HIP_H+0.08+0.62)*Tj.visina, ty=(rame-hipH-0.08)/0.62, glava=(HIP_H+0.08+0.98)*Tj.visina+Tj.vrat;
+  M.hipH=hipH; M.legL=legL;                                   // animacija čučnja koristi ove vrijednosti
+  M.hips.position.y=hipH;
+  for(const L of M.legs){ L.thigh.position.x=Math.sign(L.thigh.position.x)*0.14*Tj.kukovi; L.thigh.scale.set(Tj.noge,Tj.nogeL,Tj.noge);
+    L.foot.scale.set(1/Tj.noge,1/Tj.nogeL,1/Tj.noge); }             // tenisice ostaju iste
+  M.waist.scale.set(Tj.kukovi,1,0.68*Tj.kukovi);
+  M.torso.scale.set(Tj.ramena,ty,dub);
+  M.jersey.scale.set(Tj.struk/Tj.ramena,1,1);                    // dres prati struk, ramena prate ruke
+  M.head.position.y=(glava-hipH-0.08)/ty; M.head.scale.set(1.15/Tj.ramena,1.15/ty,1.15/dub);
+  for(const A of M.arms) A.sh.scale.set(Tj.ruke/Tj.ramena,1/ty,Tj.ruke/dub);   // duljina ruku ista
+}
 function buildPlayer(info,team){
   const g=new THREE.Group(), C=COLS[team], st=ARCH[info.arch]||ARCH.speed, bulk=1+(st.bulk-1)*0.5;
   const L=c=>new THREE.MeshLambertMaterial({color:c});
@@ -103,7 +129,8 @@ function buildPlayer(info,team){
     mk(new THREE.SphereGeometry(0.076,10,8),skin,0,-0.37,0,el,true);
     arms.push({sh,el});
   }
-  return {g,hips,torso,head,legs,arms,jersey,pony,st,mats:{jer:jerM,shorts,skin,hair:hairM}};
+  const M={g,hips,torso,head,legs,arms,jersey,waist,pony,st,mats:{jer:jerM,shorts,skin,hair:hairM}};
+  primijeniTijelo(M,tijeloZa(info)); return M;
 }
 function ringTex(){ const c=document.createElement('canvas'); c.width=c.height=128; const g=c.getContext('2d');
   g.strokeStyle='#fff'; g.shadowColor='#fff'; g.shadowBlur=14; g.lineWidth=7; for(let k=0;k<2;k++){ g.beginPath(); g.arc(64,64,46,0,Math.PI*2); g.stroke(); }
@@ -170,10 +197,10 @@ function animate(dt,time){
   for(const p of players){
     if(p.active===false){ p.mesh.g.visible=false; p.ring.visible=false; p.disc.visible=false; p.label.visible=false; continue; }
     p.mesh.g.visible=true; p.ring.visible=true;
-    const M=p.mesh; M.g.position.set(p.pos.x,p.y,p.pos.z); M.g.scale.setScalar(PSCALE);
+    const M=p.mesh; M.g.position.set(p.pos.x,p.y,p.pos.z); M.g.scale.set(PSCALE*0.88,PSCALE,PSCALE*0.9);   // probno: uži u širinu, visina ista
     const sp=Math.hypot(p.vel.x,p.vel.z); let fx,fz;
     const holder=ball.holder===p, air=p.y>0.02||p.dunking;
-    if(holder&&(p.shooting||p.dunking||p.gather||p.fakeT>0||p.y>0||sp<0.6)){ fx=-p.pos.x; fz=HOOP_Z-p.pos.z; }
+    if(holder&&(p.shooting||p.dunking||p.gather||p.fakeT>0||p.y>0.02||sp<0.6)){ fx=-p.pos.x; fz=HOOP_Z-p.pos.z; }
     else if(sp>0.5){ fx=p.vel.x; fz=p.vel.z; }
     else if(ball.state==='held'&&ball.holder.team!==p.team){ fx=ball.holder.pos.x-p.pos.x; fz=ball.holder.pos.z-p.pos.z; }
     else { fx=ball.pos.x-p.pos.x; fz=ball.pos.z-p.pos.z; }
@@ -198,7 +225,7 @@ function animate(dt,time){
     for(let i=0;i<2;i++){ const Lg=M.legs[i], s=(i?-1:1)*sw;
       if(air){ Lg.thigh.rotation.set(i?-1.0:-0.25,0,0); Lg.knee.rotation.x=i?1.5:0.6; Lg.foot.rotation.x=0.35; }
       else { Lg.thigh.rotation.set(-a+s*0.8,0,(i?1:-1)*p.crouch*0.16*wide); Lg.knee.rotation.x=2*a+Math.max(0,s)*1.3; Lg.foot.rotation.x=-(Lg.thigh.rotation.x+Lg.knee.rotation.x)*0.85; } }
-    let hy=HIP_H-(air?0:2*LEG_L*(1-Math.cos(a))*(1+(wide-1)*0.12)+run*0.04*Math.abs(Math.sin(p.phase*2)));
+    let hy=M.hipH-(air?0:2*M.legL*(1-Math.cos(a))*(1+(wide-1)*0.12)+run*0.04*Math.abs(Math.sin(p.phase*2)));
     if(idle&&S.idle==='bounce') hy+=Math.abs(Math.sin(time*7+p.idx))*0.03;
     M.hips.position.y=hy;
     M.torso.rotation.x=air?-0.08:p.crouch*0.32+run*0.18;
@@ -214,7 +241,7 @@ function animate(dt,time){
       else if(K==='one'){ const w=clamp(p.dunkT/DUNK_AIR/0.5,0,1); setArm(R,dn?-2.2:-3.1-w*0.8,-0.1,dn?-0.05:-1.3*w); setArm(Lf,-1.5,0.55,-0.6); }
       else if(K==='rev'){ const k=dn?-3.75:-2.9; setArm(R,k,-0.14,-0.1); setArm(Lf,k,0.14,-0.1); }
       else { setArm(R,dn?-2.6:-3.05,-0.1,-0.05); setArm(Lf,-2.3,0.25,-0.3); } }
-    else if(holder&&(p.shooting||p.y>0||p.fakeT>0.1)){ if(S.gather<1){ setArm(R,-2.95,-0.02,-0.45); setArm(Lf,-2.45,0.3,-0.8); } else { setArm(R,-2.85,-0.05,-0.35); setArm(Lf,-2.6,0.15,-0.6); } }
+    else if(holder&&(p.shooting||p.y>0.02||p.fakeT>0.1)){ if(S.gather<1){ setArm(R,-2.95,-0.02,-0.45); setArm(Lf,-2.45,0.3,-0.8); } else { setArm(R,-2.85,-0.05,-0.35); setArm(Lf,-2.6,0.15,-0.6); } }
     else if(holder&&p.gather){ setArm(R,-1.0,-0.2,-1.1); setArm(Lf,-1.0,0.2,-1.1); }
     else if(holder){ const b=Math.sin(ball.dribT*6.5), lo=S.dribH<1?0.25:0; if(p.dribX>=0){ setArm(R,-0.45+lo+b*0.25,-0.32,-0.55); setArm(Lf,-0.9,0.55,-1.0); } else { setArm(Lf,-0.45+lo+b*0.25,0.32,-0.55); setArm(R,-0.9,-0.55,-1.0); } }
     else if(p.relT>0){ setArm(R,-3.0,-0.02,-0.05); setArm(Lf,S.gather<1?-2.2:-2.6,0.3,-0.5); }
@@ -236,5 +263,5 @@ function animate(dt,time){
   if(rimShake>0){ rimShake-=dt; rimMesh.rotation.x=Math.PI/2+Math.sin(rimShake*40)*0.07*rimShake/0.5; } else rimMesh.rotation.x=Math.PI/2;
   if(rimFlash>0) rimFlash-=dt;
   rimLight.intensity=0.7+Math.max(0,rimFlash)*4;
-  updateNet(dt,time); updateFx(dt); updateCrowd(dt,time); updateAmbience(dt,time); updateTaunt(dt);
+  updateNet(dt,time); updateFx(dt); updateCrowd(dt,time); updateAmbience(dt,time); updateTaunt(dt); updateOblacic(dt); updateRebMark(dt,time);
 }

@@ -6,6 +6,7 @@ const rand=(a,b)=>a+Math.random()*(b-a);
 const randn=()=>(Math.random()+Math.random()+Math.random()-1.5)*2;
 const flat=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
 const $=id=>document.getElementById(id);
+primijeniTekstove();   // statični natpisi iz HTML-a (data-t…, tekstovi.js), prije nego ih ostale skripte diraju
 
 // ---------- constants (meters) ----------
 const PSCALE=1.14;
@@ -17,11 +18,12 @@ const isThree=(x,z)=> z<CORNER_Z ? Math.abs(x)>CORNER_X : Math.hypot(x,z-HOOP_Z)
 const hoopDist=p=>Math.hypot(p.x,p.z-HOOP_Z);
 function clampCourt(v){v.x=clamp(v.x,-7.1,7.1);v.z=clamp(v.z,0.7,13.4);return v;}
 
+// perf/bad: šansa savršenog i lošeg AI šuta (ostalo je 'blizu zelenog'); podešeno da AI šutira kao prije promjene tajminga
 const DIFFS=[
-  {speed:.86,react:.8,steal:.13,jump:.3,block:.2,noise:.42,aiShot:.82},
-  {speed:.96,react:.55,steal:.23,jump:.45,block:.3,noise:.3,aiShot:.95},
-  {speed:1.04,react:.35,steal:.35,jump:.6,block:.4,noise:.2,aiShot:1.06}];
-const MATE={speed:1,react:.45,steal:.2,jump:.5,block:.3,noise:.28,aiShot:1};
+  {speed:.86,react:.8,steal:.13,jump:.3,block:.2,perf:.06,bad:.39,aiShot:.82},
+  {speed:.96,react:.55,steal:.23,jump:.45,block:.3,perf:.11,bad:.36,aiShot:.95},
+  {speed:1.04,react:.35,steal:.35,jump:.6,block:.4,perf:.16,bad:.33,aiShot:1.06}];
+const MATE={speed:1,react:.45,steal:.2,jump:.5,block:.3,perf:.12,bad:.36,aiShot:1};
 let D=DIFFS[1];
 
 // ---------- sound ----------
@@ -55,7 +57,7 @@ const sfx={
 const mpn={peer:null,conn:null,conns:[],host:false,guest:false,code:'',mode:'coop',me:null,snap:null,lastSend:0,lastIn:'',overShown:false};
 // humans: ostali ljudski igrači osim game.controlled → funkcija koja vraća njihov ulaz (online gost ili lokalni kontroler)
 // local: više igrača na jednom uređaju (localMain je glavni igrač, ctrlIn njegov ulaz)
-const game={mp:false,remote:false,local:false,humans:new Map(),localMain:null,ctrlIn:null,mode:'menu',paused:false,score:[0,0],possession:0,needsClear:[false,false],shotClock:SHOT_CLOCK,pauseT:0,nextCheck:0,target:21,diffIdx:1,controlled:null,solo:false,soloMade:0,soloShots:0};
+const game={mp:false,remote:false,local:false,humans:new Map(),localMain:null,ctrlIn:null,mode:'menu',paused:false,score:[0,0],possession:0,needsClear:[false,false],shotClock:SHOT_CLOCK,pauseT:0,nextCheck:0,target:21,diffIdx:1,controlled:null,naredbe:false,solo:false,soloMade:0,soloShots:0};
 
 
 const sfx0={...sfx}; for(const k in sfx0) if(k!=='dribble') sfx[k]=(...a)=>{ sfx0[k](...a); if(mpn.host&&game.mp) netSend({t:'x',k,a}); };

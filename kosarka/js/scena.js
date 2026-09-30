@@ -55,9 +55,9 @@ function drawFloor(c){
   g.save(); g.translate(X(0),Z(11.2)); g.rotate(-0.07);
   crown(g,0,-1.3*S,0.95*S,'rgba(242,165,49,.9)');
   g.textAlign='center'; g.textBaseline='middle'; g.lineJoin='round';
-  g.font=`italic ${1.75*S}px ${FONT}`; g.lineWidth=0.13*S; g.strokeStyle='rgba(8,12,30,.55)'; g.strokeText('STREET',0,0);
-  g.fillStyle='rgba(232,236,250,.8)'; g.fillText('STREET',0,0);
-  g.font=`italic ${1.05*S}px ${FONT}`; g.fillStyle='rgba(242,165,49,.92)'; g.fillText('2 NA 2',0.7*S,1.3*S);
+  g.font=`italic ${1.75*S}px ${FONT}`; g.lineWidth=0.13*S; g.strokeStyle='rgba(8,12,30,.55)'; g.strokeText(T('zid.street'),0,0);
+  g.fillStyle='rgba(232,236,250,.8)'; g.fillText(T('zid.street'),0,0);
+  g.font=`italic ${1.05*S}px ${FONT}`; g.fillStyle='rgba(242,165,49,.92)'; g.fillText(T('zid.2na2'),0.7*S,1.3*S);
   g.restore();
   g.strokeStyle='#eef2ff'; g.lineWidth=0.065*S;
   g.strokeRect(X(-7.5),Z(0),15*S,14*S);
@@ -77,7 +77,7 @@ function drawWall(c,variant){
   for(let x=0;x<W;x+=W/8){ g.beginPath(); g.moveTo(x,0); g.lineTo(x,H); g.stroke(); }
   const cols=['#ff3fa4','#2fd3ff','#ffd23f','#7cff6b','#b06bff','#ff7a1a'];
   for(let i=0;i<22;i++){ g.fillStyle=cols[i%cols.length]+'44'; g.beginPath(); g.arc(Math.random()*W,Math.random()*H,rand(8,60),0,Math.PI*2); g.fill(); }
-  const words=variant===0?['IGRAJ','BEZ STRAHA']:variant===1?['STREET','BALL']:['2 NA 2','KRALJ TERENA'];
+  const words=variant===0?[T('zid.igraj'),T('zid.bezStraha')]:variant===1?[T('zid.street'),T('zid.ball')]:[T('zid.2na2'),T('zid.kraljTerena')];
   const grads=[['#ffd23f','#ff3fa4'],['#2fd3ff','#b06bff'],['#7cff6b','#2fd3ff']][variant];
   g.textAlign='center'; g.textBaseline='middle'; g.lineJoin='round';
   words.forEach((w,i)=>{ const x=W*(0.27+i*0.46), y=H*0.54+(i?8:-6), fs=H*0.6;
@@ -292,7 +292,7 @@ function updateAmbience(dt,time){ if(AMBU[VENUE]) AMBU[VENUE](dt,time); }
 function drawNeon(c){
   const g=c.getContext('2d'),W=c.width,H=c.height; g.clearRect(0,0,W,H);
   g.textAlign='center'; g.textBaseline='middle'; g.font=`italic ${H*0.52}px ${FONT}`; g.lineJoin='round';
-  for(const [blur,lw,col] of [[30,10,'#ff2f9a'],[14,6,'#ff5ab8'],[0,3,'#ffe0f2']]){ g.shadowColor='#ff2f9a'; g.shadowBlur=blur; g.lineWidth=lw; g.strokeStyle=col; g.strokeText('2 NA 2',W/2,H*0.6); }
+  for(const [blur,lw,col] of [[30,10,'#ff2f9a'],[14,6,'#ff5ab8'],[0,3,'#ffe0f2']]){ g.shadowColor='#ff2f9a'; g.shadowBlur=blur; g.lineWidth=lw; g.strokeStyle=col; g.strokeText(T('zid.2na2'),W/2,H*0.6); }
   g.shadowBlur=18; g.strokeStyle='#ff9ad2'; g.lineWidth=5; g.beginPath(); const w=H*0.34,h=w*0.6,x=W/2,y=H*0.17;
   g.moveTo(x-w/2,y+h/2); g.lineTo(x-w/2,y-h/2); g.lineTo(x-w/4,y); g.lineTo(x,y-h*0.65); g.lineTo(x+w/4,y); g.lineTo(x+w/2,y-h/2); g.lineTo(x+w/2,y+h/2); g.closePath(); g.stroke();
 }
@@ -350,10 +350,10 @@ function buildHoop(){
   glass.position.set(0,3.425,BOARD_Z-0.02); scene.add(glass);
   const blueM=new THREE.MeshBasicMaterial({color:0x3f86ff}), redM=new THREE.MeshBasicMaterial({color:0xff3b3b}), whiteM=new THREE.MeshBasicMaterial({color:0xffffff});
   const bar=(w,h,x,y,z,m)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,0.045),m); b.position.set(x,y,z); scene.add(b); };
-  const T=0.05, cy=3.425, bz=BOARD_Z-0.005;
-  bar(0.9,T,-0.45,cy+0.525,bz,blueM); bar(0.9,T,0.45,cy+0.525,bz,redM);
-  bar(0.9,T,-0.45,cy-0.525,bz,blueM); bar(0.9,T,0.45,cy-0.525,bz,redM);
-  bar(T,1.05+T,-0.9,cy,bz,blueM); bar(T,1.05+T,0.9,cy,bz,redM);
+  const deb=0.05, cy=3.425, bz=BOARD_Z-0.005;
+  bar(0.9,deb,-0.45,cy+0.525,bz,blueM); bar(0.9,deb,0.45,cy+0.525,bz,redM);
+  bar(0.9,deb,-0.45,cy-0.525,bz,blueM); bar(0.9,deb,0.45,cy-0.525,bz,redM);
+  bar(deb,1.05+deb,-0.9,cy,bz,blueM); bar(deb,1.05+deb,0.9,cy,bz,redM);
   const ic=RIM_Y+0.26, iz=BOARD_Z+0.012;
   bar(0.59,0.03,0,ic+0.225,iz,whiteM); bar(0.59,0.03,0,ic-0.225,iz,whiteM); bar(0.03,0.45,-0.295,ic,iz,whiteM); bar(0.03,0.45,0.295,ic,iz,whiteM);
   const halo=new THREE.Mesh(new THREE.PlaneGeometry(2.7,1.9),new THREE.MeshBasicMaterial({map:canvasTex(256,180,c=>{ const g=c.getContext('2d'); g.clearRect(0,0,256,180);
