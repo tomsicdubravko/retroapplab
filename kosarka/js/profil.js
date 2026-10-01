@@ -18,6 +18,8 @@ const Profil=(()=>{
     botovi:Object.fromEntries(BOTOVI.map(b=>[b.id,{otkljucan:b.id===BOT_POCETNI,naljepnice:0,razina:1}])),
     odabraniBot:BOT_POCETNI,   // zadnji odabrani suigrač u karijeri
     trening:{ dan:'', odradeno:0 },
+    // trgovina: otvoreno = ukupno otvorenih paketa (za zajamčenu epsku), poklon = neotvoreni besplatni paketi, dnevna = dan zadnje dnevne naljepnice
+    trgovina:{ otvoreno:0, poklon:{obicni:0, veliki:0}, dnevna:'' },
     karijera:{ liga:'kvart', bodovi:0, sljedeci:0 },   // sljedeci: koji je par u ligi idući protivnik
     statistika:{ utakmice:0, pobjede:0, poeni:0, trice:0, zakucavanja:0, kradje:0, blokovi:0 },
     postavke:{ zvuk:true, tezina:1, jezik:'hr' },   // jezik: ključ u JEZICI (tekstovi.js); vrijedi nakon ponovnog učitavanja

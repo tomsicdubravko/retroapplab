@@ -37,6 +37,8 @@ function ballPhysics(dt){
 function tryPickups(){
   if(ball.state==='pass'){
     for(const p of teams[1-ball.passTeam]){
+      // dodavanje iz auta ide preko braniča izvođača: na prvih 1.6 m ga ne može presjeći
+      if(ball.izAuta&&ball.noPick&&flat(p.pos,ball.noPick.pos)<1.6) continue;
       if(!ball.checked.has(p)&&flat(p.pos,ball.pos)<0.6&&ball.pos.y<2.5+p.y){
         ball.checked.add(p);
         const ch=(isHuman(p)?0.6:(p.team===1?0.3+D.steal*0.5:0.4))*Math.sqrt(p.st.stl);
@@ -111,7 +113,10 @@ function updateBall(dt,live){
   if(!live) return;
   if(game.mode!=='play') return;
   const settled=ball.state!=='shot'||ball.touchedRim||ball.flightT>ball.T;
-  if(settled&&ball.pos.y<2.5&&(Math.abs(ball.pos.x)>7.6||ball.pos.z>14.1||ball.pos.z<-0.15)){ outOfBounds(); return; }
+  const vani=Math.abs(ball.pos.x)>7.6||ball.pos.z>14.1||ball.pos.z<-0.15;
+  // dodavanje iz auta (izvođenje) kreće izvan terena: aut se gleda tek kad lopta uđe u teren
+  if(ball.uvod&&!vani) ball.uvod=false;
+  if(settled&&!ball.uvod&&ball.pos.y<2.5&&vani){ outOfBounds(); return; }
   checkInAirBlock();
   tryPickups();
 }
@@ -122,7 +127,10 @@ function checkInAirBlock(){
     if(o.y<0.2||o.bitT>0) continue;
     const dx=ball.pos.x-o.pos.x, dy=ball.pos.y-(o.y+2.78), dz=ball.pos.z-o.pos.z;
     if(Math.hypot(dx,dy,dz)<0.45*Math.sqrt(o.st.blk)){
-      blockShot(o,ball.noPick||o); return;
+      const s=ball.noPick;
+      // blok s leđa = faul, 1 slobodno bacanje (šut se ne broji)
+      if(!game.solo&&!ball.ft&&s&&s.team!==o.team&&sLeda(o,s)){ faulNaSutu(o,s); return; }
+      blockShot(o,s||o); return;
     }
   }
 }

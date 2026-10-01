@@ -6,6 +6,17 @@
 // legendarni: ~+15 na jake osobine tipa u odnosu na običnog bota istog tipa
 const BOT_MAX_RAZINA=5, BOT_RAZINA_BONUS=4, BOT_NALJEPNICA_ZA_OTKLJUCAVANJE=10;
 const BOT_POCETNI='dre';   // otključan od početka
+// naljepnice potrebne za sljedeći korak: [otključavanje, razina 2, razina 3, razina 4, razina 5]
+const BOT_NALJEPNICE_KORAK=[BOT_NALJEPNICA_ZA_OTKLJUCAVANJE,10,20,30,50];
+const NALJEPNICA_U_NOVCICE=20;   // naljepnica bota koji je već na razini 5
+
+// trgovina: paketi naljepnica (šanse po rijetkosti, zbroj 1)
+const PAKETI={
+  obicni:{cijena:150, naljepnica:3, sanse:{obicni:0.70, rijetki:0.22, epski:0.07, legendarni:0.01}},
+  veliki:{cijena:400, naljepnica:5, sanse:{obicni:0.50, rijetki:0.33, epski:0.14, legendarni:0.03}}};
+const PAKET_ZAJAMCENO_SVAKI=10;    // svaki 10. otvoreni paket ima barem jednu epsku (ili bolju) naljepnicu
+const PAKET_NOVI_BOT_BONUS=1.5;    // bot koji još nije otključan ispada ×1.5 češće (unutar svoje rijetkosti)
+const DNEVNA_NALJEPNICA='obicni';  // dnevna besplatna naljepnica: jedna karta sa šansama ovog paketa
 
 // tip → arhetip (brojke u igri), osobnost (ponašanje AI-a, PERS u ai.js), tijelo (TIJELO u igraci.js)
 const BOT_TIPOVI={

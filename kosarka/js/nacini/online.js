@@ -71,7 +71,7 @@ function onHostData(g,d){ if(!d||d.t!=='i') return; const n=g.gin; n.x=clamp(+d.
   const e=d.e||[]; if(e[0]) n.sd=true; if(e[1]) n.su=true; if(e[2]) n.pd=true; if(e[3]) n.pu=true; if(e[4]) n.ad=true; if(e[5]) n.st=true; }
 function takeGuestIn(g){ const n=g.gin, o={...n}; n.sd=n.su=n.pd=n.pu=n.ad=n.st=false; return o; }
 const r2=v=>Math.round(v*100)/100, r3=v=>Math.round(v*1000)/1000;
-function snapshot(){ return {t:'s',m:game.mode,sc:game.score,clk:r2(game.shotClock),nc:game.needsClear,ps:game.possession,
+function snapshot(){ return {t:'s',m:game.mode,sc:game.score,clk:r2(game.shotClock),nc:game.needsClear,ps:game.possession,fz:fazaOpis(),
   p:players.map(p=>[r3(p.pos.x),r3(p.pos.z),r3(p.y),r2(p.vel.x),r2(p.vel.z),(p.shooting?1:0)|(p.dunking?2:0)|(p.gather?4:0)|(p.dunkDone?8:0)|(p.passHolding?16:0),
     r3(p.shootT),r2(p.fakeT),r2(p.moveT),p.moveKind,r2(p.dribX),p.dribSide,r2(p.spinA),r2(p.fallT),p.fallMax,r2(p.beatT),r2(p.reachT),r2(p.stam),r2(p.passHold),r2(p.moveCd),p.fallZ,p.dunkKind]),
   b:[r3(ball.pos.x),r3(ball.pos.y),r3(ball.pos.z),ball.state,ball.holder?players.indexOf(ball.holder):-1,r2(ball.vel.x),r2(ball.vel.y),r2(ball.vel.z),ball.touchedRim?1:0,ball.scored?1:0],

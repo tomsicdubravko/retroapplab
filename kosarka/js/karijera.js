@@ -164,24 +164,42 @@ const Karijera=(()=>{
   function nacrtajBotove(){ $('karBody').querySelectorAll('canvas[data-bot]').forEach(cv=>{ const b=botPo(cv.dataset.bot), iz=b.izgled;
     if(!stanjeBota(b.id).otkljucan) return silueta(cv,iz.frizura);
     drawAvatar(cv,{skin:iz.koza,hair:iz.frizura,hairCol:iz.kosa,num:''},0); }); }
-  let pogled='glavni';   // 'glavni' | 'ekipa'
+  let pogled='glavni';   // 'glavni' | 'ekipa' (album) | 'trgovina'
   // izbor suigrača prije utakmice: samo otključani botovi, zadnji izbor ostaje zapamćen
   function suigracHtml(){ const odab=odabraniBot();
-    return `<div class="kar-sui"><div class="ks-h"><span>${T('karijera.suigrac')}</span><button class="lnk" data-a="ekipa">${T('karijera.ekipa')}</button></div><div class="ks-l">${
+    return `<div class="kar-sui"><div class="ks-h"><span>${T('karijera.suigrac')}</span><button class="lnk" data-a="ekipa">${T('karijera.album')}</button></div><div class="ks-l">${
       BOTOVI.filter(b=>stanjeBota(b.id).otkljucan).map(b=>`<button class="ks-b${b===odab?' on':''}" data-a="bot" data-id="${b.id}" style="--rc:${BOT_RIJETKOSTI[b.rijetkost].boja}">
         <canvas data-bot="${b.id}" width="60" height="44"></canvas><b>${b.ime}</b><small>${BOT_TIPOVI[b.tip].ime} · ${T('karijera.razinaKratko',{n:stanjeBota(b.id).razina})}</small></button>`).join('')}</div></div>`; }
+  // traka napretka naljepnica: "7 / 10 do otključavanja", "12 / 20 do razine 3" ili najviša razina
+  function napredakHtml(b){ const n=Trgovina.napredak(b.id);
+    if(n.treba==null) return `<div class="bk-np max">${traka(1,1)}<small>${T('album.maks')}</small></div>`;
+    return `<div class="bk-np">${traka(n.ima,n.treba)}<small>${T(n.otkljucan?'album.doRazine':'album.doOtkljucavanja',{n:n.ima,m:n.treba,r:n.razina+1})}</small></div>`; }
+  // album: karte svih botova, zaključani su siluete
   function renderEkipa(){ const odab=odabraniBot();
     $('karBody').innerHTML=`<div class="kar-ek-h"><b>${T('karijera.ekipaNaslov')}</b><span>${T('karijera.otkljucano',{n:BOTOVI.filter(b=>stanjeBota(b.id).otkljucan).length,m:BOTOVI.length})}</span></div>
       <div class="bot-grid">${BOTOVI.map(b=>{ const s=stanjeBota(b.id), R=BOT_RIJETKOSTI[b.rijetkost], Tip=BOT_TIPOVI[b.tip];
         const glava=`<canvas data-bot="${b.id}" width="120" height="88"></canvas><div class="bk-h"><b>${b.ime}</b><em>${R.ime}</em></div>`;
         if(!s.otkljucan) return `<div class="kar-card bot-k zak" style="--rc:${R.boja}">${glava}<small>${Tip.ime}</small>
-          <div class="bk-lock">${T('karijera.trebaNaljepnica',{n:BOT_NALJEPNICA_ZA_OTKLJUCAVANJE})}</div>${traka(s.naljepnice,BOT_NALJEPNICA_ZA_OTKLJUCAVANJE)}<small>${s.naljepnice} / ${BOT_NALJEPNICA_ZA_OTKLJUCAVANJE}</small></div>`;
+          <div class="bk-lock">${T('karijera.trebaNaljepnica',{n:BOT_NALJEPNICA_ZA_OTKLJUCAVANJE})}</div>${napredakHtml(b)}</div>`;
         return `<div class="kar-card bot-k${b===odab?' on':''}" style="--rc:${R.boja}" data-a="bot" data-id="${b.id}">${glava}
           <small>${Tip.ime} · ${T('karijera.razinaBota',{n:s.razina,m:BOT_MAX_RAZINA})}${b===odab?` · <b class="ok">${T('karijera.oznakaSuigrac')}</b>`:''}</small>
-          ${osobineHtml(osobineBota(b))}<p>${b.posebnost}</p><small class="bk-tip">${Tip.opis}</small></div>`; }).join('')}</div>
+          ${napredakHtml(b)}${osobineHtml(osobineBota(b))}<p>${b.posebnost}</p><small class="bk-tip">${Tip.opis}</small></div>`; }).join('')}</div>
       <button class="big alt" data-a="natrag">${T('opce.natrag')}</button>`;
     nacrtajBotove(); }
-  function render(){ if(pogled==='ekipa') return renderEkipa();
+  // trgovina: paketi naljepnica (kupnja odmah otvara paket), besplatni paketi i zajamčena epska
+  function renderTrgovina(){ const p=prof(), t=p.trgovina, dz=Trgovina.doZajamcene();
+    const sanse=s=>['obicni','rijetki','epski','legendarni'].map(r=>`<span style="color:${BOT_RIJETKOSTI[r].boja}">${BOT_RIJETKOSTI[r].ime} ${Math.round(s[r]*100)}%</span>`).join(' · ');
+    $('karBody').innerHTML=`<div class="kar-ek-h"><b>${T('trgovina.naslov')}</b><span>${p.novcici} 🪙</span></div>
+      <div class="tr-paketi">${Object.entries(PAKETI).map(([v,P])=>`<div class="kar-card tr-p tr-${v}">
+        <div class="kc-h"><b>${T('paket.ime.'+v)}</b><span>${T('trgovina.naljepnica',{n:P.naljepnica})}</span></div>
+        <small class="tr-s">${sanse(P.sanse)}</small>
+        <button class="big" data-a="kupi" data-v="${v}" ${p.novcici>=P.cijena?'':'disabled'}>${T('trgovina.kupi',{c:P.cijena})}</button>
+        ${t.poklon[v]>0?`<button class="big alt" data-a="poklon" data-v="${v}">${T('trgovina.otvoriPoklon',{n:t.poklon[v]})}</button>`:''}</div>`).join('')}</div>
+      <p class="tr-info">${dz===1?T('trgovina.zajamcenoSljedeci'):T('trgovina.zajamceno',{n:dz})}<br>${T('trgovina.pravila',{s:PAKET_ZAJAMCENO_SVAKI,c:NALJEPNICA_U_NOVCICE})}</p>
+      <button class="big alt" data-a="natrag">${T('opce.natrag')}</button>`; }
+  // otvaranje paketa ili dnevne naljepnice, pa povratak na isti ekran
+  function otvoriRez(rez){ if(!rez) return; render(); Trgovina.prikazi(rez,()=>render()); }
+  function render(){ if(pogled==='ekipa') return renderEkipa(); if(pogled==='trgovina') return renderTrgovina();
     const p=prof(), g=p.igrac, L=liga(), li=ligaIdx(), k=p.karijera, t=treningDanas(), c=kotizacija();
     const par=L.parovi[k.sljedeci%L.parovi.length], finaleOk=k.bodovi>=BODOVI_FINALE;
     $('karBody').innerHTML=`
@@ -196,6 +214,9 @@ const Karijera=(()=>{
       <div class="modes">
         <button class="big alt" data-a="turnir" ${turnir||p.novcici>=c?'':'disabled'}>${T('karijera.turnir')}<small>${turnir?T('karijera.turnirNastavi',{n:turnir.kolo+1}):T('karijera.turnirKotizacija',{c,n:c*5})}</small></button>
         <button class="big alt" data-a="trening" ${t.odradeno<3||p.novcici>=50?'':'disabled'}>${T('karijera.treningTrica')}<small>${t.odradeno<3?T('karijera.besplatno',{n:3-t.odradeno}):T('karijera.cijenaTreninga')}</small></button></div>
+      <div class="modes">
+        <button class="big alt" data-a="trgovina">${T('karijera.trgovina')}<small>${T('karijera.trgovinaPod',{n:Math.min(...Object.values(PAKETI).map(P=>P.cijena))})}</small></button>
+        <button class="big alt" data-a="dnevna" ${Trgovina.dnevnaDostupna()?'':'disabled'}>${T('karijera.dnevna')}<small>${T(Trgovina.dnevnaDostupna()?'karijera.dnevnaSpremna':'karijera.dnevnaSutra')}</small></button></div>
       <button class="big alt" data-a="izbornik">${T('opce.izbornik')}</button>`;
     nacrtajBotove(); }
   function otvori(){ toMenu(); pogled='glavni'; $('menu').classList.add('hidden'); $('karRez').classList.add('hidden'); render(); $('karOv').classList.remove('hidden'); }
@@ -204,7 +225,9 @@ const Karijera=(()=>{
   function osvjezi(){ if(!$('karOv').classList.contains('hidden')) render(); }
   $('karOv').addEventListener('click',e=>{ const b=e.target.closest('[data-a]'); if(!b||b.disabled) return; audio(); const a=b.dataset.a;
     if(a==='liga') igraj('liga'); else if(a==='finale') igraj('finale'); else if(a==='turnir') turnirKreni(); else if(a==='trening') trening(); else if(a==='izbornik') zatvori();
-    else if(a==='ekipa'){ pogled='ekipa'; render(); $('karOv').scrollTop=0; } else if(a==='natrag'){ pogled='glavni'; render(); }
+    else if(a==='ekipa'||a==='trgovina'){ pogled=a; render(); $('karOv').scrollTop=0; } else if(a==='natrag'){ pogled='glavni'; render(); }
+    else if(a==='kupi') otvoriRez(Trgovina.kupi(b.dataset.v)); else if(a==='poklon') otvoriRez(Trgovina.otvoriPoklon(b.dataset.v));
+    else if(a==='dnevna') otvoriRez(Trgovina.uzmiDnevnu());
     else if(a==='bot'&&stanjeBota(b.dataset.id).otkljucan){ prof().odabraniBot=b.dataset.id; Profil.spremi(); render(); } });
   $('karNastavi').onclick=otvori;
   $('karBtn').onclick=()=>{ audio(); otvori(); };

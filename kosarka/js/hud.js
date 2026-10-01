@@ -1,7 +1,7 @@
 // ===== Košarka 2 na 2 - hud: poruke, avatari i kartice igrača, minimapa, prikaz rezultata =====
 'use strict';
 // ---------- UI helpers ----------
-let msgT=0, fbT=0;
+let msgT=0, fbT=0, skokZamrz=null;   // skokZamrz: trenutak kad je igrač skočio (pokazivač skoka za loptu)
 function isHuman(p){ return p===game.controlled||game.humans.has(p); }
 function fbFor(p,t,c){ if(p===game.controlled||(game.local&&game.humans.has(p))) feedback(t,c);
   else if(mpn.host&&game.humans.has(p)){ const g=mpn.conns.find(x=>players[x.slot]===p); if(g) sendTo(g,{t:'fb',a:[t,c]}); } }
@@ -62,13 +62,27 @@ function updateHUD(dt){
   const sb=$('scbar'), fr=scv/SHOT_CLOCK, fl=sb.querySelector('.fl');
   sb.classList.toggle('on',game.mode==='play'||game.mode==='dead'); sb.classList.toggle('low',scv<=3&&game.mode==='play');
   fl.style.width=(fr*100)+'%'; const col=fr>0.5?'#35c46b':fr>0.25?'#ffb020':'#ff3b30'; fl.style.background=col; fl.style.color=col;
-  const c=game.controlled, h=ball.holder;
+  const c=game.controlled, h=ball.holder, F=game.remote?(mpn.snap&&mpn.snap.fz):fazaOpis();
   const showMeter=game.mode==='play'&&c&&c.shooting&&h===c;
-  $('meter').style.display=showMeter?'block':'none';
+  // pokazivač tajminga za skok za loptu (samo igraču koji skače): oznaka teče od bacanja, zeleno = idealni trenutak skoka
+  const skokMetar=game.mode==='play'&&c&&F&&F[0]==='skok'&&c.idx===0;
+  $('meter').style.display=showMeter||skokMetar?'block':'none';
   if(showMeter){ $('mf').style.left=(clamp(c.shootT/AIR,0,1)*100)+'%';
     // zelena zona = stvarni prozor savršenog šuta (±9 % × win; trice još × win3), pri 1 isto kao u CSS-u
     const w=Math.min(4,c.st.win*(c.st.win3&&isThree(c.pos.x,c.pos.z)?c.st.win3:1)), mz=$('mz'); mz.style.left=(50-9*w)+'%'; mz.style.width=(18*w)+'%'; }
-  $('hint').style.display=(game.mode==='play'&&ball.state==='held'&&c&&h.team===c.team&&game.needsClear[h.team])?'block':'none';
+  else if(skokMetar){ const t=game.faza&&!game.remote?game.faza.t:F[1];
+    if(c.y>0.02&&skokZamrz==null) skokZamrz=t;   // skočio: oznaka stane gdje je pritisnuo
+    const id=idealniSkok(c), mz=$('mz'); $('mf').style.left=(clamp((skokZamrz!=null?skokZamrz:t)/SKOK_PROZOR,0,1)*100)+'%';
+    mz.style.left=((id-SKOK_ZELENO)/SKOK_PROZOR*100)+'%'; mz.style.width=(2*SKOK_ZELENO/SKOK_PROZOR*100)+'%'; }
+  if(!skokMetar) skokZamrz=null;
+  // uputa iznad kontrola: faza (izvođenje, slobodno bacanje, skok za loptu) ili "iznesi loptu"
+  let ht='';
+  if(game.mode==='play'&&F&&c){ const ja=players.indexOf(c);
+    if(F[0]==='uvod') ht=T(F[2]===c.team?(F[3]===ja?'hud.uvodTi':'hud.uvod'):'hud.uvodObrana',{s:Math.max(0,F[1]).toFixed(1)});
+    else if(F[0]==='ft') ht=T(F[3]===ja?'hud.slobodno':'hud.slobodnoGledaj');
+    else if(F[0]==='skok') ht=T('hud.skok'); }
+  else if(game.mode==='play'&&ball.state==='held'&&c&&h.team===c.team&&game.needsClear[h.team]) ht=T('hud.iznesiLoptu');
+  const hi=$('hint'); if(hi.textContent!==ht&&ht) hi.textContent=ht; hi.style.display=ht?'block':'none';
   if(isTouch&&c){
     setBtn($('bShoot'),h===c?'shoot':'jump',T(h===c?'gumb.sut':'gumb.skok'));
     setBtn($('bPass'),h===c?'pass':game.naredbe?'cmd':'swap',T(h===c?'gumb.dodaj':game.naredbe?'gumb.naredba':'gumb.igrac'));
