@@ -88,6 +88,7 @@ function updateUser(dt){
   for(const [p,inp] of game.humans) if(p!==game.controlled) updateHuman(p,inp(),dt);
 }
 function updateHuman(p,I,dt){
+  if(game.faza&&fazaHuman(p,I,dt)) return;   // izvođenje, slobodno bacanje, skok za loptu (nastavak.js)
   let ix=I.x, iz=I.z; const m=Math.hypot(ix,iz); if(m>1){ix/=m;iz/=m;}
   const holder=ball.holder===p;
   if(p.y===0&&!p.shooting&&!p.dunking){

@@ -25,7 +25,7 @@ function gain(p,how){
   const prev=game.possession; if(how==='steal'){ stat(p,'stl'); taunt(p); }
   // za asistenciju: tko je dodao i kada (ball.noPick je dodavač dok se lopta ne uhvati)
   if(how==='pass'&&ball.noPick&&ball.noPick!==p&&ball.noPick.team===p.team){ p.assistBy=ball.noPick; p.assistT=game.clock||0; } else p.assistBy=null;
-  ball.state='held'; ball.holder=p; ball.vel.set(0,0,0); ball.lastTouchTeam=p.team; ball.noPick=null; ball.isAlley=false; ball.dunk=false; ball.alley=false;
+  ball.state='held'; ball.holder=p; ball.vel.set(0,0,0); ball.lastTouchTeam=p.team; ball.noPick=null; ball.isAlley=false; ball.dunk=false; ball.alley=false; ball.uvod=false; ball.izAuta=false; ball.ft=false;
   if(p.team!==game.possession){ game.possession=p.team; game.needsClear[p.team]=true; game.shotClock=SHOT_CLOCK; }
   else if(ball.wasShot&&ball.touchedRim) game.shotClock=SHOT_CLOCK;
   ball.wasShot=false;
@@ -92,7 +92,7 @@ function doSteal(p,h){ gain(p,'steal'); flash(T('poruka.ukradeno'),p.team===0?T(
 
 function startShot(p){
   p.shooting=true; p.shootT=0; p.vy=JUMP_V; p.vel.multiplyScalar(0.3);
-  for(const o of players) o.ai.blockTried=false;
+  for(const o of players){ o.ai.blockTried=false; o.ai.faulTried=false; }
 }
 // AI tajming: perf = šansa savršenog, bad = šansa lošeg šuta, ostalo "blizu zelenog"
 function aiShoot(p,Dx){ startShot(p); p.ai.releaseAt=AIR*(p.st.gather<1?0.4:0.5);
@@ -159,6 +159,7 @@ function pumpFake(p){
 }
 function tryAlley(p){
   const mate=mateOf(p);
+  if(game.faza) return;   // ne kod izvođenja, slobodnog bacanja ni skoka za loptu
   if(game.needsClear[p.team]){ feedback(T('fb.prvoIznesi'),'#ff8a7a'); return; }
   const tgt=new V3(0,RIM_Y+0.55,HOOP_Z+0.5), p0=new V3(p.pos.x,2.0,p.pos.z);
   const tLet=clamp(flat(p.pos,tgt)/7,1.0,1.4);   // vrijeme leta (ne T – T() su tekstovi)
@@ -180,7 +181,7 @@ function releaseShot(p,q){
   for(const o of teams[1-p.team]){
     if(o.y>0.12&&o.bitT<=0&&flat(o.pos,p.pos)<1.05){
       const bc=(isHuman(o)?0.5:(o.team===1?D.block:MATE.block))*o.st.blk*p.st.shield;
-      if(Math.random()<bc){ blockShot(o,p); return; }
+      if(Math.random()<bc){ if(!game.solo&&sLeda(o,p)) faulNaSutu(o,p); else blockShot(o,p); return; }
     }
   }
   // tajming je glavni (kao u tricama): savršeno 0.88, blizu zelenog 0.50, loše 0.10–0.35
@@ -228,10 +229,15 @@ function userSteal(p){
   const h=ball.holder; if(!h||h.team===p.team||p.stealCd>0) return;
   p.stealCd=0.6; p.reachT=0.25;
   if(p.beatT>0) return;
+  // faul pri izvođenju (dirao si igrača koji izvodi iz auta) = ponovno izvođenje za napad, s istog mjesta
+  if(game.faza&&game.faza.by===h){ if(flat(p.pos,h.pos)<1.6){ flash(T('poruka.faul'),T('poruka.faulUvod'),1.1); sfx.whistle(); deadBall(h.team,1.0,{vrsta:'uvod',mjesto:h.pos.clone()}); } return; }
+  // krađa na igraču u pokretu šuta = faul, 1 slobodno bacanje
+  if(!game.solo&&(h.shooting||h.gather)&&flat(p.pos,h.pos)<1.3){ faulNaSutu(p,h); return; }
   if(flat(p.pos,h.pos)<1.3&&!h.shooting&&!h.dunking&&h.moveT<=0){
     const r=Math.random(), sc=0.35*p.st.stl;
     if(r<sc) doSteal(p,h);
-    else if(r<sc+0.2){ flash(T('poruka.faul'),T('poruka.loptaOstaje'),1.1); sfx.whistle(); deadBall(h.team,1.3); }
+    // ostali faulovi: lopta ostaje napadu, izvodi se ispod koša, zatim iza linije za 3
+    else if(r<sc+0.2){ flash(T('poruka.faul'),T('poruka.faulIzvodjenje'),1.1); sfx.whistle(); deadBall(h.team,1.3,{vrsta:'uvod',mjesto:'kos'}); }
   }
 }
 
@@ -246,6 +252,11 @@ function onScore(){
     else if(ball.shotValue===3) hype(T('poruka.trica'),sub,'three',{dur:1,shake:0.22,flash:0.14,edge:1});
     else flash(T(txt),sub,0.9,cls);
     crowd(ball.dunk?'jump':ball.shotValue===3?'arms':'small',ball.dunk||ball.shotValue===3?1.4:0.8); return; }
+  // slobodno bacanje: 1 bod (ne broji se u šuteve iz igre), zatim lopta protivniku kao nakon koša
+  if(ball.ft){ game.score[t]+=1; const sc=ball.noPick; if(sc&&sc.team===t) stat(sc,'pts',1);
+    crowd('small',t===0?1.2:0.5); if(t===0) sfx.cheer();
+    flash(T('poruka.slobodnoPogodak'),T(t===0?'poruka.plaviPlus':'poruka.crveniPlus',{n:1}),1.3,t?'red':'blue');
+    deadBall(1-t,1.6); if(game.score[t]>=game.target) game.nextCheck='over'; return; }
   if(game.needsClear[t]){ flash(T('poruka.neVrijedi'),T('poruka.nijeIznesena'),1.5); sfx.whistle(); }
   else { game.score[t]+=ball.shotValue; crowd('small',t===0?1.4:0.5); if(t===0)sfx.cheer();
     const swish=!ball.touchedRim&&!ball.dunk, who=T(t===0?'poruka.plaviPlus':'poruka.crveniPlus',{n:ball.shotValue}), sc=ball.noPick, mine=t===0||game.mp;
@@ -269,21 +280,29 @@ function onScore(){
   deadBall(1-t,1.7);
   if(game.score[t]>=game.target) game.nextCheck='over';
 }
-function deadBall(next,t){ game.mode='dead'; game.pauseT=t; game.nextCheck=next; }
-function outOfBounds(){ flash(T('poruka.aut'),'',1); sfx.whistle(); deadBall(1-ball.lastTouchTeam,1.2); }
-function turnover(text){ flash(text,'',1.2); sfx.buzzer(); deadBall(1-game.possession,1.3); }
+// mrtva lopta: nakon pauze t igra se nastavlja za ekipu next
+// nastavak: bez njega check na vrhu (nakon koša), {vrsta:'uvod', mjesto:'kos'|V3} izvođenje (nastavak.js), {vrsta:'ft', p} slobodno bacanje
+function deadBall(next,t,nastavak){ game.mode='dead'; game.pauseT=t; game.nextCheck=next; game.nastavak=nastavak||null; game.faza=null; }
+// aut: protivnik izvodi s mjesta gdje je lopta izašla, zatim iza linije za 3
+function outOfBounds(){ const tko=1-ball.lastTouchTeam; flash(T('poruka.aut'),T(tko===0?'poruka.loptaPlavima':'poruka.loptaCrvenima'),1); sfx.whistle();
+  deadBall(tko,1.2,{vrsta:'uvod',mjesto:ball.pos.clone()}); }
+// isteklo vrijeme napada: protivnik izvodi ispod koša, zatim iza linije za 3
+function turnover(text){ flash(text,'',1.2); sfx.buzzer(); deadBall(1-game.possession,1.3,{vrsta:'uvod',mjesto:'kos'}); }
 
+// svi igrači stoje, bez poteza u tijeku (početak svakog nastavka igre); face: napad gleda prema košu
+function resetirajIgrace(team){
+  for(const p of players){ p.vel.set(0,0,0); p.y=0; p.vy=0; p.shooting=false; p.stealCd=0.5; p.jumpCd=0; p.dunking=false; p.gather=false; p.fakeT=0; p.bitT=0; p.passHolding=false; p.moveT=0; p.moveCd=0; p.beatT=0; p.fallT=0; p.spinA=0; p.dribSide=1; p.dribX=1; p.izvan=false;
+    Object.assign(p.ai,{t:rand(.4,.8),spot:null,goal:null,blockTried:false,passCd:0.4}); p.ai.tgt.copy(p.pos);
+    p.face=team===p.team?Math.PI:0; } }
 function setupCheck(team){
   if(game.solo) team=0;
   const off=teams[team],def=teams[1-team],side=Math.random()<.5?-1:1;
   off[0].pos.set(0,0,9.6); off[1].pos.set(side*4.8,0,5.4);
   def[0].pos.set(0,0,8.4); def[1].pos.set(side*4.1,0,4.6);
-  for(const p of players){ p.vel.set(0,0,0); p.y=0; p.vy=0; p.shooting=false; p.stealCd=0.5; p.jumpCd=0; p.dunking=false; p.gather=false; p.fakeT=0; p.bitT=0; p.passHolding=false; p.moveT=0; p.moveCd=0; p.beatT=0; p.fallT=0; p.spinA=0; p.dribSide=1; p.dribX=1;
-    Object.assign(p.ai,{t:rand(.4,.8),spot:null,goal:null,blockTried:false,passCd:0.4}); p.ai.tgt.copy(p.pos);
-    p.face=team===p.team?Math.PI:0; }
+  resetirajIgrace(team);
   off[0].ai.t=0.9;
-  Object.assign(ball,{state:'held',holder:off[0],wasShot:false,lastTouchTeam:team,noPick:null,isAlley:false,dunk:false,alley:false}); ball.vel.set(0,0,0);
-  game.possession=team; game.needsClear=[false,false]; game.shotClock=SHOT_CLOCK;
+  Object.assign(ball,{state:'held',holder:off[0],wasShot:false,lastTouchTeam:team,noPick:null,isAlley:false,dunk:false,alley:false,uvod:false,ft:false}); ball.vel.set(0,0,0);
+  game.possession=team; game.needsClear=[false,false]; game.shotClock=SHOT_CLOCK; game.faza=null; game.nastavak=null;
   game.controlled=team===0?off[0]:def[0];
   if(game.mp&&mpn.me) game.controlled=mpn.me;
   if(game.local&&game.localMain) game.controlled=game.localMain;
@@ -301,7 +320,9 @@ function checkClear(){
 // ---------- steps ----------
 function step(dt){
   game.clock=(game.clock||0)+dt;
-  if(ball.state!=='shot'&&!game.solo){ game.shotClock-=dt; if(game.shotClock<=0){ game.shotClock=0; turnover(T('poruka.isteklo')); return; } }
+  // slobodno bacanje i skok za loptu imaju svoj korak; kod izvođenja igra teče, samo bez sata napada (nastavak.js)
+  if(game.faza&&korakFaze(dt)) return;
+  if(ball.state!=='shot'&&!game.solo&&!game.faza){ game.shotClock-=dt; if(game.shotClock<=0){ game.shotClock=0; turnover(T('poruka.isteklo')); return; } }
   updateUser(dt);
   for(const p of players) if(!isHuman(p)&&p.active!==false&&game.mode==='play') updateAI(p,dt);
   for(const p of players) if(p.active!==false) physicsPlayer(p,dt);
@@ -315,7 +336,10 @@ function deadStep(dt){
   if(ball.state!=='held') { ball.flightT+=dt; ballPhysics(dt); }
   game.pauseT-=dt;
   if(game.pauseT<=0){
+    const n=game.nastavak; game.nastavak=null;
     if(game.nextCheck==='over') Utakmica.zavrsi();
+    else if(n&&!game.solo&&n.vrsta==='uvod') pocniUvod(game.nextCheck,n.mjesto);
+    else if(n&&!game.solo&&n.vrsta==='ft') pocniSlobodno(n.p);
     else { setupCheck(game.nextCheck); flash(T(game.mp?(game.possession===0?'poruka.loptaPlavima':'poruka.loptaCrvenima'):(game.possession===0?'poruka.vasaLopta':'poruka.loptaCrvenima')),'',0.8); }
   }
 }

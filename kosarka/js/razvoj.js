@@ -6,7 +6,8 @@ const Razvoj=(()=>{
     <pre id="devJson"></pre>
     <div class="devBtns"><button data-a="novcici">+1000 novčića</button><button data-a="osobine">+10 svim osobinama</button><button data-a="reset" class="danger">Reset profila</button></div>
     <div class="devBtns"><select id="devBot">${BOTOVI.map(b=>`<option value="${b.id}">${b.ime} · ${BOT_TIPOVI[b.tip].ime} · ${BOT_RIJETKOSTI[b.rijetkost].ime}</option>`).join('')}</select>
-      <button data-a="botOtk">Otključaj</button><button data-a="botZak">Zaključaj</button><button data-a="botRaz">Razina +1</button><button data-a="botSvi">Otključaj sve</button></div>
+      <button data-a="botOtk">Otključaj</button><button data-a="botZak">Zaključaj</button><button data-a="botRaz">Razina +1</button><button data-a="botSvi">Otključaj sve</button><button data-a="paketi">+5 paketa</button></div>
+    <div class="devBtns"><button data-a="uvodRok">Rok izvođenja: 5 s</button></div>
     <small>Samo za testiranje. Reset briše REP, rivale, rekorde trica i statistiku u profilu.</small></div>`;
   document.body.appendChild(el);
   let potvrda=0;
@@ -23,7 +24,11 @@ const Razvoj=(()=>{
     if(a==='botZak'&&id!==BOT_POCETNI) bs(id).otkljucan=false;
     if(a==='botRaz') bs(id).razina=bs(id).razina>=BOT_MAX_RAZINA?1:bs(id).razina+1;
     if(a==='botSvi') BOTOVI.forEach(x=>bs(x.id).otkljucan=true);
-    if(a.startsWith('bot')){ Profil.spremi(); Karijera.osvjezi(); }
+    // +5 besplatnih običnih paketa (otvaraju se u karijeri → Trgovina; broje se za zajamčenu epsku)
+    if(a==='paketi') p.trgovina.poklon.obicni+=5;
+    // proba pravila: rok za izvođenje 5 s ⇄ 3 s (vrijedi od sljedećeg izvođenja, ne sprema se)
+    if(a==='uvodRok'){ PRAVILA.uvodRok=PRAVILA.uvodRok===5?3:5; b.textContent='Rok izvođenja: '+PRAVILA.uvodRok+' s'; }
+    if(a.startsWith('bot')||a==='paketi'){ Profil.spremi(); Karijera.osvjezi(); }
     if(a==='novcici'){ p.novcici+=1000; Profil.spremi(); }
     if(a==='osobine'){ for(const k in p.igrac.osobine) p.igrac.osobine[k]=Math.min(100,p.igrac.osobine[k]+10); Profil.spremi(); }
     if(a==='reset'){ if(!potvrda){ potvrda=1; b.textContent='Sigurno? Klikni opet'; return; } potvrda=0; b.textContent='Reset profila'; Profil.reset(); Karijera.osvjezi(); }

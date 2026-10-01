@@ -179,6 +179,10 @@ function physicsPlayer(p,dt){
   else p.y=0;
   if(p.y>0&&!p.shooting){ p.vel.multiplyScalar(0.995); }
   p.pos.x+=p.vel.x*dt; p.pos.z+=p.vel.z*dt;
+  if(p.izvan) return;   // igrač koji izvodi iz auta stoji izvan terena (nastavak.js)
+  // nakon izvođenja ulazi u teren postupno (ne skokom na rub)
+  if(p.ulaz){ const cx=clamp(p.pos.x,-7.3,7.3), cz=clamp(p.pos.z,0.45,13.8), dx=cx-p.pos.x, dz=cz-p.pos.z, d=Math.hypot(dx,dz);
+    if(d<0.02) p.ulaz=false; else { const k=Math.min(1,4*dt/d); p.pos.x+=dx*k; p.pos.z+=dz*k; return; } }
   p.pos.x=clamp(p.pos.x,-7.3,7.3); p.pos.z=clamp(p.pos.z,0.45,13.8);
   if(Math.abs(p.pos.x)<1&&p.pos.z<1) p.pos.z=1;
 }

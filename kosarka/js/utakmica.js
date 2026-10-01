@@ -54,7 +54,7 @@ const Utakmica=(()=>{
     $('target').textContent=T('hud.do',{n:game.target});
     $('menu').classList.add('hidden'); $('over').classList.add('hidden'); $('pauseOv').classList.add('hidden');
     if(isTouch) $('touch').style.display='block';
-    setupCheck(0); flash(T('poruka.kreni'),T('poruka.vasaLopta'),1); }
+    setupCheck(0); pocniSkok(); }   // utakmica počinje skokom za loptu (nastavak.js)
 
   function pokreni(o){
     tek=o;

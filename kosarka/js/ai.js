@@ -56,7 +56,10 @@ function defend(p,dt,Dx){
   if(ball.holder===m){
     tgt=m.pos.clone().addScaledVector(toH,Math.min(0.95,L*0.5)*(press?Math.min(P.tight,0.55):P.tight));
     const d=flat(p.pos,m.pos), sr=press?1.25:1.05, sk=press?Math.max(P.steal,1.8):P.steal;
-    if(d<sr&&!m.shooting&&!m.dunking&&m.moveT<=0&&p.beatT<=0&&p.stealCd<=0&&Math.random()<Dx.steal*p.st.stl*sk*dt){ p.stealCd=1; p.reachT=0.25; doSteal(p,m); return null; }
+    if(d<sr&&!m.shooting&&!m.dunking&&m.moveT<=0&&!(game.faza&&game.faza.by===m)&&p.beatT<=0&&p.stealCd<=0&&Math.random()<Dx.steal*p.st.stl*sk*dt){ p.stealCd=1; p.reachT=0.25; doSteal(p,m); return null; }
+    // AI ponekad faulira šutera (pokušaj krađe u pokretu šuta) → 1 slobodno; češće na težoj razini (AI_FAUL, nastavak.js)
+    if(!game.solo&&m.shooting&&!p.ai.faulTried&&p.bitT<=0&&d<1.3){ p.ai.faulTried=true;
+      if(Math.random()<(p.team===1?AI_FAUL[game.diffIdx]:AI_FAUL_SUIGRAC)){ p.reachT=0.25; faulNaSutu(p,m); return null; } }
     if((m.shooting||m.dunking)&&!p.ai.blockTried&&p.bitT<=0&&d<1.7){ p.ai.blockTried=true; if(Math.random()<Math.min(0.95,Dx.jump*p.st.blk*P.block)){ jump(p); p.vel.set((m.pos.x-p.pos.x)*2,0,(m.pos.z-p.pos.z)*2); } }
   } else {
     tgt=m.pos.clone().addScaledVector(toH,Math.min(1.8,L*0.45));
@@ -66,6 +69,12 @@ function defend(p,dt,Dx){
       if(h&&h.team!==p.team&&(h.shooting||h.dunking)&&!p.ai.blockTried&&p.bitT<=0&&flat(p.pos,h.pos)<2.6){ p.ai.blockTried=true;
         if(Math.random()<Math.min(0.95,Dx.jump*p.st.blk*P.block)){ jump(p); p.vel.set((h.pos.x-p.pos.x)*2.6,0,(h.pos.z-p.pos.z)*2.6); } } }
   }
+  // izvođenje: branič primatelja zatvara put dodavanja (između izvođača i primatelja), branič izvođača stoji pred njim
+  const fz=game.faza;
+  if(fz&&fz.vrsta==='uvod'&&m.team===fz.tim){ const by=fz.by, prim=mateOf(by);
+    if(m===prim){ const k=new V3(by.pos.x-m.pos.x,0,by.pos.z-m.pos.z), Lk=k.length()||1; tgt=m.pos.clone().addScaledVector(k,Math.min(0.9,Lk*0.4)/Lk); }
+    else { const k=new V3(prim.pos.x-by.pos.x,0,prim.pos.z-by.pos.z).normalize(); tgt=by.pos.clone().addScaledVector(k,1.1); }
+    clampCourt(tgt); }
   return tgt;
 }
 const pressing=p=>persOf(p).press>0||p.ai.pressT>0;
@@ -119,6 +128,10 @@ function updateAI(p,dt){
   if(p.ai.cmd&&(p.ai.cmd.t-=dt)<=0) p.ai.cmd=null;
   if(p.ai.pressT>0) p.ai.pressT-=dt;
   if(p.dunking) return;
+  // izvođenje (nastavak.js): izvođač čeka i dodaje, suigrač se otvara; obrana brani normalno
+  const fz=game.faza;
+  if(fz&&fz.vrsta==='uvod'){ if(p===fz.by){ aiUvod(p,dt,fz); return; }
+    if(p.team===fz.tim){ moveTo(p,uvodCilj(p,dt,fz),5.2*Dx.speed*p.st.spd,dt,null); return; } }
   if(p.beatT>0){ p.vel.multiplyScalar(Math.exp(-8*dt)); return; }
   if(p.shooting){ if(ball.holder===p&&p.shootT>=p.ai.releaseAt) releaseShot(p,p.ai.q); p.vel.multiplyScalar(0.9); return; }
   if(p.y>0.02) return;   // u zraku
