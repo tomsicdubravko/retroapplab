@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pčelica – besplatna igra s pčelicom kroz šest svjetova | RetroAppLab</title>
+<meta name="description" content="Pčelica je besplatna browser igra: vodi malu pčelicu kroz livadu, noć, pustinju, led, vulkan i svemir. Igraj sam ili s prijateljem, bez instalacije, i pogledaj crtanu seriju.">
+<link rel="canonical" href="https://retroapplab.com/pcelica/o-igri.html">
+<meta property="og:title" content="Pčelica – jedna mala pčela, velika avantura">
+<meta property="og:description" content="Besplatna igra i crtana serija o maloj pčelici koja putuje kroz šest svjetova.">
+<meta property="og:image" content="https://retroapplab.com/shot-pcelica.jpg">
+<meta property="og:url" content="https://retroapplab.com/pcelica/o-igri.html">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"VideoGame","name":"Pčelica","url":"https://retroapplab.com/pcelica/","image":"https://retroapplab.com/shot-pcelica.jpg","description":"Besplatna browser igra u kojoj vodiš malu pčelicu kroz šest svjetova, sam ili s prijateljem.","genre":"Arkadna igra","gamePlatform":"Web preglednik","inLanguage":"hr","playMode":["SinglePlayer","MultiPlayer"],"author":{"@type":"Person","name":"Dubo"},"publisher":{"@type":"Organization","name":"RetroAppLab","url":"https://retroapplab.com/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}
+</script>
+<style>
+:root{
+  --night:#07131b;   /* pozadina, ista kao splash igre */
+  --deep:#0e2230;
+  --honey:#ffd044;
+  --amber:#e9900b;
+  --wing:#d9f1ff;
+  --text:#e9f2f6;
+  --muted:#9fb6c3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--text);font:400 1.06rem/1.7 Nunito,"Segoe UI",system-ui,sans-serif}
+a{color:var(--honey)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--wing);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.15;color:#fff}
+h2{font-size:clamp(1.6rem,3.6vw,2.2rem);margin-bottom:.6rem}
+h3{font-size:1.25rem;margin-bottom:.25rem}
+p+p{margin-top:.9rem}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.text{max-width:68ch}
+
+/* gornja traka */
+.top{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;max-width:1040px;margin:0 auto;font-weight:700}
+.top a{text-decoration:none;color:var(--muted)}
+.top a:hover{color:#fff}
+
+/* hero: slika igre kao prozor u svijet */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:42px;align-items:center;padding:30px 22px 70px;max-width:1040px;margin:0 auto}
+.hero h1{font-size:clamp(3rem,9vw,5.6rem);font-weight:800;color:var(--honey);letter-spacing:-.01em;
+  text-shadow:0 4px 0 var(--amber),0 14px 40px rgba(255,208,68,.25)}
+.hero .lead{font-size:1.2rem;color:var(--wing);margin:.4rem 0 1.6rem;max-width:34ch}
+.cta{display:inline-block;background:var(--honey);color:#3a2300;font:800 1.2rem "Baloo 2",sans-serif;
+  padding:.7rem 1.8rem;border-radius:999px;text-decoration:none;box-shadow:0 6px 0 var(--amber)}
+.cta:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--amber)}
+.cta:active{transform:translateY(3px);box-shadow:0 3px 0 var(--amber)}
+.hero .sub{display:block;margin-top:1rem;color:var(--muted);font-size:.95rem}
+.shot{border-radius:28px;overflow:hidden;aspect-ratio:4/5;background:#123 url('/shot-pcelica.jpg') center top/cover;
+  box-shadow:0 0 0 6px var(--deep),0 30px 60px rgba(0,0,0,.45);transform:rotate(2deg)}
+
+section{padding:56px 0}
+section.alt{background:var(--deep)}
+
+/* kako se igra */
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:1.6rem}
+.how div{border-top:3px solid var(--honey);padding-top:.9rem}
+.how p{color:var(--muted)}
+kbd{font:700 .9em Nunito,sans-serif;background:#1d3a4c;border-radius:6px;padding:.05em .45em;color:#fff}
+
+/* putovanje kroz svjetove: jedan put, šest stanica */
+.journey{list-style:none;margin-top:2rem;position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.journey::before{content:"";position:absolute;left:4%;right:4%;top:34px;border-top:3px dashed rgba(255,208,68,.45)}
+.journey li{position:relative;text-align:center}
+.journey .dot{width:68px;height:68px;margin:0 auto .7rem;border-radius:50%;display:grid;place-items:center;
+  font-size:2rem;background:var(--c);box-shadow:0 0 0 5px var(--night)}
+section.alt .journey .dot{box-shadow:0 0 0 5px var(--deep)}
+.journey h3{font-size:1.1rem}
+.journey p{font-size:.92rem;color:var(--muted);line-height:1.5}
+.journey .soon{display:inline-block;margin-top:.35rem;font-size:.78rem;font-weight:700;color:var(--night);background:var(--muted);border-radius:999px;padding:.05em .6em}
+
+/* pojačanja */
+.items{display:grid;grid-template-columns:1fr 1fr;gap:18px 40px;margin-top:1.4rem}
+.item{display:flex;gap:14px;align-items:flex-start}
+.item .ico{font-size:1.7rem;line-height:1.2}
+.item p{color:var(--muted);font-size:.98rem}
+
+/* crtić */
+.video{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;margin-top:1.4rem;box-shadow:0 0 0 6px var(--honey)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* pitanja */
+details{border-bottom:1px solid #1f3a4b;padding:.9rem 0}
+summary{cursor:pointer;font-weight:700;color:#fff;list-style:none}
+summary::after{content:"+";float:right;color:var(--honey);font-weight:800}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:.5rem}
+
+.end{text-align:center;padding:70px 22px}
+.end h2{color:var(--honey)}
+footer{text-align:center;color:var(--muted);font-size:.9rem;padding:26px 22px 40px}
+footer a{color:var(--muted)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;gap:30px;text-align:center}
+  .hero .lead{margin-left:auto;margin-right:auto}
+  .shot{width:100%;max-width:340px;margin:0 auto;transform:none}
+  .how{grid-template-columns:1fr}
+  .journey{grid-template-columns:1fr 1fr;gap:26px 14px}
+  .journey::before{display:none}
+  .items{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="/">RetroAppLab</a>
+  <a href="#crtic">Gledaj crtić</a>
+</nav>
+
+<header class="hero">
+  <div>
+    <h1>Pčelica</h1>
+    <p class="lead">Jedna mala pčela, velika avantura. Vodi pčelicu kroz šest svjetova, izbjegavaj žabe, ose i ribarevu udicu, i skupljaj cvijeće.</p>
+    <a class="cta" href="/pcelica/">Igraj besplatno</a>
+    <span class="sub">Radi u pregledniku na mobitelu i računalu, bez instalacije.</span>
+  </div>
+  <div class="shot" role="img" aria-label="Snimka zaslona igre Pčelica"></div>
+</header>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="text">
+      <h2>O igri</h2>
+      <p>Pčelica je arkadna igra u kojoj upravljaš malom pčelicom dok leti kroz krajolik pun prepreka. Svaki zamah krilima podigne je malo više, a kad ga pustiš, polako se spušta. Zvuči jednostavno, ali svijet oko nje ne miruje: žaba izbacuje jezik iz ribnjaka, ose je love, a ribar je spreman zabaciti udicu baš kad proletiš.</p>
+      <p>Što dalje letiš, igra postaje zanimljivija. Na putu se otvaraju skrivena mjesta poput Medene špilje i Oblačnog kraljevstva, a kad preletiš dovoljno daleko, pčelica prelazi u novi svijet s novim neprijateljima i novim pravilima. Prelazak je trajan, kao u starim platformskim igrama: jednom kad stigneš u noć, više se ne vraćaš na dnevnu livadu.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Kako se igra</h2>
+    <div class="how">
+      <div>
+        <h3>Leti</h3>
+        <p>Dodirni ekran ili klikni mišem da pčelica zamahne krilima. Na računalu možeš koristiti i tipku <kbd>razmak</kbd>.</p>
+      </div>
+      <div>
+        <h3>Izbjegavaj</h3>
+        <p>Svaki dodir s neprijateljem, vodom ili granom košta te život. Prati ritam prepreka i ne leti ni preblizu tlu ni preblizu vrhu.</p>
+      </div>
+      <div>
+        <h3>Skupljaj</h3>
+        <p>Cvijeće donosi bodove i posebne moći. Neki cvjetovi pomažu, a neki ti zagorčaju let, pa dobro pogledaj prije nego što ga pokupiš.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Šest svjetova</h2>
+    <p class="text">Pčelica putuje redom, svijet po svijet. Svaki svijet zadržava osnovna pravila, ali mijenja izgled, neprijatelje i atmosferu.</p>
+    <ol class="journey">
+      <li style="--c:#5fb85a"><div class="dot">🌼</div><h3>Livada</h3><p>Ribnjak, žabe, ose, ptice i ribar u čamcu.</p></li>
+      <li style="--c:#3b3f8f"><div class="dot">🌙</div><h3>Noć</h3><p>Sove umjesto ptica, šišmiši umjesto osa i krijesnice koje svijetle.</p></li>
+      <li style="--c:#d9a441"><div class="dot">🌵</div><h3>Pustinja</h3><p>Škorpion, zmija na grani, sokol, lešinar i pješčana oluja.</p></li>
+      <li style="--c:#7cc7e8"><div class="dot">❄️</div><h3>Ledenjak</h3><p>Tanki led, mećava, ledenice i jeti koji maše šapom.</p></li>
+      <li style="--c:#d2452f"><div class="dot">🌋</div><h3>Vulkan</h3><p>Lava, feniks, žar koji leti zrakom i vatreni daždevnjak.</p></li>
+      <li style="--c:#9b3fd6"><div class="dot">🚀</div><h3>Svemir</h3><p>Manja gravitacija, neonski asteroidi i veliko finale.</p><span class="soon">uskoro</span></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Pojačanja i zamke</h2>
+    <p class="text">Cvijeće na putu nije samo za bodove. Neki cvjetovi daju pčelici zaštitu, a neki je zbune.</p>
+    <div class="items">
+      <div class="item"><span class="ico">🛡️</span><div><h3>Zlatni cvijet</h3><p>Daje štit koji jednom upije udarac i spasi ti život.</p></div></div>
+      <div class="item"><span class="ico">🖤</span><div><h3>Crni cvijet</h3><p>Na nekoliko sekundi obrne kontrole. Gore postaje dolje, pa budi oprezan.</p></div></div>
+      <div class="item"><span class="ico">🍯</span><div><h3>Medena špilja</h3><p>Skriveni svijet ispod vode. Ulaziš kroz vrtlog, ali pazi na podmornicu.</p></div></div>
+      <div class="item"><span class="ico">☁️</span><div><h3>Oblačno kraljevstvo</h3><p>Dodirni neobične oblake i vjetar te odnese u nebo, gdje lete avioni.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="text">
+      <h2>Igraj s prijateljem</h2>
+      <p>Pčelica ima i način za dvoje. Jedan igrač otvori sobu i dobije kod, drugi ga upiše na svom uređaju i letite istovremeno, svatko na svom ekranu. Tu se cvijeće pretvara u oružje: možeš protivniku poslati crvenu pticu, zaviti ga u maglu, zavrtjeti ga u vrtlogu ili, ako nađeš rijedak cvijet smrti, oduzeti mu život. Štit te štiti i od toga.</p>
+    </div>
+  </div>
+</section>
+
+<section id="crtic">
+  <div class="wrap">
+    <h2>Crtana serija</h2>
+    <p class="text">Pčelica ima i svoj crtić. Svaka epizoda prati jedan svijet iz igre, pa u crtiću upoznaješ iste neprijatelje koje izbjegavaš u igri. Nove epizode dodajemo redovito.</p>
+    <div class="video">
+      <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLCUbhPOfgGdg&rel=0" title="Pčelica – sve epizode" loading="lazy" allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap text">
+    <h2>Česta pitanja</h2>
+    <details><summary>Je li igra besplatna?</summary><p>Da, Pčelica je potpuno besplatna i ne traži registraciju.</p></details>
+    <details><summary>Trebam li nešto instalirati?</summary><p>Ne. Igra radi u pregledniku na mobitelu, tabletu i računalu. Na mobitelu je najbolje igrati u uspravnom položaju.</p></details>
+    <details><summary>Kako igrati s prijateljem?</summary><p>Odaberi igru za dvoje, otvori sobu i pošalji prijatelju kod. Kad ga upiše, igra kreće na oba uređaja.</p></details>
+    <details><summary>Hoće li Pčelica biti na Androidu?</summary><p>Da, Pčelica je prva igra s RetroAppLaba koju pripremamo za Google Play.</p></details>
+  </div>
+</section>
+
+<div class="end">
+  <h2>Spreman za let?</h2>
+  <p style="margin:.4rem 0 1.4rem;color:var(--muted)">Livada te čeka.</p>
+  <a class="cta" href="/pcelica/">Igraj besplatno</a>
+</div>
+
+<footer>
+  Pčelicu je napravio Dubo iz Dubrovnika. Još igara i alata pronađi na <a href="/">retroapplab.com</a>.
+</footer>
+
+</body>
+</html>
