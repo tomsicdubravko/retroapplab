@@ -211,5 +211,33 @@
   <div class="wrap">RetroAppLab · Dubrovnik — <a href="/" style="color:var(--neon-cyan);">retroapplab.com</a></div>
 </footer>
 
+<style>
+  tbody tr.mj-sad td{background:rgba(0,242,254,.12);font-weight:700;color:#fff}
+  tbody tr.mj-sad td:first-child{box-shadow:inset 4px 0 0 var(--neon-cyan,#00f2fe)}
+  tbody tr.mj-prosli td{background:rgba(255,0,127,.10);font-weight:700;color:#fff}
+  tbody tr.mj-prosli td:first-child{box-shadow:inset 4px 0 0 var(--neon-pink,#ff007f)}
+  .mj-oznaka{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.03em;vertical-align:middle;white-space:nowrap}
+  .mj-sad .mj-oznaka{background:var(--neon-cyan,#00f2fe);color:#04131a}
+  .mj-prosli .mj-oznaka{background:var(--neon-pink,#ff007f);color:#fff}
+</style>
+<script>
+(function(){
+  var m = location.pathname.match(/(20\d\d)/) || (document.querySelector('tr.total-row td')||{textContent:''}).textContent.match(/(20\d\d)/);
+  if(!m) return;
+  var godinaStranice = +m[1];
+  var rows = document.querySelectorAll('tbody tr:not(.total-row)');
+  if(rows.length !== 12) return;
+  var danas = new Date(), g = danas.getFullYear(), mj = danas.getMonth();
+  var prosliG = mj === 0 ? g - 1 : g, prosliMj = mj === 0 ? 11 : mj - 1;
+  function oznaci(i, klasa, tekst){
+    var r = rows[i]; r.classList.add(klasa);
+    var s = document.createElement('span'); s.className = 'mj-oznaka'; s.textContent = tekst;
+    r.cells[0].appendChild(s);
+  }
+  if(godinaStranice === prosliG) oznaci(prosliMj, 'mj-prosli', 'prošli mjesec');
+  if(godinaStranice === g) oznaci(mj, 'mj-sad', 'ovaj mjesec');
+})();
+</script>
+<script src="/fond-kalendar.js"></script>
 </body>
 </html>
