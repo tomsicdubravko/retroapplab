@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kompenzacija</title>
+    <title>Kompenzacija (prijeboj) – besplatni izračun i izjava | RetroAppLab</title>
+    <meta name="description" content="Besplatni alat za kompenzaciju: unesi račune ili učitaj konto kartice, izračunaj iznos prijeboja i ispiši izjavu o kompenzaciji za potpis. Uz vodič kako prijeboj funkcionira.">
+    <link rel="canonical" href="https://retroapplab.com/kompenzacija/kompenzacija.html">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/hr.js"></script>
@@ -609,5 +611,98 @@ window.addEventListener('load', function() {
     }
 });
 </script>
+<!-- ===== VODIČ: ubaciti na kraj stranice, prije </body> ===== -->
+<style>
+.vodic{max-width:780px;margin:40px auto 30px;padding:0 6px;color:#2c3e50;font-size:1.02rem;line-height:1.75}
+.vodic h2{font-size:1.6rem;margin:0 0 .5rem;color:#2c3e50;text-align:left}
+.vodic h3{font-size:1.18rem;margin:2.1rem 0 .4rem;color:#2c3e50}
+.vodic p{margin:.6rem 0}
+.vodic ul,.vodic ol{margin:.5rem 0 .5rem 1.3rem}
+.vodic li{margin:.3rem 0}
+.vodic .uvod{font-size:1.1rem;color:#34495e}
+.vodic .primjer{background:#fff;border-left:5px solid #e67e22;border-radius:6px;padding:14px 18px;margin:1rem 0}
+.vodic .primjer table{border-collapse:collapse;width:100%;margin:.5rem 0;font-size:.97rem}
+.vodic .primjer table,.vodic .primjer td,.vodic .primjer tr{border:0;background:none;font-size:inherit}
+.vodic .primjer td{padding:5px 0;border-bottom:1px dashed #dce3ea}
+.vodic .primjer td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.vodic .primjer tr.uk td{font-weight:700;border-bottom:0;color:#1e8449}
+.vodic .koraci{counter-reset:k;list-style:none;margin-left:0}
+.vodic .koraci li{counter-increment:k;position:relative;padding-left:2.4rem;margin:.7rem 0}
+.vodic .koraci li::before{content:counter(k);position:absolute;left:0;top:.1rem;width:1.7rem;height:1.7rem;border-radius:50%;
+  background:#2980b9;color:#fff;font-weight:700;display:grid;place-items:center;font-size:.9rem}
+.vodic details{background:#fff;border-radius:6px;padding:10px 16px;margin:.5rem 0}
+.vodic summary{cursor:pointer;font-weight:600}
+.vodic details p{margin:.5rem 0 .2rem}
+.vodic .napomena{font-size:.9rem;color:#5d6d7e;border-top:1px solid #c8d0d8;margin-top:2.2rem;padding-top:1rem}
+@media print{.vodic{display:none!important}}
+</style>
+
+<article class="vodic" id="vodic">
+  <h2>Kompenzacija (prijeboj): kako funkcionira i kako je napraviti</h2>
+  <p class="uvod">Kompenzacija je najjednostavniji način da dvije firme koje jedna drugoj duguju zatvore međusobne obveze bez plaćanja. Umjesto da svaka uplati drugoj puni iznos, dugovi se prebiju, a plaća se samo razlika. Ovaj alat iz tvojih računa ili konto kartica izračuna iznos prijeboja i složi izjavu o kompenzaciji spremnu za potpis.</p>
+
+  <h3>Što je kompenzacija</h3>
+  <p>U pravu se kompenzacija zove <strong>prijeboj</strong>, a uređuje ga Zakon o obveznim odnosima. Dužnik može prebiti svoju tražbinu prema vjerovniku s onim što vjerovnik potražuje od njega, ako su obje tražbine novčane (ili glase na zamjenjive stvari iste vrste i kakvoće) i ako su obje dospjele.</p>
+  <p>Prijeboj ne nastaje sam od sebe čim se ispune uvjeti. Potrebna je <strong>izjava</strong> jedne strane drugoj. Kad je izjava dana, smatra se da je prijeboj nastupio u trenutku kad su se uvjeti stekli.</p>
+
+  <div class="primjer">
+    <strong>Primjer</strong>
+    <table>
+      <tr><td>Firma A duguje firmi B (račun za usluge)</td><td>3.200,00 €</td></tr>
+      <tr><td>Firma B duguje firmi A (račun za robu)</td><td>5.000,00 €</td></tr>
+      <tr><td>Iznos kompenzacije (manji od dva iznosa)</td><td>3.200,00 €</td></tr>
+      <tr class="uk"><td>B nakon kompenzacije još duguje A</td><td>1.800,00 €</td></tr>
+    </table>
+    Umjesto dvije uplate od ukupno 8.200 €, plaća se samo razlika od 1.800 €.
+  </div>
+
+  <h3>Kada se kompenzacija isplati</h3>
+  <ul>
+    <li>Kad poslujete s istim partnerom u oba smjera, recimo kad mu prodajete robu i od njega kupujete usluge.</li>
+    <li>Kad nekome nedostaje novca na računu, a obveze treba zatvoriti prije kraja mjeseca ili godine.</li>
+    <li>Kad želite očistiti stare otvorene stavke prije usklađivanja salda ili zaključenja godine.</li>
+  </ul>
+
+  <h3>Jednostrana i dvostrana kompenzacija</h3>
+  <p><strong>Jednostrana</strong> kompenzacija je izjava koju jedna strana pošalje drugoj. Zakon za prijeboj traži upravo izjavu jedne strane, pa je takva kompenzacija valjana i bez potpisa partnera, ako su ispunjeni uvjeti (istovrsne i dospjele tražbine).</p>
+  <p><strong>Dvostrana</strong> kompenzacija je izjava koju potpisuju obje strane. U praksi je češća, jer potpis partnera potvrđuje da se slaže s popisom računa i iznosima, pa kasnije nema nesporazuma kod usklađivanja.</p>
+  <p>Postoji i <strong>višestrana</strong> kompenzacija, kad se lanac dugova zatvara između tri ili više firmi. Ovaj alat radi dvostranu, između dviju firmi.</p>
+
+  <h3>Što mora sadržavati izjava o kompenzaciji</h3>
+  <ul>
+    <li>Podatke o obje firme: naziv, adresu i OIB.</li>
+    <li>Popis računa koji se prebijaju, s brojem, datumom i iznosom, posebno za svaku stranu.</li>
+    <li>Ukupan iznos kompenzacije.</li>
+    <li>Mjesto i datum izdavanja.</li>
+    <li>Potpis odgovorne osobe (i pečat, ako ga firma koristi).</li>
+  </ul>
+  <p>Alat sve to sam složi u dokument "Izjava o prijeboju (kompenzaciji)" koji samo ispišeš i potpišeš.</p>
+
+  <h3>Kako koristiti alat</h3>
+  <ol class="koraci">
+    <li>Upiši OIB svoje firme (vjerovnik) i partnera (dužnik). Gumbom "Otvori Sudski registar" možeš brzo provjeriti naziv i adresu firme.</li>
+    <li>Upiši mjesto i datum izdavanja izjave.</li>
+    <li>Unesi račune ručno, posebno one koje vi dugujete partneru i one koje partner duguje vama. Ili učitaj obje konto kartice iz PDF-a, pa alat sam izvuče stavke.</li>
+    <li>Klikni "Izračunaj kompenzaciju". Alat zbroji obje strane, uzme manji iznos kao iznos prijeboja i pokaže koji se računi zatvaraju.</li>
+    <li>Klikni "Generiraj dokument za potpis", ispiši izjavu i pošalji je partneru na potpis.</li>
+  </ol>
+
+  <h3>Knjiženje kompenzacije</h3>
+  <p>Kompenzacijom se istovremeno zatvara obveza prema dobavljaču i potraživanje od kupca, za isti iznos. U knjigama se to obično evidentira tako da se teretite obveze prema dobavljaču, a odobri potraživanje od kupca. Saldo konto kartica nakon toga mora odgovarati stvarnom stanju, pa je dobro odmah uskladiti stanje s partnerom.</p>
+  <p>Kompenzacija ne mijenja obvezu PDV-a. Porez je obračunat na samim računima, a prijeboj je samo način podmirenja.</p>
+
+  <h3>Česta pitanja</h3>
+  <details><summary>Može li se kompenzirati račun koji još nije dospio?</summary>
+    <p>Za jednostrani prijeboj obje tražbine moraju biti dospjele. Ako se obje strane slažu, mogu dogovoriti i prijeboj nedospjelih tražbina, pa je tada potpis obje strane posebno važan.</p></details>
+  <details><summary>Treba li izjava ovjera ili pečat?</summary>
+    <p>Ovjera nije potrebna. Pečat danas uglavnom nije obavezan, ali ga mnoge firme i dalje stavljaju uz potpis.</p></details>
+  <details><summary>Što ako se iznosi ne poklapaju s partnerovim knjigama?</summary>
+    <p>Prije kompenzacije usporedite konto kartice. Razlike najčešće nastaju zbog neproknjiženog računa, odobrenja ili uplate koja je kod jedne strane već evidentirana. Za usporedbu možeš koristiti alat Konto detektiv na RetroAppLabu.</p></details>
+  <details><summary>Spremaju li se moji podaci negdje?</summary>
+    <p>Alat radi u tvom pregledniku. Računi, OIB-i i konto kartice ne šalju se na nikakav server.</p></details>
+
+  <p class="napomena">Ovaj tekst je informativan i ne zamjenjuje pravni ni porezni savjet. Za posebne slučajeve (višestrana kompenzacija, stečaj, ovrha, sporne tražbine) obratite se svom knjigovođi ili pravniku. Alat je nastao iz svakodnevnog knjigovodstvenog posla, kao pomoć kod usklađivanja s partnerima.</p>
+</article>
+<!-- ===== KRAJ VODIČA ===== -->
 </body>
 </html>
