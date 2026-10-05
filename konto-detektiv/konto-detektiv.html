@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konto usporedba</title>
+    <title>Konto Detektiv – usporedba konto kartica i usklađivanje salda | RetroAppLab</title>
+    <meta name="description" content="Besplatni alat za usklađivanje salda s kupcima i dobavljačima: učitaj dvije konto kartice iz PDF-a i pronađi točan dan na kojem se stanja razilaze.">
+    <link rel="canonical" href="https://retroapplab.com/konto-detektiv/konto-detektiv.html">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -698,5 +700,85 @@ window.addEventListener('load', function() {
     if (prviSadrzaj) prviSadrzaj.style.display = 'block';
 });
 </script>
+<style>
+.vodic{max-width:780px;margin:40px auto 30px;padding:0 6px;color:#2c3e50;font-size:1.02rem;line-height:1.75}
+.vodic h2{font-size:1.6rem;margin:0 0 .5rem;color:#2c3e50;text-align:left}
+.vodic h3{font-size:1.18rem;margin:2.1rem 0 .4rem;color:#2c3e50}
+.vodic p{margin:.6rem 0}
+.vodic ul,.vodic ol{margin:.5rem 0 .5rem 1.3rem}
+.vodic li{margin:.3rem 0}
+.vodic .uvod{font-size:1.1rem;color:#34495e}
+.vodic .primjer{background:#fff;border-left:5px solid #e67e22;border-radius:6px;padding:14px 18px;margin:1rem 0}
+.vodic .primjer table{border-collapse:collapse;width:100%;margin:.5rem 0;font-size:.97rem}
+.vodic .primjer table,.vodic .primjer td,.vodic .primjer tr{border:0;background:none;font-size:inherit}
+.vodic .primjer td{padding:5px 0;border-bottom:1px dashed #dce3ea}
+.vodic .primjer td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.vodic .primjer tr.uk td{font-weight:700;border-bottom:0;color:#1e8449}
+.vodic .koraci{counter-reset:k;list-style:none;margin-left:0}
+.vodic .koraci li{counter-increment:k;position:relative;padding-left:2.4rem;margin:.7rem 0}
+.vodic .koraci li::before{content:counter(k);position:absolute;left:0;top:.1rem;width:1.7rem;height:1.7rem;border-radius:50%;background:#2980b9;color:#fff;font-weight:700;display:grid;place-items:center;font-size:.9rem}
+.vodic details{background:#fff;border-radius:6px;padding:10px 16px;margin:.5rem 0}
+.vodic summary{cursor:pointer;font-weight:600}
+.vodic details p{margin:.5rem 0 .2rem}
+.vodic .napomena{font-size:.9rem;color:#5d6d7e;border-top:1px solid #c8d0d8;margin-top:2.2rem;padding-top:1rem}
+@media print{.vodic{display:none!important}}
+</style>
+
+<article class="vodic" id="vodic">
+  <h2>Konto Detektiv: usporedba konto kartica i usklađivanje salda</h2>
+  <p class="uvod">Kad se tvoje stanje s kupcem ili dobavljačem ne slaže s njegovim, traženje razlike po karticama zna potrajati satima. Konto Detektiv učita obje kartice iz PDF-a, usporedi početno stanje, promet i saldo, i pokaže točan dan na kojem su se knjige razišle.</p>
+
+  <h3>Zašto se stanja moraju slagati</h3>
+  <p>Ono što je kod tebe potraživanje od kupca, kod njega je obveza prema dobavljaču. Tvoja kartica kupca (konto 1200) i njegova kartica dobavljača (konto 2200) opisuju iste račune i iste uplate, samo s druge strane. Zato na isti dan moraju pokazivati isti saldo.</p>
+  <p>Firme stanja najčešće usklađuju na kraju godine, u sklopu godišnjeg popisa potraživanja i obveza, a u praksi se za to šalje izvod otvorenih stavki (IOS). Kad partner javi da se iznosi ne slažu, potrebno je pronaći gdje je nastala razlika.</p>
+
+  <h3>Najčešći razlozi razlike</h3>
+  <ul>
+    <li>Račun je proknjižen samo kod jedne strane, jer je stigao kasnije ili je zagubljen.</li>
+    <li>Ista uplata je proknjižena s različitim datumom, npr. datum izvoda i datum valute.</li>
+    <li>Odobrenje, storno ili kompenzacija evidentirani su samo kod jednog partnera.</li>
+    <li>Krivo upisan iznos, zamijenjene znamenke ili isti račun proknjižen dvaput.</li>
+    <li>Početno stanje nije prenijeto jednako, pa razlika postoji od prvog dana godine.</li>
+  </ul>
+
+  <div class="primjer">
+    <strong>Primjer</strong>
+    <table>
+      <tr><td>Saldo kod nas (konto 1200), 31.12.</td><td>4.850,00 €</td></tr>
+      <tr><td>Saldo kod partnera (konto 2200), 31.12.</td><td>4.250,00 €</td></tr>
+      <tr class="uk"><td>Razlika</td><td>600,00 €</td></tr>
+    </table>
+    Alat pokaže da se dnevni promet razlikuje samo 14. 11.: kod nas je tog dana račun od 600 €, a kod partnera nema nijedne stavke. Ostaje provjeriti je li partner taj račun primio.
+  </div>
+
+  <h3>Kako koristiti alat</h3>
+  <ol class="koraci">
+    <li>Iz knjigovodstvenog programa izvezi karticu partnera u PDF. Isto zatraži i od partnera, za istu godinu.</li>
+    <li>Učitaj obje datoteke. Alat sam prepozna koja je kartica kupca (1200), a koja dobavljača (2200), i upozori te ako si slučajno učitao dvije iste.</li>
+    <li>Odaberi godinu. Ako kartica pokriva više godina, alat kao početno stanje uzme saldo na 31.12. prethodne godine.</li>
+    <li>Klikni "Učitaj i analiziraj kartice". Odmah vidiš razliku u početnom stanju, tekućem prometu i saldu.</li>
+    <li>Ako postoji razlika, klikni "Pronađi točan dan greške". Alat usporedi promet dan po dan, označi crvenim dane na kojima se iznosi razlikuju i dane koji postoje samo na jednoj kartici. Klik na crveni red pokaže stavke tog dana s obje strane.</li>
+    <li>Rezultat po potrebi izvezi u Excel i pošalji partneru.</li>
+  </ol>
+
+  <h3>Savjeti iz prakse</h3>
+  <ul>
+    <li>Prvo pogledaj početno stanje. Ako se razlikuje već tamo, greška je iz prošle godine i nema smisla tražiti je u tekućoj.</li>
+    <li>Razlika koja se pojavi na dva bliska datuma, jednom kao plus i jednom kao minus, najčešće je ista uplata proknjižena s različitim datumom. Saldo je onda dobar, samo se datumi ne slažu.</li>
+    <li>Ako je razlika jednaka iznosu jednog računa, provjeri je li taj račun stvarno stigao partneru.</li>
+  </ul>
+
+  <h3>Česta pitanja</h3>
+  <details><summary>Što ako je kartica skenirana?</summary>
+    <p>Skenirani PDF nema tekst koji alat može pročitati. Alat će ga prepoznati kao skenirani i ponuditi da sam odabereš koji je konto, ali za pouzdanu usporedbu najbolje je zatražiti karticu izvezenu izravno iz programa.</p></details>
+  <details><summary>Radi li s karticama iz svih programa?</summary>
+    <p>Alat čita PDF kartice s datumom, opisom i iznosima. Zasad je testiran na manjem broju kartica, pa nije sigurno da će ispravno pročitati kartice iz svakog programa. Gumbom "Prikaži učitane stavke" uvijek možeš provjeriti što je alat pročitao i usporediti to s karticom.</p></details>
+  <details><summary>Spremaju li se kartice negdje?</summary>
+    <p>Ne. PDF-ovi se čitaju u tvom pregledniku i ne šalju se ni na kakav server.</p></details>
+  <details><summary>Što kad pronađem razliku?</summary>
+    <p>Dogovori s partnerom tko treba ispraviti knjiženje. Kad se stanja usklade, međusobna dugovanja možeš zatvoriti i kompenzacijom, uz alat Kompenzacija na RetroAppLabu.</p></details>
+
+  <p class="napomena">Alat je u razvoju i testiran je na malom uzorku kartica, pa ne možemo jamčiti da će uvijek ispravno pročitati i usporediti podatke. Rezultate prije upotrebe provjeri na samim karticama, a za njihovu točnost ne preuzimamo odgovornost. Ovaj tekst je informativan i ne zamjenjuje stručni računovodstveni savjet. Alat je nastao iz svakodnevnog knjigovodstvenog posla, kao pomoć kod usklađivanja s partnerima.</p>
+</article>
 </body>
 </html>
