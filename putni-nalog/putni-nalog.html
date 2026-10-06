@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="hr-HR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Putni nalog – besplatni obrazac s obračunom dnevnica | RetroAppLab</title>
+<meta name="description" content="Besplatni putni nalog za službeno putovanje: automatski izračun sati i dnevnica, ostali troškovi, predujam i ispis naloga s obračunom putnih troškova.">
+<link rel="canonical" href="https://retroapplab.com/putni-nalog/putni-nalog.html">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/hr.js"></script>
+<style>
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; padding: 20px; line-height: 1.6; margin: 0; color: #2c3e50; }
+.top { max-width: 1000px; margin: 0 auto 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.top a { color: #2c3e50; text-decoration: none; font-weight: bold; }
+.container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
+.podnaslov { text-align: center; color: #666; margin: 0 0 20px; font-size: 14px; }
+.btn { width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+.btn-main { background: #2c3e50; color: white; }
+.btn-main:hover { background: #1a252f; }
+.mali-btn { background: #2980b9; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
+.sekcija-naslov { font-weight: bold; font-size: 14px; margin: 22px 0 8px; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 4px; }
+.mreza { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 15px; }
+.puna { grid-column: 1 / -1; }
+.putni-label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 3px; color: #555; }
+.putni-input { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; font-family: inherit; background: white; }
+.red-2 { display: flex; gap: 6px; }
+.trosak-red { display: grid; grid-template-columns: 1fr 140px auto; gap: 8px; margin-bottom: 6px; align-items: center; }
+.dnevnica-red { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+.obrisi { padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; }
+.okvir { background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; padding: 12px; margin-bottom: 15px; }
+.zbroj { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; background: #f0f9f0; border-radius: 8px; padding: 12px 15px; margin: 10px 0; }
+.zbroj div div:first-child { font-size: 11px; color: #666; }
+.zbroj div div:last-child { font-size: 18px; font-weight: bold; }
+.napomena-mala { font-size: 12px; color: #888; margin-top: 4px; }
+.vozac-card { background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.vozac-avatar { width: 38px; height: 38px; border-radius: 50%; background: #2c3e50; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+.vozac-info { flex: 1; font-size: 13px; }
+.vozac-akcije button { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 4px; }
+#dokumentPrint { display: none; color: #000; }
+@media (max-width: 700px) {
+  body { padding: 10px; }
+  .container { padding: 18px; }
+  .mreza { grid-template-columns: 1fr; }
+  .dnevnica-red { grid-template-columns: 1fr 1fr; }
+  .zbroj { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: white; padding: 0; }
+  body > *:not(#dokumentPrint) { display: none !important; }
+  #dokumentPrint { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a href="/">← RetroAppLab</a>
+  <span style="color:#888;">Besplatni alati za knjigovođe</span>
+</div>
+
+<div class="container">
+  <h1>🚗 Putni nalog</h1>
+  <p class="podnaslov">Upiši podatke o putovanju. Sati i dnevnice izračunaju se sami, a nalog s obračunom ispišeš jednim klikom.</p>
+
+  <div class="sekcija-naslov">📋 Podaci naloga</div>
+  <div class="mreza">
+    <div>
+      <label class="putni-label" for="pTvrtka">Tvrtka:</label>
+      <input type="text" id="pTvrtka" class="putni-input" placeholder="Primjer d.o.o., Zagreb">
+    </div>
+    <div>
+      <label class="putni-label" for="pBroj">Broj naloga:</label>
+      <input type="text" id="pBroj" class="putni-input" placeholder="1/2026">
+    </div>
+    <div>
+      <label class="putni-label" for="pMjesto">Mjesto izdavanja:</label>
+      <input type="text" id="pMjesto" class="putni-input" placeholder="npr. Zagreb">
+    </div>
+    <div></div>
+
+    <div class="puna">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+        <label class="putni-label" for="pVozacOdabir" style="margin:0;">👤 Odaberi spremljenu osobu:</label>
+        <button class="mali-btn" style="background:#2c3e50;" onclick="toggleBazaVozaca()" id="btnBazaVozaca">＋ Upravljaj osobama</button>
+      </div>
+      <select id="pVozacOdabir" class="putni-input" onchange="popuniVozaca()" style="background:#eaf4fb;">
+        <option value="">— Odaberi osobu iz popisa —</option>
+      </select>
+
+      <div id="bazaVozacaPanel" style="display:none;margin-top:12px;background:#f0f4f8;border-radius:10px;border:1px solid #ccd;padding:15px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <strong style="font-size:14px;">📋 Spremljene osobe</strong>
+          <button onclick="toggleBazaVozaca()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#666;" aria-label="Zatvori">✕</button>
+        </div>
+        <div style="background:white;border-radius:8px;padding:12px;margin-bottom:12px;border:1px solid #dee2e6;">
+          <div style="font-size:12px;font-weight:bold;margin-bottom:8px;" id="vozacFormaTitle">➕ Nova osoba</div>
+          <input type="hidden" id="vozacId">
+          <div class="mreza" style="margin-bottom:8px;">
+            <div><label class="putni-label" for="vIme">Ime i prezime:</label><input type="text" id="vIme" class="putni-input" placeholder="Ivan Horvat"></div>
+            <div><label class="putni-label" for="vRadnoMjesto">Radno mjesto:</label><input type="text" id="vRadnoMjesto" class="putni-input" placeholder="Komercijalist"></div>
+            <div><label class="putni-label" for="vJedinica">Org. jedinica:</label><input type="text" id="vJedinica" class="putni-input" placeholder="Prodaja"></div>
+            <div><label class="putni-label" for="vPrijevoz">Prijevoz:</label><input type="text" id="vPrijevoz" class="putni-input" placeholder="Službeni automobil"></div>
+            <div><label class="putni-label" for="vVozilo">Vozilo:</label><input type="text" id="vVozilo" class="putni-input" placeholder="Škoda Octavia"></div>
+            <div><label class="putni-label" for="vRegistracija">Registracija:</label><input type="text" id="vRegistracija" class="putni-input" placeholder="ZG-1234-AB"></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="spremiVozaca()" style="flex:1;padding:8px;background:#27ae60;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">💾 Spremi</button>
+            <button onclick="resetFormuVozaca()" style="padding:8px 14px;background:#95a5a6;color:white;border:none;border-radius:6px;cursor:pointer;">Odustani</button>
+          </div>
+        </div>
+        <div id="vozaciLista"></div>
+        <p class="napomena-mala">Osobe se spremaju samo u ovom pregledniku, na ovom uređaju.</p>
+      </div>
+    </div>
+
+    <div><label class="putni-label" for="pIme">Ime i prezime:</label><input type="text" id="pIme" class="putni-input"></div>
+    <div><label class="putni-label" for="pRadnoMjesto">Radno mjesto:</label><input type="text" id="pRadnoMjesto" class="putni-input"></div>
+    <div><label class="putni-label" for="pJedinica">Organizacijska jedinica:</label><input type="text" id="pJedinica" class="putni-input"></div>
+    <div></div>
+    <div>
+      <label class="putni-label" for="pDatumPolaska">Polazak (datum i vrijeme):</label>
+      <div class="red-2">
+        <input type="text" id="pDatumPolaska" class="putni-input fp-datum" placeholder="dd.mm.gggg" style="flex:2;">
+        <select id="pVrijemePolaska" class="putni-input" onchange="izracunajSate()" style="flex:1;" aria-label="Vrijeme polaska"></select>
+      </div>
+    </div>
+    <div>
+      <label class="putni-label" for="pDatumPovratka">Povratak (datum i vrijeme):</label>
+      <div class="red-2">
+        <input type="text" id="pDatumPovratka" class="putni-input fp-datum" placeholder="dd.mm.gggg" style="flex:2;">
+        <select id="pVrijemePovratka" class="putni-input" onchange="izracunajSate()" style="flex:1;" aria-label="Vrijeme povratka"></select>
+      </div>
+    </div>
+    <div><label class="putni-label" for="pDestinacija">Odredište:</label><input type="text" id="pDestinacija" class="putni-input"></div>
+    <div><label class="putni-label" for="pSvrha">Svrha putovanja:</label><input type="text" id="pSvrha" class="putni-input"></div>
+    <div><label class="putni-label" for="pPrijevoz">Prijevoz:</label><input type="text" id="pPrijevoz" class="putni-input"></div>
+    <div><label class="putni-label" for="pVozilo">Vozilo (marka):</label><input type="text" id="pVozilo" class="putni-input"></div>
+    <div><label class="putni-label" for="pRegistracija">Registracija:</label><input type="text" id="pRegistracija" class="putni-input"></div>
+  </div>
+
+  <div class="sekcija-naslov">💰 Dnevnice</div>
+  <div class="mreza" style="margin-bottom:10px;">
+    <div>
+      <label class="putni-label">Vrijeme na putu:</label>
+      <input type="text" id="pSatiPrikaz" class="putni-input" readonly style="background:#f4f6f7;" placeholder="izračuna se iz polaska i povratka">
+    </div>
+    <div>
+      <label class="putni-label">Ukupno dnevnice (€):</label>
+      <input type="text" id="pUkupnoDnevnice" class="putni-input" readonly style="background:#e8f5e9;">
+    </div>
+  </div>
+  <div class="okvir">
+    <div class="dnevnica-red" style="margin-bottom:4px;">
+      <small style="color:#666;font-weight:bold;">Od datuma</small>
+      <small style="color:#666;font-weight:bold;">Do datuma</small>
+      <small style="color:#666;font-weight:bold;">Broj dnevnica</small>
+      <small style="color:#666;font-weight:bold;">Iznos jedne (€)</small>
+      <span></span>
+    </div>
+    <div id="dnevniceRedovi"></div>
+    <button class="mali-btn" onclick="dodajDnevnicu()">+ Dodaj red dnevnica</button>
+    <p class="napomena-mala">Broj dnevnica predloži se sam: puna dnevnica za svaka 24 sata, za ostatak 8 do 12 sati pola, a preko 12 sati puna. Zadani iznos je 30 €, provjeri važeći neoporezivi iznos i promijeni ga po potrebi.</p>
+  </div>
+
+  <div class="sekcija-naslov">🧾 Ostali troškovi</div>
+  <div id="putniTroskovi"></div>
+  <button class="mali-btn" onclick="dodajTrosak()" style="margin-bottom:15px;">+ Dodaj trošak</button>
+
+  <div class="zbroj">
+    <div><div>Dnevnice</div><div style="color:#27ae60;" id="pSumaDnevnice">0,00 €</div></div>
+    <div><div>Ostali troškovi</div><div style="color:#2980b9;" id="pSumaTroskovi">0,00 €</div></div>
+    <div><div>Sveukupno</div><div id="pSveukupno">0,00 €</div></div>
+  </div>
+
+  <div class="mreza" style="margin:10px 0;">
+    <div><label class="putni-label" for="pPredujam">Predujam (€):</label><input type="number" id="pPredujam" class="putni-input" step="0.01" value="0" oninput="izracunajUkupno()"></div>
+    <div><label class="putni-label">Ostatak za isplatu / povrat (€):</label><input type="text" id="pOstatak" class="putni-input" readonly style="background:#fff3cd;"></div>
+  </div>
+
+  <div class="sekcija-naslov">📝 Izvješće s putovanja</div>
+  <textarea id="pIzvjesce" class="putni-input" style="min-height:70px;resize:vertical;" placeholder="Kratko izvješće o obavljenom putovanju..."></textarea>
+
+  <div class="mreza" style="margin-top:10px;">
+    <div><label class="putni-label" for="pDatumLik">Datum obračuna:</label><input type="text" id="pDatumLik" class="putni-input fp-datum" placeholder="dd.mm.gggg"></div>
+  </div>
+
+  <button class="btn btn-main" onclick="ispisPutnog()" style="margin-top:18px;">🖨️ Ispiši putni nalog</button>
+  <p class="napomena-mala" style="text-align:center;">Podaci se ne šalju nikamo, sve radi u tvom pregledniku. Iznose i obračun prije isplate provjeri prema važećim propisima.</p>
+</div>
+
+<div id="dokumentPrint"></div>
+
+<script>
+// ── pomoćne ─────────────────────────────────────────────────
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function broj(v) { return parseFloat(String(v || '').replace(',', '.')) || 0; }
+function fmtEur(n) { return (n || 0).toLocaleString('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+function fmt2(n) { return (n || 0).toLocaleString('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function hrUISO(s) {
+  let m = (s || '').match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  return m ? m[3] + '-' + m[2].padStart(2,'0') + '-' + m[1].padStart(2,'0') : '';
+}
+function hrDugiDatum(s) {
+  let m = (s || '').match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  if (!m) return s || '';
+  const mj = ['siječnja','veljače','ožujka','travnja','svibnja','lipnja','srpnja','kolovoza','rujna','listopada','studenoga','prosinca'];
+  return parseInt(m[1]) + '. ' + mj[parseInt(m[2]) - 1] + ' ' + m[3] + '.';
+}
+function lsGet(k, def) { try { let v = localStorage.getItem(k); return v === null ? def : JSON.parse(v); } catch (e) { return def; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+// ── dnevnice ────────────────────────────────────────────────
+function dodajDnevnicu(od, do_, br, iznos) {
+  let div = document.createElement('div');
+  div.className = 'dnevnica-red';
+  div.innerHTML =
+    '<input type="text" class="putni-input dnev-od" placeholder="dd.mm.gggg" aria-label="Od datuma">' +
+    '<input type="text" class="putni-input dnev-do" placeholder="dd.mm.gggg" aria-label="Do datuma">' +
+    '<input type="number" class="putni-input dnev-broj" placeholder="npr. 1,5" step="0.5" min="0" aria-label="Broj dnevnica">' +
+    '<input type="number" class="putni-input dnev-iznos" step="0.01" min="0" aria-label="Iznos jedne dnevnice">' +
+    '<button class="obrisi" aria-label="Obriši red">✕</button>';
+  div.querySelector('.dnev-od').value = od || '';
+  div.querySelector('.dnev-do').value = do_ || '';
+  div.querySelector('.dnev-broj').value = br || '';
+  div.querySelector('.dnev-iznos').value = iznos != null ? iznos : 30;
+  div.querySelector('.dnev-broj').addEventListener('input', izracunajDnevnice);
+  div.querySelector('.dnev-iznos').addEventListener('input', izracunajDnevnice);
+  div.querySelector('.obrisi').addEventListener('click', () => { div.remove(); izracunajDnevnice(); });
+  document.getElementById('dnevniceRedovi').appendChild(div);
+  if (window.flatpickr) div.querySelectorAll('.dnev-od,.dnev-do').forEach(el => flatpickr(el, { dateFormat: 'd.m.Y', locale: 'hr', allowInput: true }));
+  izracunajDnevnice();
+}
+
+function izracunajDnevnice() {
+  let ukupno = 0;
+  document.querySelectorAll('#dnevniceRedovi .dnevnica-red').forEach(red => {
+    let b = red.querySelector('.dnev-broj'); if (!b) return;
+    ukupno += broj(b.value) * broj(red.querySelector('.dnev-iznos').value);
+  });
+  document.getElementById('pUkupnoDnevnice').value = fmt2(ukupno);
+  document.getElementById('pUkupnoDnevnice').dataset.v = ukupno;
+  izracunajUkupno();
+}
+
+function izracunajUkupno() {
+  let dnevnice = broj(document.getElementById('pUkupnoDnevnice').dataset.v);
+  let troskovi = 0;
+  document.querySelectorAll('#putniTroskovi .tr-iznos').forEach(i => troskovi += broj(i.value));
+  let sve = dnevnice + troskovi;
+  let ostatak = sve - broj(document.getElementById('pPredujam').value);
+  document.getElementById('pSumaDnevnice').textContent = fmtEur(dnevnice);
+  document.getElementById('pSumaTroskovi').textContent = fmtEur(troskovi);
+  document.getElementById('pSveukupno').textContent = fmtEur(sve);
+  document.getElementById('pOstatak').value = fmt2(ostatak);
+}
+
+// Sati na putu i prijedlog broja dnevnica
+function izracunajSate() {
+  let polD = hrUISO(document.getElementById('pDatumPolaska').value);
+  let povD = hrUISO(document.getElementById('pDatumPovratka').value);
+  if (!polD || !povD) return;
+  let start = new Date(polD + 'T' + (document.getElementById('pVrijemePolaska').value || '00:00'));
+  let end   = new Date(povD + 'T' + (document.getElementById('pVrijemePovratka').value || '00:00'));
+  let prikaz = document.getElementById('pSatiPrikaz');
+  if (!(end > start)) { prikaz.value = 'Povratak mora biti nakon polaska'; return; }
+
+  let ukMin = Math.round((end - start) / 60000);
+  let sati = Math.floor(ukMin / 60), min = ukMin % 60;
+  let puniDani = Math.floor(ukMin / 1440);
+  let ostatakSati = (ukMin - puniDani * 1440) / 60;
+  let dnev = puniDani + (ostatakSati >= 12 ? 1 : ostatakSati >= 8 ? 0.5 : 0);
+
+  prikaz.value = sati + ' h' + (min ? ' ' + min + ' min' : '') + '  →  ' + String(dnev).replace('.', ',') + ' dnevnica';
+  prikaz.dataset.sati = sati + (min ? ' h ' + min + ' min' : ' h');
+  prikaz.dataset.dnev = dnev;
+
+  // Upiši prijedlog u prvi red dnevnica (ako postoji samo jedan red)
+  let redovi = document.querySelectorAll('#dnevniceRedovi .dnevnica-red');
+  if (redovi.length === 1) {
+    let r = redovi[0];
+    r.querySelector('.dnev-od').value = document.getElementById('pDatumPolaska').value;
+    r.querySelector('.dnev-do').value = document.getElementById('pDatumPovratka').value;
+    r.querySelector('.dnev-broj').value = dnev;
+  }
+  izracunajDnevnice();
+}
+
+// ── troškovi ────────────────────────────────────────────────
+function dodajTrosak(naziv, iznos) {
+  let div = document.createElement('div');
+  div.className = 'trosak-red';
+  div.innerHTML =
+    '<input type="text" class="putni-input tr-naziv" placeholder="Naziv troška (gorivo, cestarina, parking...)" aria-label="Naziv troška">' +
+    '<input type="number" class="putni-input tr-iznos" placeholder="Iznos €" step="0.01" min="0" aria-label="Iznos troška">' +
+    '<button class="obrisi" aria-label="Obriši trošak">✕</button>';
+  div.querySelector('.tr-naziv').value = naziv || '';
+  div.querySelector('.tr-iznos').value = iznos || '';
+  div.querySelector('.tr-iznos').addEventListener('input', izracunajUkupno);
+  div.querySelector('.obrisi').addEventListener('click', () => { div.remove(); izracunajUkupno(); });
+  document.getElementById('putniTroskovi').appendChild(div);
+}
+
+// ── osobe (spremljene u pregledniku) ────────────────────────
+const LS_OSOBE = 'putni_osobe';
+function ucitajVozace() { return lsGet(LS_OSOBE, []); }
+function toggleBazaVozaca() {
+  let panel = document.getElementById('bazaVozacaPanel');
+  let otvori = panel.style.display === 'none';
+  panel.style.display = otvori ? 'block' : 'none';
+  document.getElementById('btnBazaVozaca').textContent = otvori ? '－ Zatvori popis' : '＋ Upravljaj osobama';
+  if (otvori) prikaziVozace();
+}
+const POLJA_OSOBE = { ime:'vIme', radnoMjesto:'vRadnoMjesto', jedinica:'vJedinica', prijevoz:'vPrijevoz', vozilo:'vVozilo', registracija:'vRegistracija' };
+function spremiVozaca() {
+  let o = { id: document.getElementById('vozacId').value || String(Date.now()) };
+  for (let k in POLJA_OSOBE) o[k] = document.getElementById(POLJA_OSOBE[k]).value.trim();
+  if (!o.ime) { alert('Upiši ime i prezime.'); return; }
+  let lista = ucitajVozace();
+  let i = lista.findIndex(x => x.id === o.id);
+  if (i >= 0) lista[i] = o; else lista.push(o);
+  lsSet(LS_OSOBE, lista);
+  resetFormuVozaca(); prikaziVozace(); azurirajSelectVozaca();
+}
+function obrisiVozaca(id) {
+  if (!confirm('Obrisati osobu?')) return;
+  lsSet(LS_OSOBE, ucitajVozace().filter(v => v.id !== id));
+  prikaziVozace(); azurirajSelectVozaca();
+}
+function urediVozaca(id) {
+  let v = ucitajVozace().find(x => x.id === id); if (!v) return;
+  document.getElementById('vozacId').value = v.id;
+  for (let k in POLJA_OSOBE) document.getElementById(POLJA_OSOBE[k]).value = v[k] || '';
+  document.getElementById('vozacFormaTitle').textContent = '✏️ Uredi osobu';
+  document.getElementById('bazaVozacaPanel').scrollIntoView({ behavior: 'smooth' });
+}
+function resetFormuVozaca() {
+  document.getElementById('vozacId').value = '';
+  for (let k in POLJA_OSOBE) document.getElementById(POLJA_OSOBE[k]).value = '';
+  document.getElementById('vozacFormaTitle').textContent = '➕ Nova osoba';
+}
+function prikaziVozace() {
+  let lista = ucitajVozace(), el = document.getElementById('vozaciLista');
+  if (!lista.length) { el.innerHTML = '<p style="color:#999;font-size:13px;">Nema spremljenih osoba.</p>'; return; }
+  el.innerHTML = lista.map(v => {
+    let ini = esc(v.ime.split(/\s+/).map(s => s[0] || '').join('').toUpperCase().slice(0, 2));
+    let det = [v.radnoMjesto, v.jedinica, v.vozilo && (v.vozilo + (v.registracija ? ' (' + v.registracija + ')' : ''))].filter(Boolean).map(esc).join(' · ');
+    return '<div class="vozac-card"><div class="vozac-avatar">' + ini + '</div><div class="vozac-info"><strong>' + esc(v.ime) + '</strong><br><span style="color:#666;">' + det + '</span></div>' +
+      '<div class="vozac-akcije"><button style="background:#f0c040;" onclick="urediVozaca(\'' + esc(v.id) + '\')">✏️ Uredi</button><button style="background:#e74c3c;color:white;" onclick="obrisiVozaca(\'' + esc(v.id) + '\')" aria-label="Obriši">🗑️</button></div></div>';
+  }).join('');
+}
+function azurirajSelectVozaca() {
+  let sel = document.getElementById('pVozacOdabir'), t = sel.value;
+  sel.innerHTML = '<option value="">— Odaberi osobu iz popisa —</option>';
+  ucitajVozace().forEach(v => { let o = document.createElement('option'); o.value = v.id; o.textContent = v.ime + (v.radnoMjesto ? ' — ' + v.radnoMjesto : ''); sel.appendChild(o); });
+  sel.value = t;
+}
+function popuniVozaca() {
+  let v = ucitajVozace().find(x => x.id === document.getElementById('pVozacOdabir').value); if (!v) return;
+  const map = { ime:'pIme', radnoMjesto:'pRadnoMjesto', jedinica:'pJedinica', prijevoz:'pPrijevoz', vozilo:'pVozilo', registracija:'pRegistracija' };
+  for (let k in map) document.getElementById(map[k]).value = v[k] || '';
+}
+
+// ── ispis ───────────────────────────────────────────────────
+function ispisPutnog() {
+  const g = id => esc(document.getElementById(id).value.trim());
+  let mjesto = g('pMjesto') || '_______________';
+  let danas = new Date().toLocaleDateString('hr-HR');
+  let polazak = g('pDatumPolaska') + ' u ' + g('pVrijemePolaska') + ' h';
+  let povratak = g('pDatumPovratka') + ' u ' + g('pVrijemePovratka') + ' h';
+  let satiEl = document.getElementById('pSatiPrikaz');
+  let sati = esc(satiEl.dataset.sati || '');
+
+  let dnev = [], ukDnev = 0, brDnev = 0;
+  document.querySelectorAll('#dnevniceRedovi .dnevnica-red').forEach(r => {
+    let b = r.querySelector('.dnev-broj'); if (!b) return;
+    let br = broj(b.value), iz = broj(r.querySelector('.dnev-iznos').value);
+    if (br > 0) { dnev.push({ od: esc(r.querySelector('.dnev-od').value), do_: esc(r.querySelector('.dnev-do').value), br, iz, uk: br * iz }); ukDnev += br * iz; brDnev += br; }
+  });
+  let iznosiDnevnice = [...new Set(dnev.map(d => fmt2(d.iz) + ' EUR'))].join(', ') || '—';
+
+  let tr = [], ukTr = 0;
+  document.querySelectorAll('#putniTroskovi .trosak-red').forEach(r => {
+    let n = r.querySelector('.tr-naziv').value.trim(), iz = broj(r.querySelector('.tr-iznos').value);
+    if (n || iz > 0) { tr.push({ n: esc(n), iz }); ukTr += iz; }
+  });
+  let sve = ukDnev + ukTr, predujam = broj(document.getElementById('pPredujam').value);
+  let datumObr = document.getElementById('pDatumLik').value.trim();
+  let datumObrTekst = datumObr ? hrDugiDatum(datumObr) : danas;
+  let td = 'border:1px solid #000;padding:4px;';
+
+  document.getElementById('dokumentPrint').innerHTML = `
+  <div style="font-family:'Times New Roman',serif;max-width:800px;margin:0 auto;padding:15px;font-size:12px;">
+    <div style="border:1px solid #000;padding:15px;page-break-after:always;">
+      <div style="display:flex;justify-content:space-between;">
+        <div><strong>${g('pTvrtka') || '&nbsp;'}</strong><br><small>(tvrtka – ustanova)</small></div>
+        <div style="text-align:right;"><strong>Broj: ${g('pBroj')}</strong></div>
+      </div>
+      <h2 style="text-align:center;font-size:14px;border-top:1px solid #000;border-bottom:1px solid #000;padding:6px 0;margin:12px 0;">NALOG ZA SLUŽBENO PUTOVANJE</h2>
+      <p style="margin:4px 0;"><strong>${g('pIme')}</strong><br><small>(ime i prezime osobe koja putuje)</small></p>
+      <table style="width:100%;font-size:12px;">
+        <tr><td style="width:190px;">na radu u:</td><td><strong>${g('pJedinica')}</strong></td></tr>
+        <tr><td>na radnom mjestu:</td><td><strong>${g('pRadnoMjesto')}</strong></td></tr>
+        <tr><td style="padding-top:8px;">otputovat će dana:</td><td style="padding-top:8px;"><strong>${polazak}</strong> na službeno putovanje</td></tr>
+        <tr><td>u:</td><td><strong>${g('pDestinacija')}</strong></td></tr>
+        <tr><td>zbog:</td><td><strong>${g('pSvrha')}</strong></td></tr>
+        <tr><td style="padding-top:8px;">Broj dnevnica:</td><td style="padding-top:8px;"><strong>${String(brDnev).replace('.', ',')}</strong></td></tr>
+        <tr><td>Iznos dnevnice:</td><td><strong>${iznosiDnevnice}</strong></td></tr>
+        <tr><td style="padding-top:8px;">Za prijevoz može koristiti:</td><td style="padding-top:8px;"><strong>${g('pPrijevoz')}</strong></td></tr>
+        <tr><td>marke:</td><td><strong>${g('pVozilo')}</strong></td></tr>
+        <tr><td>registarske oznake:</td><td><strong>${g('pRegistracija')}</strong></td></tr>
+      </table>
+      <div style="margin-top:24px;display:flex;justify-content:space-between;">
+        <div>${mjesto}, ${danas}</div>
+        <div style="text-align:center;">M.P.<br><br>............................................<br><small>(potpis odgovorne osobe)</small></div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #000;padding:15px;">
+      <div style="display:flex;justify-content:space-between;"><h3 style="font-size:13px;margin:0;">OBRAČUN PUTNIH TROŠKOVA</h3><div>Broj: <strong>${g('pBroj')}</strong></div></div>
+      <p style="margin:8px 0;font-size:11px;">Za obavljeno službeno putovanje na temelju ovog naloga podnosim ovaj obračun:</p>
+      <table style="width:100%;font-size:11px;margin-bottom:10px;">
+        <tr><td>Na put sam krenuo-la dana:</td><td><strong>${polazak}</strong></td></tr>
+        <tr><td>Vratio-la sam se dana:</td><td><strong>${povratak}</strong></td></tr>
+        <tr><td>Na putu sam proveo-la ukupno:</td><td><strong>${sati}</strong> = ${String(brDnev).replace('.', ',')} dnevnica</td></tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;">
+        <tr style="background:#f0f0f0;"><th style="${td}" colspan="5">I. DNEVNICE</th></tr>
+        <tr style="background:#f0f0f0;"><th style="${td}">Od</th><th style="${td}">Do</th><th style="${td}">Broj dnevnica</th><th style="${td}">Iznos jedne</th><th style="${td}">Ukupno</th></tr>
+        ${dnev.map(d => `<tr><td style="${td}">${d.od || '—'}</td><td style="${td}">${d.do_ || '—'}</td><td style="${td}text-align:center;">${String(d.br).replace('.', ',')}</td><td style="${td}text-align:right;">${fmt2(d.iz)} EUR</td><td style="${td}text-align:right;">${fmt2(d.uk)} EUR</td></tr>`).join('')}
+        <tr style="font-weight:bold;"><td style="${td}" colspan="4">Ukupno dnevnice</td><td style="${td}text-align:right;">${fmt2(ukDnev)} EUR</td></tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;">
+        <tr style="background:#f0f0f0;"><th style="${td}" colspan="3">II. OSTALI TROŠKOVI</th></tr>
+        <tr><th style="${td}">Br.</th><th style="${td}">Vrsta troška</th><th style="${td}">Iznos</th></tr>
+        ${tr.map((t, i) => `<tr><td style="${td}">${i + 1}.</td><td style="${td}">${t.n}</td><td style="${td}text-align:right;">${fmt2(t.iz)} EUR</td></tr>`).join('')}
+        <tr><td style="${td}" colspan="2"><strong>Ukupno ostali troškovi</strong></td><td style="${td}text-align:right;"><strong>${fmt2(ukTr)} EUR</strong></td></tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:15px;">
+        <tr><td style="${td}">SVEUKUPNI TROŠKOVI</td><td style="${td}text-align:right;"><strong>${fmt2(sve)} EUR</strong></td></tr>
+        <tr><td style="${td}">UMANJENJE ZA ISPLAĆENI PREDUJAM</td><td style="${td}text-align:right;">${fmt2(predujam)} EUR</td></tr>
+        <tr style="background:#f0fff0;"><td style="${td}"><strong>OSTATAK ZA ISPLATU / POVRAT</strong></td><td style="${td}text-align:right;"><strong>${fmt2(sve - predujam)} EUR</strong></td></tr>
+      </table>
+      <div style="border-top:1px solid #ccc;padding-top:8px;margin-bottom:10px;"><strong>IZVJEŠĆE SA SLUŽBENOG PUTOVANJA:</strong><p style="margin:5px 0;white-space:pre-wrap;">${g('pIzvjesce')}</p></div>
+      <p style="margin-bottom:15px;font-size:11px;">Potvrđujem da je službeno putovanje prema ovom nalogu obavljeno i isplata se može obaviti.</p>
+      <div style="font-size:11px;">${mjesto}, ${datumObrTekst}</div>
+      <div style="display:flex;justify-content:space-around;margin-top:30px;font-size:11px;text-align:center;">
+        <div>Podnositelj obračuna<br><br><br>............................................</div>
+        <div>Likvidator<br><br><br>............................................</div>
+        <div>Nalogodavac isplate<br><br><br>............................................</div>
+      </div>
+    </div>
+  </div>`;
+  window.print();
+}
+
+// ── pokretanje ──────────────────────────────────────────────
+(function init() {
+  ['pVrijemePolaska','pVrijemePovratka'].forEach(id => {
+    let sel = document.getElementById(id);
+    for (let h = 0; h < 24; h++) for (let m = 0; m < 60; m += 30) {
+      let v = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+      let o = document.createElement('option'); o.value = o.textContent = v; sel.appendChild(o);
+    }
+    sel.value = id === 'pVrijemePolaska' ? '08:00' : '16:00';
+  });
+  if (window.flatpickr) {
+    flatpickr('#pDatumPolaska, #pDatumPovratka', { dateFormat: 'd.m.Y', locale: 'hr', allowInput: true, onChange: izracunajSate, onClose: izracunajSate });
+    flatpickr('#pDatumLik', { dateFormat: 'd.m.Y', locale: 'hr', allowInput: true });
+  }
+  ['pDatumPolaska','pDatumPovratka'].forEach(id => document.getElementById(id).addEventListener('change', izracunajSate));
+
+  // Zapamti tvrtku i mjesto
+  ['pTvrtka','pMjesto'].forEach(id => {
+    let el = document.getElementById(id);
+    el.value = lsGet('putni_' + id, '') || '';
+    el.addEventListener('change', () => lsSet('putni_' + id, el.value.trim()));
+  });
+
+  dodajDnevnicu('', '', '', 30);
+  dodajTrosak(); dodajTrosak(); dodajTrosak();
+  azurirajSelectVozaca();
+  izracunajUkupno();
+})();
+</script>
+</body>
+</html>
