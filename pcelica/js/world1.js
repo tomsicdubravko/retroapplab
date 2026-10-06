@@ -372,11 +372,8 @@ function updateWorldEntities(dt, invulnerable) {
       if (mp.active) broadcastFlowerTaken(f.id);
       if (f.special) {
         // u multiplayeru crni cvijet je sabotaža: obrne komande protivniku, ne tebi
-        if (mp.active) mpSendSabotage();
-        else {
-          invertActive = true;
-          invertTimeLeft = INVERT_DURATION;
-        }
+        if (mp.active) { mpSendSabotage(); popIcon(ATTACK_ICONS.invert); }
+        else soloBlackFlower(); // solo: upozorenje, pa obrnute komande (štit ih poništi) - multiplayer.js
         for (let i = 0; i < 18; i++) {
           particles.push({
             x: bee.x, y: bee.y,
@@ -390,6 +387,7 @@ function updateWorldEntities(dt, invulnerable) {
         if (!mpShieldCancelsSabotage()) {
           shieldActive = true;
           shieldTimeLeft = SHIELD_DURATION;
+          popIcon('🛡️');
         }
         for (let i = 0; i < 18; i++) {
           particles.push({
@@ -951,6 +949,7 @@ function updateBonus(dt) {
         score += HONEY_VALUE;
         bonusHoneyCount += 1;
         honeyBank += 1;
+        popIcon('🍯');
         scoreVal.textContent = score;
         for (let i = 0; i < 10; i++) {
           particles.push({
@@ -983,10 +982,12 @@ function updateBonus(dt) {
               shieldActive = true;
               shieldTimeLeft = SHIELD_DURATION;
               shieldBadge.classList.remove('hidden');
+              popIcon('🛡️');
             }
           } else {
             lives += 1;
             updateLivesHUD();
+            popIcon('❤️', true);
           }
           for (let i = 0; i < 18; i++) {
             particles.push({
@@ -1870,10 +1871,8 @@ function drawBonusEnterEffect() {
   ctx.font = 'bold 18px Trebuchet MS, sans-serif';
   ctx.shadowColor = 'rgba(0,0,0,0.5)';
   ctx.shadowBlur = 6;
-  ctx.fillText(
-    bonusEnterType === 'honey' ? '🌊 Vrtlog te uvlači!' : '☁️ Vjetar te nosi u nebo!',
-    W/2, 40
-  );
+  ctx.font = '30px sans-serif';
+  ctx.fillText(bonusEnterType === 'honey' ? '🍯' : '☁️', W/2, 44);
   ctx.restore();
 }
 
@@ -2323,13 +2322,10 @@ function drawHoneyCaveScene() {
   ctx.font = 'bold 20px Trebuchet MS, sans-serif';
   ctx.shadowColor = 'rgba(0,0,0,0.4)';
   ctx.shadowBlur = 6;
-  if (bonusExiting) {
-    ctx.fillText('🌊 Vodoskok te nosi gore!', W/2, 40);
-  } else {
-    ctx.fillText('🍯 Medena špilja! ' + Math.max(0, bonusT).toFixed(1) + 's', W/2, 40);
-  }
-  ctx.font = 'bold 15px Trebuchet MS, sans-serif';
-  ctx.fillText('Med: ' + honeyBank + ' (🛡️ ' + SHOP_SHIELD_COST + ' · ❤️ ' + SHOP_LIFE_COST + ')', W/2, 62);
+  // bez teksta: preostalo vrijeme i skupljeni med (cijene piše na samim predmetima u dućanu)
+  if (!bonusExiting) ctx.fillText('⏱️ ' + Math.max(0, bonusT).toFixed(1) + 's', W/2, 40);
+  ctx.font = 'bold 17px Trebuchet MS, sans-serif';
+  ctx.fillText('🍯 ' + honeyBank, W/2, 64);
   ctx.restore();
 
   if (bonusFlashAlpha > 0) drawBonusFlash();
@@ -2462,11 +2458,7 @@ function drawCloudKingdomScene() {
   ctx.font = 'bold 20px Trebuchet MS, sans-serif';
   ctx.shadowColor = 'rgba(255,255,255,0.6)';
   ctx.shadowBlur = 6;
-  if (bonusExiting) {
-    ctx.fillText('☁️ Vjetar te vuče dolje!', W/2, 40);
-  } else {
-    ctx.fillText('☁️ Oblačno kraljevstvo! ' + Math.max(0, bonusT).toFixed(1) + 's', W/2, 40);
-  }
+  if (!bonusExiting) ctx.fillText('⏱️ ' + Math.max(0, bonusT).toFixed(1) + 's', W/2, 40);
   ctx.restore();
 
   if (bonusFlashAlpha > 0) drawBonusFlash();

@@ -186,12 +186,13 @@ function updateWeather(dt) {
   }
 
   // pustinja, ledenjak, vulkan: umjesto kiše i munja pješčana oluja (world3.js) / mećava (world4.js) / pepeo i vatrene kugle (world5.js)
-  if (worldTheme === 'desert' || worldTheme === 'glacier' || worldTheme === 'volcano') {
+  // svemir (world6.js) nema vremena
+  if (worldTheme === 'desert' || worldTheme === 'glacier' || worldTheme === 'volcano' || worldTheme === 'space') {
     nextFlashAt = -1;
     flashAlpha = Math.max(0, flashAlpha - dt * 2.2);
     if (worldTheme === 'desert') updateSandstorm(dt);
     else if (worldTheme === 'glacier') updateBlizzard(dt);
-    else updateAshfall(dt);
+    else if (worldTheme === 'volcano') updateAshfall(dt);
     return;
   }
 
@@ -307,6 +308,9 @@ function initGame() {
   world3TriggerX = world2TriggerX + 21000 + rand() * 4200; // portal u pustinju ~1500-1800m nakon ulaska u noć
   world4TriggerX = world3TriggerX + 21000 + rand() * 4200; // portal na ledenjak ~1500-1800m nakon ulaska u pustinju
   world5TriggerX = world4TriggerX + 21000 + rand() * 4200; // portal u vulkan ~1500-1800m nakon ulaska na ledenjak
+  world6TriggerX = world5TriggerX + 21000 + rand() * 4200; // svemirski brod na kraju vulkana ~1500-1800m nakon ulaska u vulkan
+  resetSpace();    // Mjesec (world6.js)
+  resetSignals();  // upozorenja i ikone (signals.js)
   resetRedBirds(); // crvene ptice (multiplayer + solo zamka u vulkanu) kreću ispočetka
   resetVortex();   // vrtlog (multiplayer + solo zamka od pustinje nadalje)
   resetFog();      // magla (multiplayer + solo zamka od noći nadalje)
@@ -325,15 +329,28 @@ function initGame() {
 // ---------- Input ----------
 function doJump() {
   if (gameState === 'menu' || gameState === 'countdown') return;
+  if (uiModalOpen()) return; // otvoren prozor s uputama ili crtićem (ui.js)
   jumpQueued = true;
 }
-canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); doJump(); });
+// holding = dodir/razmak se još drži (u svemiru dulji dodir = viši skok, world6.js)
+canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); holding = true; doJump(); });
+window.addEventListener('pointerup', () => { holding = false; });
+window.addEventListener('pointercancel', () => { holding = false; });
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'Space') { e.preventDefault(); doJump(); }
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (e.repeat && worldTheme === 'space') return; // držanje razmaka na Mjesecu ne skače ponovo
+    holding = true;
+    doJump();
+  }
+});
+window.addEventListener('keyup', (e) => {
+  if (e.code === 'Space') holding = false;
 });
 
 startBtn.addEventListener('click', (e) => {
   e.stopPropagation();
+  if (uiModalOpen()) return;
   if (mp.active) {
     endMultiplayer();
     startBtn.textContent = 'Start';
@@ -410,6 +427,7 @@ function updateSpectator(dt) {
   waveT += dt;
   flapT += dt * 4;
   ensureTerrainAhead();
+  if (worldTheme === 'space') generateSpaceAhead();
   updateWeather(dt);
   for (const p of particles) {
     p.age += dt;
@@ -430,10 +448,12 @@ function finalizeGameOver(reason) {
   finalDist = Math.floor(scrollX / METER_SCALE);
   finalScore.textContent = 'Osvojeno cvjetova: ' + score + '  ·  Prijeđeno: ' + finalDist + 'm';
   finalScore.classList.remove('hidden');
-  document.querySelector('#overlay h1').textContent =
+  saveBest(score, finalDist); // najbolji rezultat na početnom ekranu (ui.js)
+  setOverlayTitle(
     (worldTheme === 'desert' && desertDeathText(reason)) ||
     (worldTheme === 'glacier' && glacierDeathText(reason)) ||
     (worldTheme === 'volcano' && volcanoDeathText(reason)) ||
+    (worldTheme === 'space' && spaceDeathText(reason)) ||
     (reason === 'bird' ? 'Uhvatila te ptica! 🐦' :
     reason === 'fisherman' ? 'Upecala te udica! 🎣' :
     reason === 'fish' ? 'Udarila te riba u skoku! 🐟' :
@@ -445,7 +465,7 @@ function finalizeGameOver(reason) {
     reason === 'tree' ? 'Udarila je u granu! 🌳' :
     reason === 'submarine' ? 'Zalijepila se za podmornicu! 🚢' :
     reason === 'plane' ? 'Udarila je u avion! ✈️' :
-    'Pala je u vodu! 💦');
+    'Pala je u vodu! 💦'));
   startBtn.textContent = 'Igraj ponovo';
   if (mp.active && !mp.opponentFinished) {
     // don't cover the screen yet - let the player watch the opponent's ghost finish live
@@ -536,6 +556,7 @@ function awardFlowerLife() {
   if (flowersCollected % LIFE_EVERY_N_FLOWERS === 0) {
     lives += 1;
     updateLivesHUD();
+    popIcon('❤️', true); // bonus život za 20 cvjetova
     for (let i = 0; i < 20; i++) {
       particles.push({
         x: bee.x, y: bee.y,
@@ -557,10 +578,12 @@ function update(dt) {
   if (sleepSeq) { updateSleepSequence(dt); return; } // slijetanje na veliki cvijet i pad noći (world2.js)
   if (portalSeq) { updatePortalSequence(dt); return; } // portal u pustinju + mini-splash (world3.js)
 
-  scrollX += FORWARD_SPEED * mpSpeedMul() * dt;
+  scrollX += (worldTheme === 'space' ? SPACE_SPEED : FORWARD_SPEED) * mpSpeedMul() * dt;
   waveT += dt;
   ensureTerrainAhead();
   distVal.textContent = Math.floor(scrollX / METER_SCALE);
+  updateSignals(dt); // napadi koji stižu: 1,5 s upozorenja pa udar ili štit (signals.js)
+  if (gameState !== 'playing') return;
 
   if (bonusExitGraceT > 0) bonusExitGraceT -= dt;
   if (hitInvulnT > 0) hitInvulnT -= dt;
@@ -621,6 +644,9 @@ function update(dt) {
       bee.vy = HOP_IMPULSE * 0.7; // little pop when released
     }
   }
+
+  // svemir: pčelica ne leti nego trči i skače (world6.js)
+  if (worldTheme === 'space') { updateSpaceWorld(dt, vortexed, invulnerable); return; }
 
   // bee physics - reversed while invertActive: floats up on its own, tap pushes down
   updateDesertWind(dt, !vortexed && !isStuck); // pustinja: udari vjetra guraju pčelicu (world3.js)
@@ -762,6 +788,7 @@ function lerpColorStr(hexA, hexB, t) {
 }
 
 function drawBee() {
+  if (worldTheme === 'space') { drawSpaceBee(); return; } // u svemirskom odijelu (world6.js)
   const wingFlap = gameState === 'dying' ? 0 : Math.sin(flapT) * 0.5;
   ctx.save();
   ctx.translate(bee.x, bee.y);
@@ -949,11 +976,13 @@ function draw() {
   ctx.save();
   ctx.translate(off.x, off.y);
   drawSceneContent();
+  drawSignals(); // znakovi napada i ikone power-upova iznad pčelice (signals.js)
   ctx.restore();
 }
 
 function drawSceneContent() {
   if (inBonus) { drawBonusScene(); return; }
+  if (worldTheme === 'space') { drawSpaceScene(); return; } // Mjesec (world6.js)
 
   const isNight = worldTheme === 'night';
   const isDesert = worldTheme === 'desert';
@@ -1012,7 +1041,6 @@ function drawSceneContent() {
 
   if (isNight && !portalSeq) drawDawnWind(); // pijesak koji leti pred kraj noći
   drawDesertWind();                          // linije vjetra u pustinji
-  drawWindText();                            // "Fuuuš!"
 
   drawSleepOverlay();
   drawPortalOverlay();
@@ -1097,6 +1125,7 @@ function loop(t) {
     if (gameState === 'playing') updateWeather(dt);
   }
   if (shakeTime < shakeDuration) shakeTime += dt;
+  ageSignals(dt);
   draw();
   requestAnimationFrame(loop);
 }

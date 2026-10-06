@@ -12,15 +12,108 @@
   <canvas id="game"></canvas>
   <div id="hud"><span id="scoreVal">0</span> 🌼<span id="distSep"> · </span><span id="distVal">0</span>m</div>
   <div id="livesHud"><span id="livesVal">❤️❤️</span></div>
-  <div id="invertBadge" class="hidden">🌑 OBRNUTO! <span id="invertTime">5.0</span>s</div>
-  <div id="shieldBadge" class="hidden">🛡️ ŠTIT <span id="shieldTime">8.0</span>s</div>
-  <div id="pepperBadge" class="hidden">🌶️ FEFERON! <span id="pepperTime">11.0</span>s</div>
+  <div id="invertBadge" class="hidden">🌀 <span id="invertTime">5.0</span>s</div>
+  <div id="shieldBadge" class="hidden">🛡️ <span id="shieldTime">8.0</span>s</div>
+  <div id="pepperBadge" class="hidden">🌶️ <span id="pepperTime">11.0</span>s</div>
   <div id="overlay">
+    <button id="helpBtn" aria-label="Kako se igra">?</button>
     <h1>🐝 Pčelica</h1>
-    <p>Dodirni ili klikni ekran da pčelica poskoči.<br>Imaš 2 života - udarac te samo omami na par sekundi!<br>Skupljaj cvjetove za bodove (20 = bonus život!), <b>leptiriće</b> (noću <b>krijesnice</b>) da te prate! 🦋<br><b>Crni cvijet</b> obrne komande, <b>zlatni</b> daje štit! 🌑🛡️<br>Zaroni u <b>vrtlog</b> 🍯 - pazi na podmornicu! Med kupuje štit (20) ili život (50)!<br>Dodirni <b>čudne oblake</b> ☁️ za oblačno kraljevstvo - pazi na avion!<br>Doleti do <b>velikog cvijeta</b> 🌸 - pčelica na njemu zaspi i budi se u noćnom svijetu! 🌙<br>Na kraju noći te čeka <b>portal u pustinju</b> 🏜️, iza pustinje <b>ledenjak</b> ❄️, a na kraju <b>vulkan</b> 🌋!</p>
+    <p id="subtitle">Jedna mala pčela, velika avantura</p>
     <div class="score-line hidden" id="finalScore"></div>
     <button id="startBtn">Start</button>
-    <button id="mpBtn">👥 Igraj u dvoje</button>
+    <button id="mpBtn" class="softBtn">👥 Igraj u dvoje</button>
+    <button id="cartoonBtn" class="softBtn">▶ Gledaj crtić</button>
+    <div id="bestLine" class="hidden"></div>
+  </div>
+
+  <div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="modalPanel">
+      <div class="modalHead">
+        <h2 id="helpTitle">Kako se igra</h2>
+        <button class="modalClose" aria-label="Zatvori">✕</button>
+      </div>
+      <div class="helpTabs" role="tablist">
+        <button class="helpTab active" data-tab="igra">Igra</button>
+        <button class="helpTab" data-tab="svjetovi">Svjetovi</button>
+        <button class="helpTab" data-tab="cvijece">Cvijeće</button>
+        <button class="helpTab" data-tab="dvoje">U dvoje</button>
+      </div>
+      <div class="modalBody">
+        <section class="helpPane" data-pane="igra">
+          <ul>
+            <li>👆 <b>Dodir</b>, klik ili razmak - pčelica poskoči. Ne smije pasti na tlo ni u vodu.</li>
+            <li>❤️ Imaš <b>2 života</b>. Kad te nešto udari, gubiš jedan i par sekundi trepćeš - tada ti ništa ne može nauditi.</li>
+            <li>🌼 Svaki <b>cvijet</b> je bod. Svakih <b>20 cvjetova</b> = bonus život!</li>
+            <li>🦋 <b>Leptirići</b> (noću <b>krijesnice</b>) donose 2 boda i lete u redu iza tebe. Kad izgubiš život, razbježe se.</li>
+            <li>🍯 U Medenoj špilji skupljaš <b>med</b>. Med kupuje <b>štit (20)</b> ili <b>život (50)</b>.</li>
+            <li>🚀 Na Mjesecu pčelica trči sama - dodir je skok, a <b>dulji dodir</b> viši skok.</li>
+          </ul>
+        </section>
+        <section class="helpPane hidden" data-pane="svjetovi">
+          <p class="helpNote">Svaki svijet traje oko 1500-1800 m, a onda te put sam odvede u sljedeći.</p>
+          <ul>
+            <li>🌸 <b>Livada</b> - ptice, ose, žabe, grane, ribar s udicom i ribe koje skaču. Ponekad padne oluja.</li>
+            <li>🌙 <b>Noć</b> - na kraju livade pčelica zaspi na <b>velikom cvijetu</b>. Sove, šišmiši i krijesnice.</li>
+            <li>🏜️ <b>Pustinja</b> - zora i pješčani vrtlog. Lešinari, sokolovi, škorpioni, zmije i udari vjetra.</li>
+            <li>❄️ <b>Ledenjak</b> - kroz portal. Snježne sove, ledeni sokolovi, jeti, ledenice i mećava.</li>
+            <li>🌋 <b>Vulkan</b> - kroz portal. Feniksi, žeravice, daždevnjaci, demoni lave i jezera lave.</li>
+            <li>🚀 <b>Svemir</b> - brod te odveze na Mjesec. Preskači kratere, stijene i meteore, skoči robotskoj osi na glavu (+5) i skupljaj neonske zvjezdice.</li>
+          </ul>
+          <h3>Skriveni svjetovi</h3>
+          <ul>
+            <li>🍯 <b>Medena špilja</b> - zaroni u <b>vrtlog</b> u vodi. Skupljaj med, pazi na <b>podmornicu</b>, a mjehurić te izbaci van.</li>
+            <li>☁️ <b>Oblačno kraljevstvo</b> - dodirni <b>čudne oblake</b>. Skupljaj zvjezdice i pazi na <b>avion</b>.</li>
+          </ul>
+        </section>
+        <section class="helpPane hidden" data-pane="cvijece">
+          <ul>
+            <li>🌟 <b>Zlatni cvijet</b> - <b>štit</b> na 8 s, upije jedan udarac.</li>
+            <li>🌑 <b>Crni cvijet</b> - <b>obrne komande</b> na 5 s. Na Mjesecu je to crna zvijezda koja daje <b>teške čizme</b> (niski skokovi).</li>
+            <li>🌶️ <b>Feferon</b> - <b>brzina</b> na oko 11 s (od ledenjaka nadalje).</li>
+          </ul>
+          <h3>Zamke kad igraš sam/a</h3>
+          <ul>
+            <li>🌫️ <b>Magla</b> (od noći) - pčelica se par sekundi jedva vidi.</li>
+            <li>🌀 <b>Vrtlog</b> (od pustinje) - vrti te 2-3 s pa izbaci bilo kamo.</li>
+            <li>🐦 <b>Crvena ptica</b> (od vulkana) - ptica lovac koja te prati.</li>
+          </ul>
+          <p class="helpNote">Prije svake zamke iznad pčelice zatreperi crveni znak. Ako tada imaš štit, zamka pukne o njega.</p>
+        </section>
+        <section class="helpPane hidden" data-pane="dvoje">
+          <ul>
+            <li>👥 Jedan igrač stisne <b>Kreiraj sobu</b> i dobije <b>kod od 4 znaka</b>. Drugi upiše taj kod i stisne <b>Pridruži se</b>. Oboje morate biti online.</li>
+            <li>🏆 Oboje letite kroz isti svijet - pobjeđuje tko skupi više cvjetova (kod izjednačenja tko je stigao dalje).</li>
+            <li>💫 Ako pogineš, oživiš s jednim životom kad protivnik stigne u sljedeći svijet.</li>
+          </ul>
+          <h3>Šalješ protivniku</h3>
+          <ul>
+            <li>🌑 <b>Crni cvijet</b> - obrne mu komande.</li>
+            <li>🌫️ <b>Magla</b> - par sekundi jedva vidi svoju pčelicu.</li>
+            <li>🐦 <b>Crvena ptica</b> - lovac koji ga prati.</li>
+            <li>🌀 <b>Vrtlog</b> - 2-3 s nema kontrolu.</li>
+            <li>💀 <b>Cvijet smrti</b> - samo jednom u igri, uzme mu život (štit ne pomaže).</li>
+          </ul>
+          <h3>Samo za tebe</h3>
+          <ul>
+            <li>🛡️ <b>Štit</b> - napad prvo 1,5 s treperi kao crveni znak iznad pčelice; ako tada imaš štit, napad pukne o njega (osim cvijeta smrti).</li>
+            <li>🌶️ <b>Feferon</b> - jureš naprijed da prvi/a stigneš do cvijeća.</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="cartoonModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="cartoonTitle">
+    <div class="modalPanel cartoonPanel">
+      <div class="modalHead">
+        <h2 id="cartoonTitle">▶ Crtić</h2>
+        <button class="modalClose" aria-label="Zatvori">✕</button>
+      </div>
+      <div class="modalBody">
+        <div id="cartoonFrame" class="videoBox"></div>
+        <a class="ytLink" href="https://www.youtube.com/playlist?list=PLCUbhPOfgGdg" target="_blank" rel="noopener">Otvori na YouTubeu ↗</a>
+      </div>
+    </div>
   </div>
 
   <div id="mpOverlay" class="hidden">
@@ -50,7 +143,6 @@
     <div class="mpRow mpOpp">🐝 Protivnik: <span id="mpOppScore">0</span>🌼 <span id="mpOppDist">0</span>m <span id="mpOppStatus"></span></div>
   </div>
 
-  <div id="mpToast" class="hidden"></div>
 
   <div id="spectatorBanner" class="hidden">👻 Gledaš protivnika uživo dok ne završi…</div>
 
@@ -66,7 +158,10 @@
 <script src="js/world3.js"></script>
 <script src="js/world4.js"></script>
 <script src="js/world5.js"></script>
+<script src="js/world6.js"></script>
+<script src="js/signals.js"></script>
 <script src="js/multiplayer.js"></script>
+<script src="js/ui.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
