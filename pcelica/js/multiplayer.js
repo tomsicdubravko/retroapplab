@@ -16,6 +16,7 @@ function showMpError(msg) {
 
 mpBtn.addEventListener('click', (e) => {
   e.stopPropagation();
+  if (uiModalOpen()) return;
   overlay.classList.add('hidden');
   mpOverlay.classList.remove('hidden');
   mpChoice.classList.remove('hidden');
@@ -59,9 +60,10 @@ function setupConnHandlers() {
       receiveSabotage();
       return;
     }
+    // ishodi mojih napada na protivnika: ikona iznad moje pčelice (signals.js)
     if (data.type === 'sabotageResult') {
-      if (data.result === 'applied') showMpToast('🌑 Protivniku si obrnuo/la komande!');
-      else if (data.result === 'blocked') showMpToast('🛡️ Protivnikov štit je upio sabotažu!');
+      if (data.result === 'applied') popIcon(ATTACK_ICONS.invert);
+      else if (data.result === 'blocked') popIcon('🛡️');
       return;
     }
     if (data.type === 'pepperTaken') {
@@ -84,8 +86,8 @@ function setupConnHandlers() {
       return;
     }
     if (data.type === 'fogResult') {
-      if (data.result === 'applied') showMpToast('🌫️ Protivnik je u magli!');
-      else if (data.result === 'blocked') showMpToast('🛡️ Protivnikov štit je rastjerao maglu!');
+      if (data.result === 'applied') popIcon(ATTACK_ICONS.fog);
+      else if (data.result === 'blocked') popIcon('🛡️');
       return;
     }
     if (data.type === 'deathFlowerTaken') {
@@ -97,8 +99,8 @@ function setupConnHandlers() {
       return;
     }
     if (data.type === 'deathFlowerResult') {
-      if (data.result === 'lifeLost') showMpToast('💀 Protivnik je izgubio život!');
-      else if (data.result === 'killed') showMpToast('💀 Cvijet smrti je dokrajčio protivnika!');
+      if (data.result === 'lifeLost') popIcon(ATTACK_ICONS.deathflower);
+      else if (data.result === 'killed') popIcon(ATTACK_ICONS.deathflower, true);
       return;
     }
     if (data.type === 'vortexTaken') {
@@ -111,8 +113,8 @@ function setupConnHandlers() {
       return;
     }
     if (data.type === 'vortexResult') {
-      if (data.result === 'applied') showMpToast('🌀 Protivnika je uhvatio vrtlog!');
-      else if (data.result === 'blocked') showMpToast('🛡️ Protivnikov štit je razbio vrtlog!');
+      if (data.result === 'applied') popIcon(ATTACK_ICONS.vortex);
+      else if (data.result === 'blocked') popIcon('🛡️');
       return;
     }
     if (data.type === 'redBirdAttack') {
@@ -120,9 +122,9 @@ function setupConnHandlers() {
       return;
     }
     if (data.type === 'redBirdResult') {
-      if (data.result === 'hit') showMpToast('🎯 Crvena ptica je pogodila protivnika!');
-      else if (data.result === 'blocked') showMpToast('🛡️ Protivnikov štit je odbio crvenu pticu!');
-      else if (data.result === 'dodged') showMpToast('💨 Protivnik je izbjegao crvenu pticu!');
+      if (data.result === 'hit') popIcon('🎯');
+      else if (data.result === 'blocked') popIcon('🛡️');
+      else if (data.result === 'dodged') popIcon('💨');
       return;
     }
     if (data.type === 'flowerTaken') {
@@ -133,7 +135,7 @@ function setupConnHandlers() {
     if (data.type !== 'state') return;
     mpOppScore.textContent = data.score;
     mpOppDist.textContent = data.dist;
-    mpOppStatus.textContent = data.finished ? '(gotovo)' : (!data.alive ? '(pao/la)' : (data.inBonus ? '(u bonus sobi)' : ''));
+    mpOppStatus.textContent = data.finished ? '🏁' : (!data.alive ? '💥' : (data.inBonus ? '🍯' : ''));
     mp.opponentFinished = data.finished;
     mp.lastOppState = data;
     if (gameState === 'over' && data.finished && !mp.resultShown) {
@@ -144,7 +146,7 @@ function setupConnHandlers() {
     }
   });
   conn.on('close', () => {
-    if (mp.active) mpOppStatus.textContent = '(napustio/la)';
+    if (mp.active) mpOppStatus.textContent = '🚪';
   });
 }
 
@@ -290,7 +292,7 @@ function showMultiplayerResult(mine, opp) {
   } else {
     verdict = mine.score > opp.score ? 'Pobijedio/la si! 🏆' : 'Izgubio/la si!';
   }
-  document.querySelector('#overlay h1').textContent = verdict;
+  setOverlayTitle(verdict);
   finalScore.textContent = 'Ti: ' + mine.score + '🌼 ' + mine.dist + 'm   ·   Protivnik: ' + opp.score + '🌼 ' + opp.dist + 'm';
   startBtn.textContent = 'Igraj solo ponovo';
   overlay.classList.remove('hidden');
@@ -311,7 +313,7 @@ function endMultiplayer() {
   resetDeathFlower();
   resetFog();
   pepperBadge.classList.add('hidden');
-  mpToast.classList.add('hidden');
+  resetSignals();
   mpScoreboard.classList.add('hidden');
   spectatorBanner.classList.add('hidden');
 }
@@ -319,7 +321,7 @@ function endMultiplayer() {
 // ---------- Oživljavanje u sljedećem svijetu ----------
 const REVIVE_LIVES = 1;
 
-// 1 = dan, 2 = noć, 3 = pustinja, 4 = ledenjak (WORLD_ORDER u world3.js)
+// 1 = dan, 2 = noć, 3 = pustinja, 4 = ledenjak, 5 = vulkan, 6 = svemir (WORLD_ORDER u world3.js)
 function worldIndex() {
   return WORLD_ORDER.indexOf(worldTheme) + 1;
 }
@@ -379,13 +381,13 @@ function reviveInWorld(world) {
     worldPortal = { worldX: scrollX + bee.x, y: H * 0.4, cfg: portalCfg };
     clearHazardsNear(worldPortal.worldX);
     startPortalSequence('splash');
-    showMpToast(portalCfg.title + ' - protivnik je stigao, oživio/la si!');
   } else {
     bigFlower = { worldX: scrollX + bee.x, headY: H * 0.46 };
     clearHazardsNearBigFlower();
     startSleepSequence('sleep'); // pojavi se kako spava na velikom cvijetu i budi se u noći
-    showMpToast('🌙 Protivnik je stigao u noć - oživio/la si!');
   }
+  resetSignals();
+  popIcon('❤️', true); // oživljavanje
 }
 
 function drawGhostBee(x, y) {
@@ -417,19 +419,7 @@ function drawOpponentGhost() {
 // Štit i sabotaža se međusobno poništavaju:
 //  - dođe sabotaža, a igrač ima štit -> štit nestane, komande ostaju normalne
 //  - igrač ima obrnute komande pa skupi štit (zlatni cvijet ili dućan) -> obrnute komande nestanu, štit se potroši
-const mpToast = document.getElementById('mpToast');
-let mpToastTimer = null;
-
-function showMpToast(msg) {
-  mpToast.textContent = msg;
-  mpToast.classList.remove('hidden');
-  mpToast.style.animation = 'none';
-  void mpToast.offsetWidth; // restart the CSS animation
-  mpToast.style.animation = '';
-  if (mpToastTimer) clearTimeout(mpToastTimer);
-  mpToastTimer = setTimeout(() => mpToast.classList.add('hidden'), 2200);
-}
-
+// Napad se ne primjenjuje odmah: 1,5 s upozorenja (signals.js), a štit se provjerava tek tada.
 function sendMp(msg) {
   if (!conn || !conn.open) return;
   try { conn.send(msg); } catch (err) { /* ignore */ }
@@ -445,23 +435,13 @@ function receiveSabotage() {
     sendMp({ type: 'sabotageResult', result: 'missed' });
     return;
   }
-  if (shieldActive) {
-    shieldActive = false;
-    shieldTimeLeft = 0;
-    shieldBadge.classList.add('hidden');
-    triggerShake(3, 0.15);
-    for (let i = 0; i < 16; i++) {
-      particles.push({
-        x: bee.x, y: bee.y,
-        vx: (Math.random()-0.5)*260, vy: (Math.random()-0.5)*260 - 30,
-        life: 0.6, age: 0,
-        color: i % 2 === 0 ? '#1a1a2a' : '#ffd452'
-      });
-    }
-    showMpToast('🛡️ Štit te zaštitio od sabotaže!');
-    sendMp({ type: 'sabotageResult', result: 'blocked' });
-    return;
-  }
+  queueAttack('invert',
+    () => { applyInvert(); sendMp({ type: 'sabotageResult', result: 'applied' }); },
+    () => sendMp({ type: 'sabotageResult', result: 'blocked' }));
+}
+
+// obrnute komande (u svemiru teške čizme, world6.js) - od protivnika ili od vlastitog crnog cvijeta u solo igri
+function applyInvert() {
   invertActive = true;
   invertTimeLeft = INVERT_DURATION; // nova sabotaža resetira vrijeme
   triggerShake(4, 0.2);
@@ -473,8 +453,11 @@ function receiveSabotage() {
       color: i % 2 === 0 ? '#1a1a2a' : '#ffd452'
     });
   }
-  showMpToast('🌑 Protivnik ti je obrnuo komande!');
-  sendMp({ type: 'sabotageResult', result: 'applied' });
+}
+
+// solo: crni cvijet (crna zvijezda u svemiru) djeluje na tebe - isto upozorenje kao napad, štit ga poništi
+function soloBlackFlower() {
+  queueAttack('invert', applyInvert);
 }
 
 // poziva se kad igrač dobije štit; vraća true ako je štit potrošen na poništavanje sabotaže
@@ -484,22 +467,20 @@ function mpShieldCancelsSabotage() {
     // solo: crni cvijet je obična solo mehanika pa ga štit ne dira, ali maglu (zamku) rastjera
     if (fogT <= 0) return false;
     fogT = 0;
-    showMpToast('🛡️ Štit je rastjerao maglu!');
+    shieldPops.push({ icon: ATTACK_ICONS.fog, t: 0 }); // znak magle pukne o štit (signals.js)
     return true;
   }
   if (!invertActive && fogT <= 0) return false;
-  const msgs = [];
   if (invertActive) {
     invertActive = false;
     invertTimeLeft = 0;
     invertBadge.classList.add('hidden');
-    msgs.push('obrnute komande');
+    shieldPops.push({ icon: attackIcon('invert'), t: 0 });
   }
   if (fogT > 0) {
     fogT = 0;
-    msgs.push('maglu');
+    shieldPops.push({ icon: ATTACK_ICONS.fog, t: 0 });
   }
-  showMpToast('🛡️ Štit je poništio ' + msgs.join(' i ') + '!');
   return true;
 }
 
@@ -545,7 +526,7 @@ function spawnPepper(worldX) {
   peppers.push({
     id: 'pp_' + (pepperCount++),
     worldX: worldX,
-    y: minY + pepperRand() * (maxY - minY),
+    y: spaceTokenY(minY + pepperRand() * (maxY - minY)),
     r: 16,
     taken: false,
     bob: pepperRand() * Math.PI * 2
@@ -554,7 +535,7 @@ function spawnPepper(worldX) {
 
 // ---------- Solo zamke: sabotaže iz multiplayera koje u solo igri pogađaju tebe ----------
 // Svaka se prvi put pojavi u svom svijetu (magla u noći, vrtlog u pustinji, crvena ptica u vulkanu) i ostaje u svim
-// kasnijim svjetovima, ali najviše 1-2 puta po svijetu. Vulkan nema kraja, pa se dijeli na odsječke duljine jednog svijeta.
+// kasnijim svjetovima, ali najviše 1-2 puta po svijetu. Zadnji svijet (svemir) nema kraja, pa se dijeli na odsječke duljine jednog svijeta.
 // Isto vrijedi i za feferon (ubrzanje, nije zamka) - prvi put na ledenjaku.
 const SOLO_TRAPS = [
   { fromWorld: 2, spawn: (x) => spawnFogToken(x) },
@@ -576,7 +557,7 @@ function resetSoloTraps() {
 }
 
 function worldStartX(idx) {
-  return [0, world2TriggerX, world3TriggerX, world4TriggerX, world5TriggerX][idx - 1] || 0;
+  return [0, world2TriggerX, world3TriggerX, world4TriggerX, world5TriggerX, world6TriggerX][idx - 1] || 0;
 }
 
 function scheduleSoloTraps(idx, fromX, toX) {
@@ -649,6 +630,7 @@ function updatePeppers(dt) {
       p.taken = true;
       pepperBoostT = PEPPER_BOOST_DURATION;
       if (conn && conn.open) { try { conn.send({ type: 'pepperTaken', id: p.id }); } catch (err) { /* ignore */ } }
+      popIcon('🌶️');
       triggerShake(4, 0.2);
       for (let i = 0; i < 22; i++) {
         particles.push({
@@ -788,7 +770,7 @@ function spawnFogToken(worldX) {
   fogTokens.push({
     id: 'fg_' + (fogTokenCount++),
     worldX: worldX,
-    y: minY + fogRand() * (maxY - minY),
+    y: spaceTokenY(minY + fogRand() * (maxY - minY)),
     r: 18,
     taken: false,
     bob: fogRand() * Math.PI * 2
@@ -809,6 +791,7 @@ function updateFog(dt) {
       if (mp.active) {
         sendMp({ type: 'fogTaken', id: t.id });
         sendMp({ type: 'fogAttack' });
+        popIcon(ATTACK_ICONS.fog);
       } else {
         receiveFog(); // solo (noć i dalje): magla zavije tebe, štit je rastjera
       }
@@ -829,19 +812,11 @@ function updateFog(dt) {
 
 function receiveFog() {
   if (gameState !== 'playing' && gameState !== 'countdown') return;
-  if (shieldActive) {
-    shieldActive = false;
-    shieldTimeLeft = 0;
-    shieldBadge.classList.add('hidden');
-    triggerShake(3, 0.15);
-    showMpToast('🛡️ Štit je rastjerao maglu!');
-    sendMp({ type: 'fogResult', result: 'blocked' });
-    return;
-  }
-  // nova magla dok je stara još tu samo produži trajanje, bez ponovnog fade-ina
-  fogT = fogT > 0 ? Math.max(fogT, FOG_DURATION - FOG_FADE_IN) : FOG_DURATION;
-  showMpToast(mp.active ? '🌫️ Protivnik te zavio u maglu!' : '🌫️ Zavila te magla!');
-  sendMp({ type: 'fogResult', result: 'applied' });
+  queueAttack('fog', () => {
+    // nova magla dok je stara još tu samo produži trajanje, bez ponovnog fade-ina
+    fogT = fogT > 0 ? Math.max(fogT, FOG_DURATION - FOG_FADE_IN) : FOG_DURATION;
+    sendMp({ type: 'fogResult', result: 'applied' });
+  }, () => sendMp({ type: 'fogResult', result: 'blocked' }));
 }
 
 function drawFogBlob(x, y, r, alpha) {
@@ -933,7 +908,7 @@ function updateDeathFlower() {
     deathFlowerSpawned = true;
     const minY = H * 0.2;
     const maxY = waterY - MEADOW_RAISE - 60;
-    deathFlower = { worldX: deathFlowerAt, y: minY + deathFlowerYRand * (maxY - minY), taken: false };
+    deathFlower = { worldX: deathFlowerAt, y: spaceTokenY(minY + deathFlowerYRand * (maxY - minY)), taken: false };
   }
   if (deathFlower && !deathFlower.taken) {
     const dx = (deathFlower.worldX - scrollX) - bee.x;
@@ -942,7 +917,7 @@ function updateDeathFlower() {
       deathFlower.taken = true;
       sendMp({ type: 'deathFlowerTaken' });
       sendMp({ type: 'deathFlowerAttack' });
-      showMpToast('💀 Skupio/la si cvijet smrti!');
+      popIcon(ATTACK_ICONS.deathflower, true);
       triggerShake(5, 0.25);
       for (let i = 0; i < 26; i++) {
         particles.push({
@@ -967,7 +942,8 @@ function updateDeathFlower() {
 
 function receiveDeathFlower() {
   if (!mp.active || (gameState !== 'playing' && gameState !== 'countdown')) return;
-  pendingDeathFlower += 1;
+  // štit ga ne zaustavlja (pravilo igre), ali upozorenje dobiva kao i ostali napadi
+  queueAttack('deathflower', () => { pendingDeathFlower += 1; }, null, true);
 }
 
 function applyDeathFlower() {
@@ -985,7 +961,6 @@ function applyDeathFlower() {
     updateLivesHUD();
     hitInvulnT = HIT_INVULN_DURATION;
     scareButterflies();
-    showMpToast('💀 Protivnik ti je uzeo život cvijetom smrti!');
     sendMp({ type: 'deathFlowerResult', result: 'lifeLost' });
     return false;
   }
@@ -1072,7 +1047,7 @@ function spawnVortexToken(worldX) {
   vortexTokens.push({
     id: 'vt_' + (vortexTokenCount++),
     worldX: worldX,
-    y: minY + vortexRand() * (maxY - minY),
+    y: spaceTokenY(minY + vortexRand() * (maxY - minY)),
     r: 18,
     taken: false,
     bob: vortexRand() * Math.PI * 2
@@ -1093,6 +1068,7 @@ function updateVortexTokens() {
       if (mp.active) {
         sendMp({ type: 'vortexTaken', id: t.id });
         sendMp({ type: 'vortexAttack' });
+        popIcon(ATTACK_ICONS.vortex);
       } else {
         receiveVortex(); // solo (pustinja i dalje): vrtlog uhvati tebe, štit ga razbije
       }
@@ -1111,17 +1087,10 @@ function updateVortexTokens() {
 
 function receiveVortex() {
   if (gameState !== 'playing' && gameState !== 'countdown') return;
-  if (shieldActive) {
-    shieldActive = false;
-    shieldTimeLeft = 0;
-    shieldBadge.classList.add('hidden');
-    triggerShake(3, 0.15);
-    showMpToast('🛡️ Štit je razbio vrtlog!');
-    sendMp({ type: 'vortexResult', result: 'blocked' });
-    return;
-  }
-  pendingVortex = true; // pokreće se u mpUpdateVortex (odmah, ili kad izađeš iz bonus sobe)
-  sendMp({ type: 'vortexResult', result: 'applied' });
+  queueAttack('vortex', () => {
+    pendingVortex = true; // pokreće se u mpUpdateVortex (odmah, ili kad izađeš iz bonus sobe)
+    sendMp({ type: 'vortexResult', result: 'applied' });
+  }, () => sendMp({ type: 'vortexResult', result: 'blocked' }));
 }
 
 function startVortex() {
@@ -1133,7 +1102,6 @@ function startVortex() {
   stuckBird = null;
   bee.vy = 0;
   triggerShake(4, 0.25);
-  showMpToast('🌀 Uhvatio te vrtlog!');
 }
 
 // poziva se iz core.js update(); vraća true dok vrtlog drži pčelicu (nema kontrole, ne može se ozlijediti)
@@ -1160,7 +1128,8 @@ function mpUpdateVortex(dt) {
     const band = vortexSafeBand();
     bee.y = band.top + Math.random() * (band.bottom - band.top);
     bee.vy = Math.random() < 0.5 ? -(380 + Math.random() * 140) : (220 + Math.random() * 160);
-    hitInvulnT = Math.max(hitInvulnT, VORTEX_EJECT_GRACE);
+    // na Mjesecu (world6.js) pčelica nakon izbacivanja pada bez kontrole - zaštita traje do doskoka, i kad padne u krater
+    hitInvulnT = Math.max(hitInvulnT, worldTheme === 'space' ? SPACE_VORTEX_GRACE : VORTEX_EJECT_GRACE);
     triggerShake(5, 0.2);
     for (let i = 0; i < 24; i++) {
       const a = (i / 24) * Math.PI * 2;
@@ -1259,7 +1228,7 @@ function spawnRedBirdToken(worldX) {
   redBirdTokens.push({
     id: 'rb_' + (redBirdTokenCount++),
     worldX: worldX,
-    y: minY + redBirdRand() * (maxY - minY),
+    y: spaceTokenY(minY + redBirdRand() * (maxY - minY)),
     r: 18,
     taken: false,
     bob: redBirdRand() * Math.PI * 2
@@ -1268,8 +1237,7 @@ function spawnRedBirdToken(worldX) {
 
 function receiveRedBird() {
   if (!mp.active || (gameState !== 'playing' && gameState !== 'countdown')) return;
-  pendingRedBirds += 1;
-  showMpToast('🐦 Protivnik ti šalje crvenu pticu!');
+  queueAttack('redbird', () => { pendingRedBirds += 1; }, () => sendMp({ type: 'redBirdResult', result: 'blocked' }));
 }
 
 function launchRedBird() {
@@ -1300,10 +1268,9 @@ function updateRedBirds(dt, invulnerable) {
       if (mp.active) {
         sendMp({ type: 'redBirdTaken', id: t.id });
         sendMp({ type: 'redBirdAttack' });
-        showMpToast('🐦 Poslao/la si crvenu pticu na protivnika!');
+        popIcon(ATTACK_ICONS.redbird);
       } else {
-        pendingRedBirds += 1; // solo (vulkan): napad ide na tebe
-        showMpToast('🐦 Crvena ptica te napada - bježi!');
+        queueAttack('redbird', () => { pendingRedBirds += 1; }); // solo (vulkan i dalje): napad ide na tebe
       }
       for (let i = 0; i < 20; i++) {
         particles.push({
@@ -1338,10 +1305,17 @@ function updateRedBirds(dt, invulnerable) {
     rb.worldX -= FORWARD_SPEED * (REDBIRD_SPEED_MUL - 1) * dt;
     const screenX = rb.worldX - scrollX;
     // prati visinu pčelice samo dok je ispred nje, nakon toga leti ravno dalje
-    if (screenX > bee.x) {
+    // (na Mjesecu leti ravno, pa se može preskočiti ili zgaziti skokom na glavu - world6.js)
+    if (screenX > bee.x && worldTheme !== 'space') {
       rb.y += (bee.y - rb.y) * Math.min(1, REDBIRD_HOMING_RATE * dt);
     }
     rb.curScreenX = screenX;
+    if (worldTheme === 'space' && !rb.hit && spaceStomp(screenX, rb.y, rb.r)) {
+      rb.hit = true;
+      rb.stomped = true;
+      sendMp({ type: 'redBirdResult', result: 'dodged' });
+      continue;
+    }
     if (!rb.hit && !invulnerable) {
       const dx = screenX - bee.x;
       const dy = rb.y - bee.y;
@@ -1440,6 +1414,7 @@ function drawRedBirdLayer() {
   if (gameState !== 'playing' && gameState !== 'dying') return;
   for (const rb of redBirds) {
     if (!rb.active) { drawRedBirdWarning(rb.y); continue; }
+    if (rb.stomped) continue;
     const sx = rb.worldX - scrollX;
     if (sx < -40 || sx > W + 40) continue;
     ctx.save();
@@ -1460,7 +1435,7 @@ function drawMultiplayerWorld() {
       if (worldIndex() >= 2) drawFogTokens();                  // solo zamka od noći nadalje
       if (worldIndex() >= 3) drawVortexLayer();                // solo zamka od pustinje nadalje
       if (worldIndex() >= 4) drawPepperLayer();                // solo feferon od ledenjaka nadalje
-      if (worldTheme === 'volcano') drawRedBirdLayer();         // solo zamka u vulkanu
+      if (worldIndex() >= 5) drawRedBirdLayer();               // solo zamka od vulkana nadalje
     }
     return;
   }

@@ -4,7 +4,7 @@
 //   žaba -> škorpion, grana -> zmija na kamenom luku, ribar -> ribar na oazi, kiša -> pješčana oluja
 
 // ---------- Portali između svjetova (ne mogu se promašiti) -> mini-splash -> novi svijet ----------
-// Svaki svijet od 3 nadalje počinje portalom ~1500-1800 m nakon početka prethodnog svijeta.
+// Svaki svijet od 3 nadalje počinje portalom ~1500-1800 m nakon početka prethodnog svijeta (svemir: brodom, world6.js).
 // Novi svijet se dodaje jednim unosom u WORLD_PORTALS (ključ = svijet u kojem se portal pojavljuje).
 let world3TriggerX = 0;  // world px portala noć -> pustinja, jednom po igri
 let worldPortal = null;  // { worldX, y, cfg }
@@ -47,18 +47,32 @@ const WORLD_PORTALS = {
     flash: '255,170,90', ring: 'rgba(255,120,40,0.95)', haze: 'rgba(255,140,60,0.4)', dots: ['#ffb347', '#ff5a1f'],
     drawView: () => drawVolcanoPortalView(),
     onEnter: () => initAshfall()
+  },
+  // vulkan -> svemir nema običan portal: svemirski brod pokupi pčelicu zlatnom zrakom, let do Mjeseca i slijetanje (world6.js)
+  volcano: {
+    to: 'space', num: 6,
+    triggerX: () => world6TriggerX,
+    title: '🚀 Svemir',
+    portalY: 0.22,             // brod lebdi visoko, zraka seže do tla
+    noSpin: true,              // pčelica se mirno diže kroz zraku
+    splashDuration: 6.4,       // uzlijetanje, let, slijetanje i izlazak iz broda
+    drawPortal: (x, y) => drawShipPickup(x, y),
+    drawOverlay: (s) => drawSpaceIntroOverlay(s),
+    updateSplash: (s, dt) => updateSpaceIntro(s, dt),
+    onEnter: () => initSpaceWorld(),
+    onExit: () => finishSpaceIntro()
   }
 };
 
-// redoslijed svjetova (za multiplayer oživljavanje): 1 dan, 2 noć, 3 pustinja, 4 ledenjak, 5 vulkan
-const WORLD_ORDER = ['day', 'night', 'desert', 'glacier', 'volcano'];
+// redoslijed svjetova (za multiplayer oživljavanje): 1 dan, 2 noć, 3 pustinja, 4 ledenjak, 5 vulkan, 6 svemir
+const WORLD_ORDER = ['day', 'night', 'desert', 'glacier', 'volcano', 'space'];
 
 function updateWorldPortalSpawn() {
   const cfg = WORLD_PORTALS[worldTheme];
   if (!cfg || worldPortal) return;
   const x = cfg.triggerX();
   if (scrollX + W * 2 > x) {
-    worldPortal = { worldX: x, y: H * 0.4, cfg: cfg };
+    worldPortal = { worldX: x, y: H * (cfg.portalY || 0.4), cfg: cfg };
     clearHazardsNear(x);
   }
 }
@@ -114,8 +128,10 @@ function updatePortalSequence(dt) {
     const k = Math.min(1, s.t / PORTAL_PULL_DURATION);
     scrollX = s.fromScroll + (s.toScroll - s.fromScroll) * (1 - Math.pow(1 - k, 3));
     bee.y = s.fromY + (worldPortal.y - s.fromY) * easeInOut(k);
-    s.spin += dt * (6 + k * 20);
-    bee.spin = s.spin;
+    if (!s.cfg.noSpin) {
+      s.spin += dt * (6 + k * 20);
+      bee.spin = s.spin;
+    }
     flapT += dt * 22;
     if (k >= 1) {
       s.phase = 'splash';
@@ -133,6 +149,7 @@ function updatePortalSequence(dt) {
     delete bee.spin;
     bee.vy = HOP_IMPULSE * 0.6;
     hitInvulnT = Math.max(hitInvulnT, PORTAL_EXIT_GRACE);
+    if (s.cfg.onExit) s.cfg.onExit();
   }
 }
 
@@ -339,24 +356,9 @@ function drawDawnWind() {
   ctx.restore();
 }
 
-// "Fuuuš!" iznad pčelice
+// udar vjetra: ikona 💨 iznad pčelice (signals.js) umjesto teksta
 let windTextT = 0;
-function showWindText() { windTextT = 1.2; }
-function drawWindText(dt) {
-  if (windTextT <= 0 || !bee) return;
-  const a = Math.min(1, windTextT / 0.4);
-  ctx.save();
-  ctx.globalAlpha = a;
-  ctx.fillStyle = '#fff8e7';
-  ctx.strokeStyle = 'rgba(120,70,20,0.7)';
-  ctx.lineWidth = 4;
-  ctx.font = 'italic bold 26px Trebuchet MS, sans-serif';
-  ctx.textAlign = 'center';
-  const x = bee.x + 30 + (1.2 - windTextT) * 60, y = bee.y - 40;
-  ctx.strokeText('Fuuuš!', x, y);
-  ctx.fillText('Fuuuš!', x, y);
-  ctx.restore();
-}
+function showWindText() { windTextT = 1.2; popIcon('💨', true); }
 
 // pješčani vrtlog (umjesto portala) - raste kako mu se pčelica približava
 function drawSandTwister(x, y) {
@@ -528,7 +530,6 @@ function updateDesertWind(dt, canPush) {
       windGust.t += dt;
       if (windGust.first && windGust.t >= WIND_WARN && windGust.t - dt < WIND_WARN) {
         showWindText();
-        showMpToast('💨 Vjetar te gura!');
         triggerShake(3, 0.3);
       } else if (!windGust.first && windGust.t >= WIND_WARN && windGust.t - dt < WIND_WARN) {
         showWindText();
