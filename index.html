@@ -533,6 +533,31 @@
     .featured-tool img { max-width: 160px; margin: 0 auto; }
     .featured-tool .ft-gallery img { max-width: 100%; margin: 0; }
   }
+  .featured-tool.ft-zr {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 20px; padding: 18px;
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.55);
+    box-shadow: 0 0 22px rgba(245, 158, 11, 0.12);
+  }
+  .featured-tool.ft-zr .ft-badge { color: var(--neon-gold); border-color: var(--neon-gold); }
+  .featured-tool.ft-zr h4 { font-size: 1.25rem; margin-bottom: 4px; }
+  .ft-zr-sub { font-size: 0.92rem; color: var(--neon-gold); font-weight: 600; margin-bottom: 10px; }
+  .ft-zr-desc { font-size: 0.85rem; color: var(--text-muted); }
+  .ft-zr-video { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #000; align-self: start; }
+  .ft-zr-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .ft-zr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 14px; }
+  .ft-zr-btn {
+    display: inline-block; padding: 11px 18px; border-radius: 8px;
+    border: 1px solid var(--neon-gold); background: rgba(245, 158, 11, 0.15);
+    color: #fff; font-weight: 700; font-size: 0.9rem; transition: background 0.2s;
+  }
+  .ft-zr-btn:hover { background: var(--neon-gold); color: #070611; }
+  .ft-zr-login { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+  .ft-zr-login:hover { color: var(--neon-gold); text-decoration: underline; }
+  @media (max-width: 840px) {
+    .featured-tool.ft-zr { grid-template-columns: 1fr; }
+  }
 
   /* KONTAKT */
   #kontakt {
@@ -1032,6 +1057,22 @@
     </div>
 
     <div class="lab-items">
+      <div class="featured-tool ft-zr" id="zavrsni-racun">
+        <div class="ft-zr-video">
+          <iframe src="https://www.youtube-nocookie.com/embed/qfDws6e1jKw?rel=0" title="Završni račun – prikaz aplikacije" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div>
+          <span class="ft-badge">NOVO</span>
+          <h4>Završni račun</h4>
+          <p class="ft-zr-sub">Od bruto bilance do FINA GFI-POD obrasca u par klikova.</p>
+          <p class="ft-zr-desc">Aplikacija za knjigovođe: učita prošlogodišnji GFI i bruto bilancu, složi Bilancu, RDG i Dodatne podatke, izračuna porez na dobit, članarinu TZ i temeljnicu zaključnih knjiženja, provjeri FINA kontrole i popuni originalni FINA obrazac te XML za ePoreznu. Podaci ostaju na Vašem računalu.</p>
+          <div class="ft-zr-actions">
+            <a class="ft-zr-btn" href="#kontakt">Zatraži demo i licencu</a>
+            <a class="ft-zr-login" href="/zavrsni/">Prijava za korisnike →</a>
+          </div>
+        </div>
+      </div>
+
       <div class="featured-tool">
         <img src="shot-kompenzacija.jpg" alt="Kompenzacija">
         <div>
