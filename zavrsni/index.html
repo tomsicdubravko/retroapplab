@@ -677,7 +677,9 @@ function refField([addr, label, type, cls]) {
   const key = 'RefStr!' + addr;
   let input;
   const get = () => E.inputs[key];
-  const set = (v) => { if (NUMCODES.includes(addr) && /^\d+$/.test(String(v))) v = +v; E.setInput(key, v); saveState(); recalc(); renderHeader(); if (addr === 'C42' || addr === 'C39') applyTz(); };
+  const set = (v) => { if (NUMCODES.includes(addr) && /^\d+$/.test(String(v))) v = +v; E.setInput(key, v); saveState(); recalc(); renderHeader(); if (addr === 'C42' || addr === 'C39') applyTz();
+    if (addr === 'C19') { const d = +v === 1 ? 'NE' : 'DA'; for (const a of ['I56', 'I66', 'I68']) E.setInput('RefStr!' + a, d); saveState(); recalc(); sections.ref.replaceChildren(...buildRef()); }
+  };
   if (type.startsWith('select:')) {
     const list = LISTS[type.slice(7)];
     input = h('select', { onchange: (e) => set(e.target.value) }, h('option', { value: '' }, '—'), list.map(([c, n]) => h('option', { value: c }, c + ' – ' + n)));
