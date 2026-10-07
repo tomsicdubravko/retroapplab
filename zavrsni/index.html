@@ -1843,7 +1843,10 @@ async function start() {
   if (!sbClient) sbClient = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
   let session = null;
   try { session = (await sbClient.auth.getSession()).data.session; } catch (e) { showGate('offline'); return; }
-  if (!session) { showGate('login'); return; }
+  if (!session) {
+    if (new URLSearchParams(location.search).has('demo')) { LIC.demo = true; renderLicence(); hideGate(); return; }
+    showGate('login'); return;
+  }
   LIC.email = session.user && session.user.email || '';
   const r = await checkLicence(); applyLicence(r);
   if (r.ok) hideGate(); else if (r.reason === 'offline') showGate('offline'); else showGate('login', LIC_MSG[r.reason]);
