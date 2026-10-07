@@ -1736,6 +1736,7 @@ async function checkLicence() {
 }
 function applyLicence(r) {
   LIC.ok = !!r.ok; LIC.checkedAt = Date.now();
+  if (r.ok && !applyLicence.adminChecked) { applyLicence.adminChecked = true; checkAdmin(); }
   if (r.ok) { LIC.until = r.valid_until; LIC.days = r.days_left; LIC.email = r.email || LIC.email; LIC.demo = false; }
   renderLicence();
 }
@@ -1746,6 +1747,7 @@ function renderLicence() {
   if (LIC.ok) {
     el.className = 'lic' + (LIC.days <= 30 ? ' warn' : '');
     el.append(LIC.days <= 30 ? `Licenca istječe ${fd(LIC.until)} (za ${LIC.days} dana) – produžite na retroapplab.com` : `Licenca vrijedi do ${fd(LIC.until)}`);
+    if (typeof IS_ADMIN !== 'undefined' && IS_ADMIN) el.append(' · ', h('button', { class: 'src', type: 'button', onclick: showAdmin }, 'Administracija'));
     el.append(' · ', h('button', { class: 'src', type: 'button', onclick: () => showGate('pwd') }, 'Promijeni lozinku'), ' · ', h('button', { class: 'src', type: 'button', onclick: logout }, 'Odjava'));
   } else {
     el.className = 'lic demo';
@@ -1760,7 +1762,7 @@ async function requireLicence() {
   if (!r.ok) { showGate(r.reason === 'offline' ? 'offline' : 'login', LIC_MSG[r.reason] || ''); return false; }
   return true;
 }
-async function logout() { try { await sbClient.auth.signOut(); } catch (e) {} LIC.ok = false; LIC.demo = false; renderLicence(); showGate('login'); }
+async function logout() { IS_ADMIN = false; applyLicence.adminChecked = false; try { await sbClient.auth.signOut(); } catch (e) {} LIC.ok = false; LIC.demo = false; renderLicence(); showGate('login'); }
 let installEvt = null;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; document.querySelectorAll('.installbtn').forEach(b => b.hidden = false); });
 function installBtn() {
@@ -1848,6 +1850,54 @@ async function start() {
 }
 window.addEventListener('offline', () => { if (LIC.ok) { LIC.checkedAt = 0; } });
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// ---------- Administracija licenci (samo za administratora) ----------
+let IS_ADMIN = false;
+async function checkAdmin() { try { const { data } = await sbClient.rpc('is_admin'); IS_ADMIN = data === true; } catch (e) { IS_ADMIN = false; } renderLicence(); }
+async function showAdmin() {
+  let g = document.getElementById('gate');
+  if (!g) { g = h('div', { id: 'gate', role: 'dialog', 'aria-modal': 'true' }); document.body.append(g); }
+  g.hidden = false;
+  const msg = h('p', { class: 'lead', 'aria-live': 'polite', style: 'margin:0' });
+  const tb = h('tbody');
+  const fd = (s) => s ? String(s).slice(0, 10).split('-').reverse().join('.') + '.' : '';
+  const plusYear = (iso) => { const d = iso ? new Date(iso) : new Date(); const base = d < new Date() ? new Date() : d; base.setFullYear(base.getFullYear() + 1); return base.toISOString().slice(0, 10); };
+  async function load() {
+    msg.textContent = 'Učitavam…';
+    const { data, error } = await sbClient.rpc('admin_list');
+    if (error) { msg.textContent = 'Greška: ' + error.message; return; }
+    msg.textContent = '';
+    tb.replaceChildren(...data.map(u => {
+      const until = h('input', { type: 'date', value: u.valid_until || '', style: 'padding:4px 6px' });
+      const max = h('input', { type: 'number', min: 1, value: u.max_devices || 1, style: 'width:56px;padding:4px 6px' });
+      const save = async (v) => {
+        const { error } = await sbClient.rpc('admin_set_licence', { p_email: u.email, p_until: v || until.value, p_max: +max.value || 1 });
+        msg.textContent = error ? 'Greška: ' + error.message : `✓ Spremljeno za ${u.email}`; if (!error) load();
+      };
+      const expired = u.valid_until && u.valid_until < new Date().toISOString().slice(0, 10);
+      return h('tr', {},
+        h('td', {}, h('b', {}, u.email), h('div', { class: 'adj', style: 'justify-content:flex-start' }, u.last_sign_in ? 'zadnja prijava ' + fd(u.last_sign_in) : 'nije se još prijavio')),
+        h('td', {}, until, u.valid_until ? h('div', { class: 'adj', style: 'justify-content:flex-start;color:' + (expired ? 'var(--err)' : 'inherit') }, expired ? 'istekla' : 'vrijedi') : h('div', { class: 'adj', style: 'justify-content:flex-start' }, 'nema licence')),
+        h('td', {}, `${u.devices || 0} / `, max),
+        h('td', { style: 'white-space:nowrap' },
+          h('button', { class: 'btn', type: 'button', onclick: () => save() }, 'Spremi'), ' ',
+          h('button', { class: 'btn', type: 'button', onclick: () => save(plusYear(u.valid_until)) }, '+1 godina'), ' ',
+          h('button', { class: 'btn', type: 'button', disabled: !u.devices, onclick: async () => {
+            if (!confirm(`Odvezati računalo za ${u.email}? Licenca će se vezati na računalo s kojeg se sljedeći put prijavi.`)) return;
+            const { error } = await sbClient.rpc('admin_reset_devices', { p_email: u.email });
+            msg.textContent = error ? 'Greška: ' + error.message : `✓ Računalo odvezano za ${u.email}`; if (!error) load();
+          } }, 'Odveži računalo')));
+    }));
+  }
+  const card = h('div', { class: 'gatecard', style: 'width:min(980px,100%);max-height:90vh;overflow:auto' },
+    h('h2', {}, 'Administracija licenci'),
+    h('p', { class: 'note', style: 'border:none;padding:0;text-align:center' }, 'Novog korisnika najprije otvori u Supabaseu (Authentication → Users → Add user, uz Auto Confirm). Ovdje mu zatim upišeš do kad vrijedi licenca i klikneš Spremi.'),
+    msg,
+    h('div', { class: 'sheet', style: 'margin:0' }, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'Korisnik'), h('th', {}, 'Licenca do'), h('th', {}, 'Računala'), h('th', {}, ''))), tb)),
+    h('button', { class: 'src', type: 'button', onclick: hideGate }, 'Zatvori'));
+  g.replaceChildren(card);
+  load();
+}
 
 build();
 start();
