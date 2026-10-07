@@ -1746,7 +1746,7 @@ function renderLicence() {
   if (LIC.ok) {
     el.className = 'lic' + (LIC.days <= 30 ? ' warn' : '');
     el.append(LIC.days <= 30 ? `Licenca istječe ${fd(LIC.until)} (za ${LIC.days} dana) – produžite na retroapplab.com` : `Licenca vrijedi do ${fd(LIC.until)}`);
-    el.append(' · ', h('button', { class: 'src', type: 'button', onclick: logout }, 'Odjava'));
+    el.append(' · ', h('button', { class: 'src', type: 'button', onclick: () => showGate('pwd') }, 'Promijeni lozinku'), ' · ', h('button', { class: 'src', type: 'button', onclick: logout }, 'Odjava'));
   } else {
     el.className = 'lic demo';
     el.append('DEMO – ručni unos. Uvoz, spremanje i izvoz rade uz licencu. ', h('button', { class: 'src', type: 'button', onclick: () => showGate('login') }, 'Prijava'));
@@ -1772,6 +1772,28 @@ function showGate(kind, msg) {
   if (!g) { g = h('div', { id: 'gate', role: 'dialog', 'aria-modal': 'true' }); document.body.append(g); }
   g.hidden = false;
   const card = h('div', { class: 'gatecard' }, h('img', { src: 'icons/icon-192.png', alt: '', width: 64, height: 64 }), h('h2', {}, 'Završni račun'));
+  if (kind === 'pwd') {
+    const p1 = h('input', { type: 'password', autocomplete: 'new-password', placeholder: 'nova lozinka' });
+    const p2 = h('input', { type: 'password', autocomplete: 'new-password', placeholder: 'ponovi novu lozinku' });
+    const err = h('p', { class: 'pill bad', hidden: true });
+    const ok = h('p', { class: 'okline', hidden: true }, '✓ Lozinka je promijenjena. Sljedeći put se prijavite novom lozinkom.');
+    const save = async () => {
+      err.hidden = true;
+      if (p1.value.length < 8) { err.textContent = 'Lozinka mora imati barem 8 znakova.'; err.hidden = false; return; }
+      if (p1.value !== p2.value) { err.textContent = 'Lozinke se ne podudaraju.'; err.hidden = false; return; }
+      sbtn.disabled = true;
+      const { error } = await sbClient.auth.updateUser({ password: p1.value });
+      sbtn.disabled = false;
+      if (error) { err.textContent = /fetch|network/i.test(error.message || '') ? LIC_MSG.offline : /same|different/i.test(error.message || '') ? 'Nova lozinka mora biti drugačija od stare.' : 'Promjena nije uspjela: ' + error.message; err.hidden = false; return; }
+      ok.hidden = false; p1.value = ''; p2.value = ''; sbtn.hidden = true; close.textContent = 'Zatvori';
+    };
+    const sbtn = h('button', { class: 'btn primary', type: 'button', onclick: save }, 'Spremi novu lozinku');
+    const close = h('button', { class: 'src', type: 'button', style: 'margin-top:8px', onclick: hideGate }, 'Odustani');
+    p2.addEventListener('keydown', (e) => { if (e.key === 'Enter') save(); });
+    card.append(h('p', { class: 'lead' }, 'Promjena lozinke za ' + (LIC.email || 'Vaš račun')), err, ok,
+      h('label', {}, 'Nova lozinka', p1), h('label', {}, 'Ponovi novu lozinku', p2), sbtn, close);
+    g.replaceChildren(card); setTimeout(() => p1.focus(), 50); return;
+  }
   if (kind === 'loading') card.append(h('p', { class: 'lead' }, 'Provjera licence…'));
   else if (kind === 'offline') {
     card.append(h('p', { class: 'pill bad' }, LIC_MSG.offline),
@@ -1786,7 +1808,16 @@ function showGate(kind, msg) {
       btn.disabled = true; btn.textContent = 'Prijava…';
       const { error } = await sbClient.auth.signInWithPassword({ email: em.value.trim(), password: pw.value });
       btn.disabled = false; btn.textContent = 'Prijava';
-      if (error) { err.textContent = /fetch|network/i.test(error.message || '') ? LIC_MSG.offline : 'Pogrešan e-mail ili lozinka.'; err.hidden = false; return; }
+      if (error) {
+        const m = String(error.message || error.code || '');
+        err.textContent = /fetch|network/i.test(m) ? LIC_MSG.offline
+          : /invalid login credentials/i.test(m) ? 'Pogrešan e-mail ili lozinka.'
+          : /not confirmed/i.test(m) ? 'E-mail adresa nije potvrđena. Javite se podršci.'
+          : /disabled/i.test(m) ? 'Prijava e-mailom je isključena na serveru (Supabase → Authentication → Email).'
+          : /api key|apikey/i.test(m) ? 'Neispravan ključ aplikacije (Supabase API key).'
+          : 'Prijava nije uspjela: ' + m;
+        err.hidden = false; console.warn('Supabase prijava:', error); return;
+      }
       LIC.email = em.value.trim();
       const r = await checkLicence(); applyLicence(r);
       if (r.ok) hideGate(); else { err.textContent = LIC_MSG[r.reason] || 'Licencu nije moguće provjeriti.'; err.hidden = false; }
