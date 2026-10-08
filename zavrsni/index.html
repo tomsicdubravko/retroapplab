@@ -59,9 +59,9 @@ button,input,select{font:inherit;color:inherit}
 .btn{border:1px solid var(--rule-strong);background:var(--surface);border-radius:6px;padding:6px 12px;cursor:pointer}
 .btn:hover{background:var(--sum-bg)}
 .btn:focus-visible,.tab:focus-visible,input:focus-visible,select:focus-visible,.src:focus-visible{outline:2px solid var(--in-focus);outline-offset:1px}
-.status{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;gap:28px;flex-wrap:wrap;align-items:center}
+.status{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .cards{display:flex;gap:10px;flex-wrap:wrap}
-.fig.card{border:1px solid var(--rule);border-radius:10px;background:var(--surface);padding:8px 14px;min-width:150px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.fig.card{border:1px solid var(--rule);border-radius:10px;background:var(--surface);padding:8px 12px;min-width:124px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .fig.card:hover{border-color:var(--rule-strong);background:var(--sum-bg)}
 .fig.card:focus-visible{outline:2px solid var(--in-focus);outline-offset:2px}
 .fig.card span{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
@@ -82,7 +82,7 @@ button,input,select{font:inherit;color:inherit}
 .balcard.bad{border-color:var(--err);background:var(--err-bg)}
 .balcard.bad .dot{background:var(--err)}
 .balcard.bad b{color:var(--err)}
-.kontcard{margin-left:auto;display:flex;align-items:center;gap:12px;border:1.5px solid;border-radius:10px;padding:8px 16px 8px 12px;cursor:pointer;text-align:left;font:inherit;min-width:240px}
+.kontcard{margin-left:auto;display:flex;align-items:center;gap:12px;border:1.5px solid;border-radius:10px;padding:8px 14px 8px 12px;cursor:pointer;text-align:left;font:inherit;min-width:220px}
 .kontcard.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
 .kontcard.bad{background:var(--err-bg);border-color:var(--err);color:var(--err)}
 .kontcard:hover{filter:brightness(.97)}
@@ -187,6 +187,45 @@ details[open] summary{border-bottom:1px solid var(--rule)}
 .lic:empty{display:none}
 .lic.warn{color:#8A5A00;font-weight:600}
 .lic.demo{color:#8A5A00}
+.docwrap{margin:0 0 26px}
+.docbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+.paper{background:#e4e7eb;padding:18px;border-radius:8px;overflow-x:auto}
+.doc{background:#fff;color:#000;max-width:760px;margin:0 auto;padding:56px 64px;font-family:Arial,Helvetica,sans-serif;font-size:14.5px;line-height:1.55;box-shadow:0 2px 10px rgba(0,0,0,.12);outline:none;min-height:400px}
+.doc:focus{box-shadow:0 0 0 2px var(--in-focus),0 2px 10px rgba(0,0,0,.12)}
+.doc p{margin:0 0 10px;text-align:justify}
+.doc .title{text-align:center;font-weight:700;font-size:18px;margin:26px 0 2px;letter-spacing:.03em}
+.doc .sub,.doc .point{text-align:center;font-weight:700}
+.doc .point{margin-top:16px}
+.doc .li{margin:0 0 0 30px;text-align:left}
+.doc .sig{text-align:right;margin-top:44px}
+.doc .auto{background:#EAF1FB;color:#1A4A94;border-radius:3px;padding:0 2px}
+@media (max-width:640px){.doc{padding:28px 22px}}
+@media print{.docbar,.paper{display:none}}
+.doc .hd{font-weight:700;font-size:16px;margin:0;text-align:left}
+.doc .hd2{margin:0 0 18px;text-align:left}
+.doc .ttl{font-weight:700;margin:0;text-align:left}
+.doc .h1{font-weight:700;font-style:italic;font-size:17px;margin:28px 0 10px;text-align:left}
+.doc .h2,.doc .capb{font-weight:700;margin:14px 0 0;text-align:left}
+.doc .cap{font-weight:700;font-style:italic;margin:14px 0 0;text-align:left}
+.doc .bn{font-style:italic;text-decoration:underline;color:#808080;font-size:12px;margin:0 0 10px;text-align:left;padding:0;border:none}
+.doc table{min-width:0}
+.doc .bt th{position:static;color:#000;font-size:12.5px}
+.doc .sig2{margin:36px 0 0 60%;text-align:left}
+.doc .sig3{display:flex;justify-content:space-between;margin:36px 0 0;text-align:left}
+.doc .sig3 span{width:48%}
+.doc table.bt{border-collapse:collapse;width:100%;margin:6px 0 14px;font-size:13px}
+.doc .bt th{background:#BDD7EE;text-align:left;padding:4px 6px;border-bottom:1px solid #000;font-weight:700}
+.doc .bt td{padding:3px 6px;border-bottom:1px solid #000}
+.doc .bt td+td,.doc .bt th+th{border-left:1px solid #000}
+.doc .bt .n{text-align:right;white-space:nowrap}
+.doc .bt .tot td{font-weight:700;border-bottom:none}
+.doc .bt .tot .r{text-align:right}
+.kdet summary{padding:12px 14px;cursor:pointer;font-weight:600}
+.fig.card.warnc b{color:#8A5A00}
+.dartbl{min-width:0;margin-top:8px}
+.dartbl [hidden]{display:none}
+.dartbl td,.dartbl th{padding:4px 6px}
+.lic .user{font-weight:600;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -661,7 +700,7 @@ function recalc() {
 
 // ---------- tabs ----------
 const TABS = [
-  ['upute', 'Upute'], ['ref', 'Obveznik'], ['bb', 'Uvoz', 'Uvoz podataka (prošla godina i bruto bilanca)'], ['bil', 'Bilanca'], ['rdg', 'RDG', 'Račun dobiti i gubitka'], ['dod', 'Dodatni', 'Dodatni podaci'], ['pd', 'PD', 'Prijava poreza na dobit'], ['tz', 'TZ', 'Članarina TZ i naknada za šume'], ['tem', 'Temeljnica'], ['kont', 'Kontrole', 'FINA kontrole'], ['exp', 'GFI', 'Izvoz u FINA-in GFI-POD obrazac'],
+  ['upute', 'Upute'], ['ref', 'Obveznik'], ['bb', 'Uvoz', 'Uvoz podataka (prošla godina i bruto bilanca)'], ['bil', 'Bilanca'], ['rdg', 'RDG', 'Račun dobiti i gubitka'], ['dod', 'Dodatni', 'Dodatni podaci'], ['pd', 'PD', 'Prijava poreza na dobit'], ['tz', 'TZ', 'Članarina TZ i naknada za šume'], ['tem', 'Temeljnica'], ['kont', 'Kontrole', 'FINA kontrole'], ['odl', 'Odluke', 'Odluke o utvrđivanju i raspodjeli'], ['bilj', 'Bilješke', 'Bilješke uz financijske izvještaje'], ['exp', 'GFI', 'Izvoz u FINA-in GFI-POD obrazac'],
 ];
 const sections = {};
 function showTab(id) {
@@ -678,6 +717,7 @@ function refField([addr, label, type, cls]) {
   let input;
   const get = () => E.inputs[key];
   const set = (v) => { if (NUMCODES.includes(addr) && /^\d+$/.test(String(v))) v = +v; E.setInput(key, v); saveState(); recalc(); renderHeader(); if (addr === 'C42' || addr === 'C39') applyTz();
+    if (addr === 'C4' || addr === 'F4') applyMonths();
     if (addr === 'C19') { const d = +v === 1 ? 'NE' : 'DA'; for (const a of ['I56', 'I66', 'I68']) E.setInput('RefStr!' + a, d); saveState(); recalc(); sections.ref.replaceChildren(...buildRef()); }
   };
   if (type.startsWith('select:')) {
@@ -1258,6 +1298,7 @@ function buildImport() {
   const msg = h('p', { class: 'lead', 'aria-live': 'polite' });
   const drop = h('label', { class: 'drop', for: 'bbFile' }, h('b', {}, 'Odaberi bruto bilancu (PDF)'), h('span', {}, 'ili je povuci ovdje. Ispis na 31.12., ali bez završne temeljnice (prije zaključnih knjiženja).'));
   const body = h('div');
+  const rules = h('div', { style: 'margin-top:22px' });
   async function handle(f) {
     if (!f) return; if (!(await requireLicence())) return; 
     msg.textContent = 'Čitam ' + f.name + '…';
@@ -1280,7 +1321,7 @@ function buildImport() {
 
   function render() {
     body.replaceChildren();
-    if (!BB) { body.append(h('p', { class: 'note', style: 'border:none;padding:0' }, 'Još nije učitana nijedna bilanca. Za sada je podržan ispis bilance analitike iz PSPnet-a.')); body.append(...mapEditor()); return; }
+    if (!BB) { body.append(h('p', { class: 'note', style: 'border:none;padding:0' }, 'Još nije učitana nijedna bilanca. Za sada je podržan ispis bilance analitike iz PSPnet-a.')); rules.replaceChildren(...mapEditor()); return; }
     const sum = [0, 0, 0, 0, 0, 0]; BB.leaves.forEach(l => l.v.forEach((x, i) => sum[i] += x));
     const ok = BB.total && [0, 1, 2, 3, 4, 5].every(i => Math.abs(r2(sum[i]) - BB.total[i]) < 0.01);
     const { sums, unmapped } = computeTransfer();
@@ -1290,6 +1331,7 @@ function buildImport() {
       if (!(await requireLicence())) return; 
       const used = new Set([...MAP, ...MAP2].map(r => r[1]).filter(k => TARGET[k]));
       for (const k of used) E.setInput(k, sums[k] ? sums[k] : '');
+      for (const k of used) E.setInput('_auto:' + k, sums[k] ? sums[k] : '');
       recalc();
       const act = activityRow();
       for (const r of ACT_ROWS) E.setInput('Dodatni!J' + r, '');
@@ -1323,21 +1365,21 @@ function buildImport() {
     };
     const isRdg = (l) => '47'.includes(l.k[0]);
     const head = [['Konto'], ['Naziv'], ['Saldo', 'n'], ['Ide na poziciju']];
-    body.append(h('h2', {}, 'Konta prihoda i rashoda (RDG)'),
-      h('p', { class: 'lead' }, 'Svakom kontu je dodijeljena pozicija po pravilima mapiranja. Ako promijeniš poziciju u retku, to vrijedi samo za taj konto. Crveno označena konta nemaju poziciju i neće se prenijeti. Konta sa saldom nula su posivljena.'),
-      simpleTable(head, BB.leaves.filter(isRdg).map(kRow)),
-      h('h2', {}, 'Konta bilance'),
-      h('p', { class: 'lead' }, 'Imovina se prenosi kao dugovni saldo, a kapital i obveze kao potražni. Ispravci vrijednosti (npr. 029, 129) idu na istu poziciju kao imovina, pa se sami oduzmu. Izvanbilančna konta (99) se ne prenose.'),
-      simpleTable(head, BB.leaves.filter(l => !isRdg(l) && !l.k.startsWith('99')).map(kRow)));
-
     const tRows = TARGETS.filter(t => sums[t.key] !== undefined).map(t => h('tr', {}, h('td', {}, t.label), h('td', { class: 'v' }, h('span', { class: 'calc' }, fmt(sums[t.key])))));
-    const balNote = h('span', { class: 'lead', style: 'margin:0' });
     const btn = h('button', { class: 'btn primary', type: 'button', onclick: transfer }, 'Prenesi u obrazac');
-    body.append(h('h2', {}, 'Što ide u obrazac (tekuća godina)'),
-      ...(unmapped.length ? [h('p', { class: 'pill bad', style: 'margin:0 0 10px' }, `${unmapped.length} konta s prometom nemaju poziciju`)] : []),
-      simpleTable([['Pozicija'], ['Iznos', 'n']], tRows),
-      h('div', { style: 'display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px' }, btn, done));
-    body.append(...mapEditor());
+    body.append(h('details', { class: 'sheet kdet', open: unmapped.length ? true : null },
+      h('summary', {}, `Konta i pozicije (${BB.leaves.length} konta${unmapped.length ? ', ' + unmapped.length + ' bez pozicije' : ''})`),
+      h('div', { style: 'padding:0 14px 6px' },
+        h('h2', {}, 'Konta prihoda i rashoda (RDG)'),
+        h('p', { class: 'lead' }, 'Svakom kontu je dodijeljena pozicija po pravilima mapiranja. Ako promijeniš poziciju u retku, to vrijedi samo za taj konto. Crveno označena konta nemaju poziciju i neće se prenijeti. Konta sa saldom nula su posivljena.'),
+        simpleTable(head, BB.leaves.filter(isRdg).map(kRow)),
+        h('h2', {}, 'Konta bilance'),
+        h('p', { class: 'lead' }, 'Imovina se prenosi kao dugovni saldo, a kapital i obveze kao potražni. Ispravci vrijednosti (npr. 029, 129) idu na istu poziciju kao imovina, pa se sami oduzmu. Izvanbilančna konta (99) se ne prenose.'),
+        simpleTable(head, BB.leaves.filter(l => !isRdg(l) && !l.k.startsWith('99')).map(kRow)),
+        h('h2', {}, 'Što ide u obrazac (tekuća godina)'),
+        simpleTable([['Pozicija'], ['Iznos', 'n']], tRows),
+        h('div', { style: 'display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px' }, btn, done))));
+    rules.replaceChildren(...mapEditor());
   }
 
   function mapEditor() { return [ruleEditor(MAP, saveMap, ['RDG', 'Bilanca', 'Ostalo'], 'Pravila mapiranja', 'Pravilo vrijedi za sva konta koja počinju tim brojem. Kad se više pravila poklapa, vrijedi duže (npr. 4613 ima prednost pred 46). Pravila se pamte za sve klijente.', () => { MAP = DEFAULT_MAP.map(x => x.slice()); saveMap(); }),
@@ -1357,7 +1399,7 @@ function buildImport() {
         h('button', { class: 'btn', type: 'button', onclick: () => { if (confirm('Vratiti zadana pravila?')) { reset(); render(); } } }, 'Vrati zadana pravila')));
   }
   render();
-  return [...buildPrevImport(), h('h2', {}, 'Tekuća godina – bruto bilanca'), msg, file, drop, body];
+  return [...buildPrevImport(), h('h2', {}, 'Tekuća godina – bruto bilanca'), msg, file, drop, body, ...buildChecklist(), rules];
 }
 
 // ---------- Prethodna godina iz prošlogodišnjeg GFI-ja ----------
@@ -1417,7 +1459,8 @@ async function importPrevGfi(file) {
   }
   saveState();
   sections.ref.replaceChildren(...buildRef());
-  renderHeader(); applyTz(); for (const n of numInputs) n.show(); recalc();
+  if (!E.inputs['_odl_potpis'] && E.inputs['RefStr!A75']) { E.setInput('_odl_potpis', E.inputs['RefStr!A75']); E.setInput('_auto:_odl_potpis', E.inputs['RefStr!A75']); saveState(); }
+  renderHeader(); applyTz(); applyMonths(); for (const n of numInputs) n.show(); recalc();
   return report;
 }
 function buildPrevImport() {
@@ -1588,6 +1631,8 @@ function buildExport() {
   const drop = h('label', { class: 'drop', for: 'finaFile' }, h('b', {}, 'Odaberi FINA-in GFI-POD obrazac (.xls)'), h('span', {}, 'Prazan obrazac za ovu godinu, kako ga skidaš s FINA-ine stranice. Aplikacija ga popuni i vrati ti na preuzimanje, a original ostaje netaknut.'));
   async function handle(f) {
     if (!f) return; if (!(await requireLicence())) return; 
+    const nm = checkMissing();
+    if (nm && !confirm(`U ručnom unosu nedostaje ${nm} stavki (kartica Uvoz). Ipak napraviti obrazac?`)) return;
     const c = kontCounts();
     if (c.e && !confirm(`FINA kontrole javljaju ${c.e} pogrešaka. Ipak napraviti obrazac?`)) return;
     out.replaceChildren(h('p', { class: 'lead' }, 'Punim obrazac…'));
@@ -1615,13 +1660,598 @@ function buildExport() {
     inp, drop, out];
 }
 
+// ---------- Odluke (utvrđivanje GFI, raspodjela dobiti / pokriće gubitka) ----------
+const eur = (v) => fmt(Math.abs(Number(v) || 0)) + ' EUR';
+const A = (txt) => `<span class="auto">${txt}</span>`;
+function docData() {
+  const g = (a) => E.inputs['RefStr!' + a] || '';
+  const year = g('F12') || '';
+  const iso = String(g('F4') || '').slice(0, 10);
+  const d31 = iso ? iso.split('-').reverse().join('.') + '.' : '31.12.' + year + '.';
+  return {
+    naziv: g('C29') || '________', year, d31,
+    datum: E.inputs['_odl_datum'] || new Date().toLocaleDateString('hr-HR').replace(/\s/g, ''),
+    potpis: E.inputs['_odl_potpis'] || g('A75') || '',
+    rez: E.num('RDG!J66') || 0,
+    aktiva: E.num('Bilanca!J73') || 0,
+    zadr: E.num('Bilanca!J94') || 0,
+    pgub: E.num('Bilanca!J95') || 0,
+  };
+}
+const UVOD = (d, ver) => `Na temelju odredbi Zakona o trgovačkim društvima, odredbi Zakona o računovodstvu i društvenog ugovora, skupština društva ${A(d.naziv)} ${ver} dana ${A(d.datum)}`;
+function buildUtvrdjivanje() {
+  const d = docData(), dob = d.rez >= 0;
+  return [
+    ['p', UVOD(d, 'donijela je')],
+    ['title', 'ODLUKU'],
+    ['sub', `o utvrđivanju godišnjeg financijskog izvještaja za ${A(d.year)}. godinu`],
+    ['point', 'Točka I.'],
+    ['p', `Uprava društva, sukladno propisima za ${A(d.year)}. godinu, sastavila je i skupštini društva predočila na prihvaćanje sljedeće temeljne financijske i porezne izvještaje:`],
+    ['li', '1. Bilanca,'], ['li', '2. Račun dobiti i gubitka,'], ['li', '3. Bilješke uz temeljne financijske izvještaje,'],
+    ['li', `4. Prijava poreza na dobit za ${A(d.year)}. godinu,`], ['li', '5. Obrazac GFI-POD za potrebe javne objave.'],
+    ['point', 'Točka II.'],
+    ['p', `Utvrđuje se račun dobiti i gubitka za ${A(d.year)}. godinu u kojem iskazana svota ${dob ? 'dobiti' : 'gubitka'} nakon oporezivanja iznosi ${A(eur(d.rez))}.`],
+    ['p', `Bilanca na dan ${A(d.d31)} godine iskazuje zbroj aktive u svoti ${A(eur(d.aktiva))}.`],
+    ['sig', A(d.potpis || '________________')],
+  ];
+}
+function buildRaspodjela() {
+  const d = docData();
+  const uv = ['p', UVOD(d, 'donosi')];
+  if (d.rez >= 0) {
+    const b = [uv, ['title', 'ODLUKU'], ['sub', `o raspodjeli dobiti ${A(d.year)}. godine`], ['point', 'Točka I.'],
+      ['p', `Prema usvojenim financijskim izvještajima dobit poslovne godine iznosi ${A(eur(d.rez))}.`]];
+    if (d.pgub > 0.004) b.push(['p', `Preneseni gubitak iz prethodnih razdoblja iznosi ${A(eur(d.pgub))} te se dobit poslovne godine najprije koristi za njegovo pokriće.`]);
+    if (d.zadr > 0.004) b.push(['p', `Zadržana dobit iz prethodnih razdoblja iznosi ${A(eur(d.zadr))} te s dobiti iz ove poslovne godine čini ukupnu svotu dobiti.`]);
+    b.push(['point', 'Točka II.'], ['p', 'Preostala dobit u potpunosti se raspoređuje na zadržanu dobit.'],
+      ['p', 'Dobit se smatra zadržanom sve dok se zahtjevom pojedinog člana društva, a po ispunjenim uvjetima (likvidnost društva), ne zatraži i ne izvrši isplata (djelomična ili cjelokupna) na način definiran u zahtjevu člana društva. Članovi društva koji su dobit predujmljivali moraju donijeti odluku o pokriću tog predujma.'],
+      ['sig', A(d.potpis || '________________')]);
+    return b;
+  }
+  const gub = -d.rez, b = [uv, ['title', 'ODLUKU'], ['sub', `o postupanju s gubitkom ${A(d.year)}. godine`], ['point', 'Točka I.'],
+    ['p', `Prema usvojenim financijskim izvještajima gubitak poslovne godine iznosi ${A(eur(gub))}.`]];
+  const prenos = (iznos) => {
+    b.push(['p', iznos === gub ? 'Gubitak poslovne godine raspoređuje se na preneseni gubitak.' : `Nepokriveni dio gubitka poslovne godine u iznosu od ${A(eur(iznos))} raspoređuje se na preneseni gubitak.`]);
+    if (d.pgub > 0.004) b.push(['p', `Preneseni gubitak iz prethodnih godina iznosi ${A(eur(d.pgub))} te s gubitkom iz ove poslovne godine čini ukupnu svotu gubitka za prijenos u buduća razdoblja.`]);
+    else b.push(['p', 'Gubitak se prenosi u buduća razdoblja.']);
+  };
+  if (d.zadr > 0.004 && d.zadr >= gub - 0.004) b.push(['p', `Zadržana dobit iz prethodnih razdoblja iznosi ${A(eur(d.zadr))} te će se iskoristiti za pokriće gubitka poslovne godine. Preostali iznos zadržane dobiti se zadržava odnosno prenosi u buduća razdoblja.`]);
+  else if (d.zadr > 0.004) { b.push(['p', `Zadržana dobit iz prethodnih razdoblja iznosi ${A(eur(d.zadr))} te će se u cijelosti iskoristiti za djelomično pokriće gubitka poslovne godine.`]); prenos(Math.round((gub - d.zadr) * 100) / 100); }
+  else prenos(gub);
+  b.push(['sig', A(d.potpis || '________________')]);
+  return b;
+}
+const blocksHtml = (bl) => bl.map(([c, t]) => {
+  if (c === 'sig') return `<p class="sig">${t}<br>____________________</p>`;
+  if (c === 'table') return `<table class="bt"><thead><tr>${t.head.map((x, i) => `<th${i ? ' class="n"' : ''}>${x}</th>`).join('')}</tr></thead><tbody>${t.body.map(r => `<tr>${r.map((x, i) => `<td${i ? ' class="n"' : ''}>${x}</td>`).join('')}</tr>`).join('')}${t.foot ? `<tr class="tot">${t.foot.map((x, i) => `<td${i ? ' class="n"' : ' class="r"'}>${x}</td>`).join('')}</tr>` : ''}</tbody></table>`;
+  return `<p class="${c}">${t}</p>`;
+}).join('');
+// --- jednostavan .docx (zip bez kompresije) ---
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return (b) => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = t[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }; })();
+function zipStore(files) {
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  for (const [name, text] of files) {
+    const nb = enc.encode(name), db = enc.encode(text), crc = CRC(db);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint32(14, crc, true); lh.setUint32(18, db.length, true); lh.setUint32(22, db.length, true); lh.setUint16(26, nb.length, true);
+    parts.push(new Uint8Array(lh.buffer), nb, db);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint32(16, crc, true); ch.setUint32(20, db.length, true); ch.setUint32(24, db.length, true); ch.setUint16(28, nb.length, true); ch.setUint32(42, off, true);
+    cen.push(new Uint8Array(ch.buffer), nb);
+    off += 30 + nb.length + db.length;
+  }
+  const csize = cen.reduce((s, x) => s + x.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, csize, true); end.setUint32(16, off, true);
+  const all = [...parts, ...cen, new Uint8Array(end.buffer)], out = new Uint8Array(all.reduce((s, x) => s + x.length, 0));
+  let p = 0; for (const x of all) { out.set(x, p); p += x.length; } return out;
+}
+const xesc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function docxFromEl(el, opts = {}) {
+  const ps = [];
+  const run = (txt, o = {}) => `<w:r><w:rPr>${o.b ? '<w:b/>' : ''}${o.i ? '<w:i/>' : ''}${o.u ? '<w:u w:val="single"/>' : ''}${o.color ? `<w:color w:val="${o.color}"/>` : ''}<w:sz w:val="${o.sz || 22}"/></w:rPr><w:t xml:space="preserve">${xesc(txt)}</w:t></w:r>`;
+  const STY = { title: { jc: 'center', b: 1, sz: 28, sp: 'w:before="360" w:after="60"' }, sub: { jc: 'center', b: 1 }, point: { jc: 'center', b: 1, sp: 'w:before="240" w:after="120"' },
+    sig: { jc: 'right', sp: 'w:before="720" w:after="0"' }, sig2: { jc: 'left', ind: 5400, sp: 'w:before="480" w:after="0"' }, li: { jc: 'left', ind: 567, sp: 'w:before="0" w:after="0"' },
+    hd: { jc: 'left', b: 1, sz: 24, sp: 'w:before="0" w:after="0"' }, hd2: { jc: 'left', sp: 'w:before="0" w:after="240"' }, ttl: { jc: 'left', b: 1, sp: 'w:before="0" w:after="0"' },
+    h1: { jc: 'left', b: 1, i: 1, sz: 26, sp: 'w:before="360" w:after="160"', keep: 1 }, h2: { jc: 'left', b: 1, sp: 'w:before="200" w:after="0"', keep: 1 }, cap: { jc: 'left', b: 1, i: 1, sp: 'w:before="200" w:after="0"', keep: 1 }, capb: { jc: 'left', b: 1, sp: 'w:before="200" w:after="0"', keep: 1 },
+    bn: { jc: 'left', i: 1, u: 1, color: '808080', sz: 18, sp: 'w:before="0" w:after="160"', keep: 1 } };
+  const B = 'w:val="single" w:sz="4" w:space="0" w:color="000000"';
+  for (const node of el.children) {
+    if (node.tagName === 'TABLE') {
+      const rows = [...node.querySelectorAll('tr')];
+      const ncol = rows[0] ? rows[0].children.length : 3, w0 = ncol === 3 ? 4600 : 4000, wn = Math.floor((9070 - w0) / (ncol - 1));
+      const trs = rows.map((tr, ri) => `<w:tr>${[...tr.children].map((c, ci) => {
+        const head = c.tagName === 'TH', tot = tr.classList.contains('tot');
+        return `<w:tc><w:tcPr><w:tcW w:w="${ci ? wn : w0}" w:type="dxa"/>${head ? '<w:shd w:val="clear" w:color="auto" w:fill="BDD7EE"/>' : ''}</w:tcPr><w:p><w:pPr><w:jc w:val="${ci || (tot && !ci) ? 'right' : 'left'}"/><w:spacing w:before="20" w:after="20"/></w:pPr>${run(c.innerText.trim(), { b: head || tot, sz: 19 })}</w:p></w:tc>`;
+      }).join('')}</w:tr>`).join('');
+      ps.push(`<w:tbl><w:tblPr><w:tblW w:w="9070" w:type="dxa"/><w:tblBorders><w:insideH ${B}/><w:insideV ${B}/><w:bottom ${B}/></w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${Array.from({ length: ncol }, (_, i) => `<w:gridCol w:w="${i ? wn : w0}"/>`).join('')}</w:tblGrid>${trs}</w:tbl><w:p><w:pPr><w:spacing w:before="0" w:after="120"/></w:pPr></w:p>`);
+      continue;
+    }
+    if (node.className === 'sig3') {
+      const cols = [...node.querySelectorAll(':scope > span')].map(s => s.innerText.replace(/\u00a0/g, ' ').split('\n'));
+      const n = Math.max(...cols.map(c => c.length));
+      const runs = Array.from({ length: n }, (_, i) => `${i ? '<w:r><w:br/></w:r>' : ''}${run(cols[0][i] || '')}<w:r><w:tab/></w:r>${run((cols[1] || [])[i] || '')}`).join('');
+      ps.push(`<w:p><w:pPr><w:tabs><w:tab w:val="left" w:pos="5400"/></w:tabs><w:spacing w:before="480" w:after="0" w:line="288" w:lineRule="auto"/></w:pPr>${runs}</w:p>`);
+      continue;
+    }
+    const cls = node.className || 'p', st = STY[cls] || { jc: 'both' };
+    const lines = node.innerText.replace(/\u00a0/g, ' ').split('\n');
+    const runs = lines.map((l, i) => `${i ? '<w:r><w:br/></w:r>' : ''}${run(l, st)}`).join('');
+    ps.push(`<w:p><w:pPr>${st.keep ? '<w:keepNext/>' : ''}<w:jc w:val="${st.jc}"/><w:spacing ${st.sp || 'w:before="0" w:after="160"'} w:line="288" w:lineRule="auto"/>${st.ind ? `<w:ind w:left="${st.ind}"/>` : ''}</w:pPr>${runs}</w:p>`);
+  }
+  const W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+  const fld = (instr) => `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve"> ${instr} </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:t>1</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r>`;
+  const footer = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr ${W}><w:p><w:pPr><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:i/><w:color w:val="999999"/><w:sz w:val="18"/></w:rPr><w:t xml:space="preserve">str. </w:t></w:r>${fld('PAGE')}<w:r><w:t xml:space="preserve"> / </w:t></w:r>${fld('NUMPAGES')}</w:p></w:ftr>`;
+  const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${W}><w:body>${ps.join('')}<w:sectPr>${opts.pages ? '<w:footerReference w:type="default" r:id="rId2"/>' : ''}<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1418" w:right="1418" w:bottom="1418" w:left="1418" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/><w:sz w:val="22"/><w:lang w:val="hr-HR"/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>`;
+  const files = [
+    ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' + (opts.pages ? '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>' : '') + '</Types>'],
+    ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'],
+    ['word/_rels/document.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' + (opts.pages ? '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>' : '') + '</Relationships>'],
+    ['word/document.xml', doc], ['word/styles.xml', styles],
+  ];
+  if (opts.pages) files.push(['word/footer1.xml', footer]);
+  return zipStore(files);
+}
+async function saveBlob(filename, bytes, mime) {
+  try {
+    const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+    if (dl) { await dl.save({ filename, data: bytes, mimeType: mime }); return; }
+  } catch (e) { if (e && e.code === 'declined') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([bytes], { type: mime })); a.download = filename; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+const DOC_CSS_EXTRA = `.hd{font-weight:bold;font-size:12pt;margin:0;text-align:left}.hd2{margin:0 0 14pt;text-align:left}.ttl{font-weight:bold;margin:0;text-align:left}.h1{font-weight:bold;font-style:italic;font-size:13pt;margin:20pt 0 8pt;text-align:left;break-after:avoid}.h2,.capb{font-weight:bold;margin:10pt 0 0;text-align:left;break-after:avoid}.cap{font-weight:bold;font-style:italic;margin:10pt 0 0;text-align:left;break-after:avoid}.bn{font-style:italic;text-decoration:underline;color:#808080;font-size:9pt;margin:0 0 8pt;break-after:avoid}.sig2{margin:28pt 0 0 60%;text-align:left}.sig3{display:flex;justify-content:space-between;margin:28pt 0 0;text-align:left}.sig3 span{width:48%}table.bt{border-collapse:collapse;width:100%;margin:4pt 0 10pt;font-size:9.5pt;break-inside:avoid}.bt th{background:#BDD7EE;text-align:left;padding:3pt 5pt;border-bottom:1px solid #000}.bt td{padding:2pt 5pt;border-bottom:1px solid #000}.bt td+td,.bt th+th{border-left:1px solid #000}.bt .n{text-align:right}.bt .tot td{font-weight:bold;border-bottom:none}.bt .tot .r{text-align:right}`;
+const DOC_CSS = `body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;line-height:1.5;color:#000}p{margin:0 0 8pt;text-align:justify}.title{text-align:center;font-weight:bold;font-size:14pt;margin:18pt 0 3pt}.sub,.point{text-align:center;font-weight:bold}.point{margin-top:12pt}.li{margin:0 0 0 1cm;text-align:left}.sig{text-align:right;margin-top:36pt}.auto{background:none}@page{size:A4;margin:2.5cm}`;
+function printDoc(el, title, opts = {}) {
+  const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;width:0;height:0;border:0;right:0;bottom:0';
+  document.body.append(f);
+  const d = f.contentDocument; d.open(); d.write(`<!DOCTYPE html><html lang="hr"><head><meta charset="utf-8"><title>${title}</title><style>${DOC_CSS}${DOC_CSS_EXTRA}${opts.pages ? '@page{@bottom-right{content:"str. " counter(page) " / " counter(pages);font:italic 9pt Arial;color:#999}}' : ''}</style></head><body>${el.innerHTML}</body></html>`); d.close();
+  setTimeout(() => { f.contentWindow.focus(); f.contentWindow.print(); setTimeout(() => f.remove(), 2000); }, 200);
+}
+function docEditor(key, title, builder, fileBase, dopts = {}) {
+  const ed = h('div', { class: 'doc', contenteditable: 'true', spellcheck: 'true', 'aria-label': title });
+  const state = h('span', { class: 'lead', style: 'margin:0' });
+  const regen = (force) => {
+    const saved = E.inputs[key];
+    if (saved && !force) { ed.innerHTML = saved; state.textContent = 'ručno uređeno'; return; }
+    ed.innerHTML = blocksHtml(builder()); state.textContent = 'automatski iz obrasca';
+  };
+  ed.addEventListener('input', () => { E.setInput(key, ed.innerHTML); saveState(); state.textContent = 'ručno uređeno'; });
+  hooks.push(() => { if (!E.inputs[key] && document.activeElement !== ed) ed.innerHTML = blocksHtml(builder()); });
+  regen(false);
+  const name = () => `${fileBase}_${String(E.inputs['RefStr!C29'] || 'obrazac').replace(/[^\wčćžšđČĆŽŠĐ.-]+/g, '_').slice(0, 40)}_${E.inputs['RefStr!F12'] || ''}`;
+  const bar = h('div', { class: 'docbar' },
+    h('b', {}, title), state,
+    h('span', { style: 'flex:1' }),
+    h('button', { class: 'btn', type: 'button', onclick: () => { if (E.inputs[key] && !confirm('Vratiti automatski tekst? Tvoje izmjene u ovoj odluci bit će obrisane.')) return; E.setInput(key, ''); saveState(); regen(true); } }, 'Složi ponovno iz obrasca'),
+    h('button', { class: 'btn', type: 'button', onclick: async () => { if (!(await requireLicence())) return; await saveBlob(name() + '.docx', docxFromEl(ed, dopts), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'); } }, 'Izvezi u Word'),
+    h('button', { class: 'btn primary', type: 'button', onclick: async () => { if (!(await requireLicence())) return; printDoc(ed, name(), dopts); } }, 'Spremi kao PDF'));
+  return h('div', { class: 'docwrap' }, bar, h('div', { class: 'paper' }, ed));
+}
+function buildOdluke() {
+  const field = (key, label, ph) => {
+    const i = h('input', { type: 'text', placeholder: ph, value: E.inputs[key] || '' });
+    i.addEventListener('change', () => { E.setInput(key, i.value.trim()); saveState(); recalc(); });
+    return h('label', {}, label, i);
+  };
+  return [h('h2', {}, 'Odluke'),
+    h('p', { class: 'lead' }, 'Tekst se slaže iz obrasca (naziv, godina, dobit ili gubitak, aktiva, zadržana dobit). Plavo označeni podaci dolaze iz obrasca. Tekst možeš mijenjati izravno na papiru, a izmjene se pamte uz klijenta.'),
+    h('div', { class: 'sheet' }, h('div', { class: 'form' },
+      field('_odl_datum', 'Datum donošenja odluka', 'npr. 17.03.2026.'),
+      field('_odl_potpis', 'Potpisnik (član društva / direktor)', E.inputs['RefStr!A75'] || 'ime i prezime'))),
+    docEditor('_doc_rasp', 'Odluka o raspodjeli dobiti / postupanju s gubitkom', buildRaspodjela, 'Odluka_raspodjela'),
+    docEditor('_doc_utv', 'Odluka o utvrđivanju godišnjeg financijskog izvještaja', buildUtvrdjivanje, 'Odluka_utvrdjivanje')];
+}
+
+// ---------- Bilješke uz financijske izvještaje ----------
+const AOPROW = { Bilanca: {}, RDG: {} };
+for (const r of M.bil) if (r.aop !== null) AOPROW.Bilanca[r.aop] = r.r;
+for (const r of M.rdg) if (r.aop !== null) AOPROW.RDG[r.aop] = r.r;
+const bv = (aop, col = 'J') => E.num('Bilanca!' + col + AOPROW.Bilanca[aop]) || 0;
+const rv = (aop, col = 'J') => E.num('RDG!' + col + AOPROW.RDG[aop]) || 0;
+const sumB = (aops, col) => aops.reduce((s, a) => s + bv(a, col), 0);
+const sumR = (aops, col) => aops.reduce((s, a) => s + rv(a, col), 0);
+const nz = (x) => Math.abs(x) > 0.004;
+const E2 = (x) => A(fmt(x) + ' EUR');
+const cellE = (x) => nz(x) ? fmt(x) + ' €' : '- €';
+const idx = (p, c) => nz(p) ? (Math.round(c / p * 10000) / 100).toLocaleString('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+function tbl(kind, rows, opts = {}) {
+  const y = Number(E.inputs['RefStr!F12']) || new Date().getFullYear(), p = y - 1;
+  const head = kind === 'bil' ? ['Opis', `31.12.${p}.`, `31.12.${y}.`] : kind === 'kv' ? ['Opis', `Knjigovodstvena vrijednost 31.12.${p}.`, `Knjigovodstvena vrijednost 31.12.${y}.`] : ['Naziv pozicije', String(p), String(y)];
+  const withIdx = kind !== 'kv';
+  if (withIdx) head.push(`Indeks ${y}/${p}`);
+  const body = rows.map(([lbl, pv, cv]) => [lbl, cellE(pv), cellE(cv), ...(withIdx ? [nz(cv) || nz(pv) ? idx(pv, cv) : ''] : [])]);
+  let foot = null;
+  if (opts.total !== false) { const tp = rows.reduce((s, r) => s + r[1], 0), tc = rows.reduce((s, r) => s + r[2], 0); foot = ['UKUPNO', cellE(tp), cellE(tc), ...(withIdx ? [''] : [])]; }
+  return ['table', { head, body, foot }];
+}
+const rowsB = (list) => list.map(([lbl, aops]) => [lbl, sumB([].concat(aops), 'I'), sumB([].concat(aops), 'J')]);
+const rowsR = (list) => list.map(([lbl, aops]) => [lbl, sumR([].concat(aops), 'I'), sumR([].concat(aops), 'J')]);
+const POLITIKE = [
+  ['h2', 'Dugotrajna nematerijalna imovina'],
+  ['p', 'Nematerijalna imovina je nemonetarna imovina bez fizičkih obilježja koja se može identificirati, a čine ju izdaci za razvoj, patenti, licence, koncesije, zaštitni znaci, računalni programi (softver), dozvole, franšize i ostala prava, goodwill, predujmovi za nematerijalnu imovinu te ostala nematerijalna imovina. Nematerijalna imovina priznaje se samo ako:'],
+  ['li', '• je vjerojatno će pritjecati očekivane buduće ekonomske koristi, i'], ['li', '• da se trošak nabave može pouzdano izmjeriti.'],
+  ['p', 'Nakon početnog priznavanja nematerijalna imovina se mjeri po trošku nabave umanjenom za ispravak vrijednosti i akumulirane gubitke od umanjenja. Društvo može odlučiti da dugotrajnu nematerijalnu imovinu čija se fer vrijednost može pouzdano mjeriti iskazuje po revaloriziranom iznosu nakon početnog priznavanja imovine. Ako se pojedina dugotrajna nematerijalna imovina revalorizira, sva dugotrajna nematerijalna imovina iz iste skupine također se mjeri metodom revalorizacije.'],
+  ['p', 'Amortizacija dugotrajne nematerijalne imovine obračunava se primjenom linearne metode u korisnom vijeku trajanja od 4 godine (stopa 25%). Ako Društvo donese odluku, primjenjuju se uvećane amortizacijske stope sukladno odredbama Zakona o porezu na dobit. Iznimno, nematerijalna imovina s neodređenim korisnim vijekom upotrebe se ne amortizira već se testira na umanjenje.'],
+  ['h2', 'Dugotrajna materijalna imovina'],
+  ['p', 'Dugotrajna materijalna imovina obuhvaća sredstva koja Društvo koristi pri isporuci roba i usluga te u administrativne svrhe i čiji je procijenjeni vijek upotrebe duži od godine dana. Ova imovina početno se priznaje u bilanci po trošku nabave koji obuhvaća neto kupovnu cijenu i sve druge ovisne troškove do stavljanja sredstva u upotrebu. Nakon početnog priznavanja dugotrajna imovina se mjeri po trošku nabave umanjenom za ispravak vrijednosti i akumulirane gubitke od umanjenja sukladno HSFI 6. Društvo može odlučiti da dugotrajnu materijalnu imovinu čija se fer vrijednost može pouzdano mjeriti iskazuje po revaloriziranom iznosu nakon početnog priznavanja imovine. Ako se pojedina dugotrajna materijalna imovina revalorizira, sva dugotrajna materijalna imovina iz iste skupine također se mjeri metodom revalorizacije.'],
+  ['p', 'Amortizacija dugotrajne materijalne imovine obračunava se primjenom linearne metode u procijenjenom vijeku upotrebe svakog pojedinog sredstva primjenom sljedećih stopa:'],
+  ...['Građevinski objekti 5%', 'Brodovi veći od 1000 BRT 5%', 'Osobni automobili 20%', 'Osnovno stado 20%', 'Oprema 25%', 'Dostavna vozila 25%', 'Mehanička oprema 25%', 'Računalna oprema 50%', 'Telekomunikacijska oprema 50%', 'Ostala nespomenuta imovina 10%'].map(t => ['li', t]),
+  ['p', 'Ako Društvo donese odluku, primjenjuju se uvećane amortizacijske stope sukladno odredbama Zakona o porezu na dobit.'],
+  ['p', 'Zemljište i druga imovina koja ima neograničen vijek trajanja (umjetnički radovi i sl.) te imovina u pripremi se ne amortizira.'],
+  ['p', 'Naknadni izdaci uključuju se u knjigovodstvenu vrijednost imovine ili se prema potrebi priznaju kao zasebna imovina samo ako će Društvo imati buduće ekonomske koristi od imovine te ako se trošak nabave može pouzdano mjeriti. Knjigovodstvena vrijednost zamijenjenog dijela prestaje se priznavati. Svi ostali troškovi investicijskog i tekućeg održavanja terete račun dobitka i gubitka u razdoblju u kojem su nastali. Amortizacija se obračunava primjenom linearne metode.'],
+  ['p', 'Dobici ili gubici od prestanka priznavanja dugotrajne materijalne imovine (prodaja, rashodovanje i sl.) utvrđuju se kao razlika ostvarene prodajne cijene i knjigovodstvene vrijednosti i uključuju u stavku poslovni prihodi odnosno poslovni rashodi u računu dobiti u gubitka.'],
+  ['h2', 'Biološka imovina'],
+  ['p', 'Biološka imovina i poljoprivredni proizvodi mjere se prema fer vrijednosti. Priznavanje, mjerenje i prestanak priznavanja vrše se prema odredbama HSFI 17. Ako se fer vrijednost ne može pouzdano izmjeriti, biološka imovina mjeri se po trošku nabave umanjene za ispravak vrijednosti i za gubitke od umanjenja vrijednosti sukladno HSFI 6.'],
+  ['h2', 'Ulaganja u nekretnine'],
+  ['p', 'Nekretnine (zemljište ili zgrada, ili dio zgrade, ili oboje) koje društvo drži radi ostvarivanja prihoda od najma ili radi porasta tržišne vrijednosti tretira se kao ulaganje u nekretnine sukladno HSFI 7. Prilikom utvrđivanja vrijednosti ulaganja u nekretnine primjenjuje se model troška nabave.'],
+  ['h2', 'Dugotrajna imovina namijenjena prodaji'],
+  ['p', 'Dugotrajna imovina namijenjena prodaji je imovina čija će se knjigovodstvena vrijednost nadoknaditi putem prodaje, a ne putem korištenja pod uvjetom da je ta prodaja vrlo vjerojatna unutar perioda od jedne godine. Priznavanje i mjerenje obavlja se u skladu s odredbama HSFI 8.'],
+  ['h2', 'Najmovi'],
+  ['p', 'Najmovi u kojima društvo ne snosi bitan udio rizika i koristi vlasništva tretiraju se kao poslovni najmovi. Plaćanja po osnovi poslovnih najmova iskazuju se u računu dobiti i gubitka prema pravocrtnoj metodi u razdoblju trajanja najma.'],
+  ['h2', 'Financijska imovina'],
+  ['p', 'Financijska imovina obuhvaća dionice i udjele, dane zajmove, sudjelujuće interese, ulaganja u vrijednosne papire, dane kredite, depozite i jamstvene pologe te ostalu financijsku imovinu. Financijska imovina se ne amortizira. Priznavanje, mjerenje i prestanak priznavanja obavlja se u skladu s odredbama HSFI 9.'],
+  ['h2', 'Zalihe'],
+  ['p', 'Zalihe obuhvaćaju zalihe sitnog inventara, auto guma, ambalaže i trgovačke robe. Mjere se po trošku nabave ili neto utrživoj vrijednosti, u skladu s HSFI 10. Obračun utroška zaliha provodi se po metodi prosječne ponderirane cijene. Knjigovodstveni iznos zaliha priznaje se kao rashod razdoblja u kojem su te zalihe prodane ili izuzete. Zalihe sitnog inventara i auto guma otpisuju se prilikom stavljanja u upotrebu u 100%-tnom iznosu.'],
+  ['h2', 'Potraživanja'],
+  ['p', 'Potraživanja se početno mjere po fer vrijednosti. Priznavanje, mjerenje i prestanak priznavanja obavlja se prema odredbama HSFI 11.'],
+  ['p', 'Ispravak vrijednosti potraživanja provodi se kada postoje objektivni dokazi da društvo neće moći naplatiti sva svoja potraživanja u skladu s dogovorenim uvjetima. Značajne financijske poteškoće dužnika, vjerojatnost dužnikovog stečaja te neizvršenje ili propusti u plaćanjima smatraju se pokazateljima umanjenja vrijednosti potraživanja od kupaca.'],
+  ['p', 'Iznos ispravka vrijednosti utvrđuje se kao razlika između knjigovodstvene vrijednosti i nadoknadivog iznosa potraživanja. Knjigovodstvena vrijednost imovine je smanjena korištenjem izračuna rezerviranja za umanjenjem vrijednosti te je iznos gubitka priznat u računu dobiti i gubitka u „vrijednosnim usklađivanjima“. Kada potraživanje nije naplativo otpisuje se na teret izračuna rezerviranja za potraživanja od kupaca.'],
+  ['h2', 'Kapital i rezerve'],
+  ['p', 'Kapital se sastoji od upisanog kapitala, kapitalnih rezervi, rezervi iz dobiti, revalorizacijskih rezervi, rezervi fer vrijednosti, zadržane dobiti ili prenesenog gubitka, dobiti ili gubitka tekuće godine i manjinskih (nekontrolirajućih) interesa. Priznavanje, mjerenje i prestanak priznavanja obavlja se prema odredbama HSFI 12.'],
+  ['h2', 'Obveze'],
+  ['p', 'Obveze se početno mjere po fer vrijednosti. Priznavanje, mjerenje i prestanak priznavanja obavlja se prema odredbama HSFI 13.'],
+  ['p', 'Obveze se klasificiraju kao kratkotrajne i dugotrajne. Obveze se klasificiraju kao kratkoročne obveze, osim ako Društvo ima pravo odgoditi podmirenje obveze na rok duži od 12 mjeseci. Obveze se priznaju kada je vjerojatno da će zbog podmirenja sadašnje obveze doći do odlijevanja resursa poduzetnika. Obveze prema dobavljačima i zaposlenima te obveze za predujmove mjere se po iznosu kojim će se podmiriti.'],
+  ['h2', 'Rezerviranja'],
+  ['p', 'Rezerviranje je obveza čija je priroda jasno određena i za koju je na datum bilance vjerojatno ili sigurno da će nastati, ali postoji neizvjesnost u pogledu iznosa ili datuma kada će nastati. Priznavanje i mjerenje se provodi u skladu s HSFI 13.'],
+  ['h2', 'Vremenska razgraničenja'],
+  ['p', 'Vremenska razgraničenja obuhvaćaju unaprijed plaćene troškove, nedospjelu naplatu prihoda, odgođeno plaćanje troškova i prihod budućeg razdoblja. Vremenska razgraničenja mjere se sukladno HSFI 14. Unaprijed plaćeni troškovi priznaju se kao imovina kada se odnose na iznose plaćene u tekućem razdoblju, a koji se odnose na buduća razdoblja. Odgođeno plaćanje troškova priznaje se kao obveza kada se odnosi na troškove nastale u tekućem razdoblju, a za koje nisu ispunjeni uvjeti za priznavanje obveza.'],
+  ['h2', 'Tekući porez na dobit'],
+  ['p', 'Iznos poreza na dobit za tekuću godinu obračunava se na temelju poreznog zakona koji je na snazi u Republici Hrvatskoj na dan bilance. Tekući porez knjižit će se na teret kapitala ako se porez odnosi na stavke koje se direktno knjiže na teret kapitala u istom razdoblju.'],
+  ['h2', 'Porez na dodanu vrijednost'],
+  ['p', 'Porezni propisi zahtijevaju bilježenje PDV-a na neto osnovi. PDV koji proizlazi iz transakcija prodaje i kupnje priznaje se i iskazuje u bilanci na neto osnovi.'],
+  ['h2', 'Odgođena porezna imovina'],
+  ['p', 'Odgođena porezna imovina i obveze mjere se primjenom poreznih stopa (i poreznih zakona) koji su na snazi na datum bilance. Odgođena porezna imovina se priznaje za prenesene neiskorištene porezne gubitke, neiskorištene porezne olakšice i sve odbitne privremene razlike u visini za koju je vjerojatno da će oporeziva dobit biti raspoloživa i za koju se preneseni porezni gubitak, neiskorištene porezne olakšice i odbitne privremene razlike mogu iskoristiti, sukladno odredbama HSFI 14.'],
+  ['h2', 'Prihodi'],
+  ['p', 'Prihodi se priznaju kada je vjerojatno da će buduće ekonomske koristi ulaziti kod poduzetnika i kada se mogu pouzdano mjeriti. Priznavanje, mjerenje i prestanak priznavanja obavlja se prema odredbama HSFI 15.'],
+  ['p', 'Prihodi po HSFI 15 podijeljeni su na poslovne prihode i financijske prihode. Prihodi se sastoje od fer vrijednosti primljene naknade ili potraživanja za prodane usluge tijekom redovnog poslovanja društva. Prihodi su iskazani u iznosima koji su umanjeni za porez na dodanu vrijednost. Društvo priznaje prihode kada se iznos prihoda može pouzdano mjeriti i kada je izvjesno da će društvo imati buduće ekonomske koristi.'],
+  ['p', 'Odredbe Zakona o računovodstvu, kao i HSFI 15, od izvještaja za 2025. godinu propisuju da se izvanredni prihodi ne iskazuju zasebno te su izvanredni prihodi iz prijašnjih godina iskazani u poslovnim prihodima.'],
+  ['h2', 'Rashodi'],
+  ['p', 'Rashodi se priznaju kada smanjenje budućih ekonomskih koristi proizlazi iz smanjenja imovine ili povećanja obaveza koje se može pouzdano izmjeriti, odnosno kada isti nastaju istodobno s priznavanjem ili smanjenjem imovine, a na temelju izravne povezanosti između nastalih troškova i određenih prihoda. Priznavanje, mjerenje i prestanak priznavanja obavlja se prema odredbama HSFI 16.'],
+  ['h2', 'Vrijednosti iskazane u financijskim izvještajima (iznosi)'],
+  ['p', 'Stavke uključene u financijske izvještaje društva iskazane su u službenoj valuti primarnog gospodarskog okruženja u kojem društvo posluje (funkcionalna valuta). Financijski izvještaji prikazani su u eurima, što predstavlja funkcionalnu i izvještajnu valutu Društva.'],
+  ['p', 'Na datum bilance, zalihe i dugotrajna imovina u stranoj valuti iskazuju se primjenom srednjeg tečaja HNB-a na datum transakcije, a potraživanja i obveze u stranoj valuti primjenom srednjeg tečaja HNB-a na dan bilance.'],
+];
+function buildBiljeske() {
+  const g = (a) => String(E.inputs['RefStr!' + a] || '').trim();
+  const Y = Number(g('F12')) || new Date().getFullYear();
+  const d = (s) => s ? String(s).slice(0, 10).split('-').reverse().join('.') + '.' : '';
+  const naziv = g('C29') || '________', mjesto = g('F31'), ulica = g('C33');
+  const sub = (LISTS.subjekt.find(x => x[0] === String(g('C7'))) || [])[1] || 'Društvo s ograničenom odgovornošću';
+  const nkd = (LISTS.nkd.find(x => x[0] === g('C42')) || [])[1] || '';
+  const uprava = E.inputs['_odl_potpis'] || g('A75') || '________';
+  const b = [];
+  const P = (t) => b.push(['p', t]), H = (t) => b.push(['h2', t]), N = (n) => b.push(['bn', 'Bilješka br. ' + n]);
+  const note = (n, title, defs, val, yes, no) => { H(title); N(n); (defs || []).forEach(P); P(nz(val) ? yes(E2(val)) : no); };
+  b.push(['hd', A(naziv)], ['hd2', A([mjesto, ulica].filter(Boolean).join(', '))],
+    ['ttl', 'Bilješke uz financijske izvještaje poduzetnika za razdoblje'], ['ttl', `${A(d(g('C4')))} do ${A(d(g('F4')))} godine`]);
+  b.push(['h1', 'I. INFORMACIJE O DRUŠTVU']);
+  P(`${A(naziv)}, ${A(mjesto)} (u nastavku: Društvo), OIB ${A(g('C27'))}${g('M27') ? ', MBS ' + A(g('M27')) : ''} osnovano je prema zakonima i propisima Republike Hrvatske kao ${A(sub.toLowerCase())}.`);
+  P(`Sjedište: ${A([mjesto, ulica].filter(Boolean).join(', '))}`);
+  P(`Uprava: ${A(uprava)}, direktor Društva`);
+  P(`Osnovna djelatnost: ${A(nkd)}`);
+  P(`Prosječan broj zaposlenih tijekom izvještajnog razdoblja: ${A(String(Math.round(Number(g('F56')) || 0)))}`);
+  b.push(['h1', 'II. OSNOVE SASTAVLJANJA FINANCIJSKIH IZVJEŠTAJA']);
+  P(`Financijski izvještaji Društva sastavljeni su sukladno Hrvatskim standardima financijskog izvještavanja koje je donio Odbor za standarde financijskog izvještavanja na temelju odredbi Zakona o računovodstvu. Na financijske izvještaje u ${A(Y)}. godini primjenjuju se odredbe važećeg Zakona o računovodstvu te Hrvatskih računovodstvenih standarda. Financijski izvještaji sastavljeni su na osnovi povijesnog troška, a detaljnija određenja dana su uz pojedine pozicije izvještaja.`);
+  P('Financijski izvještaji prezentiraju istinito i fer financijski položaj, financijsku uspješnost i novčane tijekove poduzetnika.');
+  P('Vjerno su predočeni učinci transakcija i drugih poslovnih događaja, a u skladu s kriterijima priznavanja imovine, obveza, kapitala, prihoda i rashoda.');
+  b.push(['h1', 'III. SAŽETAK ZNAČAJNIJIH RAČUNOVODSTVENIH POLITIKA']);
+  P('Slijedi prikaz značajnijih računovodstvenih politika usvojenih za pripremu ovih financijskih izvještaja. Ove računovodstvene politike dosljedno su primjenjivane za sva razdoblja uključena u ove izvještaje osim tamo gdje je drugačije navedeno.');
+  P('Budući događaji i njihov utjecaj nisu predvidivi sa sigurnošću i sukladno tome računovodstvene procjene zahtijevaju prosudbu, a one korištene pri izradi financijskih izvještaja podložne su promjenama nastankom novih događaja, dobivanjem dodatnih informacija i promjenom okruženja u kojem društvo posluje što može rezultirati odstupanjima od izvršenih procjena.');
+  b.push(...POLITIKE);
+  b.push(['h1', 'IV. PODUZETNICI UNUTAR GRUPE I OSOBE SA SUDJELUJUĆIM INTERESIMA']);
+  P('Poduzetnicima unutar grupe smatraju se dva ili više poduzetnika koji su međusobno vlasnički povezana, a koji imaju ulaganje u udjele/dionice više od 50 % ili su taj kapital primili (ovisna društva).');
+  P('Društva povezana sudjelujućim interesom su društva čiji udio u kapitalu nekog drugog poduzetnika iznosi od 20-50% ili društva koja su kapital do te visine primila od drugog poduzetnika (sudjelujući interesi).');
+  P('Sve eventualne transakcije s povezanim društvima po osnovi primljenih/danih zajmova i kredita te isporuka/nabava roba i usluga iskazuju se PD-IPO obrascu s detaljnim opisom transakcija.');
+  // ---- V. BILANCA ----
+  b.push(['h1', 'V. BILANCA'], ['cap', 'AKTIVA'], ['cap', 'DUGOTRAJNA IMOVINA']); N(1);
+  P('Dugotrajna imovina društva sastoji se od nematerijalne imovine, dugotrajne materijalne imovine, dugotrajne financijske imovine, dugoročnih potraživanja i odgođene porezne imovine.');
+  P(nz(bv(2)) ? `Dugotrajna imovina na dan izvještavanja iznosila je ${E2(bv(2))}.` : `Knjigovodstvena vrijednost dugotrajne imovine na dan izvještavanja iznosila je ${A('0 EUR')}.`);
+  H('Nematerijalna imovina'); N(2);
+  P('Nematerijalna imovina sastoji se od izdataka za razvoj, koncesija, patenata, licencija, robnih i uslužnih marki, softvera i ostalih prava, goodwilla, predujmova za nabavku nematerijalne imovine, nematerijalne imovine u pripremi i ostale nematerijalne imovine.');
+  P(`Knjigovodstvena vrijednost nematerijalne imovine na dan izvještavanja iznosila je ${nz(bv(3)) ? E2(bv(3)) : A('0 EUR')}.`);
+  if (nz(bv(3)) || nz(bv(3, 'I'))) b.push(tbl('kv', rowsB([['Izdaci za razvoj', 4], ['Koncesije, patenti, licencije, robne i uslužne marke, softver i ostala prava', 5], ['Goodwill', 6], ['Predujmovi za nabavu nematerijalne imovine', 7], ['Nematerijalna imovina u pripremi', 8], ['Ostala nematerijalna imovina', 9]])));
+  H('Materijalna imovina'); N(3);
+  P('Materijalna imovina sastoji se od zemljišta, građevinskih objekata, postrojenja i oprema, alata, pogonskog inventara i transportne imovine, biološke imovine, predujmova za materijalnu imovinu, materijalne imovine u pripremi, ostale materijalne imovine i ulaganja u nekretnine.');
+  if (nz(bv(10))) {
+    P(`Knjigovodstvena vrijednost materijalne imovine na dan sastavljanja financijskih izvještaja iznosila je ${E2(bv(10))}.`);
+    b.push(tbl('kv', rowsB([['Zemljište', 11], ['Građevinski objekti', 12], ['Postrojenja i oprema', 13], ['Alati, pogonski inventar i transportna imovina', 14], ['Biološka imovina', 15], ['Predujmovi za materijalnu imovinu', 16], ['Materijalna imovina u pripremi', 17], ['Ostala materijalna imovina', 18], ['Ulaganja u nekretnine', 19]])));
+    P('Amortizacija materijalne imovine (ispravak vrijednosti) obračunava se sukladno korisnom vijeku uporabe, linearnom metodom i primjenom stopa u skladu s računovodstvenim politikama.');
+  } else P(`Knjigovodstvena vrijednost materijalne imovine na dan izvještavanja iznosila je ${A('0 EUR')}.`);
+  note(4, 'Dugotrajna financijska imovina', ['Dugotrajna financijska imovina sastoji se od dugoročnih ulaganja u udjele (dionice), ulaganja u vrijednosne papire, danih dugoročnih zajmova, depozita i sličnog, ostalih dugoročnih ulaganja koja se obračunavaju metodom udjela i ostalih ulaganja u dugotrajnu financijsku imovinu.'], bv(20), (x) => `Dugotrajna financijska imovina na dan izvještavanja iznosila je ${x}.`, 'Društvo na dan izvještavanja nije imalo dugotrajnu financijsku imovinu.');
+  note(5, 'Dugoročna potraživanja', ['Dugoročna potraživanja obuhvaćaju sva potraživanja s rokom dospijeća dužim od 12 mjeseci.'], bv(31), (x) => `Dugoročna potraživanja na dan izvještavanja iznosila su ${x}.`, 'Društvo na dan izvještavanja nije imalo dugoročnih potraživanja.');
+  b.push(['cap', 'KRATKOTRAJNA IMOVINA']); N(6);
+  P('Kratkotrajna imovina društva sastoji se od imovine koja je naplativa unutar roka od godinu dana, a sastoji se od zaliha, potraživanja, kratkotrajne financijske imovine i novca u banci i blagajni.');
+  P(`Kratkotrajna imovina na dan izvještavanja iznosila je ${E2(bv(37))}.`);
+  H('Zalihe'); N(7);
+  if (nz(bv(38))) {
+    P(`Stanje zaliha na dan izvještavanja iznosilo je ${E2(bv(38))}.`);
+    b.push(tbl('bil', rowsB([['Sirovine i materijal', 39], ['Proizvodnja u tijeku', 40], ['Gotovi proizvodi', 41], ['Trgovačka roba', 42], ['Predujmovi za zalihe', 43], ['Dugotrajna imovina namijenjena prodaji', 44], ['Biološka imovina', 45]])));
+    P('Zalihe se vode po metodama definiranim u računovodstvenim politikama, računovodstvenim standardima i zakonskim propisima.');
+  } else P('Društvo na dan izvještavanja nije imalo zaliha.');
+  H('Kratkoročna potraživanja'); N(8);
+  P('Kratkoročna potraživanja sastoje se od potraživanja za isporučenu robu i usluge, potraživanja od zaposlenika i članova poduzetnika, potraživanja od države i drugih institucija i ostalih potraživanja za koja se očekuje da će se pretvoriti u novčani oblik u roku do jedne godine.');
+  P(nz(bv(46)) ? `Kratkoročna potraživanja na dan izvještavanja iznosila su ${E2(bv(46))}.` : 'Društvo na dan izvještavanja nije imalo kratkoročnih potraživanja.');
+  H('Kratkoročna potraživanja za isporučenu robu i usluge'); N('8a');
+  P('Kratkoročna potraživanja za isporučenu robu i usluge i ostala potraživanja razrađuju se na potraživanja od poduzetnika unutar grupe, od društava povezanih sudjelujućim interesom i od nepovezanih osoba.');
+  const kup = sumB([47, 48, 49]);
+  if (nz(kup)) {
+    P(`Kratkoročna potraživanja za isporučenu robu i usluge na dan izvještavanja iznosila su ukupno ${E2(kup)}.`);
+    if (!nz(sumB([47, 48]))) P('Društvo na dan izvještavanja nije imalo kratkoročna potraživanja od poduzetnika unutar grupe i/ili od društava povezanih sudjelujućim interesima po osnovi isporučenih roba i usluga.');
+    b.push(tbl('bil', rowsB([['Potraživanja od poduzetnika unutar grupe', 47], ['Potraživanja od društava povezanih sudjelujućim interesom', 48], ['Potraživanja od kupaca', 49]])));
+  } else P('Društvo na dan izvještavanja nije imalo kratkoročna potraživanja za isporučenu robu i usluge.');
+  note('8b', 'Kratkoročna potraživanja od zaposlenika i članova poduzetnika', [], bv(50), (x) => `Kratkoročna potraživanja od zaposlenika i članova poduzetnika na dan izvještavanja iznosila su ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročna potraživanja od zaposlenika i članova poduzetnika.');
+  note('8c', 'Kratkoročna potraživanja od države i drugih institucija', ['Kratkoročna potraživanja od države i drugih institucija odnose se na potraživanja za porez na dobit, potraživanja za PDV, potraživanja za više plaćene članarine i slična potraživanja.'], bv(51), (x) => `Društvo je na dan izvještavanja imalo kratkoročna potraživanja od države i drugih institucija u iznosu ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročna potraživanja od države i drugih institucija.');
+  note('8d', 'Ostala kratkoročna potraživanja', ['Ostala kratkoročna potraživanja sačinjavaju potraživanja stečena cesijom ili nekom drugom vrstom ugovora (otkup tražbine, prijenos i sl.) te potraživanja za dane predujmove.'], bv(52), (x) => `Ostala kratkoročna potraživanja na dan izvještavanja iznosila su ${x}.`, 'Društvo na dan izvještavanja nije imalo ostalih kratkoročnih potraživanja.');
+  H('Kratkotrajna financijska imovina'); N(9);
+  P('Kratkotrajnu financijsku imovinu sačinjavaju ulaganja u udjele/dionice i vrijednosne papire, dani zajmovi, depoziti i slično te ostala financijska imovina za koju se očekuje da će se pretvoriti u novčani oblik unutar jedne godine.');
+  if (nz(bv(53))) {
+    P(`Na dan izvještavanja, kratkotrajna financijska imovina Društva iznosila je ukupno ${E2(bv(53))}.`);
+    note('9a', 'Ulaganja u udjele/dionice', [], sumB([54, 57]), (x) => `Društvo je na dan izvještavanja imalo ulaganja u udjele i/ili dionice u iznosu ${x}.`, 'Društvo na dan izvještavanja nije imalo ulaganja u udjele i/ili dionice kod poduzetnika unutar grupe i/ili kod društava povezanih sudjelujućim interesima.');
+    note('9b', 'Ulaganje u vrijednosne papire', [], sumB([55, 58, 60]), (x) => `Društvo je na dan izvještavanja imalo ulaganja u vrijednosne papire u iznosu ${x}.`, 'Društvo na dan izvještavanja nije imalo ulaganja u vrijednosne papire.');
+    H('Ulaganje u zajmove, depozite i slično'); N('9c');
+    const zaj = sumB([56, 59, 61]);
+    if (nz(zaj)) {
+      P(`Društvo je na dan izvještavanja imalo ulaganja u dane zajmove, depozite i slično u iznosu ${E2(zaj)}.`);
+      if (!nz(sumB([56, 59]))) P('Društvo na dan izvještavanja nije imalo danih zajmova, depozita i sličnog poduzetnicima unutar grupe i/ili društvima povezanim sudjelujućim interesima.');
+      b.push(tbl('bil', rowsB([['Dani zajmovi, depoziti i slično poduzetnicima unutar grupe', 56], ['Dani zajmovi, depoziti i slično društvima povezanim sudjelujućim interesom', 59], ['Dani zajmovi, depoziti i slično', 61]])));
+    } else P('Društvo na dan izvještavanja nije imalo danih zajmova, depozita i sličnog.');
+    note('9d', 'Ostala financijska imovina', ['Ostala kratkotrajna financijska imovina odnosi se na ulaganja u udjele/dionice društava s udjelom vlasništva manjim od 20%, kratkoročna ulaganja u investicijske fondove i sl.'], bv(62), (x) => `Društvo je na dan izvještavanja imalo ulaganja u ostalu financijsku imovinu u iznosu ${x}.`, 'Društvo na dan izvještavanja nije imalo ulaganja u ostalu financijsku imovinu.');
+  } else P('Društvo na dan izvještavanja nije imalo kratkotrajnu financijsku imovinu.');
+  H('Novac u banci i blagajni'); N(10);
+  P(`Na dan izvještavanja iznos novca u banci kojeg čine salda na eurskim i/ili deviznim računima te novac u blagajni iznosio je ${E2(bv(63))}.`);
+  note(11, 'Plaćeni troškovi budućeg razdoblja i obračunati prihodi', [], bv(64), (x) => `Plaćeni troškovi budućeg razdoblja i obračunati prihodi na dan izvještavanja iznosili su ${x}.`, 'Društvo na dan izvještavanja nije imalo plaćenih troškova budućeg razdoblja i obračunatih prihoda.');
+  b.push(['cap', 'PASIVA']);
+  H('Kapital i rezerve'); N(12);
+  P('Prema standardima financijskog izvještavanja kapital i rezerve se sastoje od upisanog kapitala, kapitalnih rezervi, rezervi iz dobiti, revalorizacijskih rezervi, rezervi fer vrijednosti, zadržane dobiti ili prenesenog gubitka, dobiti ili gubitka tekućeg razdoblja te manjinskog interesa.');
+  P(`Na dan izvještavanja kapital Društva iznosio je ${E2(bv(67))}.`);
+  H('Temeljni (upisani) kapital'); N(13);
+  P(`Na dan izvještavanja temeljni kapital Društva iznosio je ${E2(bv(68))} i u cijelosti je upisan u sudski registar kod nadležnog trgovačkog suda.`);
+  note(14, 'Kapitalne rezerve', ['Kapitalne rezerve odnose se na kapitalni dobitak na prodane dionice, kapitalni dobitak iz prodaje otkupljenih vlastitih dionica i udjela te kapitalne pričuve iz drugih izvora. Kapitalne rezerve mogu sačinjavati povećanje kapitala društva od ulaganja novca, stvari ili prava od strane vlasnika ili dioničara u neupisani kapital društva.'], bv(69), (x) => `Kapitalne rezerve na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo kapitalnih rezervi.');
+  note(15, 'Rezerve iz dobiti', ['Rezerve iz dobiti obuhvaćaju zakonske rezerve, rezerve za vlastite udjele te statutarne i ostale rezerve.'], bv(70), (x) => `Rezerve iz dobiti na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo rezervi iz dobiti.');
+  note(16, 'Revalorizacijske rezerve', ['Revalorizacijske rezerve nastaju ponovnom procjenom imovine iznad troškova nabave dugotrajne materijalne i nematerijalne imovine.'], bv(76), (x) => `Revalorizacijske rezerve na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo revalorizacijskih rezervi.');
+  note(17, 'Rezerve fer vrijednosti', ['Rezerve fer vrijednosti sastoje se od fer vrijednosti financijske imovine raspoložive za prodaju, učinkovitog dijela zaštite novčanih tijekova i učinkovitog dijela zaštite ulaganja u inozemstvu.'], bv(77), (x) => `Rezerve fer vrijednosti na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije oformilo rezerve fer vrijednosti.');
+  H('Zadržana dobit ili preneseni gubitak'); N(18);
+  if (nz(bv(85))) P(`Stanje zadržane dobiti na dan izvještavanja kao rezultat prijašnjeg poslovanja društva iznosilo je ${E2(bv(85))}.`);
+  if (nz(bv(86))) P(`Stanje prenesenog gubitka na dan izvještavanja kao rezultat prijašnjeg poslovanja društva iznosilo je ${E2(bv(86))}.`);
+  if (!nz(bv(85)) && !nz(bv(86))) P('Društvo na dan izvještavanja nije imalo zadržane dobiti niti prenesenog gubitka.');
+  H('Dobit ili gubitak poslovne godine'); N(19);
+  if (nz(bv(89))) P(`Društvo je u poslovnoj godini poslovalo s gubitkom u iznosu ${E2(bv(89))}. Predloženo postupanje s gubitkom Društvo je donijelo Odlukom o pokriću gubitka koja je dio javne objave godišnjih financijskih izvještaja za promatranu poslovnu godinu te je javno dostupna.`);
+  else P(`Društvo je u poslovnoj godini ostvarilo neto dobit u iznosu ${E2(bv(88))}. Predloženu raspodjelu dobiti Društvo je donijelo Odlukom o raspodjeli dobiti koja je dio javne objave godišnjih financijskih izvještaja za promatranu poslovnu godinu te je javno dostupna.`);
+  note(20, 'Manjinski (nekontrolirajući) interes', ['Manjinski interesi odnose se na ostvarenu dobit koja pripada Društvu po osnovi udjela u dobiti od društava kod kojih je postotak udjela u vlasništvu manji od 20%.'], bv(90), (x) => `Manjinski interes na dan izvještavanja iznosio je ${x}.`, 'Društvo nije ostvarilo interes iz odnosa s nekontroliranim društvima.');
+  note(21, 'Rezerviranja', ['Dugoročna rezerviranja za rizike i troškove su rashodi za rizike za koje se procjenjuje da će nastati u sljedećim godinama, a imaju sadašnje učinke. Dugoročna rezerviranja sastoje se od rezerviranja za mirovine, otpremnine i slične obaveze, rezerviranja za porezne obaveze, rezerviranja za započete sudske sporove, rezerviranja za obnavljanje prirodnih bogatstava, rezerviranja za troškove u jamstvenim rokovima te druga rezerviranja.', 'Rezerviranja se provode u skladu s računovodstvenim politikama i standardima financijskog izvještavanja.'], bv(91), (x) => `Rezerviranja na dan izvještavanja iznosila su ${x}.`, 'Društvo na dan izvještavanja nije imalo provedena rezerviranja.');
+  H('Dugoročne obveze'); N(22);
+  P('Dugoročne obveze odnose se na obveze s rokom dospijeća dužim od godinu dana.');
+  if (nz(bv(98))) {
+    P(`Društvo je na dan izvještavanja imalo dugoročne obveze u visini od ${E2(bv(98))}.`);
+    note('22a', 'Dugoročne obveze za primljene robe i usluge', [], sumB([99, 101, 106]), (x) => `Dugoročne obveze za primljene robe i usluge na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo dugoročnih obveza za primljene robe i usluge.');
+    note('22b', 'Dugoročne obveze po osnovi zajmova, depozita i sličnog', [], sumB([100, 102, 103]), (x) => `Dugoročne obveze po osnovi primljenih zajmova, depozita i sličnog na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo dugoročnih obveza po osnovi primljenih zajmova, depozita i sličnog.');
+    note('22c', 'Dugoročne obveze prema bankama i drugim financijskim institucijama', [], bv(104), (x) => `Dugoročne obveze prema bankama i drugim financijskim institucijama na dan izvještavanja iznosile su ukupno ${x}.`, 'Društvo na dan izvještavanja nije imalo dugoročnih obveza prema bankama i drugim financijskim institucijama.');
+    note('22d', 'Dugoročne obveze za predujmove', [], bv(105), (x) => `Društvo je na dan izvještavanja imalo ${x} obveza za primljene predujmove (avanse) u kojima se roba ili usluga treba isporučiti u roku koji je duži od godine dana.`, 'Društvo na dan izvještavanja nije imalo obaveza za primljene predujmove (avanse) u kojima se roba ili usluga treba isporučiti u roku koji je duži od godine dana.');
+    note('22e', 'Dugoročne obveze po vrijednosnim papirima', [], bv(107), (x) => `Dugoročne obveze po vrijednosnim papirima na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo dugoročnih obveza po vrijednosnim papirima.');
+    note('22f', 'Ostale dugoročne obveze', [], bv(108), (x) => `Ostale dugoročne obveze na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo ostalih dugoročnih obveza.');
+    note('22g', 'Odgođena porezna obveza', [], bv(109), (x) => `Odgođena porezna obveza na dan izvještavanja iznosila je ${x}.`, 'Društvo na dan izvještavanja nije imalo dugoročne obveze po osnovi odgođene porezne obveze.');
+  } else P('Društvo na dan izvještavanja nije imalo dugoročnih obveza.');
+  H('Kratkoročne obveze'); N(23);
+  P('Kratkoročne obveze odnose se na obveze s rokom dospijeća kraćim od godinu dana.');
+  P(nz(bv(110)) ? `Društvo je na dan izvještavanja imalo kratkoročne obveze u visini od ${E2(bv(110))}.` : 'Društvo na dan izvještavanja nije imalo kratkoročnih obveza.');
+  H('Kratkoročne obveze za primljenu robu i usluge'); N('23a');
+  const dob = sumB([111, 113, 118]);
+  if (nz(dob)) {
+    P(`Ukupne kratkoročne obveze za primljenu robu i usluge iznosile su ${E2(dob)}.`);
+    if (!nz(sumB([111, 113]))) P('Društvo nije imalo kratkoročne obveze prema poduzetnicima unutar grupe i/ili prema društvima povezanim sudjelujućim interesima po osnovi primljenih roba i usluga.');
+  } else P('Društvo na dan izvještavanja nije imalo kratkoročne obveze za primljenu robu i usluge.');
+  note('23b', 'Kratkoročne obveze po osnovi zajmova, depozita i sličnog', [], sumB([112, 114, 115]), (x) => `Kratkoročne obveze po osnovi primljenih zajmova, depozita i sličnog na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročnih obveza po osnovi primljenih zajmova, depozita i sličnog.');
+  note('23c', 'Kratkoročne obveze prema bankama i drugim financijskim institucijama', [], bv(116), (x) => `Kratkoročne obveze prema bankama i drugim financijskim institucijama na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročne obveze prema bankama i drugim financijskim institucijama.');
+  note('23d', 'Kratkoročne obveze za predujmove', [], bv(117), (x) => `Društvo je na dan izvještavanja imalo ${x} obveza za primljene predujmove (avanse) u kojima se roba ili usluga treba isporučiti u roku koji je manji od godine dana.`, 'Društvo na dan izvještavanja nije imalo obveze za primljene predujmove (avanse) u kojima se roba ili usluga treba isporučiti u roku koji je manji od godine dana.');
+  note('23e', 'Kratkoročne obveze po vrijednosnim papirima', [], bv(119), (x) => `Kratkoročne obveze po vrijednosnim papirima na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročne obveze po vrijednosnim papirima.');
+  note('23f', 'Kratkoročne obveze prema zaposlenicima', ['Kratkoročne obveze prema zaposlenicima odnose se na obračunate, a neisplaćene neto plaće, naknade i slične obveze.'], bv(120), (x) => `Kratkoročne obveze prema zaposlenicima na dan izvještavanja iznosile su ukupno ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročne obveze prema zaposlenicima.');
+  note('23g', 'Kratkoročne obveze za poreze, doprinose i slična davanja', ['Kratkoročne obveze za poreze, doprinose i slična davanja odnose se na obračunate, a neplaćene obveze.'], bv(121), (x) => `Kratkoročne obveze za poreze, doprinose i slična davanja na dan izvještavanja iznosile su ukupno ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročne obveze za poreze, doprinose i slična davanja.');
+  note('23h', 'Kratkoročne obveze s osnove udjela u rezultatu', ['Kratkoročne obveze s osnove udjela u rezultatu odnose se na obračunate, a neplaćene obveze vezane za obvezu isplate dobiti povezanim društvima.'], bv(122), (x) => `Kratkoročne obveze s osnove udjela u rezultatu na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročne obveze s osnove udjela u rezultatu.');
+  note('23i', 'Kratkoročne obveze po osnovi dugotrajne imovine namijenjene prodaji', ['Kratkoročne obveze po osnovi dugotrajne imovine namijenjene prodaji odnose se na obračunate, a neplaćene obveze vezane uz dugotrajnu imovinu namijenjenu prodaji.'], bv(123), (x) => `Kratkoročne obveze po osnovi dugotrajne imovine namijenjene prodaji na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo kratkoročne obveze po osnovi dugotrajne imovine namijenjene prodaji.');
+  note('23j', 'Ostale kratkoročne obaveze', [], bv(124), (x) => `Ostale kratkoročne obveze na dan izvještavanja iznosile su ${x}.`, 'Društvo na dan izvještavanja nije imalo drugih kratkoročnih obveza.');
+  note(24, 'Odgođeno plaćanje troškova i prihod budućeg razdoblja', [], bv(125), (x) => `Odgođeno plaćanje troškova i prihod budućeg razdoblja na dan izvještavanja iznosili su ${x}.`, 'Društvo na dan izvještavanja nije imalo odgođenih plaćanja troškova i/ili prihoda budućeg razdoblja.');
+  H('Poslovni događaji nakon zaključivanja bilance');
+  P('Društvo nije imalo značajnije događaje nakon datuma bilance koji bi imali utjecaja na poslovni rezultat poslovne godine niti događaja koji bi imali utjecaja na strukturu bilance Društva.');
+  // ---- VI. RDG ----
+  b.push(['h1', 'VI. RAČUN DOBITI I GUBITKA']);
+  H('Poslovni prihodi'); N(25);
+  P('Poslovni prihodi sastoje se od prihoda od prodaje, prihoda na temelju uporabe vlastitih proizvoda i ostalih poslovnih prihoda.');
+  P(`Poslovni prihodi Društva u ${A(Y)}. godini ukupno su iznosili ${E2(rv(128))}.`);
+  b.push(tbl('rdg', rowsR([['Prihodi od prodaje s poduzetnicima unutar grupe', 129], ['Prihodi od prodaje', 130], ['Prihodi na temelju upotrebe vlastitih proizvoda, robe i usluga', 131], ['Ostali poslovni prihodi s poduzetnicima unutar grupe', 132], ['Ostali poslovni prihodi', 133]])));
+  H('Prihodi od prodaje'); N('25a');
+  if (nz(sumR([129, 130]))) {
+    P(`Društvo je u poslovnoj godini ${A(Y)}. ostvarilo prihode od prodaje u visini od ${E2(sumR([129, 130]))}.`);
+    if (!nz(rv(129))) P('U poslovnoj godini nije bilo ostvarenih prihoda od prodaje poduzetnicima unutar grupe.');
+    b.push(tbl('rdg', rowsR([['Prihodi od prodaje s poduzetnicima unutar grupe', 129], ['Prihodi od prodaje', 130]])));
+  } else P('Društvo u poslovnoj godini nije ostvarilo prihode od prodaje.');
+  note('25b', 'Prihodi na temelju upotrebe vlastitih proizvoda, robe i usluga', [], rv(131), (x) => `Društvo je u poslovnoj godini ostvarilo prihode s osnove upotrebe vlastitih proizvoda, robe i usluga u iznosu ${x}.`, 'Društvo u poslovnoj godini nije ostvarilo prihode s osnove upotrebe vlastitih proizvoda, robe i usluga.');
+  H('Ostali poslovni prihodi'); N('25c');
+  P('Ostali poslovni prihodi su svi prethodno nespomenuti prihodi ostvareni iz poslovnih aktivnosti, osim financijskih prihoda. Na poziciji ostalih poslovnih prihoda iskazuju se prihodi od ukidanja rezerviranja, viškovi, prihodi od otpisanih (ispravljenih) potraživanja, naknadno utvrđeni prihodi iz proteklih godina, prihodi od naplate penala i štete, naknadno odobreni popusti i sl.');
+  if (nz(sumR([132, 133]))) {
+    P(`Društvo je u poslovnoj godini ${A(Y)}. ostvarilo ostalih poslovnih prihoda u visini od ${E2(sumR([132, 133]))}.`);
+    if (!nz(rv(132))) P('U poslovnoj godini nije bilo ostalih prihoda ostvarenih s poduzetnicima unutar grupe.');
+    b.push(tbl('rdg', rowsR([['Ostali poslovni prihodi s poduzetnicima unutar grupe', 132], ['Ostali poslovni prihodi', 133]])));
+  } else P('Društvo u poslovnoj godini nije imalo ostalih poslovnih prihoda.');
+  H('Poslovni rashodi'); N(26);
+  P('Poslovni rashodi sastoje se od promjene vrijednosti zaliha proizvodnje u tijeku i gotovih proizvoda, materijalnih troškova, troškova osoblja, amortizacije, ostalih troškova, vrijednosnih usklađenja, rezerviranja i ostalih poslovnih rashoda.');
+  P(`Društvo je u ${A(Y)}. godini iskazalo poslovne rashode u visini od ${E2(rv(134))}.`);
+  b.push(tbl('rdg', rowsR([['Promjene vrijednosti', 135], ['Materijalni troškovi', 136], ['Troškovi osoblja', 140], ['Amortizacija', 144], ['Ostali troškovi', 145], ['Vrijednosna usklađenja', 146], ['Rezerviranja', 149], ['Ostali poslovni rashodi', 156]])));
+  note('26a', 'Promjene vrijednosti zaliha proizvodnje u tijeku i gotovih proizvoda', ['Promjene vrijednosti zaliha proizvodnje odnosi se samo na ona društva koja obavljaju proizvodnu djelatnost. U vrijednost zaliha proizvodnje i gotovih proizvoda uključuju se izravni troškovi proizvodnje (troškovi utrošenog materijala i izravni troškovi rada), te raspoređeni opći troškovi proizvodnje. Smanjenje vrijednosti zaliha proizvodnje u tijeku i gotovih proizvoda rezultira povećanjem rashoda u odnosu na proteklo razdoblje, dok povećanje vrijednosti zaliha rezultira smanjujem rashoda u odnosu na proteklo razdoblje.'], rv(135), (x) => `Promjene vrijednosti zaliha proizvodnje u tijeku i gotovih proizvoda u poslovnoj godini iznosile su ${x}.`, 'Društvo u poslovnoj godini nije imalo poslovnih rashoda po osnovi promjene zaliha proizvodnje u tijeku i gotovih proizvoda.');
+  H('Materijalni troškovi'); N('26b');
+  P('Materijalni troškovi sastoje se od troškova sirovina i materijala, troškova prodane robe i ostalih vanjskih troškova.');
+  P(`Tijekom poslovne godine materijalni troškovi iznosili su ${E2(rv(136))}.`);
+  b.push(tbl('rdg', rowsR([['Troškovi sirovina i materijala', 137], ['Troškovi prodane robe', 138], ['Ostali vanjski troškovi', 139]])));
+  P('Troškovi sirovina i materijala uključuju utrošene sirovine i materijal, utrošenu energiju, utrošene rezervne dijelove, otpis sitnog inventara i sl.');
+  P(nz(rv(137)) ? `Troškovi sirovina i materijala ukupno su iznosili ${E2(rv(137))}.` : 'Društvo u poslovnoj godini nije imalo troškova sirovina i materijala.');
+  P('Troškovi prodane robe podrazumijevaju nabavnu vrijednost prodane robe. Trošak nabavne vrijednosti prodane robe priznaje se u razdoblju u kojem se priznaje prihod predmetne prodane robe.');
+  P(nz(rv(138)) ? `Troškovi prodane robe ukupno su iznosili ${E2(rv(138))}.` : 'Društvo u poslovnoj godini nije imalo troškova prodane robe.');
+  P('Vanjski troškovi podrazumijevaju troškove kao što su prijevozne usluge, poštanske i telekomunikacijske usluge, trošak vanjskih dorada, trošak servisnih usluga i održavanja, trošak zakupa i leasinga, troškovi promidžbe, sajmova i sponzorstava, trošak intelektualnih i drugih usluga, trošak komunalnih usluga, trošak usluga posredovanja i druge slične usluge.');
+  P(nz(rv(139)) ? `Ostali vanjski troškovi su iznosili ${E2(rv(139))}.` : 'Društvo u poslovnoj godini nije imalo ostalih vanjskih troškova.');
+  H('Troškovi osoblja'); N('26c');
+  P('Troškovi osoblja se odnose na troškove neto plaća i nadnica, troškova poreza i doprinosa iz plaća i troškova doprinosa na plaće.');
+  if (nz(rv(140))) { P(`U ${A(Y)}. godini troškovi osoblja iznosili su ${E2(rv(140))}.`); b.push(tbl('rdg', rowsR([['Neto plaće i nadnice', 141], ['Troškovi poreza i doprinosa iz plaća', 142], ['Doprinosi na plaće', 143]]))); }
+  else P('Društvo u poslovnoj godini nije imalo troškova osoblja.');
+  note('26d', 'Amortizacija', ['Amortizacija je rađena u skladu s računovodstvenim politikama Društva i odlukama uprave Društva.'], rv(144), (x) => `U poslovnoj godini trošak amortizacije iznosio je ${x}.`, 'Društvo u poslovnoj godini nije imalo troškova amortizacije.');
+  note('26e', 'Ostali troškovi', ['Ostale troškove čine premije osiguranja, bankarske usluge i troškovi platnog prometa, zdravstvene usluge, troškovi prava korištenja, troškovi članarina, troškovi poreza koji ne ovise o dobitku i ostali nematerijalni troškovi poslovanja.'], rv(145), (x) => `Društvo je u poslovnoj godini imalo ukupno ${x} ostalih troškova.`, 'Društvo u poslovnoj godini nije imalo ostalih troškova.');
+  note('26f', 'Vrijednosna usklađenja', [], rv(146), (x) => `Vrijednosna usklađenja nefinancijske imovine u poslovnoj godini iznosila su ${x}.`, 'Društvo u poslovnoj godini nije provodilo vrijednosna usklađenja nefinancijske imovine.');
+  note('26g', 'Rezerviranja', [], rv(149), (x) => `Društvo je u poslovnoj godini provelo rezerviranja u iznosu ${x}.`, 'Društvo tijekom sastavljanja financijskih izvještaja, a u skladu s odredbama Zakona o porezu na dobit te standarada financijskog izvještavanja, nije imalo potrebe niti obavezu izvršiti rezerviranja.');
+  note('26h', 'Ostali poslovni rashodi', [], rv(156), (x) => `Ostali poslovni rashodi u poslovnoj godini iznosili su ${x}.`, 'Društvo u poslovnoj godini nije imalo ostalih poslovnih rashoda.');
+  H('Financijski prihodi'); N(27);
+  P('Financijski prihodi sastoje se od prihoda od ulaganja u dionice/udjele poduzetnika, kamata, tečajnih razlika i ostalih financijskih prihoda iz odnosa s poduzetnicima i financijskim institucijama.');
+  if (nz(rv(157))) {
+    P(`Društvo je u ${A(Y)}. godini ostvarilo financijske prihode u iznosu ${E2(rv(157))}.`);
+    if (!nz(sumR([158, 159, 160, 161, 162]))) P('Društvo nije ostvarilo financijske prihode iz odnosa s poduzetnicima unutar grupe niti prihode od ulaganja u udjele društva povezanih sudjelujućim interesima.');
+    note('27a', 'Prihodi od ostalih dugotrajnih financijskih ulaganja i zajmova, ostali prihodi od kamata i tečajne razlike', [], sumR([163, 164, 165]), (x) => `Financijski prihodi koji su ostvareni iz poslovnog odnosa s poduzetnicima koji nisu unutar grupe te financijskih institucija, a koji se sastoje od prihoda od dugotrajnih financijskih ulaganja i zajmova, ostalih financijskih prihoda od kamata, tečajnih razlika i ostalih financijskih prihoda iznosili su ${x}.`, 'Društvo nije ostvarilo financijske prihode iz odnosa s poduzetnicima koji nisu unutar grupe i financijskim institucijama.');
+    note('27b', 'Nerealizirani dobici od financijske imovine', [], rv(166), (x) => `Nerealizirani dobici od financijske imovine iznosili su ${x}.`, 'Društvo na dan izvještavanja nije posjedovalo dionice.');
+    note('27c', 'Ostali financijski prihodi', ['Ostali financijski prihodi odnose se na financijske prihode koji su ostvareni od ulaganja u udjele i dionice društava s udjelom vlasništva manjim od 20% na rok kraći od godinu dana te drugih prihoda koji se ne odnose na kamate zajmova i tečajne razlike.'], rv(167), (x) => `Ostali financijski prihodi iznosili su ${x}.`, 'Društvo na dan izvještavanja nije imalo ostalih financijskih prihoda.');
+  } else P('Društvo u poslovnoj godini nije ostvarilo financijske prihode.');
+  H('Financijski rashodi'); N(28);
+  P('Financijski rashodi se odnose na kamate, tečajne razlike i druge rashode, nerealizirane gubitke (rashode) od financijske imovine, neto vrijednosna usklađenja financijske imovine i ostale financijske rashode.');
+  if (nz(rv(168))) {
+    P(`Društvo je u ${A(Y)}. godini imalo financijskih rashoda u iznosu ${E2(rv(168))}.`);
+    b.push(tbl('rdg', rowsR([['Rashodi s osnove kamata i slični rashodi s poduzetnicima unutar grupe', 169], ['Tečajne razlike i drugi rashodi s poduzetnicima unutar grupe', 170], ['Rashodi s osnove kamata i slični rashodi', 171], ['Tečajne razlike i drugi rashodi', 172], ['Nerealizirani gubici (rashodi) od financijske imovine', 173], ['Vrijednosna usklađenja financijske imovine (neto)', 174], ['Ostali financijski rashodi', 175]])));
+    note('28a', 'Financijski rashodi s poduzetnicima unutar grupe', [], sumR([169, 170]), (x) => `Financijski rashodi s poduzetnicima unutar grupe iznosili su ${x}.`, 'Društvo nije iskazalo financijske rashode iz odnosa s poduzetnicima unutar grupe.');
+    note('28b', 'Financijski rashodi s osnove kamata i sličnih rashoda, tečajnih razlika i drugih rashoda s društvima koji nisu unutar grupe', [], sumR([171, 172]), (x) => `Financijski rashodi koji su ostvareni iz poslovnog odnosa s poduzetnicima koji nisu unutar grupe ili iz odnosa s financijskim institucijama, a koji se sastoje od rashoda kamata, tečajnih razlika i ostalih financijskih rashoda iznosili su ${x}.`, 'Društvo nije imalo financijskih rashoda iz odnosa s poduzetnicima koji nisu unutar grupe ili s financijskim institucijama.');
+    note('28c', 'Nerealizirani gubici od financijske imovine', [], rv(173), (x) => `Nerealizirani gubici od financijske imovine iznosili su ${x}.`, 'Društvo ne posjeduje financijsku imovinu koja se svodi na prodajnu vrijednost prema tržišnoj vrijednosti izlistanoj na burzi i/ili uređenom tržištu vrijednosnih papira odnosno nije iskazalo gubitke na dionicama iz vlastitog portfelja.');
+    note('28d', 'Neto vrijednosna usklađenja financijske imovine', ['Neto vrijednosno usklađenje financijske imovine proizlazi iz promjene njene vrijednosti prema mjerenju po fer vrijednosti.'], rv(174), (x) => `Neto vrijednosna usklađenja financijske imovine u poslovnoj godini iznosila su ${x}.`, 'Društvo nije provodilo neto vrijednosna usklađenja u poslovnoj godini.');
+    note('28e', 'Ostali financijski rashodi', ['Ostali financijski rashodi se odnose na financijske rashode koji su ostvareni od ulaganja u udjele i dionice društava s udjelom vlasništva manjim od 20% (realizirani gubici) te drugih financijskih rashoda koji se ne odnose na kamate zajmova i tečajne razlike.'], rv(175), (x) => `Ostali financijski rashodi u poslovnoj godini iznosili su ${x}.`, 'Društvo nije imalo ostalih financijskih rashoda u poslovnoj godini.');
+  } else P('Društvo u poslovnoj godini nije imalo financijskih rashoda.');
+  b.push(['cap', 'UKUPNI PRIHODI']); N(29);
+  P(`Društvo je u poslovnoj godini ${A(Y)}. ostvarilo ukupne prihode u visini od ${E2(rv(180))}.`);
+  b.push(['cap', 'UKUPNI RASHODI']); N(30);
+  P(`Društvo je u poslovnoj godini ${A(Y)}. imalo ukupnih rashoda u iznosu od ${E2(rv(181))}.`);
+  b.push(['capb', 'POREZ NA DOBIT']); N(31);
+  P('Porez na dobit sukladno hrvatskom Zakonu o porezu na dobit izračunava se primjenom propisane stope na oporezivu osnovicu. Porezna osnovica uvećava se i umanjuje prema propisima navedenim u Zakonu o porezu na dobit.');
+  b.push(tbl('rdg', rowsR([['Dobit prije oporezivanja', 183], ['Gubitak prije oporezivanja', 184], ['Porez na dobit', 185], ['Dobit razdoblja', 187], ['Gubitak razdoblja', 188]]), { total: false }));
+  b.push(['h1', 'VII. PRIHVAĆANJE I OBJAVA FINANCIJSKIH IZVJEŠTAJA OD STRANE UPRAVE DRUŠTVA']);
+  H('Objava financijskih izvještaja');
+  P(`Uprava društva, na temelju odluke Skupštine o utvrđivanju godišnjih financijskih izvještaja za poslovnu godinu ${A(Y)}., svojom ovjerom odobrava njihovu objavu.`);
+  const sast = E.inputs['_bilj_sastavio'] || '';
+  b.push(sast ? ['sig3', `<span>Osoba odgovorna za sastavljanje bilješki:<br>${A(sast)}</span><span>Direktor:<br>${A(uprava)}</span>`] : ['sig2', `Direktor:<br>${A(uprava)}`]);
+  return b;
+}
+function buildBiljeskeTab() {
+  return [h('h2', {}, 'Bilješke uz financijske izvještaje'),
+    h('p', { class: 'lead' }, 'Bilješke se slažu iz Bilance i RDG-a, za obje godine, s tablicama i indeksima. Uprava se uzima iz potpisnika na kartici Odluke. Tekst možeš mijenjati izravno na papiru, a izmjene se pamte uz klijenta.'),
+    (() => {
+      const i = h('input', { type: 'text', placeholder: 'ime i prezime', value: E.inputs['_bilj_sastavio'] || (() => { try { return localStorage.getItem('zavrsni-racun:sastavio') || ''; } catch (e) { return ''; } })() });
+      if (!E.inputs['_bilj_sastavio'] && i.value) E.setInput('_bilj_sastavio', i.value);
+      i.addEventListener('change', () => { E.setInput('_bilj_sastavio', i.value.trim()); try { localStorage.setItem('zavrsni-racun:sastavio', i.value.trim()); } catch (e) {} saveState(); recalc(); });
+      return h('div', { class: 'sheet' }, h('div', { class: 'form' }, h('label', {}, 'Osoba odgovorna za sastavljanje bilješki', i), h('p', { class: 'hint', style: 'align-self:end;margin:0' }, 'Pamti se i za sljedeće klijente.')));
+    })(),
+    docEditor('_doc_bilj', 'Bilješke uz financijske izvještaje', buildBiljeske, 'Biljeske', { pages: true })];
+}
+
+
+// ---------- Ručni unos i provjera ----------
+const CHECK = [
+  { key: 'PD!Q81', label: 'Predujmovi poreza na dobit uplaćeni tijekom godine', where: 'PD r.br. 56', num: true, auto: 'iz konta 830', hint: 'upiši 0 ako ih nije bilo' },
+  { key: 'ČLANARINE!K76', label: 'Uplaćeni predujam članarine TZ', where: 'TZ 1 r.br. 10', num: true, auto: 'iz konta 4613', hint: 'upiši 0 ako ga nije bilo' },
+  { key: 'RefStr!F56', label: 'Prosječan broj zaposlenih, tekuća godina', where: 'referentnu stranicu', num: true, hint: 'upiši 0 ako nema zaposlenih' },
+  { key: 'RefStr!F58', label: 'Broj zaposlenih prema satima rada, tekuća godina', where: 'referentnu stranicu i PD', num: true, hint: 'upiši 0 ako nema zaposlenih' },
+  { key: 'RefStr!F60', label: 'Mjeseci poslovanja', where: 'referentnu stranicu, TZ i PD', num: true, autoFn: () => 'iz razdoblja' },
+  { key: '_dar', label: 'Darovanja (donacije) tijekom godine', where: 'PD, tablica darovanja r.br. 3.1.–3.7.', dar: true },
+  { key: '_odl_datum', label: 'Datum donošenja odluka', where: 'odluke' },
+  { key: '_odl_potpis', label: 'Potpisnik (direktor)', where: 'odluke i bilješke', auto: 'ovlaštena osoba iz prošlogodišnjeg GFI-ja' },
+  { key: 'RefStr!PU', label: 'Šifra područnog ureda Porezne', where: 'XML TZ 1' },
+  { key: 'RefStr!ISP', label: 'Šifra ispostave Porezne', where: 'XML TZ 1' },
+];
+const DAR_ROWS = [109, 110, 111, 112, 113, 114, 115];
+function oibValid(s) { s = String(s || ''); if (!/^\d{11}$/.test(s)) return false; let a = 10; for (let i = 0; i < 10; i++) { a = (a + +s[i]) % 10; if (a === 0) a = 10; a = (a * 2) % 11; } let k = 11 - a; if (k === 10) k = 0; return k === +s[10]; }
+function checkStatus(c) {
+  if (c.dar) {
+    if (E.inputs['_dar_none']) return 'auto';
+    return DAR_ROWS.some(r => E.num('PD!Q' + r)) ? 'manual' : 'missing';
+  }
+  const v = E.inputs[c.key];
+  if (v === undefined || v === null || v === '') return 'missing';
+  if (c.autoFn) return 'auto';
+  const a = E.inputs['_auto:' + c.key];
+  if (c.auto && a !== undefined && a !== '' && (String(a) === String(v) || Math.abs(Number(a) - Number(v)) < 0.005)) return 'auto';
+  return 'manual';
+}
+const checkMissing = () => CHECK.filter(c => checkStatus(c) === 'missing').length;
+function monthsOfPeriod() {
+  const a = String(E.inputs['RefStr!C4'] || ''), b = String(E.inputs['RefStr!F4'] || '');
+  const m1 = a.match(/^(\d{4})-(\d{2})/), m2 = b.match(/^(\d{4})-(\d{2})/);
+  if (!m1 || !m2) return null;
+  const n = (+m2[1] - +m1[1]) * 12 + (+m2[2] - +m1[2]) + 1;
+  return n >= 1 && n <= 12 ? n : null;
+}
+function applyMonths() { const n = monthsOfPeriod(); if (n) { E.setInput('RefStr!F60', n); saveState(); for (const x of numInputs) x.show(); recalc(); } }
+function buildChecklist() {
+  const tb = h('tbody'), head = h('p', { class: 'lead', style: 'margin:0' });
+  for (const c of CHECK) {
+    let input;
+    if (c.dar) {
+      const none = h('input', { type: 'checkbox', checked: E.inputs['_dar_none'] ? true : null });
+      none.addEventListener('change', () => { E.setInput('_dar_none', none.checked ? 1 : ''); saveState(); recalc(); });
+      const rows = DAR_ROWS.map((r, i) => {
+        const naz = h('input', { class: 'txt', type: 'text', placeholder: 'naziv primatelja', value: E.inputs['PD!B' + r] || '' });
+        const oib = h('input', { class: 'txt', type: 'text', inputmode: 'numeric', maxlength: 11, placeholder: 'OIB', style: 'max-width:130px', value: E.inputs['PD!L' + r] || '' });
+        const bad = h('span', { class: 'pill bad', hidden: true }, 'neispravan OIB');
+        const chk = () => { bad.hidden = !oib.value || oibValid(oib.value); };
+        naz.addEventListener('change', () => { E.setInput('PD!B' + r, naz.value.trim()); saveState(); recalc(); });
+        oib.addEventListener('change', () => { oib.value = oib.value.replace(/\D/g, ''); E.setInput('PD!L' + r, oib.value); chk(); saveState(); recalc(); });
+        chk();
+        const amt = numInput('PD!Q' + r); amt.style.maxWidth = '130px';
+        return h('tr', {}, h('td', { style: 'width:44px;color:var(--muted)' }, '3.' + (i + 1) + '.'), h('td', {}, naz), h('td', {}, oib, ' ', bad), h('td', {}, amt));
+      });
+      const tbl = h('table', { class: 'dartbl' }, h('thead', {}, h('tr', {}, h('th', {}), h('th', {}, 'Naziv primatelja'), h('th', {}, 'OIB'), h('th', {}, 'Iznos'))), h('tbody', {}, rows));
+      const box = h('div', { hidden: !DAR_ROWS.some(r => E.inputs['PD!B' + r] || E.inputs['PD!Q' + r]) }, tbl);
+      const tog = h('button', { class: 'src', type: 'button', onclick: () => { box.hidden = !box.hidden; } }, 'Upiši primatelje');
+      input = h('div', {}, h('label', { style: 'display:flex;gap:6px;align-items:center;font-size:13px' }, none, 'Nije bilo darovanja'), tog);
+      const st0 = h('span', { class: 'pill' }), note0 = h('div', { class: 'adj', style: 'justify-content:flex-start' });
+      hooks.push(() => {
+        const s = checkStatus(c);
+        st0.className = 'pill ' + (s === 'missing' ? 'bad warn' : 'ok');
+        st0.textContent = s === 'auto' ? '✓ nije bilo' : s === 'manual' ? '✎ upisano' : '⚠ nedostaje';
+        const sum = DAR_ROWS.reduce((x, r) => x + (E.num('PD!Q' + r) || 0), 0);
+        note0.textContent = s === 'manual' ? `ukupno ${fmt(sum)} € · ide u ${c.where}` : s === 'missing' ? 'upiši primatelje ili označi da ih nije bilo · ide u ' + c.where : 'ide u ' + c.where;
+        none.checked = !!E.inputs['_dar_none'];
+      });
+      tb.append(h('tr', {}, h('td', {}, h('b', { style: 'font-weight:600' }, c.label), note0, box), h('td', { style: 'width:170px' }, input), h('td', { style: 'width:130px' }, st0)));
+      continue;
+    }
+    if (c.num) { input = numInput(c.key); input.style.maxWidth = '150px'; }
+    else {
+      input = h('input', { class: 'txt', type: 'text', style: 'max-width:220px', value: E.inputs[c.key] || '' });
+      input.addEventListener('change', () => { E.setInput(c.key, input.value.trim()); saveState(); recalc(); });
+      hooks.push(() => { if (document.activeElement !== input) input.value = E.inputs[c.key] || ''; });
+    }
+    const st = h('span', { class: 'pill' }), note = h('div', { class: 'adj', style: 'justify-content:flex-start' });
+    hooks.push(() => {
+      const s = checkStatus(c);
+      st.className = 'pill ' + (s === 'missing' ? 'bad warn' : 'ok');
+      st.textContent = s === 'auto' ? '✓ automatski' : s === 'manual' ? '✎ upisano' : '⚠ nedostaje';
+      note.textContent = s === 'auto' ? (c.autoFn ? c.autoFn() : c.auto) + ' · ide u ' + c.where : s === 'missing' ? (c.hint ? c.hint + ' · ' : '') + 'ide u ' + c.where : 'ide u ' + c.where;
+    });
+    tb.append(h('tr', {}, h('td', {}, h('b', { style: 'font-weight:600' }, c.label), note), h('td', { style: 'width:170px' }, input), h('td', { style: 'width:130px' }, st)));
+  }
+  hooks.push(() => { const n = checkMissing(); head.textContent = n ? `Još ${n} ${n === 1 ? 'stavka nedostaje' : n < 5 ? 'stavke nedostaju' : 'stavki nedostaje'}. Upisano se odmah prenosi na pravo mjesto.` : 'Sve je upisano. Upisano se odmah prenosi na pravo mjesto.'; });
+  return [h('h2', { id: 'rucni', style: 'margin-top:22px' }, 'Ručni unos i provjera'), head,
+    h('div', { class: 'sheet', style: 'margin-top:8px' }, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'Stavka'), h('th', {}, 'Vrijednost'), h('th', {}, 'Status'))), tb))];
+}
+
 // ---------- Upute ----------
 const UPUTE_HTML = "<h2>Prije početka</h2>\n<p>Aplikacija iz prošlogodišnjeg GFI-POD-a i bruto bilance za tekuću godinu automatski priprema završni račun i sve povezane obračune i kontrole.</p>\n<p>Na kraju se podaci prenose u FINA-in GFI-POD obrazac.</p>\n<p>Aplikacija je usklađena s bruto bilancom iz knjigovodstvenog programa PSPnet. Ako koristite drugi program, stojimo na raspolaganju za prilagodbu Vašem postojećem sustavu: pošaljite nam bruto bilancu iz svog programa i uskladit ćemo učitavanje i mapiranje konta.</p>\n<p><strong>Vaši podaci ostaju kod Vas.</strong> Aplikacija sve obrađuje lokalno, u pregledniku na Vašem računalu. Bruto bilanca, GFI obrasci i svi upisani iznosi nikamo se ne šalju i ne spremaju se ni na kakav server. Čuvaju se samo u Vašem pregledniku i u datotekama koje sami spremite.</p>\n<p><strong>Za početak su potrebne 3 datoteke</strong></p>\n<p>Za svakog klijenta pripremi:</p>\n<ol>\n<li><strong>Prošlogodišnji GFI-POD</strong> klijenta (Excel, .xls), onaj koji je predan FINA-i.</li>\n<li><strong>Bruto bilancu u PDF-u</strong> iz programa, sa stanjem <strong>prije zaključnih knjiženja</strong>: ispis na 31.12., ali bez završne temeljnice. Bilanca sa završnom temeljnicom ne valja, jer aplikacija zaključna knjiženja radi sama.</li>\n<li><strong>Prazan FINA-in GFI-POD obrazac</strong> za godinu koja se predaje, skinut s FINA-ine stranice. Jedan obrazac služi za sve klijente.</li>\n</ol>\n<p>Za učitavanje datoteka računalo mora biti spojeno na internet.</p>\n<h2>Korak po korak</h2>\n<p>Cijeli unos za jednog klijenta ide ovim redom, na kartici <strong>Uvoz</strong>:</p>\n<ol>\n<li>Klikni <strong>Novi obrazac</strong> (gore desno) da kreneš od praznog. Prethodni klijent neka je prije toga spremljen (vidi Spremanje).</li>\n<li>U dio <strong>Prethodna godina</strong> ubaci prošlogodišnji GFI-POD. Zelenim slovima mora pisati:<ul>\n<li>Učitani podaci o tvrtki (naziv, OIB, adresa, djelatnost, sjedište),</li>\n<li>Učitana prošla godina (broj pozicija u Bilanci, RDG-u i Dodatnim podacima),</li>\n<li>Stopa članarine TZ određena prema djelatnosti i sjedištu.</li>\n</ul>\n</li>\n<li>U dio <strong>Tekuća godina – bruto bilanca</strong> ubaci PDF bruto bilance. Provjeri da pored naziva firme piše zeleno <strong>Zbroj konta = promet u razdoblju</strong>. Ako piše crveno, PDF nije dobro pročitan.</li>\n<li>Pregledaj dvije tablice konta (RDG i bilanca). <strong>Crveno</strong> označeno konto nema poziciju i neće se prenijeti: odaberi mu poziciju u padajućem izborniku u tom retku.</li>\n<li>Klikni <strong>Prenesi u obrazac</strong>. Ispod gumba mora pisati <strong>Aktiva i pasiva se slažu</strong>.</li>\n<li>Na kartici <strong>Obveznik</strong> provjeri podatke koji se ne prepisuju sami: broj zaposlenih i sati rada za tekuću godinu, te dokumente koji se predaju (bilješke, odluke).</li>\n</ol>\n<h2>Pregled i ispravci</h2>\n<p>Najbrža provjera je usporedba stupaca: prethodna i tekuća godina trebaju imati sličan raspored po pozicijama. Pozicija koja je prošle godine imala iznos, a sad je prazna (ili obrnuto), znak je da je neko konto otišlo na krivo mjesto.</p>\n<table>\n<thead>\n<tr>\n<th>Kartica</th>\n<th>Što pogledati</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>RDG</td>\n<td>Prihodi i rashodi po pozicijama, usporedi s prošlom godinom.</td>\n</tr>\n<tr>\n<td>Bilanca</td>\n<td>Aktiva i pasiva; nijedna pozicija ne smije biti negativna (osim kapitala i rezervi).</td>\n</tr>\n<tr>\n<td>Dodatni</td>\n<td>Prihodi po djelatnosti, kamate, zajmovi, naknade zaposlenima.</td>\n</tr>\n<tr>\n<td>PD</td>\n<td>Nepriznati troškovi (reprezentacija, osobni automobili), potpore, preneseni gubitak.</td>\n</tr>\n<tr>\n<td>TZ</td>\n<td>Stopa članarine, umanjenje za potpomognuto područje, uplaćeni predujmovi.</td>\n</tr>\n<tr>\n<td>Temeljnica</td>\n<td>Mora pisati zeleno <strong>Duguje = potražuje</strong>.</td>\n</tr>\n<tr>\n<td>Kontrole</td>\n<td>Pogreške bi FINA odbila; provjere su upozorenja. Broj se stalno vidi gore u statusu.</td>\n</tr>\n</tbody>\n</table>\n<p><strong>Plava polja</strong> upisuješ ili ispravljaš ručno. <strong>Siva polja</strong> su zbrojevi i računaju se sama. Gdje iznos dolazi s druge kartice, uz njega piše odakle (npr. <em>PD</em>, <em>temeljnica</em>), a klik vodi tamo.</p>\n<p>Kod AOP 051, 121 i 145 podebljani iznos je konačan; ručno se ispravlja malo polje ispod njega (stanje prije zaključnih knjiženja).</p>\n<p>Stopa članarine TZ određuje se sama po djelatnosti. Ako je upišeš ručno, ostaje dok ne klikneš <strong>vrati automatsku stopu</strong>.</p>\n<h2>Izvoz i predaja</h2>\n<p>Aplikacija ne slaže novu Excel datoteku, nego popuni FINA-in obrazac: upiše referentnu stranicu, Bilancu, RDG i Dodatne podatke, a formule, kontrole i skriveni list ostaju netaknuti.</p>\n<ol>\n<li>Klikni zeleni gumb <strong>Izvezi FINA GFI</strong> (ili karticu <strong>GFI</strong>) i odaberi prazan FINA-in GFI-POD obrazac. Ako kontrole javljaju pogreške, aplikacija prvo pita želiš li nastaviti.</li>\n<li>Spremi ponuđenu datoteku (naziv je <em>GFI-POD_naziv firme_godina.xls</em>). Original obrasca ostaje prazan.</li>\n<li>Otvori datoteku u Excelu. Dok je u zaštićenom prikazu, list Kont može javljati pogreške: to je normalno, jer Excel tada ne računa.</li>\n<li>Klikni <strong>Omogući uređivanje</strong>. Excel preračuna sve formule i kontrolni broj, i pogreške nestanu.</li>\n<li>Pogledaj list <strong>Kont</strong>: treba pokazivati isto što i kartica Kontrole u aplikaciji.</li>\n<li>Spremi s <strong>Ctrl+S</strong> i ostavi format <strong>.xls</strong> (Excel 97-2003). Ne spremaj kao .xlsx.</li>\n<li>Predaj spremljenu datoteku kroz <strong>e-RGFI</strong>.</li>\n</ol>\n<h2>Spremanje, mapiranje i česti problemi</h2>\n<p><strong>Spremanje.</strong> Gumb <strong>Spremi u datoteku</strong> napravi datoteku <em>naziv firme_godina_zavrsni.json</em> sa svim podacima klijenta, uključujući učitanu bruto bilancu. <strong>Učitaj</strong> vraća točno to stanje. Za svakog klijenta drži svoju datoteku, jer aplikacija u pregledniku pamti samo zadnjeg.</p>\n<p><strong>Mapiranje konta.</strong> Na dnu kartice Uvoz su dva seta pravila: za RDG i Bilancu, te za Dodatne podatke. Pravilo vrijedi za sva konta koja počinju tim brojem, a duže pravilo ima prednost (4613 pred 46). Pravila se pamte za sve klijente, pa se svako novo konto razvrstava samo jednom.</p>\n<table>\n<thead>\n<tr>\n<th>Problem</th>\n<th>Rješenje</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Konto je crveno u tablici uvoza</td>\n<td>Odaberi mu poziciju u retku, ili dodaj pravilo za njegovu skupinu.</td>\n</tr>\n<tr>\n<td>Aktiva i pasiva se ne slažu</td>\n<td>Provjeri ima li crvenih konta; zatim je li bilanca stanje prije zaključnih knjiženja.</td>\n</tr>\n<tr>\n<td>Negativna pozicija u Bilanci (kontrola 48)</td>\n<td>Konto ima saldo na krivoj strani (npr. preplaćena plaća); provjeri knjiženja ili prebaci iznos na suprotnu poziciju.</td>\n</tr>\n<tr>\n<td>Prihodi po djelatnostima (kontrola 67)</td>\n<td>Aplikacija ih stavlja na poziciju iz prošle godine, ili po NKD-u; ispravi na kartici Dodatni podaci.</td>\n</tr>\n<tr>\n<td>Stopa TZ je 0</td>\n<td>Djelatnost nije na zakonskom popisu; ako firma pretežno radi nešto drugo, upiši stopu ručno.</td>\n</tr>\n<tr>\n<td>PDF se ne učitava</td>\n<td>Mora biti PDF ispisan iz programa, ne skeniran; računalo mora biti na internetu.</td>\n</tr>\n<tr>\n<td>U Excelu su pogreške na listu Kont</td>\n<td>Klikni Omogući uređivanje; ako ostanu, usporedi s karticom Kontrole.</td>\n</tr>\n</tbody>\n</table>";
 function buildUpute() { const d = h('div', { class: 'upute' }); d.innerHTML = UPUTE_HTML; return [h('h2', {}, 'Upute za rad'), d]; }
 // ---------- header & status ----------
 function renderHeader() {
   const g = (a) => E.inputs['RefStr!' + a];
-  const d = (s) => s ? s.split('-').reverse().join('.') + '.' : '__.__.____.';
+  const d = (s) => s ? String(s).slice(0, 10).split('-').reverse().join('.') + '.' : '__.__.____.';
   const year = g('F12') || (g('F4') ? String(g('F4')).slice(0, 4) : '');
   document.getElementById('hName').textContent = ('Završni račun ' + year).trim().toUpperCase();
   document.getElementById('hPeriod').textContent = d(g('C4')) + ' — ' + d(g('F4'));
@@ -1642,6 +2272,9 @@ function buildStatus() {
   const [, bP] = mk('POREZ NA DOBIT', 'pd');
   const [fU, bU] = mk('POREZ ZA UPLATU', 'pd');
   const cards = h('div', { class: 'cards' }, fR, st.querySelectorAll('.card')[1], fU); st.insertBefore(cards, st.querySelectorAll('.card')[0]);
+  const [fM, bM] = mk('RUČNI UNOS', 'bb');
+  fM.addEventListener('click', () => setTimeout(() => { const r = document.getElementById('rucni'); if (r) r.scrollIntoView({ block: 'start' }); }, 50));
+  hooks.push(() => { const n = checkMissing(); bM.textContent = n ? n + ' nedostaje' : 'sve upisano'; fM.classList.toggle('warnc', !!n); });
   const kIco = h('span', { class: 'kico', 'aria-hidden': 'true' });
   const kMain = h('b'), kSub = h('small');
   const fK = h('button', { class: 'kontcard', type: 'button', title: 'Otvori popis FINA kontrola', onclick: () => showTab('kont') },
@@ -1680,7 +2313,7 @@ function build() {
     bil: () => buildGfi('Bilanca', M.bil, 'Bilanca', 'Stanje na kraju razdoblja. Plava polja puniš iz bruto bilance; zbrojne pozicije, dobit iz RDG-a i preplate iz zaključnih knjiženja računaju se same.'),
     rdg: () => buildGfi('RDG', M.rdg, 'Račun dobiti i gubitka', 'Ostali troškovi (AOP 145) uključuju članarinu TZ iz temeljnice, a porez na dobit (AOP 185) dolazi iz PD obrasca.'),
     dod: () => buildGfi('Dodatni', M.dod, 'Dodatni podaci', 'Obrazac POD-DOP. Prihodi od prodaje u zemlji dolaze iz RDG-a, a kamate i prihod od trgovine pune se iz bruto bilance po pravilima za dodatne podatke. Sve ostalo upisuješ ručno.'),
-    pd: buildPd, tz: buildTz, tem: buildTem, kont: buildKont, exp: buildExport,
+    pd: buildPd, tz: buildTz, tem: buildTem, kont: buildKont, odl: buildOdluke, bilj: buildBiljeskeTab, exp: buildExport,
   };
   for (const [id, name, full] of TABS) {
     tabs.append(h('button', { class: 'tab', role: 'tab', title: full || name, id: 'tab-' + id, 'aria-controls': 'sec-' + id, type: 'button', onclick: () => showTab(id) }, name));
@@ -1748,6 +2381,8 @@ function renderLicence() {
   const fd = (s) => s ? String(s).slice(0, 10).split('-').reverse().join('.') + '.' : '';
   if (LIC.ok) {
     el.className = 'lic' + (LIC.days <= 30 ? ' warn' : '');
+    const loc = String(LIC.email || '').split('@')[0];
+    if (loc) el.append(h('span', { class: 'user' }, 'Korisnik: ' + loc.slice(0, Math.min(6, Math.max(3, loc.length - 2))) + '*******'), ' · ');
     el.append(LIC.days <= 30 ? `Licenca istječe ${fd(LIC.until)} (za ${LIC.days} dana) – produžite na retroapplab.com` : `Licenca vrijedi do ${fd(LIC.until)}`);
     if (typeof IS_ADMIN !== 'undefined' && IS_ADMIN) el.append(' · ', h('button', { class: 'src', type: 'button', onclick: showAdmin }, 'Administracija'));
     el.append(' · ', h('button', { class: 'src', type: 'button', onclick: () => showGate('pwd') }, 'Promijeni lozinku'), ' · ', h('button', { class: 'src', type: 'button', onclick: logout }, 'Odjava'));
