@@ -697,6 +697,21 @@
     .tab { padding: 10px 7px 9px; font-size: 0.78rem; }
     .tab img { display: none; }
   }
+  .featured-label.fl-zr { margin-top: 28px; }
+  .featured-card.fc-zr {
+    grid-template-columns: 1.1fr 1fr;
+    border-color: rgba(245, 158, 11, 0.55);
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.12);
+  }
+  .fc-zr-media { padding: 22px; display: flex; align-items: center; background: rgba(245, 158, 11, 0.05); }
+  .fc-zr-media .ft-zr-video { width: 100%; }
+  .fc-zr .featured-content p { margin-bottom: 10px; }
+  .fc-zr .featured-content p.ft-zr-sub { color: var(--neon-gold); font-weight: 600; font-size: 1rem; }
+  .fc-zr-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; border: 1px solid; padding: 1px 7px; border-radius: 4px; color: var(--neon-gold); border-color: var(--neon-gold); align-self: flex-start; margin-bottom: 8px; }
+  @media (max-width: 840px) {
+    .featured-card.fc-zr { grid-template-columns: 1fr; }
+    .fc-zr-media { padding: 14px 14px 0; }
+  }
 </style>
 </head>
 <body>
@@ -824,6 +839,25 @@
       <div class="featured-actions">
         <a href="/pcelica/" class="play-btn">Igraj →</a>
         <a href="/pcelica/o-igri.html" class="play-btn">O igri</a>
+      </div>
+    </div>
+  </div>
+  <span class="featured-label fl-zr">ZA KNJIGOVOĐE<span class="fl-cursor">_</span></span>
+  <div class="featured-card fc-zr">
+    <div class="fc-zr-media">
+      <div class="ft-zr-video">
+        <iframe src="https://www.youtube-nocookie.com/embed/qfDws6e1jKw?rel=0" title="Završni račun – prikaz aplikacije" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+    <div class="featured-content">
+      <span class="ft-badge fc-zr-badge">NOVO</span>
+      <h3>Završni račun</h3>
+      <p class="ft-zr-sub">Od bruto bilance do FINA GFI-POD obrasca u par klikova.</p>
+      <p>Učita prošlogodišnji GFI i bruto bilancu, složi Bilancu, RDG i Dodatne podatke, izračuna porez na dobit, članarinu TZ i temeljnicu zaključnih knjiženja, provjeri FINA kontrole i popuni originalni FINA obrazac te XML za ePoreznu. Podaci ostaju na Vašem računalu.</p>
+      <div class="ft-zr-actions">
+        <a class="ft-zr-btn" href="/zavrsni/?demo=1">Isprobaj demo</a>
+        <a class="ft-zr-btn" href="#kontakt">Zatraži licencu</a>
+        <a class="ft-zr-login" href="/zavrsni/">Prijava za korisnike →</a>
       </div>
     </div>
   </div>
