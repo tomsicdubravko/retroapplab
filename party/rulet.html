@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="hr" style="background:#0e0e16">
+<head>
+<meta charset="UTF-8">
+<script src="party.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0e0e16">
+<title>Rulet V2 – Party Games</title>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#0e0e16;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;}
+body{display:flex;flex-direction:column;align-items:center;padding:0 0 40px;}
+
+.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:440px;padding:20px 20px 40px;}
+.screen.active{display:flex;}
+
+.title{font-family:'Bebas Neue';font-size:2.2rem;letter-spacing:.14em;color:#d4b35d;margin-bottom:4px;text-align:center;}
+.sub{font-size:.74rem;color:rgba(255,255,255,.35);letter-spacing:.06em;margin-bottom:20px;text-align:center;}
+.inp{width:100%;background:#1e1e2e;border:1px solid rgba(255,255,255,.2);color:#fff;font-family:'Inter';font-size:.95rem;padding:11px 14px;border-radius:10px;outline:none;margin-bottom:6px;-webkit-text-fill-color:#fff;}
+.inp:focus{border-color:#d4b35d;}
+.inp::placeholder{color:rgba(255,255,255,.3);-webkit-text-fill-color:rgba(255,255,255,.3);}
+.inp-label{font-size:.68rem;letter-spacing:.08em;color:rgba(255,255,255,.3);margin-bottom:4px;align-self:flex-start;}
+.btn{width:100%;padding:13px;border-radius:10px;cursor:pointer;font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:.1em;border:none;transition:all .2s;margin-bottom:8px;}
+.btn-gold{background:rgba(200,168,75,.2);border:1.5px solid rgba(200,168,75,.5);color:#d4b35d;}
+.btn-gold:hover{background:rgba(200,168,75,.32);transform:translateY(-1px);}
+.btn-dark{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);}
+.btn-sm{width:auto;padding:9px 24px;font-size:1rem;}
+
+.player-list{width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.player-row{display:flex;gap:6px;align-items:center;}
+.color-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.2);}
+.remove-btn{background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.25);color:#ff6b6b;width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:.85rem;flex-shrink:0;}
+
+/* Legend */
+.legend{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:.72rem;color:rgba(255,255,255,.45);}
+.legend-dot{width:12px;height:12px;border-radius:3px;}
+
+/* WHEEL */
+#wheel-screen{max-width:480px;padding-top:0;}
+.wheel-outer{position:relative;width:320px;height:320px;margin:12px auto 6px;flex-shrink:0;}
+canvas#wheel{border-radius:50%;display:block;box-shadow:0 0 40px rgba(200,168,75,.2),0 8px 32px rgba(0,0,0,.6);}
+.wheel-pointer{position:absolute;top:-18px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:30px solid #d4b35d;filter:drop-shadow(0 0 8px rgba(200,168,75,.6));z-index:10;}
+#spin-btn{width:72px;height:72px;border-radius:50%;border:none;cursor:pointer;background:radial-gradient(circle at 40% 35%,#f0c840,#c8a020);font-family:'Bebas Neue';font-size:.95rem;letter-spacing:.05em;color:#1a1a00;box-shadow:0 0 20px rgba(200,168,75,.4),0 4px 12px rgba(0,0,0,.4);transition:all .15s;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;}
+#spin-btn:active{transform:translate(-50%,-50%) scale(.95);}
+#spin-btn:disabled{opacity:.5;cursor:default;}
+
+/* Result */
+#result-area{width:100%;max-width:380px;text-align:center;padding:0 16px;margin-top:4px;min-height:90px;}
+#result-name{font-family:'Bebas Neue';font-size:2.2rem;letter-spacing:.1em;min-height:48px;transition:all .3s;}
+#result-desc{font-size:.85rem;color:rgba(255,255,255,.5);margin-top:2px;min-height:20px;}
+
+/* Choose screen */
+#choose-screen{position:fixed;inset:0;background:rgba(10,10,18,.96);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;}
+#choose-screen.show{display:flex;}
+.choose-title{font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:.1em;color:#d4b35d;text-align:center;}
+.choose-sub{font-size:.8rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:6px;}
+.choose-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;}
+.choose-btn{padding:13px;border-radius:10px;cursor:pointer;font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:.08em;color:#fff;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);transition:all .2s;text-align:center;}
+.choose-btn:hover{background:rgba(255,255,255,.15);transform:translateY(-1px);}
+
+#round-info{font-family:'Bebas Neue';font-size:.82rem;letter-spacing:.15em;color:rgba(200,168,75,.5);margin-top:8px;}
+#sips-bar-local{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;width:100%;max-width:380px;padding:0 16px;}
+#drink-flash{display:none;position:fixed;inset:0;background:rgba(231,76,60,.88);z-index:9999;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:3.5rem;letter-spacing:.1em;color:#fff;text-shadow:0 0 30px rgba(0,0,0,.5);pointer-events:none;text-align:center;padding:20px;}
+
+/* Rulet V2: Canvas depth and responsive black/gold presentation. */
+body{background:radial-gradient(ellipse at 50% 15%,#30241666,transparent 60%),#0d0d11;color:#f7efd9;}
+.screen{max-width:460px;min-width:0;} .inp{background:#18171b;border-color:#dcc17a33;min-width:0;}
+.player-row .inp{min-width:0;} .btn{min-height:48px;border-radius:14px;}
+.btn-gold{background:linear-gradient(130deg,#e3c680,#a68036);color:#241b0c;border:1px solid #eed59b;box-shadow:inset 0 1px #fff5,0 6px 22px #0005;}
+.btn-gold:hover{background:linear-gradient(130deg,#f1d798,#bb954a);}
+.btn:focus-visible,.choose-btn:focus-visible,#spin-btn:focus-visible{outline:2px solid #f6d895;outline-offset:4px;}
+.v2-brand{font-size:.64rem;letter-spacing:.22em;color:#b99b5d;text-align:center;margin:20px 0 12px;}
+#wheel-screen{max-width:500px;padding:0 14px 28px;gap:0;}
+#wheel-screen .v2-brand{margin:18px 0 6px;} #round-info{color:#dbc48a;font-size:.85rem;margin:0 0 5px;}
+#online-wheel-status{color:#a89d87;min-height:18px;letter-spacing:0;line-height:1.45;}
+.wheel-outer{width:min(100%,360px);height:auto;aspect-ratio:1;margin:18px auto 12px;isolation:isolate;}
+.wheel-outer::before{content:'';position:absolute;inset:7%;border-radius:50%;box-shadow:0 22px 32px #000b,0 0 60px #d4aa4320;z-index:-1;}
+canvas#wheel{width:100%;height:100%;box-shadow:none;}
+.wheel-pointer,.gamble-pointer{position:absolute;top:1%;left:50%;width:28px;height:39px;border:0;transform:translateX(-50%);background:linear-gradient(100deg,#75521d,#fff0b7 36%,#c69945 54%,#806025);clip-path:polygon(10% 0,90% 0,100% 33%,50% 100%,0 33%);filter:drop-shadow(0 3px 2px #000);z-index:10;transform-origin:50% 15%;}
+.wheel-pointer::after,.gamble-pointer::after{content:'';position:absolute;top:7px;left:10px;width:8px;height:8px;border-radius:50%;background:#292219;box-shadow:inset 0 1px 2px #000,0 1px #ffedb7;}
+#spin-btn{width:64px;height:64px;background:radial-gradient(circle at 35% 20%,#fff1bf,#d1aa53 58%,#705022);border:1px solid #f0d89a;box-shadow:inset 0 2px 2px #fff9,inset 0 -3px 5px #452d1f88,0 4px 10px #0009;font-size:.95rem;color:#332509;}
+#spin-btn:disabled{opacity:.9;color:#705a30;}
+#result-area{max-width:420px;border:1px solid #d1ad5738;border-radius:20px;padding:17px 14px;background:radial-gradient(ellipse at 50% 0,#b78b3322,transparent 80%),linear-gradient(140deg,#1c1919,#121215);min-height:118px;box-shadow:0 8px 24px #0003;}
+.result-eyebrow{font-size:.58rem;letter-spacing:.2em;color:#a9905e;margin-bottom:7px;}
+#result-name{font-size:clamp(1.6rem,7vw,2.2rem);min-height:34px;line-height:1.2;overflow-wrap:anywhere;}
+#result-name:empty::before{content:'ZAVRTI KOTAČ';color:#d7c7a0;} #result-desc{color:#bdb19a;line-height:1.5;}
+#result-desc:empty::before{content:'Večer može početi.';color:#8b8170;}
+#result-area.result-arrive{animation:resultArrive 450ms ease both;}
+#sips-bar-local{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-width:420px;padding:0;margin-top:14px;}
+.rulet-player{display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px;border:1px solid #e3c68022;border-radius:14px;background:#18161a;min-width:0;}
+.rulet-avatar{width:32px;height:32px;display:grid;place-items:center;border:1px solid var(--player-color);border-radius:50%;font-size:.68rem;color:var(--player-color);background:#ffffff05;}
+.rulet-player-name{font-size:.74rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.rulet-player-drink{font-size:.6rem;color:#918575;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rulet-player-count{font-family:'Bebas Neue';font-size:1.5rem;color:#e4c986;text-align:center;}.rulet-player-count small{display:block;font-family:Inter;font-size:.48rem;color:#918575;letter-spacing:.05em;}
+.rulet-player.is-winner{border-color:#dfbf78;box-shadow:inset 0 0 15px #cfaa4420;}.rulet-player.is-me .rulet-player-name::after{content:' · TI';color:#d5bc79;font-size:.58rem;}
+#lobby-list .player-row{padding:12px;background:#ffffff05;border:1px solid #dfc17722;border-radius:12px;font-size:.82rem;overflow-wrap:anywhere;}
+#wheel-back-btn{opacity:1!important;color:#b5a78d;} #choose-screen{background:#0c0b0df5;overflow-y:auto;justify-content:safe center;}
+.choose-btn{min-height:48px;background:linear-gradient(135deg,#2b2520,#151419);border-radius:14px;}
+#gamble-screen{background:radial-gradient(ellipse at 50% 35%,#463018aa,transparent 75%),#0d0c10fa!important;overflow-y:auto;justify-content:safe center!important;}
+.gamble-title{font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:.14em;color:#ebcc86;}.gamble-sub{font-size:.76rem;color:#aa9b7d;text-align:center;line-height:1.5;}
+.gamble-outer{position:relative;width:230px;max-width:100%;aspect-ratio:1;margin:8px 0;}.gamble-outer canvas{width:100%;height:100%;border-radius:50%;filter:drop-shadow(0 12px 18px #0009);}
+.gamble-pointer{width:24px;height:33px;}.gamble-pointer::after{left:8px;top:6px;}
+.gamble-options{display:flex;gap:10px;width:100%;max-width:300px;}.gamble-options span{flex:1;padding:12px 7px;border:1px solid #dfc17733;border-radius:12px;text-align:center;color:#dcc78e;font-size:.68rem;background:#171616;}.gamble-options span:last-child{color:#edaaa0;border-color:#a34d3f66;}
+#gamble-btn,#gamble-spin-btn{background:linear-gradient(135deg,#e6c984,#99722e)!important;color:#241b0c!important;border-color:#f5dca0!important;min-height:48px;box-shadow:inset 0 1px #fff8,0 4px 18px #0006!important;}
+#gamble-close-btn{min-height:44px;color:#d8c9ab!important;border-color:#dbbd7955!important;} #gamble-timer{color:#b2a183!important;}
+#gamble-result{font-size:1.65rem!important;max-width:100%;overflow-wrap:anywhere;} #drink-flash{font-size:clamp(2rem,10vw,3.5rem);white-space:pre-line;}
+@keyframes resultArrive{from{opacity:.5;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:350px){#wheel-screen{padding-left:12px;padding-right:12px;}.rulet-player{gap:5px;padding:8px;grid-template-columns:26px minmax(0,1fr) auto;}.rulet-avatar{width:26px;height:26px;}.wheel-pointer{height:35px;}}
+@media(prefers-reduced-motion:reduce){#result-area.result-arrive{animation:none;}.btn,.choose-btn{transition:none;}}
+
+
+/* Navigation sits in its own row, safely above the pointer and wheel. */
+.rulet-navigation{width:100%;display:flex;align-items:center;justify-content:flex-start;min-height:44px;margin:8px 0 0;}
+.rulet-exit{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 12px;border:1px solid #d4b35d22;border-radius:12px;background:#ffffff03;font-family:Inter,sans-serif;font-size:.76rem;cursor:pointer;color:#b5a78d;}
+.rulet-exit:hover{border-color:#d4b35d66;color:#e6ce96;}.rulet-exit:focus-visible{outline:2px solid #f6d895;outline-offset:3px;}
+#wheel-screen .v2-brand{margin-top:6px;}
+#spin-btn.spin-ready:not(:disabled){animation:ruletReadyPulse 2.6s ease-in-out infinite;}
+#spin-again-hint{font-size:.65rem;line-height:1.5;color:#a29479;margin-top:9px;}
+@keyframes ruletReadyPulse{0%,100%{box-shadow:inset 0 2px 2px #fff9,inset 0 -3px 5px #452d1f88,0 4px 10px #0009,0 0 0 0 #dfbd6922;}50%{box-shadow:inset 0 2px 2px #fff9,inset 0 -3px 5px #452d1f88,0 4px 10px #0009,0 0 18px 5px #dfbd6944;}}
+@media(prefers-reduced-motion:reduce){#spin-btn.spin-ready:not(:disabled){animation:none;}}
+
+</style>
+<link rel="stylesheet" href="party-author.css">
+</head>
+<body>
+
+<div id="drink-flash"></div>
+
+<!-- MODE -->
+<div id="mode-screen" class="screen active">
+  <div style="font-size:2.5rem;margin-top:20px;">🎰</div>
+  <div class="v2-brand">PARTY GAMES · V2</div><div class="title">RULET</div>
+  <div class="sub">Točkić odlučuje tko pije!</div>
+  <button class="btn btn-gold" onclick="showScreen('setup-screen')">📱 LOKALNO</button>
+  <div style="font-size:.7rem;color:rgba(255,255,255,.2);margin:-2px 0 10px;text-align:center;">Svi igraju na jednom uređaju</div>
+  <button class="btn btn-gold" onclick="startBots()">🤖 PROTIV BOTOVA</button>
+  <div style="font-size:.7rem;color:rgba(255,255,255,.2);margin:-2px 0 10px;text-align:center;">Ti vrtiš, botovi su igrači</div>
+  <button class="btn btn-dark" onclick="showScreen('online-screen')">🌐 ONLINE</button>
+  <div style="font-size:.7rem;color:rgba(255,255,255,.2);margin-bottom:10px">Svatko igra na svom mobitelu</div>
+  <button class="btn btn-dark btn-sm" style="width:100%;margin-top:8px;opacity:.5;" onclick="window.location.href='index.html'">← Natrag na igre</button>
+  <footer class="pg-author" aria-label="Autor igre">A GAME BY <a href="https://retroapplab.com/" target="_blank" rel="noopener noreferrer">RETROAPPLAB</a> <span aria-hidden="true">↗</span></footer>
+</div>
+
+<!-- ONLINE -->
+<div id="online-screen" class="screen">
+  <div class="title">ONLINE RULET</div>
+  <div class="sub">Svatko igra na svom mobitelu • 2–8 igrača</div>
+  <div class="inp-label">TVOJE IME</div>
+  <input id="online-name" class="inp" maxlength="16" placeholder="Ime...">
+  <div class="inp-label">TVOJE PIĆE</div>
+  <input id="online-drink" class="inp" maxlength="10" placeholder="Piće..." value="Piće">
+  <div id="online-actions" style="width:100%">
+    <button class="btn btn-gold" onclick="createRoom()">KREIRAJ SOBU</button>
+    <input id="room-inp" class="inp" placeholder="npr. K7M4RX" maxlength="6" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase">
+    <button class="btn btn-dark" onclick="joinRoom()">UĐI U SOBU</button>
+  </div>
+  <div id="online-err" role="status" style="color:#e74c3c;font-size:.8rem;text-align:center;margin:8px 0"></div>
+  <div id="lobby-wrap" style="display:none;width:100%">
+    <div class="sub" style="margin-bottom:4px">KOD SOBE</div>
+    <div id="room-code-display" style="font-family:'Bebas Neue';font-size:2.8rem;letter-spacing:.2em;color:#d4b35d;text-align:center">······</div>
+    <div id="lobby-list" class="player-list"></div>
+    <div id="lobby-status" class="sub" role="status"></div>
+    <button id="host-start-online-btn" class="btn btn-gold" onclick="hostStartOnline()" style="display:none">KRENI 🎰</button>
+  </div>
+  <button class="btn btn-dark" onclick="leaveOnline()">← Natrag</button>
+</div>
+
+<!-- SETUP -->
+<div id="setup-screen" class="screen">
+  <div style="font-size:2rem;margin-top:16px;">🎰</div>
+  <div class="title" style="font-size:1.8rem;">IGRAČI</div>
+  <div class="sub">Dodaj igrače i njihova pića</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#c0392b;opacity:.9"></div>Normalno – pije</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f1c40f"></div>★ Malo – bira tko pije</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div>💀 Micro – svi piju osim njega</div>
+  </div>
+
+  <div class="inp-label">IGRAČI (2–8)</div>
+  <div class="player-list" id="player-list"></div>
+  <button class="btn btn-dark" onclick="addPlayer()" style="margin-bottom:16px;">+ Dodaj igrača</button>
+  <button class="btn btn-gold" onclick="startGame()">ZAVRTI! 🎰</button>
+  <button class="btn btn-dark btn-sm" style="width:100%;margin-top:4px;" onclick="showScreen('mode-screen')">← Natrag</button>
+</div>
+
+<!-- WHEEL -->
+<div id="wheel-screen" class="screen">
+  <div class="rulet-navigation"><button id="wheel-back-btn" class="rulet-exit" onclick="goSetup()" aria-label="Izlaz iz igre">← Izlaz</button></div>
+  <div class="v2-brand">PARTY GAMES · RULET V2</div>
+  <div id="round-info">RUNDA 1</div>
+  <div id="online-wheel-status" class="sub" role="status" style="display:none;margin:4px 0;text-align:center"></div>
+  <div class="wheel-outer">
+    <div class="wheel-pointer" aria-hidden="true"></div>
+    <canvas id="wheel" width="320" height="320" role="img" aria-label="Party Games rulet"></canvas>
+    <button id="spin-btn" onclick="spin()">VRTI!</button>
+  </div>
+  <div id="result-area" aria-live="polite"><div class="result-eyebrow">KOTAČ ODLUČUJE</div>
+    <div id="result-name"></div>
+    <div id="result-desc"></div>
+    <div id="spin-again-hint" hidden>Za novo okretanje pritisni VRTI na kotaču.</div>
+    <button id="gamble-btn" onclick="startGamble()" style="display:none;margin-top:10px;padding:12px 28px;border-radius:12px;cursor:pointer;font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:.1em;color:#fff;background:linear-gradient(135deg,rgba(241,196,15,.3),rgba(241,196,15,.12));border:1.5px solid rgba(241,196,15,.7);box-shadow:0 0 16px rgba(241,196,15,.25);transition:all .2s;">✦ ZLATNI GUTLJAJ</button>
+    <div id="gamble-timer" style="font-size:.68rem;color:rgba(255,255,255,.3);margin-top:4px;letter-spacing:.06em;display:none;"></div>
+  </div>
+  <div id="sips-bar-local"></div>
+</div>
+
+<!-- GAMBLE MINI WHEEL -->
+<div id="gamble-screen" style="position:fixed;inset:0;background:rgba(10,10,18,.97);z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;">
+  <div class="gamble-title">✦ ZLATNI GUTLJAJ</div>
+  <div class="gamble-sub">Jedan okret. Dvije mogućnosti.<br>50/50 – ili se spasiš ili piješ duplo!</div>
+  <div class="gamble-outer"><div class="gamble-pointer" aria-hidden="true"></div><canvas id="gamble-wheel" width="200" height="200" role="img" aria-label="Zlatni gutljaj: spašen ili duplo"></canvas></div>
+  <div class="gamble-options"><span>✓ SPAŠEN<br>Ne piješ</span><span>× DUPLO<br>Dva gutljaja</span></div>
+  <div id="gamble-result" style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:.1em;min-height:44px;text-align:center;"></div>
+  <button id="gamble-spin-btn" onclick="spinGamble()" style="padding:13px 36px;border-radius:12px;cursor:pointer;font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:.1em;color:#fff;background:linear-gradient(135deg,rgba(241,196,15,.3),rgba(241,196,15,.12));border:1.5px solid rgba(241,196,15,.6);box-shadow:0 0 16px rgba(241,196,15,.2);">VRTI! 🎲</button>
+  <button id="gamble-close-btn" onclick="closeGamble()" style="padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Inter';font-size:.78rem;color:rgba(255,255,255,.3);background:transparent;border:1px solid rgba(255,255,255,.1);display:none;">NASTAVI →</button>
+</div>
+
+<!-- CHOOSE WHO DRINKS -->
+<div id="choose-screen">
+  <div style="font-size:3rem;">🎯</div>
+  <div class="choose-title" id="choose-title">PERO BIRA TKO PIJE!</div>
+  <div class="choose-sub" id="choose-sub">Pogodio je malo polje – on bira!</div>
+  <div class="choose-btns" id="choose-btns"></div>
+</div>
+
+<script>
+var COLORS=['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#ec407a'];
+// Big segment color (darker version), small segment = golden/yellow
+var BIG_COLORS  =['#c0392b','#2471a3','#1e8449','#ca6f1e','#76448a','#148f77','#6d3b8a','#a93226'];
+var SMALL_COLOR ='rgba(241,196,15,0.85)';
+var MICRO_COLOR ='rgba(231,76,60,0.9)';
+
+var players=[];
+var sips={};
+var round=1;
+var spinning=false;
+var currentAngle=0;
+
+// Each player gets 3 segments: big (normal), small (choose), micro (2x)
+var BIG_RATIO   = 0.68;
+var SMALL_RATIO = 0.20;
+var MICRO_RATIO = 0.12;
+
+function initPlayers(){
+  players=[
+    {name:sessionStorage.getItem('playerName')||'Igrač 1',color:COLORS[0],drink:'Piće'},
+    {name:'Igrač 2',color:COLORS[1],drink:'Piće'},
+  ];
+  renderSetup();
+}
+
+function renderSetup(){
+  var el=document.getElementById('player-list');
+  el.innerHTML='';
+  players.forEach(function(p,i){
+    var row=document.createElement('div');
+    row.className='player-row';
+    row.innerHTML=
+      '<div class="color-dot" style="background:'+p.color+'"></div>'+
+      '<input class="inp" style="flex:1;margin:0;" placeholder="Ime..." maxlength="12" value="'+p.name+'" oninput="players['+i+'].name=this.value"/>'+
+      '<input class="inp" style="width:85px;margin:0;" placeholder="Piće..." maxlength="10" value="'+p.drink+'" oninput="players['+i+'].drink=this.value"/>'+
+      (players.length>2?'<button class="remove-btn" onclick="removePlayer('+i+')">✕</button>':'');
+    el.appendChild(row);
+  });
+}
+
+function addPlayer(){
+  if(players.length>=8) return;
+  var i=players.length;
+  players.push({name:'Igrač '+(i+1),color:COLORS[i%COLORS.length],drink:'Piće'});
+  renderSetup();
+}
+function removePlayer(i){ players.splice(i,1); renderSetup(); }
+
+function startGame(){
+  players.forEach(function(p,i){if(!p.name.trim())p.name='Igrač '+(i+1);if(!p.drink.trim())p.drink='Piće';});
+  players.forEach(function(p){if(!sips[p.name])sips[p.name]=0;});
+  round=1; currentAngle=0; spinning=false;
+  showScreen('wheel-screen');
+  drawWheel();
+  resetResult();
+  renderSipsLocal();
+  document.getElementById('round-info').textContent='RUNDA 1';
+}
+
+function startBots(){
+  players=[
+    {name:sessionStorage.getItem('playerName')||'Ti', color:COLORS[0], drink:'Piće'},
+    {name:'Bot Ana',  color:COLORS[1], drink:'Piće'},
+    {name:'Bot Pero', color:COLORS[2], drink:'Piće'},
+    {name:'Bot Mate', color:COLORS[3], drink:'Piće'},
+  ];
+  players.forEach(function(p){if(!sips[p.name])sips[p.name]=0;});
+  round=1; currentAngle=0; spinning=false;
+  showScreen('wheel-screen');
+  drawWheel(); resetResult(); renderSipsLocal();
+  document.getElementById('round-info').textContent='RUNDA 1';
+}
+
+function goSetup(){ showScreen('mode-screen'); }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  if(id==='setup-screen') renderSetup();
+}
+
+// ── BUILD SEGMENTS ─────────────────────────────────────────────────────────────
+// Returns array of {playerIdx, type:'big'|'small', startAngle, endAngle}
+function buildSegments(){
+  var n=players.length;
+  var perPlayer=2*Math.PI/n;
+  var segments=[];
+  players.forEach(function(p,i){
+    var base=currentAngle+i*perPlayer;
+    segments.push({playerIdx:i,type:'big',   start:base, end:base+perPlayer*BIG_RATIO});
+    segments.push({playerIdx:i,type:'small', start:base+perPlayer*BIG_RATIO, end:base+perPlayer*(BIG_RATIO+SMALL_RATIO)});
+    segments.push({playerIdx:i,type:'micro', start:base+perPlayer*(BIG_RATIO+SMALL_RATIO), end:base+perPlayer});
+  });
+  return segments;
+}
+
+// ── DRAW ──────────────────────────────────────────────────────────────────────
+var canvas,ctx;
+function ruletCanvas(id,size){
+  var c=document.getElementById(id),scale=Math.min(window.devicePixelRatio||1,2);
+  if(c.width!==size*scale||c.height!==size*scale){c.width=size*scale;c.height=size*scale;}
+  var g=c.getContext('2d');g.setTransform(scale,0,0,scale,0,0);g.clearRect(0,0,size,size);return g;
+}
+function ruletDisc(g,cx,cy,r,fill){g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.fillStyle=fill;g.fill();}
+function ruletMetal(g,cx,cy,r){
+  var metal=g.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+  [[0,'#6c4c20'],[.18,'#e4c382'],[.32,'#fff1bb'],[.48,'#a37a32'],[.65,'#e9cd8a'],[.83,'#73511f'],[1,'#cba45d']].forEach(function(stop){metal.addColorStop(stop[0],stop[1]);});
+  ruletDisc(g,cx,cy,r,metal);
+}
+function paintRulet(g,size,segs,hit,mini){
+  var c=size/2,r=size*.48,face=r-size*.06;
+  g.save();g.shadowColor='#000c';g.shadowBlur=8;g.shadowOffsetY=5;ruletDisc(g,c,c+3,r,'#463019');g.restore();
+  ruletMetal(g,c,c,r);ruletDisc(g,c,c,r-3,'#342819');ruletMetal(g,c,c,r-5);ruletDisc(g,c,c,face+3,'#090a0d');
+  segs.forEach(function(seg){
+    var isHit=hit&&hit.playerIdx===seg.playerIdx&&hit.type===seg.type;
+    var color=mini?(seg.type==='saved'?'#485c47':'#6e282e'):seg.type==='small'?'#b99248':seg.type==='micro'?'#872d37':BIG_COLORS[seg.playerIdx%BIG_COLORS.length];
+    g.save();g.beginPath();g.moveTo(c,c);g.arc(c,c,face,seg.start,seg.end);g.closePath();g.clip();
+    var grad=g.createRadialGradient(c,c,10,c,c,face);grad.addColorStop(0,'#151318');grad.addColorStop(.64,color);grad.addColorStop(1,isHit?'#f0cf84':color);g.fillStyle=grad;g.fillRect(0,0,size,size);
+    g.fillStyle=seg.type==='big'?'#0006':'#0002';g.fillRect(0,0,size,size);
+    if(isHit){var light=g.createRadialGradient(c,c,face*.3,c,c,face);light.addColorStop(0,'#fff2b800');light.addColorStop(1,'#ffe4a488');g.fillStyle=light;g.fillRect(0,0,size,size);}
+    g.restore();
+    g.beginPath();g.moveTo(c,c);g.arc(c,c,face,seg.start,seg.end);g.closePath();g.strokeStyle=isHit?'#ffe4a4':'#e0c28666';g.lineWidth=isHit?2:1;g.stroke();
+    var mid=(seg.start+seg.end)/2;g.save();g.translate(c,c);g.rotate(mid);g.textAlign='right';g.textBaseline='middle';g.shadowColor='#000';g.shadowBlur=3;
+    if(mini){g.font='bold 17px Inter,Arial';g.fillStyle=seg.type==='saved'?'#e8d59f':'#f2c0b1';g.fillText(seg.type==='saved'?'✓':'×',face-10,0);}
+    else{var p=players[seg.playerIdx],name=p.name;var max=seg.type==='big'?9:6;if(name.length>max)name=name.slice(0,max-1)+'…';g.font='bold '+(seg.type==='big'?11:9)+'px Inter,Arial';g.fillStyle=seg.type==='small'?'#fff0bc':'#fff0e4';g.fillText((seg.type==='small'?'★ ':seg.type==='micro'?'☠ ':'')+name,face-8,seg.type==='big'?-5:0);if(seg.type==='big'){g.font='8px Inter,Arial';g.fillStyle='#dac8ad';g.fillText(p.drink.slice(0,10),face-8,8);}}
+    g.restore();
+    // Each actual boundary has a matching gold index mark on the fixed-size rim.
+    g.save();g.translate(c,c);g.rotate(seg.start);g.fillStyle='#f9e4aa';g.fillRect(face+5,-.7,3,1.4);g.restore();
+  });
+  var shade=g.createRadialGradient(c,c,face*.7,c,c,face);shade.addColorStop(0,'#0000');shade.addColorStop(1,'#0008');ruletDisc(g,c,c,face,shade);
+  var reflection=g.createLinearGradient(0,0,size,size);reflection.addColorStop(0,'#fff1ca33');reflection.addColorStop(.42,'#fff1ca04');reflection.addColorStop(.5,'#0000');reflection.addColorStop(1,'#0003');ruletDisc(g,c,c,face,reflection);
+  g.beginPath();g.arc(c,c,r-7,Math.PI*1.05,Math.PI*1.72);g.strokeStyle='#fff4cb99';g.lineWidth=1;g.stroke();
+  ruletMetal(g,c,c,mini?19:36);ruletDisc(g,c,c,mini?16:33,'#171519');
+  if(mini){g.textAlign='center';g.textBaseline='middle';g.fillStyle='#e3c783';g.font='13px Inter,Arial';g.fillText('✦',c,c);}
+}
+function drawWheel(highlightSeg){
+  canvas=document.getElementById('wheel');ctx=ruletCanvas('wheel',320);
+  paintRulet(ctx,320,buildSegments(),highlightSeg,false);
+}
+// Count the real, unequal segment boundaries crossing the top pointer.
+function ruletBoundaryCrossings(from,to,mini){
+  if(to<=from)return 0;
+  var tau=2*Math.PI,bases=[];
+  if(mini){for(var i=0;i<8;i++)bases.push(i*tau/8);}
+  else{var per=tau/players.length;players.forEach(function(_,i){[0,BIG_RATIO,BIG_RATIO+SMALL_RATIO].forEach(function(ratio){bases.push((i+ratio)*per);});});}
+  return bases.reduce(function(count,base){var offset=Math.PI*1.5-base;return count+Math.floor((to-offset)/tau)-Math.floor((from-offset)/tau);},0);
+}
+function ruletTickBetween(from,to,speed,mini){
+  var count=ruletBoundaryCrossings(from,to,mini);
+  if(count&&!document.hidden){for(var i=0;i<count;i++)try{sndTick(speed,i*.006);}catch(e){}
+    var pointer=document.querySelector(mini?'.gamble-pointer':'.wheel-pointer');
+    if(pointer&&!matchMedia('(prefers-reduced-motion: reduce)').matches){if(pointer.ruletKick)pointer.ruletKick.cancel();pointer.ruletKick=pointer.animate([{transform:'translateX(-50%) rotate(-8deg)'},{transform:'translateX(-50%) rotate(0deg)'}],{duration:90,easing:'ease-out'});}
+  }
+  return count;
+}
+
+// ── SPIN ──────────────────────────────────────────────────────────────────────
+function spin(){
+  if(spinning) return;
+  spinning=true;
+  resetResult();
+  document.getElementById('spin-btn').disabled=true;
+
+  var extraSpins=(6+Math.random()*5)*2*Math.PI;
+  var targetOffset=Math.random()*2*Math.PI;
+  var totalRot=extraSpins+targetOffset;
+  var duration=4500+Math.random()*1500;
+  var start=null;
+  var startAngle=currentAngle;
+  var lastTickAngle=startAngle;
+
+  function easeOut(t){return 1-Math.pow(1-t,3);}
+  sndSpinStart();
+
+  function frame(ts){
+    if(!start) start=ts;
+    var elapsed=ts-start;
+    var t=Math.min(elapsed/duration,1);
+    var eased=easeOut(t);
+    currentAngle=startAngle+totalRot*eased;
+    drawWheel();
+
+    ruletTickBetween(lastTickAngle,currentAngle,1-t,false);
+    lastTickAngle=currentAngle;
+
+    if(t<1){requestAnimationFrame(frame);}
+    else{currentAngle=startAngle+totalRot;spinning=false;sndStop();showResult();}
+  }
+  requestAnimationFrame(frame);
+}
+
+function getWinnerSeg(){
+  var n=players.length;
+  var perPlayer=2*Math.PI/n;
+  // Normalize wheel angle so we can find which segment the pointer hits
+  // Pointer is at top (angle = -PI/2 = 3*PI/2 from positive x-axis)
+  // We need to find what segment is at the top after spinning
+  var pointerAngle = Math.PI * 1.5; // top of wheel in canvas coords
+
+  // The wheel has rotated by currentAngle, so the segment at pointer is:
+  // segment whose original angle (before rotation) = pointerAngle - currentAngle
+  var relAngle = ((pointerAngle - currentAngle) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI);
+
+  // Find which segment contains relAngle
+  var segs = buildSegments();
+  // Segments use currentAngle as base, so rebuild without offset for detection
+  var base = 0;
+  for(var i=0; i<players.length; i++){
+    var bigEnd   = base + perPlayer * BIG_RATIO;
+    var smallEnd = base + perPlayer * (BIG_RATIO+SMALL_RATIO);
+    var microEnd = base + perPlayer;
+    if(relAngle >= base && relAngle < bigEnd){
+      return {playerIdx:i, type:'big'};
+    } else if(relAngle >= bigEnd && relAngle < smallEnd){
+      return {playerIdx:i, type:'small'};
+    } else if(relAngle >= smallEnd && relAngle < microEnd){
+      return {playerIdx:i, type:'micro'};
+    }
+    base += perPlayer;
+  }
+  return {playerIdx:0, type:'big'};
+}
+
+function showResult(){
+  var seg=getWinnerSeg();
+  var p=players[seg.playerIdx];
+
+  // Find matching full segment for highlight
+  var segs=buildSegments();
+  var fullSeg=segs.find(function(s){return s.playerIdx===seg.playerIdx&&s.type===seg.type;})||segs[0];
+  drawWheel(fullSeg);
+
+  document.getElementById('result-name').style.color=seg.type==='small'?'#f1c40f':p.color;
+  document.getElementById('spin-btn').disabled=false;
+  round++;
+  document.getElementById('round-info').textContent='RUNDA '+round;
+
+  if(seg.type==='big'){
+    document.getElementById('result-name').textContent=p.name.toUpperCase()+' PIJE!';
+    document.getElementById('result-desc').textContent=p.drink+' 🍺';
+    sips[p.name]=(sips[p.name]||0)+1;
+    renderSipsLocal();
+    triggerDrinkFlash(p.name+'\nPIJE! 🍺');
+    // Offer gamble
+    showGambleBtn(seg.playerIdx, 1);
+  } else if(seg.type==='small'){
+    document.getElementById('result-name').textContent='★ '+p.name.toUpperCase();
+    document.getElementById('result-desc').textContent='Bira tko pije!';
+    showChooseScreen(seg.playerIdx);
+  } else {
+    // MICRO – svi piju osim njega
+    document.getElementById('result-name').style.color='#e74c3c';
+    document.getElementById('result-name').textContent='💀 '+p.name.toUpperCase();
+    document.getElementById('result-desc').textContent='Svi piju osim '+p.name+'! 🍺';
+    players.forEach(function(pl,i){
+      if(i!==seg.playerIdx) sips[pl.name]=(sips[pl.name]||0)+1;
+    });
+    renderSipsLocal();
+    if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
+    triggerDrinkFlash('Svi piju!\n(osim '+p.name+') 🍺');
+  }
+}
+
+function showChooseScreen(winnerIdx){
+  var chooser=players[winnerIdx];
+  document.getElementById('choose-title').innerHTML=
+    '<span style="color:'+chooser.color+'">'+chooser.name.toUpperCase()+'</span><br>BIRA TKO PIJE!';
+  document.getElementById('choose-sub').textContent='Pogodio je malo polje – on bira!';
+  var btns=document.getElementById('choose-btns');
+  btns.innerHTML='';
+  players.forEach(function(p,i){
+    if(i===winnerIdx) return;
+    var btn=document.createElement('div');
+    btn.className='choose-btn';
+    btn.style.borderColor=p.color+'66';
+    btn.innerHTML='<span style="color:'+p.color+'">'+p.name+'</span> pije 🍺';
+    btn.onclick=(function(pi){return function(){ chooseDrink(pi); };})(i);
+    btns.appendChild(btn);
+  });
+  var selfBtn=document.createElement('div');
+  selfBtn.className='choose-btn';
+  selfBtn.style.borderColor=chooser.color+'66';
+  selfBtn.innerHTML='<span style="color:'+chooser.color+'">Ja sam ('+chooser.name+')</span> pijem sam 🍺';
+  selfBtn.onclick=(function(pi){return function(){ chooseDrink(pi); };})(winnerIdx);
+  btns.appendChild(selfBtn);
+  document.getElementById('choose-screen').classList.add('show');
+}
+
+function chooseDrink(playerIdx){
+  document.getElementById('choose-screen').classList.remove('show');
+  var p=players[playerIdx];
+  sips[p.name]=(sips[p.name]||0)+1;
+  renderSipsLocal();
+  document.getElementById('result-desc').textContent=p.name+' pije! 🍺';
+  triggerDrinkFlash(p.name+'\nPIJE! 🍺');
+}
+
+function resetResult(){
+  clearInterval(gambleTimerInterval);
+  document.getElementById('gamble-btn').style.display='none';
+  document.getElementById('gamble-timer').style.display='none';
+  document.getElementById('result-name').textContent='';
+  document.getElementById('result-desc').textContent='';
+}
+
+// ── SIPS ──────────────────────────────────────────────────────────────────────
+function sipColor(n){return n===0?'#2ecc71':n<=2?'#f1c40f':n<=4?'#e67e22':'#e74c3c';}
+function renderSipsLocal(){
+  savePartyResults(sips, true);
+  var el=document.getElementById('sips-bar-local'); el.innerHTML='';
+  var winner=typeof onlineMode!=='undefined'&&onlineMode&&onlineState?onlineState.result:!spinning&&document.getElementById('result-name').textContent?getWinnerSeg():null;
+  players.forEach(function(p,i){
+    var n=sips[p.name]||0,chip=document.createElement('div');
+    chip.className='rulet-player'+(typeof onlineMode!=='undefined'&&onlineMode&&p.id===myPeerId?' is-me':'');chip.style.setProperty('--player-color',p.color);
+    if(winner&&winner.playerIdx===i)chip.classList.add('is-winner');
+    var avatar=document.createElement('span');avatar.className='rulet-avatar';avatar.textContent=p.name.trim().split(/\s+/).map(function(word){return word[0];}).join('').slice(0,2).toUpperCase();
+    var info=document.createElement('div'),name=document.createElement('div'),drink=document.createElement('div');name.className='rulet-player-name';name.textContent=p.name;drink.className='rulet-player-drink';drink.textContent=p.drink+(p.connected===false?' · odsutan':'');info.append(name,drink);
+    var count=document.createElement('div');count.className='rulet-player-count';count.textContent=n;var label=document.createElement('small');label.textContent='GUTLJAJA';count.appendChild(label);chip.append(avatar,info,count);el.appendChild(chip);
+  });
+}
+
+function triggerDrinkFlash(msg){
+  if(navigator.vibrate) navigator.vibrate([200,100,200]);
+  sndDrink();
+  var flash=document.getElementById('drink-flash');
+  flash.textContent=msg;
+  flash.style.display='flex';
+  var count=0;
+  var blink=setInterval(function(){
+    flash.style.opacity=flash.style.opacity==='1'?'0':'1';
+    count++;
+    if(count>5){clearInterval(blink);flash.style.display='none';flash.style.opacity='1';}
+  },220);
+}
+
+// ── GAMBLE ────────────────────────────────────────────────────────────────────
+var gamblePlayerIdx=-1, gambleSips=0, gambleTimerInterval=null, gambleSpinning=false;
+
+function showGambleBtn(playerIdx, sipAmount){
+  gamblePlayerIdx=playerIdx; gambleSips=sipAmount;
+  var btn=document.getElementById('gamble-btn');
+  var timerEl=document.getElementById('gamble-timer');
+  btn.style.display='inline-block';
+  timerEl.style.display='block';
+  var sec=8;
+  timerEl.textContent='Nestaje za '+sec+'s...';
+  gambleTimerInterval=setInterval(function(){
+    sec--;
+    if(sec<=0){
+      clearInterval(gambleTimerInterval);
+      btn.style.display='none';
+      timerEl.style.display='none';
+    } else {
+      timerEl.textContent='Nestaje za '+sec+'s...';
+    }
+  },1000);
+}
+
+function startGamble(){
+  clearInterval(gambleTimerInterval);
+  document.getElementById('gamble-btn').style.display='none';
+  document.getElementById('gamble-timer').style.display='none';
+  document.getElementById('gamble-screen').style.display='flex';
+  document.getElementById('gamble-result').textContent='';
+  document.getElementById('gamble-spin-btn').style.display='inline-block';
+  document.getElementById('gamble-close-btn').style.display='none';
+  drawGambleWheel(0);
+}
+
+function drawGambleWheel(angle){
+  var g=ruletCanvas('gamble-wheel',200),arc=2*Math.PI/8,segs=[];
+  for(var i=0;i<8;i++)segs.push({playerIdx:i,type:i%2===0?'saved':'double',start:angle+i*arc,end:angle+(i+1)*arc});
+  var rel=((Math.PI*1.5-angle)%(2*Math.PI)+2*Math.PI)%(2*Math.PI),index=Math.floor(rel/arc)%8;
+  paintRulet(g,200,segs,gambleSpinning?null:segs[index],true);
+}
+
+function spinGamble(){
+  if(gambleSpinning) return;
+  gambleSpinning=true;
+  document.getElementById('gamble-spin-btn').style.display='none';
+
+  var totalRot=(5+Math.random()*5)*2*Math.PI + Math.random()*2*Math.PI;
+  var duration=2500+Math.random()*1000;
+  var start=null,lastGambleAngle=0;
+  function easeOut(t){return 1-Math.pow(1-t,3);}
+  try{ sndSpinStart(); }catch(e){}
+
+  function frame(ts){
+    if(!start) start=ts;
+    var t=Math.min((ts-start)/duration,1);
+    var angle=totalRot*easeOut(t);
+    drawGambleWheel(angle);
+
+    ruletTickBetween(lastGambleAngle,angle,1-t,true);lastGambleAngle=angle;
+
+    if(t<1){ requestAnimationFrame(frame); }
+    else{
+      gambleSpinning=false;drawGambleWheel(totalRot);
+      var n=8, arc=2*Math.PI/n;
+      var pointerRel=((Math.PI*1.5-totalRot)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+      var segIdx=Math.floor(pointerRel/arc)%n;
+      var saved=segIdx%2===0;
+      try{ sndStop(); }catch(e){}
+      showGambleResult(saved);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function showGambleResult(saved){
+  var p=players[gamblePlayerIdx];
+  var resEl=document.getElementById('gamble-result');
+  sndStop();
+  if(saved){
+    resEl.style.color='#2ecc71';
+    resEl.textContent='🎉 SPAŠEN! Ne piješ!';
+    // Refund the sip
+    sips[p.name]=Math.max(0,(sips[p.name]||0)-gambleSips);
+    renderSipsLocal();
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+  } else {
+    resEl.style.color='#e74c3c';
+    resEl.textContent='💀 PIJEŠ DUPLO!';
+    // Add extra sips (already paid 1, now +1 more = 2 total)
+    sips[p.name]=(sips[p.name]||0)+gambleSips;
+    renderSipsLocal();
+    sndDrink();
+    if(navigator.vibrate) navigator.vibrate([300,100,300]);
+  }
+  setTimeout(function(){
+    document.getElementById('gamble-close-btn').style.display='inline-block';
+  },800);
+}
+
+function closeGamble(){
+  document.getElementById('gamble-screen').style.display='none';
+  gambleSpinning=false;
+}
+
+// ── SOUNDS ────────────────────────────────────────────────────────────────────
+var audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+
+function sndTick(speed,delay){
+  // speed 0..1, higher = faster = higher pitch, shorter
+  var ctx=getAudio();
+  var freq = 300 + speed*600;  // 300Hz slow → 900Hz fast
+  var dur  = 0.025 + speed*0.02;
+  var vol  = 0.15 + speed*0.1;
+
+  var buf=ctx.createBuffer(1,ctx.sampleRate*dur,ctx.sampleRate);
+  var data=buf.getChannelData(0);
+  for(var j=0;j<data.length;j++){
+    var env=1-(j/data.length);
+    data[j]=Math.sin(j/ctx.sampleRate*freq*2*Math.PI)*env*vol;
+  }
+  var src=ctx.createBufferSource();
+  var gain=ctx.createGain();
+  var filt=ctx.createBiquadFilter();
+  filt.type='bandpass';
+  filt.frequency.value=freq*1.5;
+  filt.Q.value=2;
+  src.buffer=buf;
+  src.connect(filt);filt.connect(gain);gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(1,ctx.currentTime);
+  src.start(ctx.currentTime+(delay||0));
+}
+
+function sndSpinStart(){
+  // Short whoosh on spin start
+  var ctx=getAudio();
+  var buf=ctx.createBuffer(1,ctx.sampleRate*0.15,ctx.sampleRate);
+  var data=buf.getChannelData(0);
+  for(var j=0;j<data.length;j++){
+    var env=j<data.length*0.3?j/(data.length*0.3):1-(j-data.length*0.3)/(data.length*0.7);
+    data[j]=(Math.random()*2-1)*env*0.3;
+  }
+  var src=ctx.createBufferSource();
+  var filt=ctx.createBiquadFilter();
+  filt.type='highpass';filt.frequency.value=800;
+  var gain=ctx.createGain();
+  src.buffer=buf;src.connect(filt);filt.connect(gain);gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0.4,ctx.currentTime);
+  src.start();
+}
+
+function sndStop(){
+  // Satisfying thud when wheel stops
+  var ctx=getAudio();
+  var o=ctx.createOscillator();var g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type='sine';
+  o.frequency.setValueAtTime(180,ctx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+0.2);
+  g.gain.setValueAtTime(0.35,ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
+  o.start();o.stop(ctx.currentTime+0.2);
+}
+
+function sndDrink(){
+  var ctx=getAudio();
+  [0,.18].forEach(function(t){
+    var o=ctx.createOscillator();var g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sawtooth';
+    o.frequency.setValueAtTime(300,ctx.currentTime+t);
+    o.frequency.exponentialRampToValueAtTime(80,ctx.currentTime+t+.3);
+    g.gain.setValueAtTime(.25,ctx.currentTime+t);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.32);
+    o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.35);
+  });
+}
+
+function syncRuletNavigation(){
+  var button=document.getElementById('spin-btn');
+  var ready=!button.disabled&&!spinning&&(typeof onlineMode==='undefined'||!onlineMode||(onlineState&&onlineState.phase==='ready'));
+  button.classList.toggle('spin-ready',!!ready);
+  document.getElementById('spin-again-hint').hidden=!(ready&&document.getElementById('result-name').textContent);
+}
+new MutationObserver(syncRuletNavigation).observe(document.getElementById('spin-btn'),{attributes:true,attributeFilter:['disabled']});
+new MutationObserver(syncRuletNavigation).observe(document.getElementById('wheel-screen'),{attributes:true,attributeFilter:['class']});
+new MutationObserver(function(){
+  syncRuletNavigation();
+  var area=document.getElementById('result-area');area.classList.remove('result-arrive');
+  if(document.getElementById('result-name').textContent){void area.offsetWidth;area.classList.add('result-arrive');}
+}).observe(document.getElementById('result-name'),{childList:true});
+initPlayers();
+</script>
+<script src="rulet-online.js"></script>
+</body>
+</html>

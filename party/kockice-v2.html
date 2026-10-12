@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="hr" style="background:#0e0e16">
+<head>
+<meta charset="UTF-8">
+<script src="party.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0e0e16">
+<title>Kockice V2 – Party 18+</title>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#0e0e16;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;}
+body{display:flex;flex-direction:column;align-items:center;}
+
+.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:480px;padding:0 20px 40px;}
+.screen.active{display:flex;}
+
+.screen-title{font-family:'Bebas Neue';font-size:2rem;letter-spacing:.12em;color:#d4b35d;margin:32px 0 4px;}
+.screen-sub{font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.06em;margin-bottom:24px;}
+.btn{width:100%;padding:13px;border-radius:10px;cursor:pointer;font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:.1em;border:none;transition:all .2s;margin-bottom:8px;}
+.btn-gold{background:rgba(200,168,75,.2);border:1.5px solid rgba(200,168,75,.5);color:#d4b35d;}
+.btn-gold:hover{background:rgba(200,168,75,.32);transform:translateY(-1px);}
+.btn-dark{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);}
+.btn-dark:hover{background:rgba(255,255,255,.12);}
+.btn-sm{width:auto;padding:9px 24px;font-size:1rem;}
+.inp{width:100%;background:#1e1e2e;border:1px solid rgba(255,255,255,.2);color:#fff;font-family:'Inter';font-size:1rem;padding:12px 16px;border-radius:10px;outline:none;margin-bottom:8px;-webkit-text-fill-color:#fff;}
+.inp:focus{border-color:#d4b35d;}
+.inp::placeholder{color:rgba(255,255,255,.3);-webkit-text-fill-color:rgba(255,255,255,.3);}
+.inp-label{font-size:.7rem;letter-spacing:.08em;color:rgba(255,255,255,.3);margin-bottom:4px;align-self:flex-start;}
+.err{font-size:.75rem;color:#e74c3c;min-height:18px;margin-bottom:6px;text-align:center;}
+.player-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;width:100%;}
+.ldot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* SIPS BAR */
+#sips-bar{display:none;position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,18,.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(200,168,75,.15);padding:8px 16px;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;}
+
+/* GAME */
+#round-label{font-family:'Bebas Neue';font-size:.85rem;letter-spacing:.15em;color:rgba(200,168,75,.6);margin:12px 0 4px;}
+#phase-label{font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:.12em;color:rgba(255,255,255,.5);margin-bottom:8px;}
+
+/* Timer */
+#timer-wrap{position:relative;width:72px;height:72px;margin:6px auto 12px;}
+#timer-svg{position:absolute;inset:0;transform:rotate(-90deg);}
+#timer-circle{stroke-dasharray:207;stroke-dashoffset:0;transition:stroke-dashoffset .15s linear,stroke .3s;}
+#timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:1.9rem;}
+
+/* Number grid */
+#number-picker{width:100%;max-width:380px;background:#1a1a2e;border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:16px;margin-bottom:12px;}
+.picker-title{font-size:.7rem;letter-spacing:.1em;color:rgba(255,255,255,.5);text-align:center;margin-bottom:12px;}
+.numbers-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;}
+.num-btn{
+  aspect-ratio:1;border-radius:10px;
+  border:1.5px solid rgba(255,255,255,.25);
+  background:#2a2a3e;
+  color:#ffffff;font-family:Arial,sans-serif;font-size:1.1rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.num-btn:hover:not(.disabled):not(.selected){background:rgba(200,168,75,.25);border-color:rgba(200,168,75,.6);}
+.num-btn.selected{background:rgba(200,168,75,.4);border-color:#d4b35d;color:#d4b35d;box-shadow:0 0 14px rgba(200,168,75,.4);transform:scale(1.08);}
+.num-btn.disabled{opacity:.25;cursor:default;pointer-events:none;}
+
+/* Others */
+#others-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;width:100%;max-width:380px;}
+.other-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:6px 12px;font-size:.75rem;}
+.other-chip.done{border-color:rgba(46,204,113,.35);color:rgba(46,204,113,.9);}
+.other-chip.out{opacity:.3;text-decoration:line-through;}
+
+/* DICE SCREEN */
+#dice-screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:480px;padding:20px 20px 40px;}
+#dice-screen.active{display:flex;}
+
+.dice-wrap{display:flex;gap:24px;justify-content:center;margin:16px 0;}
+.die-container{position:relative;}
+.die-svg{border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.5);transition:transform .3s;}
+.die-svg.landing{animation:dieLand .35s ease-out;}
+@keyframes dieLand{0%{transform:scale(1.2) rotate(5deg)}60%{transform:scale(.95)}100%{transform:scale(1) rotate(0)}}
+@keyframes diceRoll{from{transform:rotate(-8deg) scale(.95)}to{transform:rotate(8deg) scale(1.05)}}
+
+.rr-row{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:420px;}
+.rr-row.drinks{border-color:rgba(231,76,60,.45);background:rgba(231,76,60,.08);}
+.rr-row.safe{border-color:rgba(46,204,113,.3);background:rgba(46,204,113,.06);}
+.rr-name{font-family:'Bebas Neue';font-size:1.05rem;}
+.rr-detail{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px;}
+.drink-badge{background:#e74c3c;color:#fff;font-family:'Bebas Neue';font-size:.88rem;letter-spacing:.07em;padding:4px 12px;border-radius:16px;animation:pulse .8s ease infinite alternate;white-space:nowrap;}
+.safe-badge{background:rgba(46,204,113,.15);color:#2ecc71;font-family:'Bebas Neue';font-size:.88rem;padding:4px 12px;border-radius:16px;border:1px solid rgba(46,204,113,.3);}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.06);box-shadow:0 0 10px rgba(231,76,60,.4)}}
+
+/* Dice total glow */
+#dice-total{font-family:'Bebas Neue';font-size:3rem;letter-spacing:.1em;color:#d4b35d;text-shadow:0 0 20px rgba(212,179,93,.5);margin-top:4px;}
+
+/* Handoff */
+#handoff{position:fixed;inset:0;background:#0e0e16;z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+#handoff.show{display:flex;}
+.handoff-bar{width:220px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:6px;}
+.handoff-fill{height:100%;background:#d4b35d;border-radius:2px;animation:fillBar 3s linear forwards;}
+@keyframes fillBar{from{width:0}to{width:100%}}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* Bot thinking */
+#bot-thinking{text-align:center;margin:24px 0 12px;}
+.dice-spin{font-size:4rem;animation:spin .25s linear infinite;display:inline-block;}
+</style>
+<link rel="stylesheet" href="dice-v2.css">
+<script src="vendor/three-0.160.1.min.js"></script>
+<link rel="stylesheet" href="party-author.css">
+</head>
+<body class="dice-v2">
+
+<!-- SIPS BAR -->
+<div id="sips-bar"></div>
+
+<!-- DRINK FLASH -->
+<div id="drink-flash" style="display:none;position:fixed;inset:0;background:rgba(231,76,60,.88);z-index:9999;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:4rem;letter-spacing:.1em;color:#fff;text-shadow:0 0 30px rgba(0,0,0,.5);pointer-events:none;"></div>
+
+<!-- MODE SELECT -->
+<div id="mode-screen" class="screen active">
+  <div style="font-size:3rem;margin-top:28px;">🎲</div>
+  <div class="v2-brand">PARTY GAMES · KOCKICE V2</div>
+  <div class="screen-title">KOCKICE</div>
+  <div class="screen-sub">Odaberi broj 2–12 • Bot baca • Ko pogodi pije 2x!</div>
+  <button class="btn btn-gold" onclick="startBots()">🤖 PROTIV BOTOVA</button>
+  <button class="btn btn-gold" onclick="showScreen('local-screen')">📱 LOKALNO</button>
+  <button class="btn btn-dark" onclick="showScreen('online-screen')">🌐 ONLINE</button>
+  <button class="btn btn-dark" onclick="window.location.href='index.html'">← Natrag na igre</button>
+  <footer class="pg-author" aria-label="Autor igre">A GAME BY <a href="https://retroapplab.com/" target="_blank" rel="noopener noreferrer">RETROAPPLAB</a> <span aria-hidden="true">↗</span></footer>
+</div>
+
+<!-- LOCAL -->
+<div id="local-screen" class="screen">
+  <div class="screen-title">IGRAČI</div>
+  <div class="screen-sub">Tko igra?</div>
+  <div id="local-list" style="width:100%;"></div>
+  <button class="btn btn-dark" style="margin-bottom:12px;" onclick="addLocalPlayer()">+ Dodaj igrača</button>
+  <div class="err" id="local-err"></div>
+  <button class="btn btn-gold" onclick="startLocalGame()">KRENI 🎲</button>
+  <button class="btn btn-dark btn-sm" style="margin-top:4px;width:100%;" onclick="showScreen('mode-screen')">← Natrag</button>
+</div>
+
+<!-- ONLINE -->
+<div id="online-screen" class="screen">
+  <div class="screen-title">ONLINE</div>
+  <div class="screen-sub">Svaki igrač na svom mobitelu</div>
+  <div class="inp-label">TVOJE IME</div>
+  <input id="online-name" class="inp" placeholder="Upiši ime..."/>
+  <button class="btn btn-gold" onclick="createRoom()">KREIRAJ SOBU</button>
+  <div style="font-size:.72rem;color:rgba(255,255,255,.2);margin:4px 0 8px;">ili</div>
+  <div class="inp-label">KOD SOBE</div>
+  <input id="room-inp" class="inp" placeholder="npr. K7M4RX" maxlength="6" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase"/>
+  <button class="btn btn-dark" onclick="joinRoom()">UĐI U SOBU</button>
+  <div class="err" id="online-err"></div>
+
+  <div id="lobby-wrap" style="display:none;width:100%;">
+    <div style="background:rgba(212,179,93,.1);border:1.5px solid rgba(212,179,93,.35);border-radius:12px;padding:14px;text-align:center;margin-bottom:14px;">
+      <div style="font-size:.65rem;letter-spacing:.1em;color:rgba(200,168,75,.5);margin-bottom:4px;">KOD SOBE</div>
+      <div style="font-family:'Bebas Neue';font-size:2.6rem;letter-spacing:.3em;color:#d4b35d;" id="room-code-display">···</div>
+    </div>
+    <div id="lobby-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.3);text-align:center;margin-bottom:12px;" id="lobby-status"></div>
+    <button class="btn btn-gold" id="host-start-online-btn" onclick="hostStartOnline()" style="display:none">KRENI 🎲</button>
+  </div>
+  <button class="btn btn-dark btn-sm" style="margin-top:8px;width:100%;" onclick="showScreen('mode-screen')">← Natrag</button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="screen" style="padding-top:52px;">
+  <div id="round-label">RUNDA 1</div>
+  <div id="phase-label">ČEKAMO START</div>
+
+  <div id="timer-wrap" style="display:none;">
+    <svg id="timer-svg" width="72" height="72">
+      <circle cx="36" cy="36" r="33" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="5"/>
+      <circle id="timer-circle" cx="36" cy="36" r="33" fill="none" stroke="#d4b35d" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <div id="timer-num" style="color:#fff;">5</div>
+  </div>
+
+  <div id="round-ready" class="dice-round-ready" hidden>
+    <svg class="ready-dice-icon" viewBox="0 0 100 84" aria-hidden="true"><g fill="#211a2d" stroke="#d8b970" stroke-width="2"><rect x="9" y="24" width="49" height="49" rx="10" transform="rotate(-12 33 48)"/><rect x="44" y="9" width="47" height="47" rx="10" transform="rotate(12 68 33)"/></g><g fill="#e8ca83"><circle cx="22" cy="38" r="3"/><circle cx="34" cy="49" r="3"/><circle cx="46" cy="60" r="3"/><circle cx="58" cy="23" r="3"/><circle cx="77" cy="27" r="3"/><circle cx="54" cy="41" r="3"/><circle cx="73" cy="45" r="3"/></g></svg>
+    <h2>SPREMNI ZA BACANJE?</h2>
+    <p>Pritisni KRENI i odaberi svoj broj prije isteka vremena.</p>
+    <button class="btn btn-gold" id="kreni-btn" onclick="hostKreni()" style="display:none;">KRENI</button>
+    <div id="round-host-wait" class="round-host-wait" role="status" hidden>ČEKAMO DOMAĆINA...</div>
+  </div>
+
+  <div id="number-picker">
+    <div class="picker-title" id="picker-title">ODABERI ZBROJ KOCKICA</div>
+    <div class="picker-hint">Kockice su ilustracija. Biraš zbroj 2–12.</div>
+    <div class="numbers-grid" id="numbers-grid"></div>
+  </div>
+
+  <div id="others-row"></div>
+
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
+    <button class="btn btn-gold btn-sm" id="reveal-btn" onclick="revealDice()" style="display:none;">BACI KOCKICE ▶</button>
+  </div>
+</div>
+
+<!-- DICE REVEAL -->
+<div id="dice-screen">
+  <div id="round-label-dice" style="font-family:'Bebas Neue';font-size:.85rem;letter-spacing:.15em;color:rgba(200,168,75,.6);margin-top:20px;">RUNDA 1</div>
+
+  <div class="dice-3d-stage" id="dice-3d-stage"></div>
+  <div class="dice-3d-caption" id="dice-3d-caption">KOCKICE SU U ZRAKU…</div>
+
+  <div id="bot-thinking">
+    <div class="dice-spin">🎲</div>
+    <div style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:.1em;color:#d4b35d;margin-top:10px;">BOT BACA KOCKICE...</div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.3);margin-top:4px;">Napeto! 😅</div>
+  </div>
+
+  <div id="dice-reveal-wrap" style="display:none;text-align:center;">
+    <div style="font-size:.68rem;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:12px;">BOT JE BACIO</div>
+    <div class="dice-wrap" id="dice-display"></div>
+    <div id="dice-total">–</div>
+  </div>
+
+  <div id="dice-results" style="width:100%;max-width:420px;padding:0 16px;display:none;margin-top:10px;"></div>
+
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+    <button class="btn btn-gold btn-sm" id="next-round-btn" onclick="nextRound()" style="display:none;">SLJEDEĆA RUNDA →</button>
+    <button class="btn btn-gold btn-sm" id="new-game-btn" onclick="newGame()" style="display:none;">NOVA IGRA 🔄</button>
+  </div>
+</div>
+
+<!-- HANDOFF -->
+<div id="handoff">
+  <div style="font-size:4.5rem;animation:bounce .6s ease infinite alternate;">📱</div>
+  <div id="handoff-title" style="font-family:'Bebas Neue';font-size:2.2rem;letter-spacing:.1em;text-align:center;"></div>
+  <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:4px;letter-spacing:.05em;">Klikni za preskočiti</div>
+  <div class="handoff-bar"><div class="handoff-fill" id="handoff-fill"></div></div>
+</div>
+
+<script>
+var COLORS=['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c'];
+var playerName = sessionStorage.getItem('playerName') || 'Igrač 1';
+var totalSips  = {};
+var gameMode   = 'bots';
+var isHost     = false;
+var myPeerId   = '';
+var peer=null, hostConn=null, clientConns=[];
+var localPlayers=[{name:playerName,color:COLORS[0],isBot:false}];
+var localTurnIdx=0, turnPassing=false;
+var timerInterval=null, timerSec=5;
+var gameState=null;
+
+// ── SCREENS ──────────────────────────────────────────────────────────────────
+function showScreen(id){
+  ['mode-screen','local-screen','online-screen','game-screen'].forEach(function(s){
+    document.getElementById(s).classList.remove('active');
+  });
+  document.getElementById('dice-screen').style.display='none';
+  document.getElementById(id).classList.add('active');
+}
+
+// ── LOCAL SETUP ───────────────────────────────────────────────────────────────
+function renderLocalList(){
+  var el=document.getElementById('local-list'); el.innerHTML='';
+  localPlayers.forEach(function(p,i){
+    var row=document.createElement('div'); row.className='player-row';
+    row.innerHTML='<div class="ldot" style="background:'+p.color+'"></div>'+
+      (i===0
+        ? '<div style="flex:1;padding:10px;font-weight:600;color:'+p.color+'">'+p.name+' (Ti)</div>'
+        : '<input class="inp" style="flex:1;margin:0;" type="text" placeholder="Ime igrača '+(i+1)+'..." maxlength="16" value="'+p.name+'" oninput="localPlayers['+i+'].name=this.value"/>')+
+      (i>0?'<button onclick="removeLocal('+i+')" style="background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.25);color:#ff6b6b;width:30px;height:30px;border-radius:6px;cursor:pointer;flex-shrink:0;">✕</button>':'');
+    el.appendChild(row);
+  });
+}
+function addLocalPlayer(){ if(localPlayers.length>=6) return; localPlayers.push({name:'',color:COLORS[localPlayers.length],isBot:false}); renderLocalList(); }
+function removeLocal(i){ localPlayers.splice(i,1); renderLocalList(); }
+
+function startBots(){
+  gameMode='bots'; isHost=true; myPeerId='local-0';
+  gameState={
+    players:[
+      {id:'local-0',name:playerName,      color:COLORS[0],sips:0,eliminated:false,permanentlyOut:false,selected:null,isBot:false},
+      {id:'local-1',name:'Bot Pero',color:COLORS[1],sips:0,eliminated:false,permanentlyOut:false,selected:null,isBot:true},
+      {id:'local-2',name:'Bot Ana', color:COLORS[2],sips:0,eliminated:false,permanentlyOut:false,selected:null,isBot:true},
+      {id:'local-3',name:'Bot Mate',color:COLORS[3],sips:0,eliminated:false,permanentlyOut:false,selected:null,isBot:true},
+    ],
+    botRoll:null,round:1,phase:'waiting',finale:false
+  };
+  showScreen('game-screen');
+  renderGame();
+  document.getElementById('kreni-btn').style.display='inline-block';
+}
+
+function startLocalGame(){
+  if(localPlayers.length<2){document.getElementById('local-err').textContent='Minimalno 2 igrača!';return;}
+  localPlayers.forEach(function(p,i){if(!p.name.trim())p.name='Igrač '+(i+1);});
+  gameMode='local'; isHost=true; myPeerId='local-0';
+  gameState={
+    players:localPlayers.map(function(p,i){return{id:'local-'+i,name:p.name,color:p.color,sips:0,eliminated:false,permanentlyOut:false,selected:null,isBot:false};}),
+    botRoll:null,round:1,phase:'waiting',finale:false
+  };
+  localTurnIdx=0;
+  showScreen('game-screen'); renderGame();
+}
+
+renderLocalList();
+document.getElementById('online-name').value = playerName;
+
+// ── ONLINE ────────────────────────────────────────────────────────────────────
+function initPeer(cb,attempt){
+  attempt=attempt||0;
+  if(peer) peer.destroy();
+  hostConn=null; clientConns=[];
+  peer=isHost?new Peer('party-kockice-'+generateRoomCode().toLowerCase()):new Peer();
+  peer.on('open',function(id){myPeerId=id;cb(id);});
+  peer.on('error',function(e){
+    if(isHost&&e.type==='unavailable-id'&&attempt<4){initPeer(cb,attempt+1);return;}
+    document.getElementById('online-err').textContent=e.type==='peer-unavailable'?'Soba ne postoji. Provjeri kod.':'Greška: '+e.type;
+  });
+}
+function createRoom(){
+  var name=document.getElementById('online-name').value.trim();
+  if(!name){document.getElementById('online-err').textContent='Upiši ime!';return;}
+  playerName=name; isHost=true; gameMode='online';
+  document.getElementById('lobby-wrap').style.display='block';
+  initPeer(function(id){
+    document.getElementById('room-code-display').textContent=id.slice(-6).toUpperCase();
+    document.getElementById('lobby-status').textContent='Čekamo igrače...';
+    document.getElementById('host-start-online-btn').style.display='block';
+    peer.on('connection',function(conn){
+      conn.on('open',function(){
+        clientConns.push(conn);
+        conn.on('data',function(d){handleHostMsg(conn,d);});
+        conn.on('close',function(){clientConns=clientConns.filter(function(c){return c!==conn;});broadcastLobby();});
+      });
+    });
+    broadcastLobby();
+  });
+}
+function joinRoom(){
+  var code=document.getElementById('room-inp').value.trim().toLowerCase();
+  isHost=false;
+  var name=document.getElementById('online-name').value.trim();
+  if(!name){document.getElementById('online-err').textContent='Upiši ime!';return;}
+  if(!/^[a-hj-np-z2-9]{6}$/i.test(code)){document.getElementById('online-err').textContent='Upiši kod sobe od 6 znakova.';return;}
+  playerName=name; gameMode='online';
+  document.getElementById('lobby-wrap').style.display='block';
+  document.getElementById('lobby-status').textContent='Spajanje...';
+  initPeer(function(){
+    hostConn=peer.connect('party-kockice-'+code);
+    hostConn.on('open',function(){hostConn.send({type:'join',name:playerName,id:myPeerId});});
+    hostConn.on('data',function(d){handleClientMsg(d);});
+    hostConn.on('error',function(){document.getElementById('online-err').textContent='Soba ne postoji!';});
+  });
+}
+function getLobbyPlayers(){
+  var list=[{id:myPeerId,name:playerName,color:COLORS[0],host:true}];
+  clientConns.forEach(function(c,i){if(c.playerName)list.push({id:c.playerId,name:c.playerName,color:COLORS[(i+1)%COLORS.length],host:false});});
+  return list;
+}
+function broadcastLobby(){
+  var players=getLobbyPlayers();
+  clientConns.forEach(function(c){try{c.send({type:'lobby',players:players});}catch(e){}});
+  renderLobbyList(players);
+  document.getElementById('lobby-status').textContent='Čekamo... ('+players.length+'/6)';
+}
+function renderLobbyList(players){
+  var el=document.getElementById('lobby-list'); el.innerHTML='';
+  players.forEach(function(p){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 14px;';
+    row.innerHTML='<div class="ldot" style="background:'+p.color+'"></div><div style="flex:1">'+p.name+'</div>'+(p.host?'<div style="font-size:.65rem;color:#d4b35d;background:rgba(212,179,93,.15);padding:2px 8px;border-radius:10px;">HOST</div>':'');
+    el.appendChild(row);
+  });
+}
+function hostStartOnline(){
+  var players=getLobbyPlayers();
+  if(players.length<2){alert('Minimalno 2 igrača!');return;}
+  gameState={
+    players:players.map(function(p){return{id:p.id,name:p.name,color:p.color,sips:0,eliminated:false,permanentlyOut:false,selected:null,isBot:false};}),
+    botRoll:null,round:1,phase:'waiting',finale:false
+  };
+  clientConns.forEach(function(c){try{c.send({type:'startGame',state:gameState});}catch(e){}});
+  showScreen('game-screen'); renderGame();
+}
+function handleHostMsg(conn,data){
+  if(data.type==='join'){conn.playerName=data.name;conn.playerId=data.id;broadcastLobby();}
+  if(data.type==='selected'){var p=gameState.players.find(function(pl){return pl.id===data.id;});if(p){p.selected=data.selected;broadcastState();checkAllSelected();}}
+}
+function handleClientMsg(data){
+  if(data.type==='lobby'){renderLobbyList(data.players);document.getElementById('lobby-status').textContent='Igrači: '+data.players.length;}
+  if(data.type==='startGame'){gameState=data.state;showScreen('game-screen');renderGame();}
+  if(data.type==='state'){gameState=data.state;renderGame();}
+  if(data.type==='showDice'){gameState=data.state;stopTimer();showDiceScreen();}
+  if(data.type==='drinkAlert'){if(data.ids.indexOf(myPeerId)>-1) triggerDrinkAlert(data.double);}
+  if(data.type==='kreni'){gameState=data.state;renderGame();startTimer();}
+  if(data.type==='nextRound'){gameState=data.state;showScreen('game-screen');renderGame();}
+}
+function broadcastState(){if(!isHost)return;clientConns.forEach(function(c){try{c.send({type:'state',state:gameState});}catch(e){}});}
+
+// ── GAME RENDER ───────────────────────────────────────────────────────────────
+function renderGame(){
+  if(!gameState) return;
+  var gs=gameState;
+  var waiting=gs.phase==='waiting';
+  document.getElementById('game-screen').classList.toggle('round-waiting',waiting);
+  document.getElementById('round-ready').hidden=!waiting;
+  document.getElementById('round-host-wait').hidden=!(waiting&&gameMode==='online'&&!isHost);
+  document.getElementById('round-label').textContent='RUNDA '+gs.round;
+  updateSipsBar(gs.players);
+
+  var active=gs.players.filter(function(p){return !p.eliminated;});
+  var allPicked=active.every(function(p){return p.selected!==null;});
+  var me=gs.players.find(function(p){return p.id===myPeerId;});
+
+  var phaseEl=document.getElementById('phase-label');
+  if(gs.phase==='waiting') phaseEl.textContent='ČEKAMO START...';
+  else if(allPicked) phaseEl.textContent='SVI ODABRALI! ✓';
+  else phaseEl.textContent='ODABERI ZBROJ';
+
+  document.getElementById('kreni-btn').style.display=(gs.phase==='waiting'&&isHost)?'inline-block':'none';
+  document.getElementById('reveal-btn').style.display=(gs.phase==='picking'&&allPicked&&isHost)?'inline-block':'none';
+  document.getElementById('timer-wrap').style.display=(gs.phase==='picking'&&!allPicked)?'block':'none';
+
+  renderPicker(me,gs);
+
+  var othersEl=document.getElementById('others-row'); othersEl.innerHTML='';
+  gs.players.forEach(function(p){
+    if(p.id===myPeerId||p.isBot) return;
+    var el=document.createElement('div');
+    el.className='other-chip'+(p.selected!==null?' done':'')+(p.eliminated?' out':'');
+    el.innerHTML='<div class="ldot" style="background:'+p.color+'"></div>'+p.name+(p.selected!==null?' ✓':'...')+(p.eliminated?' 💀':'');
+    othersEl.appendChild(el);
+  });
+}
+
+function renderPicker(me,gs){
+  var grid=document.getElementById('numbers-grid'); grid.innerHTML='';
+  var isElim=me&&me.eliminated;
+  var isMyTurn = gs.phase==='picking' && me && !me.eliminated && (
+    gameMode==='online' ||
+    gameMode==='bots' ||
+    (gameState.players[localTurnIdx] && me.id===gameState.players[localTurnIdx].id)
+  );
+  document.getElementById('picker-title').textContent=isElim?'ELIMINIRAN 💀':'ODABERI ZBROJ KOCKICA';
+
+  for(var n=2;n<=12;n++){
+    var btn=document.createElement('button');
+    var isSel=me&&me.selected===n;
+    btn.className='num-btn'+(isSel?' selected':'');
+    var disabled=isElim||gs.phase!=='picking'||(me&&me.selected!==null&&!isSel)||!isMyTurn;
+    if(disabled) btn.classList.add('disabled');
+    // Balanced faces illustrate the sum; the existing handler still receives n only.
+    var first=Math.floor(n/2),second=n-first;
+    btn.setAttribute('aria-label','Zbroj '+n);
+    btn.setAttribute('aria-pressed',isSel?'true':'false');
+    btn.innerHTML='<span class="sum-dice-pair" aria-hidden="true">'+makeDieSVG(first)+makeDieSVG(second)+'</span><span class="sum-number">'+n+'</span>';
+    if(!disabled)(function(num){btn.onclick=function(){pickNumber(num);};})(n);
+    grid.appendChild(btn);
+  }
+}
+
+function pickNumber(n){
+  var me=gameState.players.find(function(p){return p.id===myPeerId;});
+  if(!me||me.eliminated||gameState.phase!=='picking') return;
+  me.selected=n;
+  sndClick();
+  if(gameMode==='online'){
+    if(isHost){broadcastState();checkAllSelected();}
+    else{hostConn.send({type:'selected',id:myPeerId,selected:n});renderGame();}
+  }
+  else{renderGame();passLocalTurn();}
+}
+
+function checkAllSelected(){
+  var active=gameState.players.filter(function(p){return !p.eliminated;});
+  if(active.every(function(p){return p.selected!==null;})){stopTimer();renderGame();}
+}
+
+// ── LOCAL TURNS ───────────────────────────────────────────────────────────────
+function hostKreni(){
+  if(!isHost) return;
+  gameState.phase='picking';
+  clientConns.forEach(function(c){try{c.send({type:'kreni',state:gameState});}catch(e){}});
+  document.getElementById('kreni-btn').style.display='none';
+  if(gameMode==='local'||gameMode==='bots'){
+    // Find first active human player
+    localTurnIdx=0;
+    var found=false;
+    for(var i=0;i<gameState.players.length;i++){
+      var p=gameState.players[i];
+      if(!p.eliminated&&!(gameMode==='bots'&&p.isBot)){localTurnIdx=i;found=true;break;}
+    }
+    if(!found){
+      // No humans left – just auto-pick bots
+      gameState.players.forEach(function(p){if(!p.eliminated&&p.isBot&&p.selected===null)p.selected=Math.floor(Math.random()*11)+2;});
+      checkAllSelected();
+      return;
+    }
+    myPeerId=gameState.players[localTurnIdx].id;
+    renderGame();
+    showHandoff(gameState.players[localTurnIdx],function(){turnPassing=false;startTimer();});
+  } else {renderGame();startTimer();}
+}
+
+function passLocalTurn(){
+  if(turnPassing) return;
+  turnPassing=true; stopTimer();
+  var players=gameState.players;
+  var next=-1;
+  for(var i=1;i<=players.length;i++){
+    var ni=(localTurnIdx+i)%players.length;
+    if(!players[ni].eliminated&&!players[ni].isBot&&players[ni].selected===null){next=ni;break;}
+  }
+  if(next===-1){
+    turnPassing=false;
+    gameState.players.forEach(function(p){if(!p.eliminated&&p.isBot&&p.selected===null)p.selected=Math.floor(Math.random()*11)+2;});
+    checkAllSelected();
+    return;
+  }
+  showHandoff(gameState.players[next],function(){
+    turnPassing=false; localTurnIdx=next;
+    myPeerId=gameState.players[next].id;
+    renderGame(); startTimer();
+  });
+}
+
+function showHandoff(player, cb){
+  var ov=document.getElementById('handoff');
+  document.getElementById('handoff-title').innerHTML='<span style="color:'+player.color+'">'+player.name.toUpperCase()+'</span><br>UZMI MOBITEL!';
+  var bar=document.getElementById('handoff-fill');
+  var nb=bar.cloneNode(true); bar.parentNode.replaceChild(nb,bar);
+  ov.classList.add('show');
+  ov.style.cursor='pointer';
+
+  var done=false;
+  function finish(){
+    if(done) return;
+    done=true;
+    ov.classList.remove('show');
+    ov.removeEventListener('click', finish);
+    cb();
+  }
+
+  ov.addEventListener('click', finish);
+  setTimeout(finish, 3000);
+}
+
+// ── TIMER ─────────────────────────────────────────────────────────────────────
+function startTimer(){
+  stopTimer(); timerSec=5; updateTimerUI(5);
+  timerInterval=setInterval(function(){
+    timerSec--; updateTimerUI(timerSec); sndTick(timerSec<=2);
+    if(timerSec<=0){
+      stopTimer();
+      if(gameMode==='local'||gameMode==='bots'){
+        var me=gameState.players.find(function(p){return p.id===myPeerId;});
+        if(me&&!me.eliminated&&me.selected===null) me.selected=Math.floor(Math.random()*11)+2;
+        passLocalTurn();
+      } else if(isHost){
+        gameState.players.forEach(function(p){if(!p.eliminated&&p.selected===null)p.selected=Math.floor(Math.random()*11)+2;});
+        broadcastState();
+        checkAllSelected();
+      }
+    }
+  },1000);
+}
+function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null;}}
+function updateTimerUI(sec){
+  document.getElementById('timer-num').textContent=sec;
+  var c=document.getElementById('timer-circle');
+  c.setAttribute('stroke-dashoffset',207*(1-sec/5));
+  var hot=sec<=2; c.setAttribute('stroke',hot?'#e74c3c':'#d4b35d');
+  document.getElementById('timer-num').style.color=hot?'#e74c3c':'#fff';
+}
+
+// ── DICE REVEAL ───────────────────────────────────────────────────────────────
+function revealDice(){
+  if(!isHost) return;
+  stopTimer();
+  gameState.players.forEach(function(p){if(!p.eliminated&&p.selected===null)p.selected=Math.floor(Math.random()*11)+2;});
+  var d1=Math.floor(Math.random()*6)+1;
+  var d2=Math.floor(Math.random()*6)+1;
+  gameState.botRoll=[d1,d2];
+  gameState.phase='results';
+  scoreDice(d1+d2);
+  updateSipsBar(gameState.players);
+  clientConns.forEach(function(c){try{c.send({type:'showDice',state:gameState});}catch(e){}});
+  showDiceScreen();
+}
+
+// SVG Dice
+var DICE_DOTS={
+  1:[[50,50]],
+  2:[[28,28],[72,72]],
+  3:[[28,28],[50,50],[72,72]],
+  4:[[28,28],[72,28],[28,72],[72,72]],
+  5:[[28,28],[72,28],[50,50],[28,72],[72,72]],
+  6:[[28,28],[72,28],[28,50],[72,50],[28,72],[72,72]]
+};
+function makeDieSVG(val){
+  var svg='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style="border-radius:16px;display:block;">'+
+    '<rect width="100" height="100" rx="16" fill="#f5f0e8" stroke="#c8a84b" stroke-width="3"/>';
+  DICE_DOTS[val].forEach(function(pos){
+    svg+='<circle cx="'+pos[0]+'" cy="'+pos[1]+'" r="9" fill="#1a1a2e"/>';
+  });
+  svg+='</svg>';
+  return svg;
+}
+
+function showDiceScreen(){
+  document.getElementById('dice-screen').style.display='flex';
+  document.getElementById('game-screen').classList.remove('active');
+  document.getElementById('round-label-dice').textContent='RUNDA '+gameState.round;
+  document.getElementById('bot-thinking').style.display='block';
+  document.getElementById('dice-reveal-wrap').style.display='none';
+  document.getElementById('dice-results').style.display='none';
+  document.getElementById('next-round-btn').style.display='none';
+  document.getElementById('new-game-btn').style.display='none';
+  document.getElementById('dice-total').textContent='';
+
+  sndDiceRattle();
+  setTimeout(function(){
+    document.getElementById('bot-thinking').style.display='none';
+    showDiceReveal();
+  },1800);
+}
+
+function showDiceReveal(){
+  var wrap=document.getElementById('dice-reveal-wrap');
+  var display=document.getElementById('dice-display');
+  display.innerHTML=''; wrap.style.display='block';
+
+  var total=gameState.botRoll[0]+gameState.botRoll[1];
+
+  // First show both dice rolling
+  gameState.botRoll.forEach(function(d, i){
+    var container=document.createElement('div');
+    container.className='die-container';
+    // Rolling placeholder
+    container.innerHTML='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style="border-radius:16px;display:block;animation:diceRoll .15s ease infinite alternate;"><rect width="100" height="100" rx="16" fill="#2a2a3e" stroke="#c8a84b" stroke-width="3"/><text x="50" y="65" text-anchor="middle" font-size="48" fill="#d4b35d">?</text></svg>';
+    display.appendChild(container);
+  });
+
+  // Reveal first die
+  setTimeout(function(){
+    sndCardFlip();
+    var container = display.children[0];
+    container.innerHTML = makeDieSVG(gameState.botRoll[0]);
+    container.querySelector('svg').classList.add('die-svg','landing');
+  }, 600);
+
+  // Reveal second die
+  setTimeout(function(){
+    sndCardFlip();
+    var container = display.children[1];
+    container.innerHTML = makeDieSVG(gameState.botRoll[1]);
+    container.querySelector('svg').classList.add('die-svg','landing');
+  }, 1300);
+
+  setTimeout(function(){
+    document.getElementById('dice-total').textContent=total;
+    sndSafe();
+    setTimeout(function(){ showResults(total); },500);
+  },1800);
+}
+
+function scoreDice(total){
+  var gs=gameState;
+  var active=gs.players.filter(function(p){return !p.eliminated;});
+  var hasExact=active.some(function(p){return p.selected===total;});
+  var diffs=active.map(function(p){return Math.abs(p.selected-total);});
+  var minDiff=Math.min.apply(null,diffs);
+
+  active.forEach(function(p){
+    var diff=Math.abs(p.selected-total);
+    if(p.selected===total){p.drinks=2;p.sips+=2;p.eliminated=true;}
+    else if(!hasExact&&diff===minDiff){p.drinks=1;p.sips+=1;p.eliminated=true;}
+    else p.drinks=0;
+  });
+  if(active.every(function(p){return p.drinks===0;})){
+    active.forEach(function(p){p.drinks=1;p.sips+=1;p.eliminated=true;});
+  }
+
+  active.forEach(function(p){if(p.eliminated)p.permanentlyOut=true;});
+}
+
+function showResults(total){
+  var gs=gameState;
+  var active=gs.players.filter(function(p){return p.selected!==null;});
+  broadcastState();
+  updateSipsBar(gs.players);
+
+  // Drink alert (online only – locally flash would cover results)
+  if(gameMode==='online' && isHost){
+    var loserIds=active.filter(function(p){return p.drinks>0;}).map(function(p){return p.id;});
+    if(loserIds.length>0){
+      var drinkMsg={type:'drinkAlert',ids:loserIds,double:active.some(function(p){return p.drinks===2;})};
+      clientConns.forEach(function(c){try{c.send(drinkMsg);}catch(e){}});
+      if(loserIds.indexOf(myPeerId)>-1){
+        var myDrinks=active.find(function(p){return p.id===myPeerId;});
+        triggerDrinkAlert(myDrinks&&myDrinks.drinks===2);
+      }
+    }
+  }
+
+  // Show result rows
+  var rs=document.getElementById('dice-results');
+  rs.innerHTML=''; rs.style.display='block';
+
+  var sorted=active.slice().sort(function(a,b){return b.drinks-a.drinks;});
+  sorted.forEach(function(p,i){
+    var row=document.createElement('div');
+    row.className='rr-row'+(p.drinks>0?' drinks':' safe');
+    row.style.cssText='opacity:0;transform:translateY(12px);transition:all .35s ease;transition-delay:'+(i*.15)+'s;';
+    var diff=Math.abs(p.selected-total);
+    row.innerHTML=
+      '<div><div class="rr-name" style="color:'+p.color+'">'+p.name+'</div>'+
+      '<div class="rr-detail">Odabrao: '+p.selected+' • Palo: '+total+' • Razlika: '+diff+'</div></div>'+
+      '<div style="display:flex;align-items:center;gap:8px;">'+
+      (p.drinks===2?'<div class="drink-badge">PIJ 2x! 🍺🍺</div>':
+       p.drinks===1?'<div class="drink-badge">PIJ! 🍺</div>':
+       '<div class="safe-badge">SAFE ✓</div>')+
+      '</div>';
+    rs.appendChild(row);
+    setTimeout(function(){
+      row.style.opacity='1'; row.style.transform='translateY(0)';
+      if(p.drinks>0) sndDrink(); else sndSafe();
+    },100+i*150);
+  });
+
+  var remaining=gs.players.filter(function(p){return !p.permanentlyOut;});
+
+  setTimeout(function(){
+    if(!isHost) return;
+    if(remaining.length<=1){
+      document.getElementById('new-game-btn').style.display='inline-block';
+    } else {
+      document.getElementById('next-round-btn').style.display='inline-block';
+    }
+  }, sorted.length*150+600);
+}
+
+function nextRound(){
+  if(!isHost) return;
+  gameState.players.forEach(function(p){p.selected=null;p.drinks=0;});
+  gameState.players.forEach(function(p){p.eliminated=p.permanentlyOut||false;});
+  gameState.round++; gameState.phase='waiting'; gameState.botRoll=null;
+  localTurnIdx=0; turnPassing=false;
+  if(gameMode==='local'||gameMode==='bots') myPeerId='local-0';
+  clientConns.forEach(function(c){try{c.send({type:'nextRound',state:gameState});}catch(e){}});
+  document.getElementById('dice-screen').style.display='none';
+  showScreen('game-screen'); renderGame(); updateSipsBar(gameState.players);
+}
+
+function newGame(){
+  if(!isHost) return;
+  gameState.players.forEach(function(p){
+    if(!totalSips[p.name]) totalSips[p.name]=0;
+    totalSips[p.name]+=p.sips;
+    p.sips=0;p.eliminated=false;p.permanentlyOut=false;p.selected=null;p.drinks=0;
+  });
+  gameState.round=1;gameState.phase='waiting';gameState.botRoll=null;
+  clientConns.forEach(function(c){try{c.send({type:'startGame',state:gameState});}catch(e){}});
+  document.getElementById('dice-screen').style.display='none';
+  showScreen('game-screen'); renderGame(); updateSipsBar(gameState.players);
+}
+
+// ── SIPS BAR ──────────────────────────────────────────────────────────────────
+function sipColor(n){return n===0?'#2ecc71':n<=2?'#f1c40f':n<=4?'#e67e22':'#e74c3c';}
+function updateSipsBar(players){
+  var counts=Object.create(null);
+  players.forEach(function(p){counts[p.name]=(totalSips[p.name]||0)+p.sips;});
+  savePartyResults(counts);
+  var bar=document.getElementById('sips-bar');
+  var anyDrank=players.some(function(p){return p.sips>0;})||Object.keys(totalSips).some(function(k){return totalSips[k]>0;});
+  if(!anyDrank) return;
+  bar.style.display='flex'; bar.innerHTML='';
+  players.forEach(function(p){
+    var total=(totalSips[p.name]||0)+p.sips;
+    var col=sipColor(total);
+    var chip=document.createElement('div');
+    chip.style.cssText='display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1px solid '+col+'44;border-radius:20px;padding:4px 10px;font-size:.72rem;'+(p.permanentlyOut?'opacity:.5;':'');
+    chip.innerHTML='<div style="width:8px;height:8px;border-radius:50%;background:'+col+';box-shadow:0 0 6px '+col+'"></div><span style="color:rgba(255,255,255,.7)">'+p.name+'</span><span style="font-family:Bebas Neue;font-size:.9rem;color:'+col+';margin-left:2px">'+total+'🍺</span>';
+    bar.appendChild(chip);
+  });
+}
+
+// ── DRINK ALERT ───────────────────────────────────────────────────────────────
+function triggerDrinkAlert(double){
+  if(navigator.vibrate){
+    if(double) navigator.vibrate([300,100,300,100,300]);
+    else        navigator.vibrate([200,100,200]);
+  }
+  sndDrink();
+  var flash=document.getElementById('drink-flash');
+  flash.textContent=double?'PIJ 2x! 🍺🍺':'PIJ! 🍺';
+  flash.style.display='flex';
+  var count=0;
+  var blink=setInterval(function(){
+    flash.style.opacity=flash.style.opacity==='1'?'0':'1';
+    count++;
+    if(count>7){clearInterval(blink);flash.style.display='none';flash.style.opacity='1';}
+  },double?200:250);
+}
+
+// ── SOUNDS ────────────────────────────────────────────────────────────────────
+var audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function sndTick(hot){var ctx=getAudio();var o=ctx.createOscillator();var g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=hot?880:660;o.type='square';g.gain.setValueAtTime(.15,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.08);o.start();o.stop(ctx.currentTime+.08);}
+function sndClick(){var ctx=getAudio();var o=ctx.createOscillator();var g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=520;o.type='sine';g.gain.setValueAtTime(.12,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.06);o.start();o.stop(ctx.currentTime+.06);}
+function sndDiceRattle(){
+  var ctx=getAudio();
+  for(var i=0;i<16;i++){(function(t){
+    var buf=ctx.createBuffer(1,ctx.sampleRate*.04,ctx.sampleRate);
+    var data=buf.getChannelData(0);
+    for(var j=0;j<data.length;j++) data[j]=(Math.random()*2-1)*.5;
+    var src=ctx.createBufferSource();var gain=ctx.createGain();var filt=ctx.createBiquadFilter();
+    filt.type='bandpass';filt.frequency.value=900+Math.random()*600;
+    src.buffer=buf;src.connect(filt);filt.connect(gain);gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(.3,ctx.currentTime+t);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.04);
+    src.start(ctx.currentTime+t);
+  })(i*.11+Math.random()*.03);}
+}
+function sndCardFlip(){
+  var ctx=getAudio();
+  // Thud sound for dice landing
+  var o=ctx.createOscillator();var g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type='sine';
+  o.frequency.setValueAtTime(200,ctx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+.15);
+  g.gain.setValueAtTime(.4,ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.15);
+  o.start();o.stop(ctx.currentTime+.15);
+  // Rattle on land
+  var buf=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate);
+  var data=buf.getChannelData(0);
+  for(var j=0;j<data.length;j++){var env=1-(j/data.length);data[j]=(Math.random()*2-1)*env*.3;}
+  var src=ctx.createBufferSource();var gn=ctx.createGain();
+  src.buffer=buf;src.connect(gn);gn.connect(ctx.destination);
+  gn.gain.setValueAtTime(.3,ctx.currentTime);src.start();
+}
+function sndDrink(){var ctx=getAudio();[0,.2].forEach(function(t){var o=ctx.createOscillator();var g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.setValueAtTime(300,ctx.currentTime+t);o.frequency.exponentialRampToValueAtTime(80,ctx.currentTime+t+.3);g.gain.setValueAtTime(.25,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.32);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.35);});}
+function sndSafe(){var ctx=getAudio();[261,329,392].forEach(function(freq,i){var o=ctx.createOscillator();var g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=freq;var t=ctx.currentTime+i*.1;g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);o.start(t);o.stop(t+.25);});}
+</script>
+<script src="dice-v2.js"></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+/* PeerJS 1v1 / 2v2 adapter. Only the host calls checkHit/resolveShot; guests render its snapshots. */
+var beerOnline={role:null,seat:0,peer:null,conn:null,code:'',names:['',''],reservedPeer:'',resumeToken:'',connected:false,inGame:false,revision:0,lastRevision:0,turnToken:0,request:0,seenRequest:0,pending:0,executing:false,pendingState:null,outcome:null,flightAt:0,offset:0,bestRtt:Infinity,retry:0,retryTimer:null,watchdog:null,tick:null,resultTimer:null,pings:{},generation:0};
+(function(){
+  var n=beerOnline,baseStart=startGame,baseRestart=restartGame,baseThrow=startThrow,baseStop=stopLine,baseCheck=checkHit,baseResolve=resolveShot,baseNext=nextTurn,baseUpdateShot=updateShot;
+  Object.assign(n,{format:'duel',capacity:2,players:[],myId:'',mySlot:0,activeSlot:0,nextSlot:0,roundHits:0,bonusRounds:0,paused:false,signalingLost:false,lobbyRevision:0,lastLobbyRevision:0});
+  var baseStepAxis=stepAxis,baseRequestFrame=requestFrame;
+  function el(id){return document.getElementById(id);}
+  function status(text){el('bp-online-status').textContent=text;}
+  function send(conn,data){try{if(conn&&conn.open){conn.send(data);return true;}}catch(e){}return false;}
+  function randomToken(){var bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from(bytes,function(v){return v.toString(16).padStart(2,'0');}).join('');}
+  function roomCode(){if(typeof generateRoomCode==='function')return generateRoomCode();var alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',bytes=new Uint8Array(6);crypto.getRandomValues(bytes);return Array.from(bytes,function(v){return alphabet[v%alphabet.length];}).join('');}
+  function online(){return gameMode==='online'&&n.inGame;}
+  function teams(){return n.format==='teams';}
+  function teamOf(slot){return teams()?Math.floor(slot/2):slot;}
+  function roster(){return n.players.map(function(p){return p?{id:p.id,name:p.name,connected:p.connected,ready:p.ready,rematchReady:!!p.rematchReady}:null;});}
+  function myPlayer(){return n.players[n.mySlot];}
+  function activePlayer(){return n.players[n.activeSlot];}
+  function allConnected(){return n.players.length===n.capacity&&n.players.every(function(p){return p&&p.connected;});}
+  function readyToStart(){return allConnected()&&(!teams()||n.players.every(function(p){return p.ready;}));}
+  function ownTurn(){return n.connected&&!n.paused&&n.mySlot===n.activeSlot;}
+  function broadcast(data){n.players.forEach(function(p){if(p&&p.conn&&p.connected)send(p.conn,data);});}
+  function syncRoster(d){if(Number.isSafeInteger(d.rosterRevision)&&d.rosterRevision<n.lastLobbyRevision)return;if(Number.isSafeInteger(d.rosterRevision))n.lastLobbyRevision=d.rosterRevision;n.format=d.format||'duel';n.capacity=teams()?4:2;if(d.roster){n.players=d.roster;n.mySlot=n.players.findIndex(function(p){return p&&p.id===n.myId;});}n.seat=teamOf(n.mySlot);n.names=d.names||n.names;}
+  function setConnectionUI(){
+    var joined=n.role==='host'&&!!n.code||n.role==='guest'&&n.connected;
+    el('bp-online-name').hidden=joined;el('bp-online-name-label').hidden=joined;document.querySelector('.bp-room-actions').hidden=joined;document.querySelector('.bp-join-row').hidden=joined;el('bp-online-format').hidden=joined;el('bp-room-info').hidden=!n.code;el('bp-code-display').textContent=n.code;el('bp-online-title').textContent=teams()?'ONLINE · 2 NA 2':'ONLINE · 1 NA 1';if(!el('online-settings').hidden)document.querySelector('.bp-intro-sub').textContent=teams()?'Dvije ekipe. Četiri igrača. Jedan pobjednik.':'Šest čaša. Dva igrača. Jedan pobjednik.';
+    el('bp-lobby-players').replaceChildren();
+    if(teams()&&n.role){var grid=document.createElement('div');grid.className='bp-slot-grid';for(var i=0;i<4;i++){var player=n.players[i],button=document.createElement('button');button.type='button';button.className='bp-slot';button.dataset.slot=i;button.dataset.team=teamOf(i);button.dataset.mine=!!player&&player.id===n.myId;button.disabled=n.inGame||!!player;var title=document.createElement('b');title.textContent=(i<2?'CRVENI TIM':'PLAVI TIM')+' · '+(i%2+1);var name=document.createElement('span');name.textContent=player?player.name:'SLOBODNO MJESTO';var state=document.createElement('small');state.textContent=player?(player.connected?(player.ready?'SPREMAN ✓':'ČEKA SPREMNOST'):'IZGUBLJENA VEZA'):'ODABERI MJESTO';button.append(title,name,state);button.addEventListener('click',function(){lobbyIntent('slot',Number(this.dataset.slot));});grid.appendChild(button);}el('bp-lobby-players').appendChild(grid);}
+    else n.players.forEach(function(p,i){if(!p)return;var row=document.createElement('div');row.textContent=(i===0?'Domaćin · ':'Gost · ')+p.name;el('bp-lobby-players').appendChild(row);});
+    el('bp-ready').hidden=!teams()||!joined||n.inGame;var me=myPlayer();el('bp-ready').dataset.ready=!!me&&me.ready;el('bp-ready').textContent=me&&me.ready?'SPREMAN ✓ · PROMIJENI':'SPREMAN SAM';el('bp-ready').disabled=!me||!me.connected;
+    el('bp-host-start').hidden=n.role!=='host';el('bp-host-start').disabled=!readyToStart()||!renderer||contextLost;el('bp-online-name').disabled=!!n.role;
+  }
+  function renderControls(){
+    if(!online())return;var mine=ownTurn(),busy=!!n.pending||!n.connected||n.paused,active=activePlayer();
+    throwBtn.disabled=busy||phase!=='idle';stopBtn.disabled=busy||(phase!=='moving-x'&&phase!=='moving-y');nextBtn.disabled=busy||phase!=='done'||!lastShotHit;
+    throwBtn.style.display=mine&&phase==='idle'?'block':'none';stopBtn.style.display=mine&&(phase==='moving-x'||phase==='moving-y')?'block':'none';nextBtn.style.display=!teams()&&mine&&phase==='done'&&lastShotHit?'block':'none';
+    el('bp-net-status').hidden=false;el('bp-net-status').textContent=n.paused||!n.connected?'IGRA JE PAUZIRANA · Čekamo povratak igrača.':teams()?'NA POTEZU: '+(active?active.name:'')+' — '+(currentPlayer===0?'CRVENI TIM':'PLAVI TIM'):mine?'TVOJ POTEZ · '+n.code:'PROTIVNIK JE NA POTEZU · '+n.code;
+    el('bp-reconnect').hidden=n.connected||n.role!=='guest';el('bp-safe-exit').hidden=n.connected&&!n.paused;el('bp-team-roster').hidden=!teams();el('bp-team-roster').replaceChildren();
+    if(teams()){n.players.forEach(function(p,i){if(!p)return;var name=document.createElement('span');name.className='bp-team-player';name.dataset.team=teamOf(i);name.dataset.active=i===n.activeSlot;name.title=p.name;name.textContent=p.name;el('bp-team-roster').appendChild(name);});el('turn-label').textContent=active?active.name:'';el('hit-streak').hidden=true;}
+    if(n.outcome&&(phase==='done'||phase==='won'||teams()&&phase==='idle')){var mineShot=n.outcome.player===n.seat;resultMsg.textContent=teams()?(n.outcome.bonus?'OBA IGRAČA POGODILA — DODATNA RUNDA!':n.outcome.hit?'POGODAK! PROTIVNIČKA EKIPA PIJE!':'PROMAŠAJ!'):(n.outcome.hit?(mineShot?'POGODAK! IGRAŠ PONOVNO!':'POGODAK! PROTIVNIK IGRA PONOVNO!'):'PROMAŠAJ! RED JE NA PROTIVNIKU');resultMsg.style.color=n.outcome.hit?'#83ce9e':'#ec8887';if(phase==='done')phaseLabel.textContent=teams()?'SADA BACA '+(n.players[n.nextSlot]?n.players[n.nextSlot].name.toUpperCase():'')+'!':n.outcome.hit?getNames()[1-n.outcome.player]+' pije!':'Sljedeći igrač preuzima potez…';}
+    if(!n.outcome&&phase!=='done'&&phase!=='won')resultMsg.replaceChildren();
+    if(phase==='idle')phaseLabel.textContent=mine?'PRITISNI BACI':teams()?'ČEKAMO '+(active?active.name.toUpperCase():'IGRAČA')+'...':'ČEKAMO PROTIVNIKA...';
+    var restart=el('win-screen').querySelector('button');el('bp-win-menu').hidden=false;el('bp-rematch-status').hidden=!teams();
+    if(teams()){var me=myPlayer();restart.disabled=!n.connected||n.paused||!!me&&me.rematchReady;restart.textContent=me&&me.rematchReady?'SPREMAN · ČEKAMO OSTALE':'REVANŠ';el('bp-rematch-status').textContent='SPREMNI ZA REVANŠ: '+n.players.filter(function(p){return p&&p.rematchReady;}).length+'/4';if(phase==='won'){var winTeam=cups[1].length===0?0:1,winners=n.players.filter(function(p,i){return p&&teamOf(i)===winTeam;}).map(function(p){return p.name;});el('win-title').textContent=(winTeam===0?'CRVENI':'PLAVI')+' TIM POBJEĐUJE!';el('win-sub').textContent=winners.join(' i ')+' · '+(6-cups[1].length)+' : '+(6-cups[0].length);}}
+    else{restart.disabled=n.role==='guest'||!n.connected;restart.textContent=n.role==='host'?'NOVA PARTIJA 🏓':'ČEKAMO DOMAĆINA...';}
+  }
+  function snapshot(){var flight=shot?{id:shot.id,game:shot.game,player:shot.player,opponent:shot.opponent,hit:shot.hit?shot.hit.i:null,start:shot.start.toArray(),end:shot.end.toArray(),at:n.flightAt}:null;return {type:'state',revision:++n.revision,game:gameSerial,turn:n.turnToken,phase:phase,names:n.names.slice(),cups:cups.map(function(c){return c.slice();}),player:currentPlayer,shotSerial:shotSerial,active:activeShotId,resolved:resolvedShotId,hit:lastShotHit,streak:hitStreak,x:posX,y:posY,dx:dirX,dy:dirY,sx:stoppedX,sy:stoppedY,flight:flight,outcome:n.outcome,format:n.format,roster:roster(),rosterRevision:n.lobbyRevision,activeSlot:n.activeSlot,nextSlot:n.nextSlot,roundHits:n.roundHits,bonusRounds:n.bonusRounds,paused:n.paused,frozenElapsed:shot&&n.paused?n.frozenElapsed:null};}
+  function publish(ack,toId){if(!n.inGame||n.role!=='host')return;var s=snapshot();n.players.forEach(function(p){if(p&&p.conn&&p.connected)send(p.conn,Object.assign({},s,{ack:p.id===toId?ack||0:0}));});renderControls();}
+  function resetEffects(){shot=null;turnTween=null;if(ball)ball.visible=false;if(ripple)ripple.visible=false;droplets.forEach(function(d){d.visible=false;});cupMeshes.forEach(function(c){c.group.scale.setScalar(1);c.liquid.rotation.x=-Math.PI/2;});}
+  function launch(){el('p1-name').value=n.names[0];el('p2-name').value=n.names[1];gameMode='online';baseStart();n.inGame=true;n.pendingState=null;n.outcome=null;setCamera(n.seat*Math.PI);resize3D();renderControls();}
+  function validState(s){var capacity=s&&s.format==='teams'?4:2;return s&&(s.format==='duel'||s.format==='teams')&&Array.isArray(s.roster)&&s.roster.length===capacity&&s.roster.every(function(p){return p&&typeof p.id==='string'&&typeof p.name==='string'&&p.name.length<=16&&typeof p.connected==='boolean';})&&new Set(s.roster.map(function(p){return p.id;})).size===capacity&&Number.isInteger(s.activeSlot)&&s.activeSlot>=0&&s.activeSlot<capacity&&s.player===(s.format==='teams'?Math.floor(s.activeSlot/2):s.activeSlot)&&s.type==='state'&&Number.isSafeInteger(s.revision)&&Number.isSafeInteger(s.game)&&[0,1].indexOf(s.player)>=0&&Array.isArray(s.names)&&s.names.length===2&&s.names.every(function(v){return typeof v==='string'&&v.length<=16;})&&Array.isArray(s.cups)&&s.cups.length===2&&s.cups.every(function(c){return Array.isArray(c)&&c.length<=6&&new Set(c).size===c.length&&c.every(function(i){return Number.isInteger(i)&&i>=0&&i<6;});})&&['idle','moving-x','moving-y','flying','done','won','unavailable'].indexOf(s.phase)>=0;}
+  function applyState(s){
+    syncRoster(s);n.paused=!!s.paused;n.activeSlot=s.activeSlot;n.nextSlot=s.nextSlot;n.roundHits=s.roundHits;n.bonusRounds=s.bonusRounds;
+    if(!n.inGame||gameSerial!==s.game){launch();resetEffects();}
+    gameSerial=s.game;n.turnToken=s.turn;p1Name=s.names[0];p2Name=s.names[1];n.names=s.names.slice();el('p1-bar-name').textContent=p1Name;el('p2-bar-name').textContent=p2Name;cups=s.cups.map(function(c){return c.slice();});currentPlayer=s.player;shotSerial=s.shotSerial;activeShotId=s.active;resolvedShotId=s.resolved;lastShotHit=s.hit;hitStreak=s.streak;posX=s.x;posY=s.y;dirX=s.dx;dirY=s.dy;stoppedX=s.sx;stoppedY=s.sy;n.outcome=s.outcome;phase=s.phase;
+    if(s.phase==='flying'&&s.flight){var f=s.flight;if(!shot||shot.id!==f.id){resetEffects();shot={id:f.id,game:f.game,player:f.player,opponent:f.opponent,hit:f.hit===null?null:{i:f.hit},start:new THREE.Vector3().fromArray(f.start),end:new THREE.Vector3().fromArray(f.end),startTime:performance.now()+f.at-(Date.now()+n.offset),record:f.hit===null?null:cupMeshes.find(function(c){return c.player===f.opponent&&c.index===f.hit;})};ball.visible=true;ball.position.copy(shot.start);n.flightAt=f.at;}shot.startTime=s.paused?performance.now()-s.frozenElapsed:performance.now()+f.at-(Date.now()+n.offset);}
+    else{resetEffects();}
+    updateUI();updateHitStreak();renderCups();nextBtn.textContent='BACAJ PONOVNO';
+    if(phase==='won'){showWin(getNames()[cups[1].length===0?0:1]);}else{el('win-screen').style.display='none';el('game-screen').style.display='flex';if(phase==='moving-x'||phase==='moving-y')phaseLabel.textContent=ownTurn()?(phase==='moving-x'?'ZAUSTAVI X OS!':'ZAUSTAVI Y OS!'):'PROTIVNIK CILJA...';}
+    setCamera(n.seat*Math.PI);drawScene();renderControls();if(shot||phase==='moving-x'||phase==='moving-y'){lastFrame=performance.now();requestFrame();}
+  }
+  function receiveState(s){if(!validState(s)||s.revision<=n.lastRevision)return;n.lastRevision=s.revision;if(s.ack&&s.ack===n.pending)n.pending=0;if(s.phase==='flying'&&!n.clockReady){n.clockState=s;return;}n.clockState=null;if(shot&&!s.paused&&s.game===gameSerial&&s.phase!=='flying'){n.pendingState=s;return;}applyState(s);}
+  function scheduleMissTurn(){clearTimeout(n.resultTimer);var game=gameSerial,id=resolvedShotId;n.resultTimer=setTimeout(function(){n.resultTimer=null;if(n.role==='host'&&n.inGame&&!n.paused&&game===gameSerial&&id===resolvedShotId&&phase==='done'&&(teams()||!lastShotHit)&&n.connected)execute(n.myId,{action:'next',game:gameSerial,turn:n.turnToken,shot:activeShotId,request:0},true);},1400);}
+  function armFlight(){clearTimeout(n.flightTimer);if(n.role!=='host'||!shot||n.paused)return;var id=shot.id,game=gameSerial,duration=shot.hit?1500:1700;n.flightTimer=setTimeout(function(){if(online()&&!n.paused&&document.hidden&&shot&&shot.id===id&&gameSerial===game)updateShot(shot.startTime+duration+1);},Math.max(0,shot.startTime+duration-performance.now())+25);}
+  function refreshConnections(){
+    if(n.role!=='host')return;n.connected=allConnected();n.mySlot=n.players.findIndex(function(p){return p&&p.id===n.myId;});n.seat=teamOf(n.mySlot);n.names=teams()?['CRVENI TIM','PLAVI TIM']:n.players.map(function(p){return p?p.name:'';});
+    var pause=n.inGame&&(!n.connected||n.signalingLost);
+    if(pause&&!n.paused){n.paused=true;n.turnToken++;n.pausePerf=performance.now();n.pauseWall=Date.now();n.frozenElapsed=shot?performance.now()-shot.startTime:0;clearTimeout(n.resultTimer);clearTimeout(n.flightTimer);}
+    else if(!pause&&n.paused){if(shot){shot.startTime+=performance.now()-n.pausePerf;n.flightAt+=Date.now()-n.pauseWall;}n.paused=false;armFlight();if(phase==='done'&&(teams()||!lastShotHit))scheduleMissTurn();lastFrame=performance.now();requestFrame();}
+  }
+  function execute(actor,d,automatic){
+    if(!n.inGame||!n.connected||n.paused||!d||d.game!==gameSerial||d.turn!==n.turnToken||(!automatic&&(!activePlayer()||actor!==activePlayer().id))||!Number.isSafeInteger(d.request)||d.request<0)return false;
+    if(d.action==='start'){if(phase!=='idle'||d.shot!==shotSerial+1)return false;n.outcome=null;n.executing=true;try{baseThrow();}finally{n.executing=false;}return phase==='moving-x';}
+    if(d.action==='stop'){if((phase!=='moving-x'&&phase!=='moving-y')||d.axis!==phase||d.shot!==shotSerial+1||!Number.isFinite(d.value)||d.value<0||d.value>(phase==='moving-x'?1:.55))return false;if(phase==='moving-x')posX=d.value;else posY=d.value;n.executing=true;try{baseStop();}finally{n.executing=false;}return true;}
+    if(d.action==='repeat'){if(teams())return false;if(phase!=='done'||!lastShotHit||d.shot!==activeShotId)return false;n.outcome=null;n.executing=true;try{baseNext();}finally{n.executing=false;}return true;}
+    if(d.action==='next'){if(phase!=='done'||!teams()&&lastShotHit||shot||d.shot!==activeShotId||cups[0].length===0||cups[1].length===0)return false;clearTimeout(n.resultTimer);n.turnToken++;n.activeSlot=teams()?n.nextSlot:1-n.activeSlot;currentPlayer=teamOf(n.activeSlot);phase='idle';nextBtn.style.display='none';throwBtn.textContent='BACI 🏓';resultMsg.textContent='';if(!teams())n.outcome=null;updateUI();publish();return true;}
+    return false;
+  }
+  function intent(action){if(!online()||!ownTurn()||n.pending)return;var d={type:'intent',action:action,game:gameSerial,turn:n.turnToken,shot:action==='repeat'||action==='next'?activeShotId:shotSerial+1,request:++n.request};if(action==='stop'){d.axis=phase;d.value=phase==='moving-x'?posX:posY;}if(n.role==='host'){execute(n.myId,d,false);publish();}else{n.pending=d.request;if(!send(n.conn,d))n.pending=0;renderControls();}}
+  window.startThrow=function(){if(!online())return baseThrow();if(n.executing)return baseThrow();intent('start');};
+  window.stopLine=function(){if(!online())return baseStop();if(n.executing)return baseStop();intent('stop');};
+  window.checkHit=function(){if(!online())return baseCheck();if(n.role!=='host'||!n.executing)return;var value=baseCheck();if(shot){n.flightAt=Date.now()+180;shot.startTime=performance.now()+180;armFlight();}return value;};
+  window.requestFrame=function(){if(online()&&(n.paused||!n.connected))return;baseRequestFrame();};
+  window.stepAxis=function(position,direction,seconds,limit){if(online()&&(n.paused||!n.connected))return {position:position,direction:direction};return baseStepAxis(position,direction,seconds,limit);};
+  window.updateShot=function(now){if(online()&&(n.paused||!n.connected||shot&&now<shot.startTime))return;baseUpdateShot(now);};
+  window.resolveShot=function(s){
+    if(!online())return baseResolve(s);
+    if(n.role==='guest'){if(n.pendingState){var state=n.pendingState;n.pendingState=null;applyState(state);}else{phase='net-wait';renderControls();send(n.conn,{type:'sync'});}return;}
+    var before=resolvedShotId;baseResolve(s);if(resolvedShotId!==before){n.outcome={id:s.id,player:s.player,shooter:activePlayer().id,slot:n.activeSlot,hit:!!s.hit,bonus:false};if(teams()&&phase==='done'){n.roundHits+=s.hit?1:0;if(n.activeSlot%2===0)n.nextSlot=n.activeSlot+1;else{n.outcome.bonus=n.roundHits===2;n.nextSlot=n.outcome.bonus?currentPlayer*2:(1-currentPlayer)*2;n.bonusRounds=n.outcome.bonus?n.bonusRounds+1:0;n.roundHits=0;}}publish();if(phase==='done'&&(teams()||!lastShotHit))scheduleMissTurn();}
+  };
+  window.nextTurn=function(){if(!online())return baseNext();if(n.executing)return baseNext();intent(lastShotHit?'repeat':'next');};
+  window.startGame=function(){if(gameMode!=='online'){leave();stopBtn.disabled=false;nextBtn.disabled=false;resultMsg.style.color='';el('win-screen').querySelector('button').disabled=false;return baseStart();}return baseStart();};
+  window.restartGame=function(){if(online()){if(teams())lobbyIntent('rematch',true);else if(n.role==='host'&&n.connected)startMatch();return;}return baseRestart();};
+  function lobby(){refreshConnections();setConnectionUI();if(n.role==='host')status(readyToStart()?'Svi su spremni. Možeš započeti igru.':'Čekamo igrače i spremnost ('+n.players.filter(function(p){return p&&p.connected;}).length+'/'+n.capacity+').');broadcast({type:'lobby',revision:++n.lobbyRevision,names:n.names,code:n.code,format:n.format,roster:roster()});if(n.inGame){publish();renderControls();}}
+  function startMatch(){if(n.role!=='host'||!readyToStart()||n.signalingLost||!renderer||contextLost||(n.inGame&&phase!=='won')||n.inGame&&teams()&&!n.players.every(function(p){return p.rematchReady;}))return;n.turnToken++;n.activeSlot=0;n.nextSlot=0;n.roundHits=0;n.bonusRounds=0;n.paused=false;n.players.forEach(function(p){p.rematchReady=false;});clearTimeout(n.resultTimer);clearTimeout(n.flightTimer);launch();publish();}
+  function applyLobbyAction(player,action,value,game){
+    if(!player||!player.connected)return;
+    if(action==='rematch'){if(!n.inGame||phase!=='won'||game!==gameSerial)return;player.rematchReady=true;lobby();if(teams()&&allConnected()&&n.players.every(function(p){return p.rematchReady;}))startMatch();return;}
+    if(n.inGame||!teams())return;
+    if(action==='ready'&&typeof value==='boolean')player.ready=value;
+    if(action==='slot'&&Number.isInteger(value)&&value>=0&&value<4&&!n.players[value]){var from=n.players.indexOf(player);n.players[from]=null;n.players[value]=player;player.ready=false;}
+    lobby();
+  }
+  function lobbyIntent(action,value){var d={type:'lobbyAction',action:action,value:value,game:gameSerial,request:++n.request};if(n.role==='host')applyLobbyAction(myPlayer(),action,value,gameSerial);else if(n.connected)send(n.conn,d);}
+  function loseConnection(conn){
+    if(n.role==='host'){var p=n.players.find(function(p){return p&&p.conn===conn;});if(!p)return;p.connected=false;lobby();return;}
+    if(conn!==n.conn)return;n.connecting=false;n.connected=false;n.paused=true;n.pending=0;clearTimeout(n.watchdog);status('Veza s domaćinom je prekinuta. Pokušavamo ponovno…');setConnectionUI();renderControls();reconnect();
+  }
+  function hostConnection(conn){var generation=n.generation,admitted=false;var handshake=setTimeout(function(){if(!admitted)conn.close();},8000);conn.on('data',function(d){
+    if(generation!==n.generation||n.role!=='host'||!d||typeof d!=='object')return;
+    var player=n.players.find(function(p){return p&&p.conn===conn&&p.peer===conn.peer;});
+    if(d.type==='join'){
+      if(player&&player.connected){clearTimeout(handshake);return;}
+      var reserved=d.token?n.players.find(function(p){return p&&p.token===d.token;}):null,slot=n.players.findIndex(function(p){return !p;});
+      if(typeof d.name!=='string'||!d.name.trim()||d.name.length>16||d.ready!==true||reserved&&reserved.connected||!reserved&&(slot<0||n.inGame)){send(conn,{type:'denied',message:slot<0?'Soba je puna ('+n.capacity+'/'+n.capacity+').':'Povratak u ovu sobu nije odobren.'});setTimeout(function(){conn.close();},100);clearTimeout(handshake);return;}
+      clearTimeout(handshake);admitted=true;player=reserved||{id:randomToken(),name:d.name.trim(),token:randomToken(),ready:!teams(),rematchReady:false};if(!reserved)n.players[slot]=player;player.conn=conn;player.peer=conn.peer;player.connected=true;player.seenRequest=0;n.conn=n.players.find(function(p){return p&&p.conn;}).conn;refreshConnections();send(conn,{type:'welcome',token:player.token,id:player.id,format:n.format,names:n.names,roster:roster(),rosterRevision:n.lobbyRevision});lobby();return;
+    }
+    if(!player||!player.connected)return;
+    if(d.type==='ping'){send(conn,{type:'pong',id:d.id,time:Date.now()});return;}
+    if(d.type==='sync'){if(n.inGame)publish();else lobby();return;}
+    if(d.type==='leave'){if(!n.inGame)n.players[n.players.indexOf(player)]=null;else player.connected=false;player.conn=null;conn.close();lobby();return;}
+    if(d.type==='intent'||d.type==='lobbyAction'){if(!Number.isSafeInteger(d.request)||d.request<=player.seenRequest)return;player.seenRequest=d.request;if(d.type==='intent'){execute(player.id,d,false);publish(d.request,player.id);}else applyLobbyAction(player,d.action,d.value,d.game);}
+  });conn.on('close',function(){clearTimeout(handshake);loseConnection(conn);});conn.on('error',function(){clearTimeout(handshake);loseConnection(conn);});}
+  function ping(){if(n.role!=='guest'||!n.connected)return;var id=randomToken();n.pings[id]={time:Date.now(),perf:performance.now()};send(n.conn,{type:'ping',id:id});}
+  function guestData(conn,d){if(conn!==n.conn||!d)return;
+    if(d.type==='welcome'){n.clockReady=false;n.clockState=null;n.bestRtt=Infinity;n.connecting=false;n.connected=true;n.retry=0;n.pending=0;clearTimeout(n.watchdog);n.resumeToken=d.token;n.myId=d.id;syncRoster(d);try{sessionStorage.setItem('bp-resume-'+n.code,d.token);}catch(e){}status('Povezano. Čekamo domaćina…');setConnectionUI();ping();setTimeout(ping,200);setTimeout(ping,450);renderControls();}
+    if(d.type==='pong'&&n.pings[d.id]){var p=n.pings[d.id],rtt=performance.now()-p.perf;if(rtt<n.bestRtt){n.bestRtt=rtt;n.offset=d.time-(p.time+rtt/2);}delete n.pings[d.id];n.clockReady=true;if(n.clockState){var state=n.clockState;n.clockState=null;applyState(state);}}
+    if(d.type==='lobby'&&d.revision>n.lastLobbyRevision){n.lastLobbyRevision=d.revision;syncRoster(d);setConnectionUI();status(teams()?'Odaberi mjesto i potvrdi spremnost.':'Povezano. Čekamo da domaćin započne igru.');renderControls();}
+    if(d.type==='state')receiveState(d);
+    if(d.type==='hostLeft'){n.retry=20;n.paused=true;n.connected=false;status('Domaćin je napustio sobu. Vrati se na izbornik.');renderControls();}
+    if(d.type==='denied'){n.connecting=false;clearTimeout(n.retryTimer);n.retry=20;status(d.message);n.connected=false;renderControls();}
+  }
+  function connectGuest(){if(!n.peer||!n.peer.open||n.connected||n.connecting)return;n.connecting=true;var conn=n.peer.connect('party-beerpong-'+n.code.toLowerCase(),{reliable:true});n.conn=conn;conn.on('open',function(){if(conn!==n.conn)return;send(conn,{type:'join',name:n.joinName,ready:!!renderer&&!contextLost,token:n.resumeToken});});conn.on('data',function(d){guestData(conn,d);});conn.on('close',function(){loseConnection(conn);});conn.on('error',function(){loseConnection(conn);});clearTimeout(n.watchdog);n.watchdog=setTimeout(function(){if(!n.connected&&conn===n.conn){conn.close();loseConnection(conn);}},12000);}
+  function reconnect(){clearTimeout(n.retryTimer);if(n.role!=='guest'||n.connected||n.retry>=8)return;var generation=n.generation;n.retry++;n.retryTimer=setTimeout(function(){if(generation!==n.generation)return;if(n.peer&&!n.peer.destroyed){if(n.peer.disconnected)n.peer.reconnect();else connectGuest();}else reconnect();},1500);}
+  function initPeer(attempt){
+    if(!window.Peer){status('PeerJS nije dostupan. Provjeri internetsku vezu.');return;}
+    var generation=n.generation;var p=n.role==='host'?new Peer('party-beerpong-'+roomCode().toLowerCase()):new Peer();n.peer=p;
+    p.on('open',function(id){if(generation!==n.generation)return;clearTimeout(n.watchdog);if(n.role==='host'){n.signalingLost=false;n.code=id.slice(-6).toUpperCase();lobby();}else connectGuest();});
+    if(n.role==='host')p.on('connection',hostConnection);
+    p.on('disconnected',function(){if(generation!==n.generation)return;status('Ponovno povezivanje sa serverom…');if(n.role==='host'){n.signalingLost=true;lobby();}if(!p.destroyed)p.reconnect();});
+    p.on('error',function(e){if(generation!==n.generation)return;if(n.role==='host'&&e.type==='unavailable-id'&&attempt<4){p.destroy();initPeer(attempt+1);return;}status(e.type==='peer-unavailable'?'Soba ne postoji. Provjeri kod.':'Povezivanje nije uspjelo: '+e.type);if(n.role==='guest'&&n.inGame)reconnect();});
+    n.watchdog=setTimeout(function(){if(!p.open)status('Povezivanje traje predugo. Provjeri internet i pokušaj ponovno.');},15000);
+  }
+  function leave(notify){clearTimeout(n.flightTimer);n.generation++;n.connecting=false;clearTimeout(n.retryTimer);clearTimeout(n.watchdog);clearTimeout(n.resultTimer);clearInterval(n.tick);if(notify!==false){if(n.role==='host')broadcast({type:'hostLeft'});else send(n.conn,{type:'leave'});}var p=n.peer;n.peer=null;n.conn=null;n.connected=false;n.inGame=false;n.role=null;n.pending=0;n.pendingState=null;n.outcome=null;n.code='';n.names=['',''];n.resumeToken='';n.reservedPeer='';n.request=0;n.seenRequest=0;n.revision=0;n.lastRevision=0;n.retry=0;n.offset=0;n.bestRtt=Infinity;n.pings={};n.players=[];n.myId='';n.mySlot=0;n.activeSlot=0;n.roundHits=0;n.bonusRounds=0;n.paused=false;n.signalingLost=false;n.lobbyRevision=0;n.lastLobbyRevision=0;n.clockReady=false;n.clockState=null;if(p)p.destroy();el('bp-net-status').hidden=true;el('bp-reconnect').hidden=true;el('bp-safe-exit').hidden=true;el('bp-team-roster').hidden=true;el('bp-win-menu').hidden=true;el('bp-rematch-status').hidden=true;el('bp-online-name').disabled=false;stopBtn.disabled=false;nextBtn.disabled=false;throwBtn.disabled=false;el('win-screen').querySelector('button').disabled=false;el('win-screen').querySelector('button').textContent='NOVA IGRA 🏓';resultMsg.style.color='';setConnectionUI();}
+  function begin(role){var name=el('bp-online-name').value.trim(),code=el('bp-room-code').value.trim().toUpperCase();if(!name){status('Upiši svoje ime.');return;}if(!renderer||contextLost){status('Online igra zahtijeva dostupan 3D prikaz.');return;}if(role==='guest'&&!/^[A-HJ-NP-Z2-9]{6}$/.test(code)){status('Upiši kod sobe od 6 znakova.');return;}var format=document.querySelector('input[name="online-format"]:checked').value;leave();gameMode='online';n.format=format;n.capacity=teams()?4:2;n.players=new Array(n.capacity).fill(null);n.role=role;n.seat=role==='host'?0:1;n.mySlot=n.seat;n.joinName=name;if(role==='host'){n.myId=randomToken();n.players[0]={id:n.myId,name:name,connected:true,ready:!teams(),rematchReady:false};}n.names[n.seat]=name;n.code=role==='guest'?code:'';if(role==='guest'){try{n.resumeToken=sessionStorage.getItem('bp-resume-'+code)||'';}catch(e){}}status(role==='host'?'Kreiranje sobe…':'Spajanje u sobu…');initPeer(0);n.tick=setInterval(function(){if(n.role==='host'&&n.connected&&n.inGame&&(phase==='moving-x'||phase==='moving-y'))publish();},100);}
+  el('bp-create-room').addEventListener('click',function(){begin('host');});el('bp-join-room').addEventListener('click',function(){begin('guest');});el('bp-host-start').addEventListener('click',startMatch);
+  el('bp-online-back').addEventListener('click',function(){leave();gameMode='local';beerPongLobby.showModes();});
+  el('bp-copy-code').addEventListener('click',async function(){try{await navigator.clipboard.writeText(n.code);status('Kod je kopiran: '+n.code);}catch(e){var code=el('bp-code-display');var range=document.createRange();range.selectNodeContents(code);var selection=getSelection();selection.removeAllRanges();selection.addRange(range);status('Označen kod sobe: '+n.code);}});
+  el('bp-reconnect').addEventListener('click',function(){n.retry=0;reconnect();});
+  el('bp-ready').addEventListener('click',function(){var me=myPlayer();if(me)lobbyIntent('ready',!me.ready);});
+  el('bp-safe-exit').addEventListener('click',function(){leave();window.location.href='index.html';});
+  el('bp-win-menu').addEventListener('click',function(){leave();window.location.href='index.html';});
+  document.querySelectorAll('input[name="online-format"]').forEach(function(input){input.addEventListener('change',function(){if(!n.role){n.format=input.value;n.capacity=teams()?4:2;setConnectionUI();}});});
+  el('bp-online-name').value=sessionStorage.getItem('playerName')||'Igrač';
+  window.addEventListener('pagehide',function(){leave(false);});
+  document.querySelector('.bp-header a').addEventListener('click',function(){leave();});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&online()){if(n.role==='guest')send(n.conn,{type:'sync'});else if(phase==='done'&&(teams()||!lastShotHit))scheduleMissTurn();}});
+  n.leave=leave;n.renderControls=renderControls;n.publish=publish;n.startMatch=startMatch;
+})();

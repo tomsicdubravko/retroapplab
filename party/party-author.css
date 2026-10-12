@@ -1,0 +1,9 @@
+/* RetroAppLab signature: static, in-flow, start screens only. */
+.pg-author{box-sizing:border-box;width:100%;margin:18px 0 0;padding:8px 0 0;text-align:center;color:#b3a078;font-family:'Inter',sans-serif;font-size:10px;font-weight:400;line-height:1.7;letter-spacing:.12em;}
+.pg-author a{color:#c3ad7e;text-decoration:none;white-space:nowrap;}
+.pg-author a:hover{text-decoration:underline;text-underline-offset:3px;}
+.pg-author a:focus-visible{outline:1px solid #d9ba6b;outline-offset:4px;border-radius:2px;}
+.pg-author-tagline{display:block;margin-top:3px;font-size:9px;letter-spacing:.2em;color:#a39478;}
+.menu-footer .pg-author{margin-top:14px;}
+#mode-selection .pg-author{margin-top:10px;padding-top:4px;}
+@media(max-width:380px){.pg-author{letter-spacing:.08em;}}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="hr" style="background:#0e0e16">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0e0e16">
+<title>Party Games 18+</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap');
+:root{--bg:#0e0e16;--gold:#d4b35d;--ease:cubic-bezier(.22,.68,.25,1);--transition:320ms;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);color:#fff;font-family:'Inter',sans-serif;min-height:100%;}
+[hidden]{display:none!important;}
+.splash-panel{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;transition:opacity var(--transition) var(--ease),transform var(--transition) var(--ease);}
+#splash{z-index:2;}
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.splash-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:340px;margin:auto;text-align:center;}
+.splash-art{position:relative;width:144px;height:184px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:4px;}
+.splash-art::before{content:'';position:absolute;width:290px;height:290px;border-radius:50%;background:radial-gradient(circle,rgba(212,179,93,.17) 0,rgba(212,179,93,.06) 38%,transparent 68%);pointer-events:none;}
+.hero-card{position:relative;width:110px;height:155px;display:flex;align-items:center;justify-content:center;border-radius:15px;background:linear-gradient(145deg,#efd487 0,#d4b35d 38%,#a47b28 100%);border:1px solid rgba(255,235,173,.65);box-shadow:0 12px 30px rgba(0,0,0,.35),0 0 28px rgba(200,168,75,.2);animation:floatCard 4.8s var(--ease) infinite;}
+.hero-card::after{content:'';position:absolute;inset:6px;border:1px solid rgba(51,35,6,.27);border-radius:10px;pointer-events:none;}
+.hero-card svg{width:94px;height:128px;}
+.brand-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.6rem,16vw,4.5rem);font-weight:400;letter-spacing:.18em;text-indent:.18em;color:var(--gold);line-height:1;text-shadow:0 0 28px rgba(212,179,93,.25);}
+.brand-edition{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.22em;text-indent:.22em;color:rgba(212,179,93,.7);margin-top:-9px;}
+.age-badge{padding:5px 14px;border-radius:999px;background:rgba(212,179,93,.09);border:1px solid rgba(212,179,93,.27);color:var(--gold);font-size:.72rem;letter-spacing:.12em;}
+.slogan{color:rgba(255,255,255,.48);line-height:1.5;font-size:.8rem;font-style:italic;margin:2px 0 9px;}
+button{touch-action:manipulation;}
+.btn-yes{height:58px;width:100%;max-width:320px;border-radius:12px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.1em;color:#211a0b;background:linear-gradient(135deg,#ecd083,#c8a344);border:1px solid #efda9d;box-shadow:0 5px 22px rgba(200,168,75,.22),inset 0 1px 0 rgba(255,255,255,.3);transition:transform var(--transition) var(--ease),box-shadow var(--transition) var(--ease),filter var(--transition) var(--ease);}
+.btn-yes:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 8px 30px rgba(200,168,75,.32);}
+.btn-yes:active{transform:translateY(0) scale(.985);}
+.btn-yes:disabled{cursor:default;}
+.btn-no,.btn-back{padding:11px;width:100%;max-width:320px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.8rem;color:rgba(255,255,255,.4);background:transparent;border:1px solid rgba(255,255,255,.1);transition:color var(--transition) var(--ease),border-color var(--transition) var(--ease),background var(--transition) var(--ease);}
+.btn-no:hover,.btn-back:hover{color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.025);}
+button:focus-visible{outline:2px solid #f1d990;outline-offset:5px;}
+.btn-back{width:auto;padding:10px 24px;margin-top:8px;}
+.kick-emoji{font-size:5rem;animation:shake 1.2s var(--ease) infinite alternate;}
+.kick-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:#e74c3c;text-shadow:0 0 20px rgba(231,76,60,.25);font-weight:400;}
+.kick-sub{font-size:.85rem;color:rgba(255,255,255,.4);line-height:1.7;}
+.is-leaving{opacity:0;transform:translateY(-8px);pointer-events:none;}
+.is-entering .splash-content{animation:arrive 420ms var(--ease) both;}
+@keyframes floatCard{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-9px) rotate(1deg)}}
+@keyframes arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@media(max-height:650px){.splash-panel{padding:20px;}.splash-content{gap:11px;}.splash-art{height:155px;}.hero-card{width:94px;height:132px;}.hero-card svg{width:80px;height:110px;}.brand-title{font-size:3.6rem;}.slogan{margin-bottom:4px;}}
+@media(prefers-reduced-motion:reduce){:root{--transition:0ms;}.hero-card,.kick-emoji,.is-entering .splash-content{animation:none;}.btn-yes:hover,.is-leaving{transform:none;}}
+</style>
+</head>
+<body>
+<section id="splash" class="splash-panel is-entering" aria-label="Party Games Edition">
+  <canvas id="c" aria-hidden="true"></canvas>
+  <div class="splash-content">
+    <div class="splash-art">
+      <div class="hero-card">
+        <svg viewBox="0 0 120 150" role="img" aria-label="Simbol karata, kockica, ruleta i beer ponga">
+          <g fill="none" stroke="#33270f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="60" cy="64" r="34"/>
+            <circle cx="60" cy="64" r="25" stroke-width="1.4"/>
+            <path d="M60 30v9M84 40l-6 7M94 64h-9M84 88l-7-6M60 98v-9M36 88l6-6M26 64h9M36 40l6 7"/>
+            <path d="M54 23l6 7 6-7" fill="#33270f"/>
+          </g>
+          <path d="M60 44c-5 7-16 13-16 22a9 9 0 0 0 16 6 9 9 0 0 0 16-6c0-9-11-15-16-22zm-3 26c0 8-1 13-6 17h18c-5-4-6-9-6-17z" fill="#33270f"/>
+          <g transform="rotate(-9 85 100)">
+            <rect x="70" y="84" width="30" height="30" rx="6" fill="#d9b963" stroke="#33270f" stroke-width="2.4"/>
+            <g fill="#33270f"><circle cx="78" cy="92" r="2.2"/><circle cx="92" cy="92" r="2.2"/><circle cx="85" cy="99" r="2.2"/><circle cx="78" cy="106" r="2.2"/><circle cx="92" cy="106" r="2.2"/></g>
+          </g>
+          <g stroke="#33270f" stroke-width="2.4" stroke-linejoin="round">
+            <path d="M22 89h26l-4 26H26z" fill="#d9b963"/>
+            <path d="M25 98h20" fill="none"/>
+            <circle cx="36" cy="79" r="4" fill="#33270f" stroke="none"/>
+          </g>
+          <path d="M19 24v-9h5a4 4 0 0 1 0 8h-5" fill="none" stroke="#33270f" stroke-width="2" stroke-linecap="round"/>
+          <path d="M96 130v-9h5a4 4 0 0 1 0 8h-5" fill="none" stroke="#33270f" stroke-width="2" stroke-linecap="round" transform="rotate(180 101 124)"/>
+        </svg>
+      </div>
+    </div>
+    <h1 class="brand-title">PARTY</h1>
+    <div class="brand-edition">GAMES EDITION</div>
+    <div class="age-badge">🍻 PARTY EDITION • 18+</div>
+    <p class="slogan">Igre. Piće. Prijatelji. Problemi.</p>
+    <button class="btn-yes" onclick="ageYes()">IMAM 18+ GODINA</button>
+    <button class="btn-no" onclick="ageNo()">Nemam 18 godina</button>
+  </div>
+</section>
+<section id="kicked" class="splash-panel" hidden aria-label="Samo za punoljetne">
+  <div class="splash-content">
+    <div class="kick-emoji" aria-hidden="true">🚫</div>
+    <h2 class="kick-title">NISI DOBRODOŠAO!</h2>
+    <p class="kick-sub">Ova igra je samo za punoljetne.<br>Vrati se kad narasteš! 😄</p>
+    <button class="btn-back" onclick="goBack()">← Natrag</button>
+  </div>
+</section>
+<script>
+var transitioning=false, departing=false;
+var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+var splashParticles=(function(){
+  var canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+  var particles=[],width=0,height=0,frame=null,lastTime=0,active=false;
+  function reset(pt,initial){
+    pt.x=Math.random()*width;pt.y=initial?Math.random()*height:height+10;
+    pt.r=Math.random()*2+.5;pt.vx=(Math.random()-.5)*.35;pt.vy=-Math.random()*.6-.2;
+    pt.maxLife=Math.random()*.5+.5;pt.life=initial?Math.random()*pt.maxLife:pt.maxLife;
+    pt.color=Math.random()>.5?'200,168,75':'255,220,120';
+  }
+  function resize(){
+    width=window.innerWidth;height=window.innerHeight;
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+    particles.forEach(function(pt){reset(pt,true);});
+    if(!active)draw(0);
+  }
+  function draw(step){
+    ctx.clearRect(0,0,width,height);
+    particles.forEach(function(pt){
+      pt.x+=pt.vx*step;pt.y+=pt.vy*step;pt.life-=.004*step;
+      if(pt.life<=0||pt.x<-20||pt.x>width+20||pt.y<-20)reset(pt,false);
+      var alpha=Math.max(0,Math.sin(pt.life/pt.maxLife*Math.PI))*.6;
+      ctx.beginPath();ctx.arc(pt.x,pt.y,pt.r,0,Math.PI*2);ctx.fillStyle='rgba('+pt.color+','+alpha+')';ctx.fill();
+      if(pt.r>1.8){ctx.strokeStyle='rgba('+pt.color+','+(alpha*.4)+')';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(pt.x-pt.r*2,pt.y);ctx.lineTo(pt.x+pt.r*2,pt.y);ctx.moveTo(pt.x,pt.y-pt.r*2);ctx.lineTo(pt.x,pt.y+pt.r*2);ctx.stroke();}
+    });
+  }
+  function tick(time){
+    frame=null;if(!active)return;
+    var step=lastTime?Math.min(time-lastTime,32)/16.667:1;lastTime=time;draw(step);frame=requestAnimationFrame(tick);
+  }
+  function pause(){active=false;if(frame!==null)cancelAnimationFrame(frame);frame=null;lastTime=0;}
+  function start(){
+    if(active||document.hidden||document.getElementById('splash').hidden||departing)return;
+    if(reducedMotion.matches){draw(0);return;}
+    active=true;lastTime=0;frame=requestAnimationFrame(tick);
+  }
+  resize();for(var i=0;i<60;i++){var pt={};reset(pt,true);particles.push(pt);}draw(0);start();
+  window.addEventListener('resize',resize);
+  document.addEventListener('visibilitychange',function(){if(document.hidden)pause();else start();});
+  reducedMotion.addEventListener('change',function(){pause();start();});
+  window.addEventListener('pagehide',pause);
+  return {start:start,pause:pause};
+})();
+function setButtonsDisabled(disabled){document.querySelectorAll('button').forEach(function(button){button.disabled=disabled;});}
+function transitionScreen(from,to){
+  if(transitioning||departing)return;
+  transitioning=true;setButtonsDisabled(true);splashParticles.pause();
+  var current=document.getElementById(from),next=document.getElementById(to);
+  current.classList.add('is-leaving');
+  setTimeout(function(){
+    current.hidden=true;current.classList.remove('is-leaving','is-entering');
+    next.hidden=false;next.classList.add('is-entering');
+    transitioning=false;setButtonsDisabled(false);
+    if(to==='splash')splashParticles.start();
+    next.querySelector('button').focus({preventScroll:true});
+  },reducedMotion.matches?0:320);
+}
+function ageYes(){
+  if(transitioning||departing)return;
+  departing=true;setButtonsDisabled(true);sessionStorage.setItem('ageOk','1');sessionStorage.setItem('splashEntry','1');
+  document.getElementById('splash').classList.add('is-leaving');
+  setTimeout(function(){window.location.href='index.html';},reducedMotion.matches?0:320);
+}
+function ageNo(){sessionStorage.removeItem('ageOk');transitionScreen('splash','kicked');}
+function goBack(){transitionScreen('kicked','splash');}
+window.addEventListener('pageshow',function(event){
+  if(event.persisted){transitioning=false;departing=false;setButtonsDisabled(false);document.getElementById('splash').classList.remove('is-leaving');splashParticles.start();}
+});
+</script>
+</body>
+</html>

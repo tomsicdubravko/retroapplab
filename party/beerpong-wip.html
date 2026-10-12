@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="hr" style="background:#0e0e16">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beer Pong</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#0e0e16;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;}
+body{display:flex;flex-direction:column;align-items:center;padding:16px;}
+
+/* SETUP */
+#setup-screen{display:flex;flex-direction:column;align-items:center;width:100%;max-width:360px;padding:20px 20px 40px;}
+.title{font-family:'Bebas Neue';font-size:2.2rem;letter-spacing:.14em;color:#d4b35d;margin-bottom:4px;}
+.sub{font-size:.74rem;color:rgba(255,255,255,.35);margin-bottom:24px;}
+.inp-label{font-size:.68rem;letter-spacing:.08em;color:rgba(255,255,255,.3);margin-bottom:4px;align-self:flex-start;}
+.inp{width:100%;background:#1e1e2e;border:1px solid rgba(255,255,255,.2);color:#fff;font-family:'Inter';font-size:1rem;padding:12px 16px;border-radius:10px;outline:none;margin-bottom:10px;-webkit-text-fill-color:#fff;}
+.inp:focus{border-color:#d4b35d;}
+.inp::placeholder{color:rgba(255,255,255,.3);-webkit-text-fill-color:rgba(255,255,255,.3);}
+.btn-gold{width:100%;padding:14px;border-radius:12px;cursor:pointer;font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:.1em;color:#fff;background:linear-gradient(135deg,rgba(200,168,75,.28),rgba(200,168,75,.12));border:1.5px solid rgba(200,168,75,.65);transition:all .2s;margin-top:6px;}
+.btn-gold:hover{background:linear-gradient(135deg,rgba(200,168,75,.42),rgba(200,168,75,.22));}
+
+/* GAME */
+#game-screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:380px;}
+
+/* Player bar */
+#player-bar{
+  width:100%;display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;margin-bottom:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+}
+.pbar-name{font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:.08em;}
+.pbar-cups{font-size:.72rem;color:rgba(255,255,255,.4);}
+#turn-label{font-family:'Bebas Neue';font-size:.85rem;letter-spacing:.12em;color:rgba(255,255,255,.35);}
+
+/* 3D TABLE */
+.table-3d-wrap{width:100%;max-width:340px;perspective:700px;margin-bottom:6px;}
+.table-wrap{
+  width:100%;
+  background:linear-gradient(180deg,#071507 0%,#0e2a0e 50%,#163016 100%);
+  border-radius:16px 16px 10px 10px;
+  padding:14px 12px;
+  border:2px solid rgba(255,255,255,.08);
+  position:relative;
+  box-shadow:0 8px 24px rgba(0,0,0,.6);
+  transform:perspective(500px) rotateX(18deg);
+  transform-origin:center bottom;
+  transition:transform .6s ease;
+  overflow:hidden;
+}
+.table-wrap.flipping{animation:tableFlip .6s ease forwards;}
+@keyframes tableFlip{
+  0%  {transform:perspective(500px) rotateX(18deg);}
+  50% {transform:perspective(500px) rotateX(90deg) scale(.8);opacity:.3;}
+  100%{transform:perspective(500px) rotateX(18deg);opacity:1;}
+}
+.table-shadow{width:75%;max-width:240px;height:18px;background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%);margin:0 auto;margin-top:-6px;}
+
+/* Aim lines */
+#line-x{position:absolute;top:0;bottom:0;width:2.5px;background:rgba(255,220,50,.9);box-shadow:0 0 10px rgba(255,220,50,.7);display:none;z-index:10;pointer-events:none;}
+#line-y{position:absolute;left:0;right:0;height:2.5px;background:rgba(255,220,50,.9);box-shadow:0 0 10px rgba(255,220,50,.7);display:none;z-index:10;pointer-events:none;}
+#crosshair{position:absolute;width:16px;height:16px;border-radius:50%;background:#ffe033;box-shadow:0 0 14px rgba(255,220,50,.9);display:none;z-index:11;pointer-events:none;transform:translate(-50%,-50%);}
+
+/* CUPS */
+.cups-side{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;}
+.cups-row{display:flex;gap:8px;justify-content:center;}
+.cup{
+  width:36px;height:36px;border-radius:50%;
+  border:2.5px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;position:relative;
+  box-shadow:0 3px 8px rgba(0,0,0,.5);
+  pointer-events:none;transition:all .3s;
+}
+.cup.top{background:radial-gradient(circle at 35% 35%,rgba(150,150,200,.65),rgba(80,80,160,.95));border-color:rgba(150,150,220,.7);width:28px;height:28px;font-size:.75rem;}
+.cup.bot{background:radial-gradient(circle at 35% 35%,rgba(200,150,50,.65),rgba(160,90,10,.95));border-color:rgba(220,160,50,.7);width:36px;height:36px;font-size:.95rem;}
+.cup.p1color.top{background:radial-gradient(circle at 35% 35%,rgba(231,76,60,.65),rgba(160,20,10,.95));border-color:rgba(231,76,60,.7);}
+.cup.p1color.bot{background:radial-gradient(circle at 35% 35%,rgba(231,76,60,.65),rgba(160,20,10,.95));border-color:rgba(231,76,60,.7);}
+.cup.p2color.top{background:radial-gradient(circle at 35% 35%,rgba(52,152,219,.65),rgba(15,70,160,.95));border-color:rgba(52,152,219,.7);}
+.cup.p2color.bot{background:radial-gradient(circle at 35% 35%,rgba(52,152,219,.65),rgba(15,70,160,.95));border-color:rgba(52,152,219,.7);}
+.cup.gone{background:rgba(255,255,255,.03)!important;border-color:rgba(255,255,255,.07)!important;opacity:.2;box-shadow:none!important;}
+.cup.hit{animation:cupHit .5s ease forwards;}
+@keyframes cupHit{
+  0%  {transform:scale(1)}
+  25% {transform:scale(1.5);filter:brightness(3);}
+  60% {transform:scale(.8);}
+  100%{transform:scale(1);}
+}
+
+.divider{display:flex;align-items:center;gap:8px;margin:6px 0;color:rgba(255,255,255,.12);font-size:.62rem;letter-spacing:.1em;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+
+/* CONTROLS */
+#controls{margin-top:12px;text-align:center;width:100%;}
+#phase-label{font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:.12em;color:#d4b35d;margin-bottom:8px;}
+#stop-btn{
+  width:100%;padding:18px;border-radius:12px;cursor:pointer;
+  font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:.1em;color:#fff;
+  background:linear-gradient(135deg,rgba(231,76,60,.3),rgba(200,20,10,.2));
+  border:1.5px solid rgba(231,76,60,.65);
+  box-shadow:0 0 20px rgba(231,76,60,.2);
+  display:none;transition:transform .1s;
+}
+#stop-btn:active{transform:scale(.97);}
+#result-msg{font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:.08em;margin:10px 0;min-height:28px;text-align:center;}
+#next-btn{
+  width:100%;padding:13px;border-radius:10px;cursor:pointer;
+  font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:.1em;color:#d4b35d;
+  background:rgba(200,168,75,.15);border:1.5px solid rgba(200,168,75,.4);
+  display:none;transition:all .2s;
+}
+#next-btn:hover{background:rgba(200,168,75,.28);}
+
+/* Win screen */
+#win-screen{display:none;flex-direction:column;align-items:center;padding:40px 20px;gap:12px;}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <div style="font-size:2.5rem;margin-bottom:10px;">🏓</div>
+  <div class="title">BEER PONG</div>
+  <div class="sub">Mini – 6 čaša • 1v1</div>
+
+  <div class="inp-label">IGRAČ 1 (crveni)</div>
+  <input id="p1-name" class="inp" placeholder="Ime igrača 1..." value="Igrač 1"/>
+  <div class="inp-label">IGRAČ 2 (plavi)</div>
+  <input id="p2-name" class="inp" placeholder="Ime igrača 2..." value="Igrač 2"/>
+  <button class="btn-gold" onclick="startGame()">KRENI 🏓</button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen">
+
+  <div id="player-bar">
+    <div>
+      <div class="pbar-name" id="p1-bar-name" style="color:#e74c3c">Igrač 1</div>
+      <div class="pbar-cups" id="p1-cups-left">6 čaša</div>
+    </div>
+    <div id="turn-label">NA POTEZU</div>
+    <div style="text-align:right">
+      <div class="pbar-name" id="p2-bar-name" style="color:#3498db">Igrač 2</div>
+      <div class="pbar-cups" id="p2-cups-left">6 čaša</div>
+    </div>
+  </div>
+
+  <div class="table-3d-wrap">
+    <div class="table-wrap" id="table">
+      <div id="line-x"></div>
+      <div id="line-y"></div>
+      <div id="crosshair"></div>
+
+      <!-- GORE = protivnik (uvijek mali) -->
+      <div class="cups-side" id="top-cups">
+        <div class="cups-row">
+          <div class="cup top p2color" data-side="top" data-i="0">🍺</div>
+          <div class="cup top p2color" data-side="top" data-i="1">🍺</div>
+          <div class="cup top p2color" data-side="top" data-i="2">🍺</div>
+        </div>
+        <div class="cups-row">
+          <div class="cup top p2color" data-side="top" data-i="3">🍺</div>
+          <div class="cup top p2color" data-side="top" data-i="4">🍺</div>
+        </div>
+        <div class="cups-row">
+          <div class="cup top p2color" data-side="top" data-i="5">🍺</div>
+        </div>
+      </div>
+
+      <div class="divider">── GAĐAJ GORE ──</div>
+
+      <!-- DOLJE = trenutni igrač (uvijek veliki) -->
+      <div class="cups-side" id="bottom-cups">
+        <div class="cups-row">
+          <div class="cup bot p1color" data-side="bot" data-i="5">🍺</div>
+        </div>
+        <div class="cups-row">
+          <div class="cup bot p1color" data-side="bot" data-i="3">🍺</div>
+          <div class="cup bot p1color" data-side="bot" data-i="4">🍺</div>
+        </div>
+        <div class="cups-row">
+          <div class="cup bot p1color" data-side="bot" data-i="0">🍺</div>
+          <div class="cup bot p1color" data-side="bot" data-i="1">🍺</div>
+          <div class="cup bot p1color" data-side="bot" data-i="2">🍺</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="table-shadow"></div>
+
+  <div id="controls">
+    <div id="phase-label">PRITISNI BACI</div>
+    <button id="stop-btn" onclick="stopLine()">⚡ STOP!</button>
+    <div id="result-msg"></div>
+    <button id="next-btn" onclick="nextTurn()">SLJEDEĆI →</button>
+    <button class="btn-gold" id="throw-btn" onclick="startThrow()" style="margin-top:6px;">BACI 🏓</button>
+  </div>
+</div>
+
+<!-- WIN -->
+<div id="win-screen">
+  <div style="font-size:4rem;">🏆</div>
+  <div style="font-family:'Bebas Neue';font-size:2.5rem;letter-spacing:.12em;color:#d4b35d;" id="win-title">POBJEDA!</div>
+  <div style="font-family:'Bebas Neue';font-size:1.3rem;color:rgba(255,255,255,.6);" id="win-sub"></div>
+  <button class="btn-gold" onclick="restartGame()" style="margin-top:16px;max-width:300px;">NOVA IGRA 🏓</button>
+</div>
+
+<script>
+var p1Name='', p2Name='';
+// cups[0] = p1 cups remaining indices, cups[1] = p2 cups remaining
+var cups = [[0,1,2,3,4,5],[0,1,2,3,4,5]];
+var currentPlayer = 0; // 0=p1, 1=p2
+// currentPlayer always aims at top cups (opponent)
+// top cups = opponent cups, bot cups = current player cups
+
+var phase='idle';
+var posX=0, posY=0, dirX=1, dirY=1;
+var speed=0.013;
+var raf=null, stoppedX=0, stoppedY=0;
+
+var tableEl   = document.getElementById('table');
+var lineX     = document.getElementById('line-x');
+var lineY     = document.getElementById('line-y');
+var cross     = document.getElementById('crosshair');
+var stopBtn   = document.getElementById('stop-btn');
+var throwBtn  = document.getElementById('throw-btn');
+var nextBtn   = document.getElementById('next-btn');
+var phaseLabel= document.getElementById('phase-label');
+var resultMsg = document.getElementById('result-msg');
+
+function startGame(){
+  p1Name = document.getElementById('p1-name').value.trim() || 'Igrač 1';
+  p2Name = document.getElementById('p2-name').value.trim() || 'Igrač 2';
+  cups = [[0,1,2,3,4,5],[0,1,2,3,4,5]];
+  currentPlayer = 0;
+  document.getElementById('setup-screen').style.display='none';
+  document.getElementById('game-screen').style.display='flex';
+  document.getElementById('p1-bar-name').textContent=p1Name;
+  document.getElementById('p2-bar-name').textContent=p2Name;
+  updateUI();
+  renderCups();
+}
+
+function getNames(){ return [p1Name, p2Name]; }
+function getOpponent(){ return 1 - currentPlayer; }
+
+function updateUI(){
+  var names=getNames();
+  var opp=getOpponent();
+  // Who's on turn = current player
+  document.getElementById('turn-label').textContent = names[currentPlayer];
+  document.getElementById('turn-label').style.color = currentPlayer===0?'#e74c3c':'#3498db';
+  document.getElementById('p1-cups-left').textContent = cups[0].length + ' čaša';
+  document.getElementById('p2-cups-left').textContent = cups[1].length + ' čaša';
+}
+
+function renderCups(){
+  var opp = getOpponent();
+  var cur = currentPlayer;
+  var oppColor = opp===0 ? 'p1color' : 'p2color';
+  var curColor = cur===0 ? 'p1color' : 'p2color';
+
+  // TOP cups = opponent, always small
+  var topEls = document.querySelectorAll('[data-side="top"]');
+  topEls.forEach(function(el){
+    var i = parseInt(el.dataset.i);
+    el.className = 'cup top ' + oppColor;
+    if(cups[opp].indexOf(i)===-1){ el.classList.add('gone'); el.textContent=''; }
+    else el.textContent='🍺';
+  });
+
+  // BOT cups = current player, always large
+  var botEls = document.querySelectorAll('[data-side="bot"]');
+  botEls.forEach(function(el){
+    var i = parseInt(el.dataset.i);
+    el.className = 'cup bot ' + curColor;
+    if(cups[cur].indexOf(i)===-1){ el.classList.add('gone'); el.textContent=''; }
+    else el.textContent='🍺';
+  });
+}
+
+function startThrow(){
+  computeCupPositions();
+  phase='moving-x';
+  posX=0; posY=0; dirX=1; dirY=1;
+  lineX.style.cssText='position:absolute;top:0;bottom:0;width:2.5px;background:rgba(255,220,50,.9);box-shadow:0 0 10px rgba(255,220,50,.7);left:0%;z-index:10;pointer-events:none;display:block;';
+  lineY.style.display='none';
+  cross.style.display='none';
+  stopBtn.style.display='block';
+  throwBtn.style.display='none';
+  nextBtn.style.display='none';
+  resultMsg.textContent='';
+  phaseLabel.textContent='ZAUSTAVI X OS!';
+  cancelAnimationFrame(raf);
+  animate();
+}
+
+function animate(){
+  if(phase==='moving-x'){
+    posX += speed*dirX;
+    if(posX>=1){posX=1;dirX=-1;} if(posX<=0){posX=0;dirX=1;}
+    lineX.style.left=(posX*100)+'%';
+  } else if(phase==='moving-y'){
+    posY += speed*dirY;
+    if(posY>=0.55){posY=0.55;dirY=-1;} if(posY<=0){posY=0;dirY=1;}
+    lineY.style.top=(posY*100)+'%';
+    cross.style.left=(stoppedX*100)+'%';
+    cross.style.top=(posY*100)+'%';
+  }
+  raf=requestAnimationFrame(animate);
+}
+
+function stopLine(){
+  if(phase==='moving-x'){
+    stoppedX=posX;
+    phase='moving-y';
+    lineY.style.cssText='position:absolute;left:0;right:0;height:2.5px;background:rgba(255,220,50,.9);box-shadow:0 0 10px rgba(255,220,50,.7);top:0%;z-index:10;pointer-events:none;display:block;';
+    cross.style.cssText='position:absolute;width:16px;height:16px;border-radius:50%;background:#ffe033;box-shadow:0 0 14px rgba(255,220,50,.9);z-index:11;pointer-events:none;display:block;left:'+(stoppedX*100)+'%;top:0%;transform:translate(-50%,-50%);';
+    phaseLabel.textContent='ZAUSTAVI Y OS!';
+  } else if(phase==='moving-y'){
+    stoppedY=posY;
+    phase='done';
+    cancelAnimationFrame(raf);
+    stopBtn.style.display='none';
+    checkHit();
+  }
+}
+
+var TOP_CUP_POSITIONS = [];
+var CUP_HIT_RADIUS = 0.048;
+
+function computeCupPositions(){
+  // Remove 3D transform temporarily to get accurate positions
+  tableEl.style.transform = 'none';
+  tableEl.style.transition = 'none';
+  var rect = tableEl.getBoundingClientRect();
+  TOP_CUP_POSITIONS = [];
+  document.querySelectorAll('[data-side="top"]').forEach(function(el){
+    if(el.classList.contains('gone')) return;
+    var cr = el.getBoundingClientRect();
+    TOP_CUP_POSITIONS.push({
+      i:  parseInt(el.dataset.i),
+      fx: (cr.left - rect.left + cr.width/2)  / rect.width,
+      fy: (cr.top  - rect.top  + cr.height/2) / rect.height,
+      r:  (cr.width/2) / rect.width,
+    });
+  });
+  // Restore transform
+  tableEl.style.transform = '';
+  tableEl.style.transition = '';
+}
+
+function checkHit(){
+  var opp = getOpponent();
+
+  cross.style.left=(stoppedX*100)+'%';
+  cross.style.top=(stoppedY*100)+'%';
+
+  var hit=null, minDist=999;
+  TOP_CUP_POSITIONS.forEach(function(pos){
+    if(cups[opp].indexOf(pos.i)===-1) return; // already gone
+    var dx=stoppedX-pos.fx;
+    var dy=stoppedY-pos.fy;
+    var dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist < pos.r && dist < minDist){minDist=dist;hit=pos;}
+  });
+
+  if(hit){
+    // Animate the cup element
+    var hitEl=document.querySelector('[data-side="top"][data-i="'+hit.i+'"]');
+    if(hitEl){
+      hitEl.classList.add('hit');
+      setTimeout(function(){hitEl.classList.remove('hit');hitEl.classList.add('gone');hitEl.textContent='';},500);
+    }
+    cups[opp]=cups[opp].filter(function(i){return i!==hit.i;});
+    var names=getNames();
+    resultMsg.innerHTML='<span style="color:#2ecc71">POGODAK! 🎯 '+names[opp]+' pije!</span>';
+    updateUI();
+    if(cups[opp].length===0){
+      setTimeout(function(){showWin(names[currentPlayer]);},800);
+      return;
+    }
+  } else {
+    resultMsg.innerHTML='<span style="color:#e74c3c">PROMAŠAJ! 😅</span>';
+  }
+
+  nextBtn.style.display='block';
+  phaseLabel.textContent='';
+}
+
+function nextTurn(){
+  currentPlayer=getOpponent();
+  nextBtn.style.display='none';
+  resultMsg.textContent='';
+  phaseLabel.textContent='';
+  lineX.style.display='none';
+  lineY.style.display='none';
+  cross.style.display='none';
+  throwBtn.style.display='block';
+
+  // Flip table animation
+  tableEl.classList.add('flipping');
+  setTimeout(function(){
+    tableEl.classList.remove('flipping');
+    renderCups();
+    updateUI();
+    var names=getNames();
+    phaseLabel.textContent=names[currentPlayer].toUpperCase()+', TVOJ RED!';
+  },300);
+}
+
+function showWin(name){
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('win-screen').style.display='flex';
+  document.getElementById('win-title').textContent=name.toUpperCase()+' POBIJEDIO!';
+  document.getElementById('win-sub').textContent='Protivnik pije sve preostale čaše! 🍺';
+}
+
+function restartGame(){
+  document.getElementById('win-screen').style.display='none';
+  document.getElementById('setup-screen').style.display='flex';
+}
+</script>
+</body>
+</html>

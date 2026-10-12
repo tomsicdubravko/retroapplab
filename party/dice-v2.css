@@ -1,0 +1,64 @@
+/* Kockice V2: visual layer, original game logic unchanged. */
+body.dice-v2{background:radial-gradient(ellipse at 50% 8%,rgba(95,57,139,.14),transparent 65%),#0e0e16;--dice-gold:#dec076;--dice-purple:#b59bd9;--dice-ease:cubic-bezier(.22,.68,.25,1);}
+.dice-v2 .screen,.dice-v2 #dice-screen{min-width:0;margin-left:auto;margin-right:auto;}
+.dice-v2 #game-screen,.dice-v2 #dice-screen{position:relative;isolation:isolate;width:calc(100% - 24px);max-width:560px;padding:18px 14px 24px!important;margin-top:var(--scorebar-space,18px);margin-bottom:28px;border:1px solid rgba(218,185,101,.4);border-radius:27px;background:radial-gradient(ellipse at 50% 28%,rgba(106,70,139,.19),transparent 75%),repeating-linear-gradient(35deg,rgba(255,255,255,.006) 0 1px,transparent 1px 5px),linear-gradient(150deg,#21192c,#111017 85%);box-shadow:inset 0 0 0 5px rgba(216,185,105,.025),0 18px 54px rgba(0,0,0,.35);}
+.dice-v2 #game-screen::before,.dice-v2 #dice-screen::before{content:'';position:absolute;inset:6px;border:1px solid rgba(218,185,101,.09);border-radius:21px;pointer-events:none;}
+.dice-v2 #round-label,.dice-v2 #round-label-dice{color:#b4a4c9;margin:3px 0 8px!important;font-size:.8rem;}
+.dice-v2 #phase-label{color:#c6bad3;font-size:1rem;margin:4px 0 10px;}
+.dice-v2 #number-picker{max-width:440px;padding:14px 12px;border:1px solid rgba(173,133,222,.21);background:rgba(10,8,17,.2);border-radius:18px;}
+.dice-v2 .picker-title{font-size:.68rem;color:#b3a4c8;line-height:1.5;}
+.dice-v2 .numbers-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.dice-v2 .num-btn{min-width:0;min-height:48px;border-radius:13px;background:linear-gradient(145deg,#3b2d50,#251e33);border:1px solid rgba(170,137,215,.27);font-family:'Bebas Neue',sans-serif;font-size:1.65rem;font-weight:400;letter-spacing:.03em;color:#e2d8f0;transition:transform 220ms var(--dice-ease),box-shadow 220ms var(--dice-ease),border-color 220ms var(--dice-ease);}
+.dice-v2 .num-btn:hover:not(.disabled):not(.selected){background:linear-gradient(145deg,#4b375f,#332640);border-color:#a38ac0;transform:translateY(-2px);}
+.dice-v2 .num-btn.selected{background:linear-gradient(140deg,#e6c77e,#bc9849);border-color:#f3dda2;color:#292011;box-shadow:0 0 0 2px rgba(224,190,108,.12),0 0 20px rgba(212,179,93,.25);transform:translateY(-2px);}
+.dice-v2 .num-btn.disabled{opacity:.42;}.dice-v2 .num-btn.selected.disabled{opacity:1;}
+.dice-v2 .num-btn:focus-visible,.dice-v2 .btn:focus-visible{outline:2px solid #f2d491;outline-offset:4px;}
+.dice-v2 .other-chip{padding:6px 9px;font-size:.67rem;background:rgba(0,0,0,.14);border-color:rgba(174,144,207,.16);}
+.dice-v2 .btn-gold{background:linear-gradient(135deg,rgba(218,185,101,.2),rgba(218,185,101,.08));border-color:rgba(218,185,101,.55);color:#e2c887;}
+.dice-v2 .v2-brand{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.13em;color:#c7aedf;margin-top:30px;}
+.dice-v2 #dice-results{padding:0!important;margin-top:16px!important;}
+.dice-v2 .rr-row{padding:11px 12px;background:rgba(0,0,0,.12);border-color:rgba(164,129,195,.2);}
+.dice-v2 .rr-name{overflow-wrap:anywhere;}.dice-v2 .rr-detail{font-size:.65rem;line-height:1.5;}
+.dice-v2 #sips-bar{background:rgba(17,12,24,.95);}
+.dice-v2 #drink-flash{font-size:clamp(2rem,9vw,3.5rem)!important;text-align:center;overflow-wrap:anywhere;padding:20px;}
+.dice-3d-stage{display:none;position:relative;width:100%;height:280px;border-radius:19px;overflow:hidden;border:1px solid rgba(218,185,101,.17);background:radial-gradient(ellipse at 50% 40%,#30213e,#15101e 85%);margin:12px 0 8px;}
+.webgl-ready .dice-3d-stage{display:block;}
+.dice-3d-stage canvas{display:block;width:100%;height:100%;touch-action:pan-y;}
+.webgl-ready #bot-thinking,.webgl-ready #dice-reveal-wrap{display:none!important;}
+.webgl-ready #dice-total{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;min-width:45px;text-align:center;font-size:2.8rem;color:#efce7b;text-shadow:0 0 22px rgba(212,179,93,.4);pointer-events:none;z-index:3;}
+.webgl-ready #dice-total:empty{display:none;}
+.webgl-ready #dice-total.has-total{animation:diceSumArrive 350ms var(--dice-ease) both;}
+.dice-3d-caption{display:none;text-align:center;font-size:.65rem;color:#b3a0c6;letter-spacing:.11em;line-height:1.5;margin:4px 0 6px;}
+.webgl-ready .dice-3d-caption{display:block;}
+.dice-3d-stage.exact-hit::after{content:'';position:absolute;inset:0;border:2px solid #efcf80;border-radius:inherit;background:rgba(235,195,103,.16);pointer-events:none;animation:diceHitFlash 650ms ease-out both;z-index:4;}
+@keyframes diceSumArrive{from{opacity:0;transform:translate(-50%,-50%) scale(.75)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes diceHitFlash{0%,35%{opacity:.8}18%,100%{opacity:0}}
+@media(max-width:350px){.dice-v2 #game-screen,.dice-v2 #dice-screen{padding:14px 10px 18px!important;}.dice-v2 .numbers-grid{gap:8px;}.dice-v2 .num-btn{font-size:1.4rem;}.dice-3d-stage{height:235px;}.dice-v2 .drink-badge,.dice-v2 .safe-badge{font-size:.75rem;padding:4px 8px;}.dice-v2 .rr-detail{font-size:.59rem;}}
+@media(prefers-reduced-motion:reduce){.dice-v2 .num-btn{transition:none;}.webgl-ready #dice-total.has-total,.dice-3d-stage.exact-hit::after{animation:none;}.dice-3d-stage.exact-hit::after{opacity:0;}}
+
+/* Keep presentation hidden until both meshes have reached their resting pose. */
+.webgl-ready.dice-v2-rolling #dice-total,.webgl-ready.dice-v2-rolling #dice-results{visibility:hidden!important;}
+
+/* Waiting is a dedicated round introduction; the original KRENI handler stays intact. */
+.dice-v2 #game-screen.round-waiting #number-picker,
+.dice-v2 #game-screen.round-waiting #others-row,
+.dice-v2 #game-screen.round-waiting #phase-label{display:none!important;}
+.dice-round-ready{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;max-width:400px;flex:1;padding:36px 6px;text-align:center;}
+.dice-round-ready[hidden],.round-host-wait[hidden]{display:none;}
+.ready-dice-icon{width:112px;height:94px;filter:drop-shadow(0 0 20px #d8b97024);}
+.dice-round-ready h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.7rem,7vw,2.2rem);letter-spacing:.08em;font-weight:400;color:#edd39a;line-height:1.15;}
+.dice-round-ready p{max-width:290px;font-size:.83rem;line-height:1.7;color:#b5a8c4;}
+.dice-v2 #round-ready #kreni-btn{width:100%;max-width:290px;min-height:58px;margin:10px 0 0;border-radius:16px;background:linear-gradient(135deg,#efd596,#bc9447);border:1px solid #f4dca0;color:#2a2113;box-shadow:inset 0 1px #fff7,0 6px 24px #d8b97022;font-size:1.5rem;letter-spacing:.12em;}
+.round-host-wait{margin-top:14px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;color:#d1bb8a;}
+
+/* Illustrative dice pairs never participate in roll or selection logic. */
+.dice-v2 .picker-hint{font-size:.62rem;line-height:1.5;color:#9f90b5;text-align:center;margin:5px 0 13px;}
+.dice-v2 .num-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:92px;padding:10px 3px 8px;box-shadow:inset 0 1px 0 #ffffff0a,0 4px 9px #0002;}
+.sum-dice-pair{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;}
+.sum-dice-pair svg{width:26px!important;height:26px!important;max-width:calc((100% - 4px)/2);flex-shrink:1;border-radius:5px!important;filter:drop-shadow(0 2px 2px #0005);}
+.sum-number{font-family:'Bebas Neue',sans-serif;font-size:1.85rem;line-height:1;letter-spacing:.04em;}
+.dice-v2 .num-btn.selected{box-shadow:inset 0 1px #fff6,0 0 0 2px #e0be6c22,0 0 20px #d4b35d40;}
+.dice-v2 .num-btn.selected .sum-dice-pair svg rect{fill:#fff7de;stroke:#745728;}
+@media(max-width:350px){.dice-v2 #number-picker{padding:12px 8px;}.dice-v2 .num-btn{min-height:86px;padding:9px 2px 7px;gap:8px;}.sum-dice-pair{gap:3px;}.sum-dice-pair svg{width:23px!important;height:23px!important;max-width:calc((100% - 3px)/2);}.sum-number{font-size:1.65rem;}}
+
+.dice-v2 .num-btn{aspect-ratio:auto;width:100%;}

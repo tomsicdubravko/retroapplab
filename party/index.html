@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="hr" style="background:#0e0e16">
+<head>
+<meta charset="UTF-8">
+<script>
+if(sessionStorage.getItem('splashEntry')==='1'){
+  document.documentElement.classList.add('from-splash');
+  sessionStorage.removeItem('splashEntry');
+}
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0e0e16">
+<title>Party Games</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+:root{--bg:#0e0e16;--gold:#d4b35d;--ease:cubic-bezier(.22,.68,.25,1);}
+*{margin:0;padding:0;box-sizing:border-box;}
+[hidden]{display:none!important;}
+html,body{background:var(--bg);color:#fff;font-family:'Inter',sans-serif;min-height:100vh;}
+body{display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse at 50% 0,rgba(200,168,75,.055),transparent 520px),var(--bg);}
+button,input{font:inherit;}
+button{touch-action:manipulation;}
+button:focus-visible{outline:2px solid #f1d990;outline-offset:5px;}
+.svg-defs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;}
+#name-screen{display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px;padding:70px 24px 40px;}
+#game-screen{display:none;flex-direction:column;width:100%;max-width:1040px;padding:28px 24px 40px;}
+.brand{display:flex;align-items:center;gap:10px;color:var(--gold);}
+.brand-mark{display:grid;place-items:center;width:32px;height:43px;border-radius:6px;background:linear-gradient(140deg,#ecd083,#ad872e);border:1px solid rgba(255,229,148,.4);box-shadow:0 0 18px rgba(212,179,93,.09);flex-shrink:0;}
+.brand-mark svg{width:29px;height:38px;}
+.brand-name{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.13em;line-height:1;}
+.brand-edition{font-size:.51rem;letter-spacing:.18em;color:rgba(212,179,93,.55);margin-top:5px;}
+#name-screen .brand{margin-bottom:34px;}
+.title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;font-weight:400;letter-spacing:.12em;color:var(--gold);margin-bottom:5px;text-align:center;}
+.sub{font-size:.76rem;color:#858590;margin-bottom:28px;text-align:center;line-height:1.5;}
+.inp{width:100%;background:#1e1e2e;border:1px solid rgba(255,255,255,.18);color:#fff;font-size:1rem;padding:13px 16px;border-radius:10px;outline:none;margin-bottom:8px;-webkit-text-fill-color:#fff;}
+.inp:focus{border-color:var(--gold);}
+.inp::placeholder{color:#70707e;-webkit-text-fill-color:#70707e;}
+.err{font-size:.75rem;color:#ef7669;min-height:18px;margin-bottom:6px;text-align:center;}
+.btn-gold{width:100%;padding:14px;border-radius:12px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.1em;color:#211a0b;background:linear-gradient(135deg,#ecd083,#c8a344);border:1px solid #efda9d;box-shadow:0 5px 22px rgba(200,168,75,.16);transition:transform 320ms var(--ease);}
+.btn-gold:hover{transform:translateY(-2px);}
+.menu-header{position:relative;width:100%;margin-bottom:25px;}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px;}
+.edition-pill{font-size:.58rem;letter-spacing:.12em;color:#bda568;border:1px solid rgba(212,179,93,.18);background:rgba(212,179,93,.05);border-radius:20px;padding:6px 9px;white-space:nowrap;}
+.welcome{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:2.55rem;line-height:1.1;letter-spacing:.045em;margin-bottom:15px;}
+.profile{display:flex;align-items:center;gap:11px;}
+.avatar{display:grid;place-items:center;width:43px;height:43px;border-radius:14px;flex-shrink:0;color:#ead594;background:linear-gradient(140deg,#463b23,#252117);border:1px solid rgba(212,179,93,.25);font-size:.88rem;font-weight:700;letter-spacing:.02em;}
+.profile-label{color:#7f7f8f;font-size:.64rem;margin-bottom:4px;}
+.player-name{font-size:1rem;font-weight:600;overflow-wrap:anywhere;}
+.profile-dot{width:6px;height:6px;display:inline-block;border-radius:50%;background:#72b493;box-shadow:0 0 7px rgba(114,180,147,.3);margin-right:5px;}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;}
+.section-heading h2{font-size:.67rem;font-weight:600;letter-spacing:.13em;color:#9a9aa6;}
+.section-heading .section-note{font-size:.61rem;color:#626273;}
+.games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;}
+.game-card{--accent:#e4b260;--edge:rgba(186,76,69,.38);--tile:#361b22;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;text-align:left;width:100%;min-width:0;min-height:208px;padding:16px;border-radius:19px;overflow:hidden;cursor:pointer;border:1px solid var(--edge);color:#fff;background:radial-gradient(circle at 90% 8%,rgba(220,92,73,.15),transparent 62%),linear-gradient(150deg,var(--tile),#17151e);box-shadow:0 10px 22px rgba(0,0,0,.12);transition:transform 320ms var(--ease),border-color 320ms var(--ease),box-shadow 320ms var(--ease);}
+.game-card::after{content:'';position:absolute;inset:auto -35px -75px auto;width:160px;height:160px;border-radius:50%;border:1px solid var(--edge);opacity:.22;pointer-events:none;}
+.game-card:hover:not(:disabled){transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 26px rgba(0,0,0,.3);}
+.game-card:active:not(:disabled){transform:translateY(-1px);}
+.game-card.dice{--accent:#c1a4ef;--edge:rgba(164,121,230,.36);--tile:#302143;background:radial-gradient(circle at 90% 8%,rgba(159,103,220,.18),transparent 62%),linear-gradient(150deg,var(--tile),#191521);}
+.game-card.roulette{--accent:#e5c06d;--edge:rgba(212,179,93,.35);--tile:#352b1d;background:radial-gradient(circle at 90% 8%,rgba(216,89,70,.15),transparent 64%),linear-gradient(150deg,var(--tile),#21171b);}
+.game-card.pong{--accent:#ddc17c;--edge:rgba(178,155,89,.4);--tile:#203529;background:radial-gradient(circle at 90% 8%,rgba(74,135,89,.17),transparent 64%),linear-gradient(150deg,var(--tile),#121c17);}
+.game-card.soon{--accent:#777584;--edge:rgba(255,255,255,.08);--tile:#1b1b25;background:linear-gradient(150deg,var(--tile),#14141d);cursor:not-allowed;color:#777584;box-shadow:none;}
+.game-card.soon .game-art{opacity:.3;filter:grayscale(1);}
+.game-card.soon .game-desc{color:#646472;}
+.game-card.soon .game-name{color:#92909d;}
+.game-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:6px;}
+.game-level,.soon-tag{font-size:.53rem;font-weight:600;letter-spacing:.1em;color:var(--accent);padding:4px 7px;border-radius:20px;border:1px solid var(--edge);background:rgba(0,0,0,.12);}
+.game-art{position:absolute;top:31px;right:13px;width:76px;height:76px;transform:rotate(-5deg);transition:transform 420ms var(--ease);pointer-events:none;}
+.game-card:hover:not(:disabled) .game-art{transform:translateY(-3px) rotate(1deg);}
+.game-copy{position:relative;z-index:1;margin-top:72px;width:100%;}
+.game-name{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:1.65rem;letter-spacing:.07em;line-height:1.1;color:#f4edf0;}
+.game-desc{font-size:.66rem;line-height:1.5;min-height:4.5em;color:#c4aeb5;margin-top:5px;max-width:190px;}
+.dice .game-desc{color:#bcb0cd;}.roulette .game-desc{color:#c6b698;}
+.game-footer{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:11px;color:var(--accent);font-size:.57rem;letter-spacing:.035em;}
+.game-arrow{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.05);font-size:1.1rem;line-height:1;}
+.sips-section{width:100%;margin-top:30px;border-top:1px solid rgba(255,255,255,.07);padding-top:22px;}
+.results-sub{font-size:.65rem;color:#696978;margin-top:-4px;margin-bottom:13px;}
+.sips-chips{display:flex;flex-direction:column;gap:7px;list-style:none;}
+.rank-row{display:flex;align-items:center;gap:11px;min-width:0;min-height:62px;padding:11px 13px;border:1px solid rgba(255,255,255,.06);border-radius:13px;background:rgba(255,255,255,.025);}
+.rank-row.leader{border-color:rgba(212,179,93,.36);background:linear-gradient(110deg,rgba(212,179,93,.12),rgba(212,179,93,.025));box-shadow:inset 3px 0 0 #d4b35d;}
+.rank-number{width:16px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:#646474;flex-shrink:0;}
+.leader .rank-number{color:var(--gold);}
+.rank-row .avatar{width:34px;height:34px;border-radius:11px;font-size:.7rem;}
+.rank-player{display:flex;align-items:center;gap:7px;flex:1;min-width:0;}
+.rank-name{font-size:.78rem;color:#d6d5de;overflow-wrap:anywhere;min-width:0;}
+.you-tag{font-size:.5rem;font-weight:600;letter-spacing:.1em;padding:3px 5px;border-radius:5px;color:#a99cc5;background:rgba(159,135,206,.1);flex-shrink:0;}
+.rank-score{text-align:right;flex-shrink:0;min-width:44px;}
+.sip-count{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1;color:#d5c8a0;}
+.leader .sip-count{color:var(--gold);}
+.sip-unit{display:block;font-size:.53rem;color:#777580;margin-top:3px;}
+.crown{width:17px;height:17px;color:var(--gold);flex-shrink:0;}
+.empty-results{padding:21px 18px;border:1px dashed rgba(212,179,93,.15);border-radius:14px;text-align:center;background:rgba(212,179,93,.015);}
+.empty-results p{font-size:.8rem;color:#a99d7e;margin-bottom:6px;}.empty-results span{font-size:.66rem;color:#6e6c7c;line-height:1.5;}
+.reset-results{display:block;margin:15px auto 0;padding:7px 10px;border:0;background:none;cursor:pointer;color:#747383;font-size:.65rem;}
+.reset-results:hover{color:#b8b3bf;}
+.menu-footer{text-align:center;font-size:.55rem;letter-spacing:.14em;color:#464554;margin-top:28px;}
+.from-splash #name-screen,.from-splash #game-screen{animation:menuArrival 420ms var(--ease) both;}
+@keyframes menuArrival{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:760px){#game-screen{padding:35px 34px 50px;}.header-top{margin-bottom:30px;}.welcome{font-size:3.2rem;}.profile{position:absolute;right:0;bottom:5px;}.games-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}.game-card{min-height:255px;padding:19px;}.game-art{width:100px;height:100px;top:42px;right:22px;}.game-copy{margin-top:106px;}.game-name{font-size:1.85rem;}.game-desc{font-size:.7rem;}.sips-section{margin-top:35px;max-width:620px;align-self:center;}.menu-footer{margin-top:34px;}}
+@media(max-width:350px){#game-screen{padding:23px 16px 32px;}.games-grid{gap:10px;}.game-card{padding:13px;min-height:213px;}.game-name{font-size:1.5rem;}.game-desc{font-size:.63rem;}.game-art{width:66px;height:66px;right:8px;top:34px;}.edition-pill{font-size:.51rem;}.welcome{font-size:2.3rem;}.rank-row{gap:8px;padding:10px;}.crown{display:none;}}
+@media(prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important;}.game-card:hover:not(:disabled),.game-card:hover:not(:disabled) .game-art{transform:none;}}
+</style>
+<link rel="stylesheet" href="party-author.css">
+</head>
+<body>
+<svg class="svg-defs" aria-hidden="true"><defs>
+<symbol id="logo-symbol" viewBox="0 0 120 150">
+          <g fill="none" stroke="#33270f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="60" cy="64" r="34"/>
+            <circle cx="60" cy="64" r="25" stroke-width="1.4"/>
+            <path d="M60 30v9M84 40l-6 7M94 64h-9M84 88l-7-6M60 98v-9M36 88l6-6M26 64h9M36 40l6 7"/>
+            <path d="M54 23l6 7 6-7" fill="#33270f"/>
+          </g>
+          <path d="M60 44c-5 7-16 13-16 22a9 9 0 0 0 16 6 9 9 0 0 0 16-6c0-9-11-15-16-22zm-3 26c0 8-1 13-6 17h18c-5-4-6-9-6-17z" fill="#33270f"/>
+          <g transform="rotate(-9 85 100)">
+            <rect x="70" y="84" width="30" height="30" rx="6" fill="#d9b963" stroke="#33270f" stroke-width="2.4"/>
+            <g fill="#33270f"><circle cx="78" cy="92" r="2.2"/><circle cx="92" cy="92" r="2.2"/><circle cx="85" cy="99" r="2.2"/><circle cx="78" cy="106" r="2.2"/><circle cx="92" cy="106" r="2.2"/></g>
+          </g>
+          <g stroke="#33270f" stroke-width="2.4" stroke-linejoin="round">
+            <path d="M22 89h26l-4 26H26z" fill="#d9b963"/>
+            <path d="M25 98h20" fill="none"/>
+            <circle cx="36" cy="79" r="4" fill="#33270f" stroke="none"/>
+          </g>
+          <path d="M19 24v-9h5a4 4 0 0 1 0 8h-5" fill="none" stroke="#33270f" stroke-width="2" stroke-linecap="round"/>
+          <path d="M96 130v-9h5a4 4 0 0 1 0 8h-5" fill="none" stroke="#33270f" stroke-width="2" stroke-linecap="round" transform="rotate(180 101 124)"/>
+        </symbol>
+<symbol id="cards-art" viewBox="0 0 100 100">
+  <rect x="18" y="13" width="47" height="68" rx="8" fill="#8e333d" stroke="#ca7b69" stroke-width="1.5" transform="rotate(-15 42 47)"/>
+  <rect x="36" y="19" width="47" height="68" rx="8" fill="#e9cc83" stroke="#f7dfad" stroke-width="1.5" transform="rotate(10 60 53)"/>
+  <path d="M61 35c-4 5-13 10-13 17a7 7 0 0 0 13 5 7 7 0 0 0 13-5c0-7-9-12-13-17zm-2 19c0 6-1 9-4 12h12c-3-3-4-6-4-12z" fill="#55202c"/>
+  <path d="M43 29l3 4-3 4-3-4zM75 73l3 4-3 4-3-4z" fill="#55202c"/>
+</symbol>
+<symbol id="dice-art" viewBox="0 0 100 100">
+  <g transform="rotate(-17 36 42)"><rect x="13" y="17" width="45" height="45" rx="10" fill="#7953aa" stroke="#b292de" stroke-width="1.5"/><g fill="#e3d4f8"><circle cx="25" cy="29" r="3"/><circle cx="47" cy="51" r="3"/><circle cx="36" cy="40" r="3"/></g></g>
+  <g transform="rotate(12 63 61)"><rect x="40" y="38" width="46" height="46" rx="10" fill="#c6a9ef" stroke="#e4d1fd" stroke-width="1.5"/><g fill="#50366d"><circle cx="52" cy="50" r="3"/><circle cx="74" cy="50" r="3"/><circle cx="63" cy="61" r="3"/><circle cx="52" cy="72" r="3"/><circle cx="74" cy="72" r="3"/></g></g>
+</symbol>
+<symbol id="roulette-art" viewBox="0 0 100 100">
+  <circle cx="50" cy="54" r="36" fill="#6e2c30" stroke="#d4b35d" stroke-width="3"/>
+  <g fill="#b99648"><path d="M50 54V22a32 32 0 0 1 23 9zM50 54h32a32 32 0 0 1-9 23zM50 54v32a32 32 0 0 1-23-9zM50 54H18a32 32 0 0 1 9-23z"/></g>
+  <circle cx="50" cy="54" r="25" fill="none" stroke="#e8cc85" stroke-width="1.2"/>
+  <circle cx="50" cy="54" r="9" fill="#281e1b" stroke="#e0bd69" stroke-width="2"/>
+  <path d="M44 7h12l-6 12z" fill="#efce78"/><circle cx="50" cy="54" r="2.5" fill="#e0bd69"/>
+</symbol>
+<symbol id="pong-art" viewBox="0 0 100 100">
+  <g fill="#6b626b" stroke="#a897a0" stroke-width="1.5" stroke-linejoin="round"><path d="M18 42h25l-4 34H22zM43 32h25l-4 34H47zM57 51h25l-4 34H61z"/></g>
+  <g fill="none" stroke="#b6a5ae" stroke-width="1.4"><path d="M21 51h19M46 41h19M60 60h19"/></g><circle cx="29" cy="23" r="7" fill="#c4bbc4"/>
+</symbol>
+<symbol id="crown-art" viewBox="0 0 24 24"><path d="M3 7l5 4 4-7 4 7 5-4-2 12H5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+</defs></svg>
+<section id="name-screen" aria-labelledby="name-title">
+  <div class="brand"><div class="brand-mark"><svg aria-hidden="true"><use href="#logo-symbol"/></svg></div><div><div class="brand-name">PARTY GAMES</div><div class="brand-edition">PARTY EDITION</div></div></div>
+  <h1 id="name-title" class="title">KAKO SE ZOVEŠ?</h1>
+  <p class="sub">Ime je obavezno za igru</p>
+  <input id="name-inp" class="inp" type="text" aria-label="Tvoje ime" placeholder="Upiši ime..." maxlength="16" onkeydown="if(event.key==='Enter')submitName()" autocomplete="nickname"/>
+  <div class="err" id="name-err" role="status"></div>
+  <button class="btn-gold" onclick="submitName()">DALJE →</button>
+</section>
+<main id="game-screen" aria-labelledby="welcome-title">
+  <header class="menu-header">
+    <div class="header-top">
+      <div class="brand"><div class="brand-mark"><svg aria-hidden="true"><use href="#logo-symbol"/></svg></div><div><div class="brand-name">PARTY GAMES</div><div class="brand-edition">PARTY EDITION</div></div></div>
+      <span class="edition-pill">SAMO ZA 18+</span>
+    </div>
+    <h1 id="welcome-title" class="welcome">Spreman za igru?</h1>
+    <div class="profile"><div class="avatar" id="profile-avatar" aria-hidden="true">?</div><div><div class="profile-label"><span class="profile-dot"></span>IGRAŠ KAO</div><div class="player-name" id="pname">–</div></div></div>
+  </header>
+  <div class="section-heading"><h2>ODABERI SVOJU IGRU</h2><span class="section-note">Neka večer počne.</span></div>
+  <div class="games-grid">
+    <button class="game-card cards" onclick="go('karte-v2.html')" aria-label="Karte — pokreni igru">
+      <div class="game-top"><span class="game-level">LAGANO</span></div>
+      <svg class="game-art" aria-hidden="true"><use href="#cards-art"/></svg>
+      <div class="game-copy"><h3 class="game-name">KARTE</h3><p class="game-desc">Pogodi dvije karte bota. Tko pogodi više — pije!</p><div class="game-footer"><span>Lokalno · Online</span><span class="game-arrow" aria-hidden="true">›</span></div></div>
+    </button>
+    <button class="game-card dice" onclick="go('kockice-v2.html')" aria-label="Kockice — pokreni igru">
+      <div class="game-top"><span class="game-level">SREDNJE</span></div>
+      <svg class="game-art" aria-hidden="true"><use href="#dice-art"/></svg>
+      <div class="game-copy"><h3 class="game-name">KOCKICE</h3><p class="game-desc">Odaberi broj od 2 do 12. Pogodak znači dupli gutljaj.</p><div class="game-footer"><span>Lokalno · Online</span><span class="game-arrow" aria-hidden="true">›</span></div></div>
+    </button>
+    <button class="game-card roulette" onclick="go('rulet.html')" aria-label="Rulet — pokreni igru">
+      <div class="game-top"><span class="game-level">LAGANO</span></div>
+      <svg class="game-art" aria-hidden="true"><use href="#roulette-art"/></svg>
+      <div class="game-copy"><h3 class="game-name">RULET</h3><p class="game-desc">Zavrti kotač. Koga odabere — pije ili bira tko pije.</p><div class="game-footer"><span>Lokalno · Online</span><span class="game-arrow" aria-hidden="true">›</span></div></div>
+    </button>
+    <button class="game-card pong" onclick="go('beerpong-v2.html')" aria-label="Igraj Beer Pong">
+      <div class="game-top"><span class="game-level">1 NA 1 · 2 NA 2</span></div>
+      <svg class="game-art" aria-hidden="true"><use href="#pong-art"/></svg>
+      <div class="game-copy"><h3 class="game-name">BEER PONG</h3><p class="game-desc">Pogodi čašu. Protivnik pije. Klasik za svaki party.</p><div class="game-footer"><span>Lokalno · Bot · Online</span><span class="game-arrow" aria-hidden="true">›</span></div></div>
+    </button>
+  </div>
+  <section class="sips-section" id="sips-section" aria-labelledby="results-title">
+    <div class="section-heading"><h2 id="results-title">VEČERAŠNJI REZULTATI</h2><svg class="crown" aria-hidden="true"><use href="#crown-art"/></svg></div>
+    <p class="results-sub" id="results-sub">Poredak po broju gutljaja</p>
+    <ol class="sips-chips" id="sips-chips" aria-label="Ljestvica gutljaja"></ol>
+    <div class="empty-results" id="empty-results"><p>Večer tek počinje.</p><span>Zaigraj — prvi gutljaji stižu na ljestvicu.</span></div>
+    <button class="reset-results" id="reset-results" onclick="resetSips()" hidden>↺ Resetiraj rezultate</button>
+  </section>
+  <footer class="menu-footer">IGRE. PIĆE. PRIJATELJI. PROBLEMI.<div class="pg-author">CRAFTED BY <a href="https://retroapplab.com/" target="_blank" rel="noopener noreferrer">RETROAPPLAB</a><span class="pg-author-tagline">PIXELS · CODE · PLAY</span></div></footer>
+</main>
+<script>
+if(sessionStorage.getItem('ageOk')!=='1'){window.location.replace('splash.html');}
+var playerName=sessionStorage.getItem('playerName')||'';
+var totalSips=readTotals();
+function readTotals(){
+  var stored;
+  try{stored=JSON.parse(sessionStorage.getItem('totalSips')||'{}');}catch(e){stored={};}
+  if(!stored||typeof stored!=='object'||Array.isArray(stored))return {};
+  var counts=Object.create(null);
+  Object.keys(stored).forEach(function(name){var n=Number(stored[name]);if(Number.isFinite(n)&&n>=0)counts[name]=Math.floor(n);});
+  return counts;
+}
+function initials(name){var words=name.trim().split(/\s+/);return (Array.from(words[0]||'?')[0]+(words.length>1?Array.from(words[words.length-1])[0]:'')).toLocaleUpperCase('hr');}
+function styleAvatar(avatar,name){
+  var shades=[['#463b23','#252117','#ead594'],['#38304b','#211c2c','#cbb5ed'],['#493038','#291c23','#e2b0bb'],['#2e4140','#1a2828','#aad2c8']];
+  var hash=Array.from(name).reduce(function(n,c){return n+c.codePointAt(0);},0),colors=shades[hash%shades.length];
+  avatar.textContent=initials(name);avatar.style.background='linear-gradient(140deg,'+colors[0]+','+colors[1]+')';avatar.style.color=colors[2];
+}
+if(playerName){document.getElementById('name-inp').value=playerName;showGameScreen();}
+function submitName(){
+  var val=document.getElementById('name-inp').value.trim();
+  if(!val){document.getElementById('name-err').textContent='Upiši ime!';return;}
+  playerName=val;sessionStorage.setItem('playerName',val);showGameScreen();
+}
+function showGameScreen(){
+  document.getElementById('name-screen').style.display='none';document.getElementById('game-screen').style.display='flex';
+  document.getElementById('pname').textContent=playerName;styleAvatar(document.getElementById('profile-avatar'),playerName);renderSips();
+}
+function go(page){sessionStorage.setItem('playerName',playerName);window.location.href=page;}
+function renderSips(){
+  totalSips=readTotals();
+  var keys=Object.keys(totalSips),hasScores=keys.some(function(name){return totalSips[name]>0;});
+  var list=document.getElementById('sips-chips');list.replaceChildren();
+  document.getElementById('empty-results').hidden=hasScores;
+  document.getElementById('results-sub').hidden=!hasScores;
+  document.getElementById('reset-results').hidden=!hasScores;
+  if(!hasScores)return;
+  keys.sort(function(a,b){return totalSips[b]-totalSips[a]||a.localeCompare(b,'hr');});
+  keys.forEach(function(name,index){
+    var n=totalSips[name],row=document.createElement('li');row.className='rank-row'+(index===0?' leader':'');
+    var rank=document.createElement('span');rank.className='rank-number';rank.textContent=index+1;
+    var avatar=document.createElement('div');avatar.className='avatar';avatar.setAttribute('aria-hidden','true');styleAvatar(avatar,name);
+    var player=document.createElement('div');player.className='rank-player';
+    var label=document.createElement('span');label.className='rank-name';label.textContent=name;player.appendChild(label);
+    if(name===playerName){var you=document.createElement('span');you.className='you-tag';you.textContent='TI';player.appendChild(you);}
+    var score=document.createElement('div');score.className='rank-score';
+    var count=document.createElement('span');count.className='sip-count';count.textContent=n;
+    var unit=document.createElement('span');unit.className='sip-unit';unit.textContent=sipUnit(n);score.append(count,unit);
+    row.append(rank,avatar,player);
+    if(index===0){var crown=document.createElementNS('http://www.w3.org/2000/svg','svg');crown.classList.add('crown');crown.setAttribute('aria-hidden','true');var use=document.createElementNS('http://www.w3.org/2000/svg','use');use.setAttribute('href','#crown-art');crown.appendChild(use);row.appendChild(crown);}
+    row.appendChild(score);list.appendChild(row);
+  });
+}
+function sipUnit(n){return n%10===1&&n%100!==11?'gutljaj':'gutljaja';}
+function resetSips(){totalSips={};sessionStorage.setItem('totalSips','{}');renderSips();}
+window.addEventListener('pageshow',function(event){if(event.persisted){if(sessionStorage.getItem('ageOk')!=='1'){window.location.replace('splash.html');return;}playerName=sessionStorage.getItem('playerName')||'';if(playerName)showGameScreen();}});
+</script>
+</body>
+</html>
+
