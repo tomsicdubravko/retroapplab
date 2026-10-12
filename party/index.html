@@ -98,6 +98,22 @@ button:focus-visible{outline:2px solid #f1d990;outline-offset:5px;}
 @media(min-width:760px){#game-screen{padding:35px 34px 50px;}.header-top{margin-bottom:30px;}.welcome{font-size:3.2rem;}.profile{position:absolute;right:0;bottom:5px;}.games-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}.game-card{min-height:255px;padding:19px;}.game-art{width:100px;height:100px;top:42px;right:22px;}.game-copy{margin-top:106px;}.game-name{font-size:1.85rem;}.game-desc{font-size:.7rem;}.sips-section{margin-top:35px;max-width:620px;align-self:center;}.menu-footer{margin-top:34px;}}
 @media(max-width:350px){#game-screen{padding:23px 16px 32px;}.games-grid{gap:10px;}.game-card{padding:13px;min-height:213px;}.game-name{font-size:1.5rem;}.game-desc{font-size:.63rem;}.game-art{width:66px;height:66px;right:8px;top:34px;}.edition-pill{font-size:.51rem;}.welcome{font-size:2.3rem;}.rank-row{gap:8px;padding:10px;}.crown{display:none;}}
 @media(prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important;}.game-card:hover:not(:disabled),.game-card:hover:not(:disabled) .game-art{transform:none;}}
+/* Čitljivost: samo veličine, kontrast i razmaci tekstova; izgled kartica ostaje isti. */
+.game-desc,.dice .game-desc,.roulette .game-desc{font-size:13px;line-height:1.5;color:#c5c0cb;}
+.game-card.soon .game-desc{color:#646472;}
+.game-footer{gap:8px;font-size:11.5px;font-weight:600;line-height:1.35;letter-spacing:.03em;margin-top:12px;filter:brightness(1.12);}
+.section-heading h2{font-size:12px;color:#b9b6c4;}
+.section-heading .section-note{font-size:11.5px;color:#918fa0;}
+.profile-label{font-size:11.5px;color:#a6a3b4;}
+.results-sub{font-size:12px;color:#9a97a8;}
+.rank-name{font-size:14px;color:#e0dfe7;}
+.you-tag{font-size:10px;color:#bcb0d6;}
+.sip-unit{font-size:10.5px;color:#a19eab;}
+.empty-results p{font-size:14px;color:#c4b58f;}.empty-results span{font-size:12px;color:#9d9aab;}
+.reset-results{font-size:12px;color:#9c99aa;}
+.menu-footer{font-size:11px;color:#86849a;}
+.menu-footer .pg-author{font-size:11px;color:#c8b483;}.menu-footer .pg-author a{color:#d8c08b;}.menu-footer .pg-author-tagline{font-size:11px;color:#b3a27f;}
+@media(min-width:760px){.game-desc,.dice .game-desc,.roulette .game-desc{font-size:14px;}}
 </style>
 <link rel="stylesheet" href="party-author.css">
 </head>
