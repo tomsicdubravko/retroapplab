@@ -541,7 +541,11 @@
     box-shadow: 0 0 22px rgba(245, 158, 11, 0.12);
   }
   .featured-tool.ft-zr .ft-badge { color: var(--neon-gold); border-color: var(--neon-gold); }
-  .featured-tool.ft-zr h4 { font-size: 1.25rem; margin-bottom: 4px; }
+  .featured-tool.ft-zr h3 { font-size: 1.2rem; color: #fff; margin-bottom: 6px; }
+  .featured-tool.ft-zr { grid-template-areas: "video main" "seo main"; grid-template-rows: auto 1fr; }
+  .ft-zr .ft-zr-video { grid-area: video; }
+  .ft-zr .ft-zr-main { grid-area: main; }
+  .ft-zr-seo { grid-area: seo; font-size: 0.8rem; line-height: 1.6; color: var(--text-muted); }
   .ft-zr-sub { font-size: 0.92rem; color: var(--neon-gold); font-weight: 600; margin-bottom: 10px; }
   .ft-zr-desc { font-size: 0.85rem; color: var(--text-muted); }
   .ft-zr-video { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #000; align-self: start; }
@@ -556,7 +560,7 @@
   .ft-zr-login { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
   .ft-zr-login:hover { color: var(--neon-gold); text-decoration: underline; }
   @media (max-width: 840px) {
-    .featured-tool.ft-zr { grid-template-columns: 1fr; }
+    .featured-tool.ft-zr { grid-template-columns: 1fr; grid-template-areas: "video" "main" "seo"; grid-template-rows: auto; }
   }
 
   /* KONTAKT */
@@ -852,8 +856,7 @@
     <div class="featured-content">
       <span class="ft-badge fc-zr-badge">NOVO</span>
       <h3>Završni račun</h3>
-      <p class="ft-zr-sub">Od bruto bilance do FINA GFI-POD obrasca u par klikova.</p>
-      <p>Učita prošlogodišnji GFI i bruto bilancu, složi Bilancu, RDG i Dodatne podatke, izračuna porez na dobit, članarinu TZ i temeljnicu zaključnih knjiženja, provjeri FINA kontrole i popuni originalni FINA obrazac te XML za ePoreznu. Podaci ostaju na Vašem računalu.</p>
+      <p>Završni račun za knjigovođe: od bruto bilance do FINA GFI-POD obrasca u par klikova. Bilanca, RDG, porez na dobit, članarina TZ, odluke, bilješke i FINA kontrole.</p>
       <div class="ft-zr-actions">
         <a class="ft-zr-btn" href="/zavrsni/?demo=1">Isprobaj demo</a>
         <a class="ft-zr-btn" href="#kontakt">Zatraži licencu</a>
@@ -1089,9 +1092,9 @@
         <div class="ft-zr-video">
           <iframe src="https://www.youtube-nocookie.com/embed/qfDws6e1jKw?rel=0" title="Završni račun – prikaz aplikacije" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
-        <div>
+        <div class="ft-zr-main">
           <span class="ft-badge">NOVO</span>
-          <h4>Završni račun</h4>
+          <h3>Završni račun – GFI-POD za knjigovođe</h3>
           <p class="ft-zr-sub">Od bruto bilance do FINA GFI-POD obrasca u par klikova.</p>
           <p class="ft-zr-desc">Aplikacija za knjigovođe: učita prošlogodišnji GFI i bruto bilancu, složi Bilancu, RDG i Dodatne podatke, izračuna porez na dobit, članarinu TZ i temeljnicu zaključnih knjiženja, provjeri FINA kontrole i popuni originalni FINA obrazac te XML za ePoreznu. Podaci ostaju na Vašem računalu.</p>
           <div class="ft-zr-actions">
@@ -1100,6 +1103,7 @@
             <a class="ft-zr-login" href="/zavrsni/">Prijava za korisnike →</a>
           </div>
         </div>
+        <p class="ft-zr-seo">Završni račun je web aplikacija za knjigovodstvene servise. Iz prošlogodišnjeg GFI-POD obrasca i bruto bilance automatski priprema Bilancu, Račun dobiti i gubitka, Dodatne podatke, prijavu poreza na dobit (PD), obrazac TZ 1, temeljnicu zaključnih knjiženja, odluke o utvrđivanju i raspodjeli dobiti te bilješke uz financijske izvještaje. Prije predaje provjerava sve FINA kontrole, a na kraju popunjava originalni FINA GFI-POD obrazac i izrađuje XML za ePoreznu. Podaci ostaju na računalu korisnika.</p>
       </div>
 
       <div class="featured-tool">
