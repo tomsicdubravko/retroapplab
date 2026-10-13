@@ -98,6 +98,7 @@ function animate(now){
 }
 function updateHitStreak(){var indicator=document.getElementById('hit-streak');indicator.textContent=hitStreak>=4?'NEZAUSTAVLJIV! 🔥':hitStreak>=2?hitStreak+' POGOTKA ZAREDOM!':'';indicator.hidden=hitStreak<2;}
 function startGame(){
+  beerPongAudio.reset();
   gameSerial++;activeShotId=0;resolvedShotId=0;lastShotHit=false;hitStreak=0;updateHitStreak();throwBtn.textContent='BACI 🏓';
   clearTimeout(winTimer);p1Name=document.getElementById('p1-name').value.trim()||'Igrač 1';p2Name=document.getElementById('p2-name').value.trim()||'Igrač 2';cups=[[0,1,2,3,4,5],[0,1,2,3,4,5]];currentPlayer=0;phase='idle';shot=null;turnTween=null;
   document.getElementById('setup-screen').style.display='none';document.getElementById('game-screen').style.display='flex';document.getElementById('win-screen').style.display='none';document.getElementById('p1-bar-name').textContent=p1Name;document.getElementById('p2-bar-name').textContent=p2Name;
@@ -126,7 +127,7 @@ function checkHit(){
   shot={id:activeShotId,game:gameSerial,startTime:performance.now(),start:start,end:end,hit:hit,opponent:opp,player:currentPlayer,record:hit?cupMeshes.find(function(c){return c.player===opp&&c.index===hit.i;}):null};ball.visible=true;ball.position.copy(start);lastFrame=performance.now();requestFrame();
 }
 function updateShot(now){
-  var s=shot,elapsed=now-s.startTime,t=Math.min(elapsed/1050,1);ball.rotation.x=elapsed*.012;ball.rotation.z=elapsed*.008;
+  var s=shot,elapsed=now-s.startTime,t=Math.min(elapsed/1050,1);beerPongAudio.frame(s,elapsed);ball.rotation.x=elapsed*.012;ball.rotation.z=elapsed*.008;
   if(elapsed<=1050){ball.position.lerpVectors(s.start,s.end,t);ball.position.y+=Math.sin(Math.PI*t)*2.8;return;}
   if(s.hit){
     var impact=Math.min((elapsed-1050)/450,1),center=s.record.group.position;
@@ -147,7 +148,7 @@ function resolveShot(s){
   if(s.hit&&cups[s.opponent].indexOf(s.hit.i)===-1)return;
   resolvedShotId=s.id;lastShotHit=!!s.hit;phase='done';phaseLabel.textContent='';resultMsg.replaceChildren();var text=document.createElement('span');
   if(s.hit){
-    cups[s.opponent]=cups[s.opponent].filter(function(i){return i!==s.hit.i;});hitStreak++;updateHitStreak();
+    cups[s.opponent]=cups[s.opponent].filter(function(i){return i!==s.hit.i;});hitStreak++;updateHitStreak();if(hitStreak>=2)beerPongAudio.once(s.game+':'+s.id+':bonus','bonus');
     text.style.color='#83ce9e';text.textContent=isBotTurn()?'POGODAK! RAČUNALO IGRA PONOVNO!':'POGODAK! IGRAŠ PONOVNO!';resultMsg.appendChild(text);
     phaseLabel.textContent=getNames()[s.opponent]+' pije!';updateUI();renderCups();
     if(cups[s.opponent].length===0){nextBtn.style.display='none';throwBtn.style.display='none';showWin(getNames()[s.player]);return;}
@@ -168,8 +169,8 @@ function nextTurn(){
   turnTween={startTime:performance.now(),from:viewAngle,to:viewAngle+Math.PI};lastFrame=performance.now();requestFrame();
 }
 function updateTurn(now){var t=Math.min((now-turnTween.startTime)/550,1),ease=t*t*(3-2*t);setCamera(turnTween.from+(turnTween.to-turnTween.from)*ease);if(t===1){turnTween=null;phase='idle';throwBtn.style.display='block';phaseLabel.textContent=getNames()[currentPlayer].toUpperCase()+', TVOJ RED!';renderCups();onTurnReady();}}
-function showWin(name){hitStreak=0;updateHitStreak();phase='won';document.getElementById('game-screen').style.display='none';document.getElementById('win-screen').style.display='flex';document.getElementById('win-title').textContent=name.toUpperCase()+' POBIJEDIO!';document.getElementById('win-sub').textContent='Protivnik pije sve preostale čaše! 🍺';}
-function restartGame(){hitStreak=0;lastShotHit=false;updateHitStreak();clearTimeout(winTimer);cancelAnimationFrame(raf);raf=null;shot=null;turnTween=null;lastFrame=0;phase='idle';document.getElementById('win-screen').style.display='none';document.getElementById('game-screen').style.display='none';document.getElementById('setup-screen').style.display='flex';}
+function showWin(name){beerPongAudio.once(gameSerial+':win','win');hitStreak=0;updateHitStreak();phase='won';document.getElementById('game-screen').style.display='none';document.getElementById('win-screen').style.display='flex';document.getElementById('win-title').textContent=name.toUpperCase()+' POBIJEDIO!';document.getElementById('win-sub').textContent='Protivnik pije sve preostale čaše! 🍺';}
+function restartGame(){beerPongAudio.reset();hitStreak=0;lastShotHit=false;updateHitStreak();clearTimeout(winTimer);cancelAnimationFrame(raf);raf=null;shot=null;turnTween=null;lastFrame=0;phase='idle';document.getElementById('win-screen').style.display='none';document.getElementById('game-screen').style.display='none';document.getElementById('setup-screen').style.display='flex';}
 document.addEventListener('visibilitychange',function(){lastFrame=0;if(document.hidden){cancelAnimationFrame(raf);raf=null;}else if(renderer){if(phase==='moving-x'||phase==='moving-y'||shot||turnTween)requestFrame();else drawScene();}});
 window.addEventListener('pagehide',function(){clearTimeout(winTimer);cancelAnimationFrame(raf);raf=null;});
 window.beerPongV2View={snapshot:function(){

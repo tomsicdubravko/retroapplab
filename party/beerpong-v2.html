@@ -166,6 +166,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:16px;}
 <!-- GAME -->
 <div id="game-screen">
 
+  <div class="bp-sound-row"><button type="button" id="bp-sound-toggle" aria-label="Zvuk uključen" aria-pressed="true">🔊</button></div>
   <div id="player-bar">
     <div>
       <div class="pbar-name" id="p1-bar-name" style="color:#e74c3c">Igrač 1</div>
@@ -208,6 +209,7 @@ body{display:flex;flex-direction:column;align-items:center;padding:16px;}
   <button class="bp-menu-exit" id="bp-win-menu" type="button" hidden>POVRATAK NA IZBORNIK</button>
 </div>
 
+<script src="beerpong-audio.js"></script>
 <script src="beerpong-v2.js"></script>
 <script src="beerpong-bot.js"></script>
 <script src="beerpong-lobby.js"></script>

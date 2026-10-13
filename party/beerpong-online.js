@@ -55,6 +55,7 @@ var beerOnline={role:null,seat:0,peer:null,conn:null,code:'',names:['',''],reser
     if(s.phase==='flying'&&s.flight){var f=s.flight;if(!shot||shot.id!==f.id){resetEffects();shot={id:f.id,game:f.game,player:f.player,opponent:f.opponent,hit:f.hit===null?null:{i:f.hit},start:new THREE.Vector3().fromArray(f.start),end:new THREE.Vector3().fromArray(f.end),startTime:performance.now()+f.at-(Date.now()+n.offset),record:f.hit===null?null:cupMeshes.find(function(c){return c.player===f.opponent&&c.index===f.hit;})};ball.visible=true;ball.position.copy(shot.start);n.flightAt=f.at;}shot.startTime=s.paused?performance.now()-s.frozenElapsed:performance.now()+f.at-(Date.now()+n.offset);}
     else{resetEffects();}
     updateUI();updateHitStreak();renderCups();nextBtn.textContent='BACAJ PONOVNO';
+    if(s.outcome&&s.outcome.hit&&(s.streak>=2||s.outcome.bonus))beerPongAudio.once(s.game+':'+s.outcome.id+':bonus','bonus');
     if(phase==='won'){showWin(getNames()[cups[1].length===0?0:1]);}else{el('win-screen').style.display='none';el('game-screen').style.display='flex';if(phase==='moving-x'||phase==='moving-y')phaseLabel.textContent=ownTurn()?(phase==='moving-x'?'ZAUSTAVI X OS!':'ZAUSTAVI Y OS!'):'PROTIVNIK CILJA...';}
     setCamera(n.seat*Math.PI);drawScene();renderControls();if(s.intro&&s.phase==='idle'&&n.introShown!==s.game)showFirstThrow();if(shot||phase==='moving-x'||phase==='moving-y'){lastFrame=performance.now();requestFrame();}
   }
