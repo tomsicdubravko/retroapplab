@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Putni nalog – besplatni obrazac s obračunom dnevnica | RetroAppLab</title>
-<meta name="description" content="Besplatni putni nalog za službeno putovanje: automatski izračun sati i dnevnica, ostali troškovi, predujam i ispis naloga s obračunom putnih troškova.">
+<meta name="description" content="Besplatni putni nalog 2026. s automatskim obračunom dnevnica (30 € / 15 €), umanjenjem za obroke i kilometražom privatnim automobilom (0,50 €/km). Ispis naloga jednim klikom.">
+<meta property="og:description" content="Besplatni putni nalog 2026. s automatskim obračunom dnevnica (30 € / 15 €), umanjenjem za obroke i kilometražom privatnim automobilom (0,50 €/km). Ispis naloga jednim klikom.">
 <link rel="canonical" href="https://retroapplab.com/putni-nalog/putni-nalog.html">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
@@ -44,6 +45,19 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
 .vozac-info { flex: 1; font-size: 13px; }
 .vozac-akcije button { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: 4px; }
 #dokumentPrint { display: none; color: #000; }
+/* Tekstualni dio ispod alata */
+.vodic { margin-top: 34px; border-top: 2px solid #ecf0f1; padding-top: 6px; }
+.vodic h2 { font-size: 1.2rem; color: #2c3e50; margin: 26px 0 8px; }
+.vodic h3 { font-size: 15px; color: #2980b9; margin: 18px 0 4px; }
+.vodic p { font-size: 14px; color: #444; margin: 0 0 10px; line-height: 1.65; }
+.vodic em { color: #777; }
+.tablica-okvir { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 10px 0 12px; border: 1px solid #dee2e6; border-radius: 8px; }
+.vodic table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px; }
+.vodic th, .vodic td { padding: 9px 12px; border-bottom: 1px solid #ecf0f1; text-align: left; }
+.vodic th { background: #f0f4f8; color: #2c3e50; font-weight: bold; }
+.vodic td + td, .vodic th + th { text-align: right; white-space: nowrap; }
+.vodic td[colspan] { text-align: center; color: #888; }
+.vodic tr:last-child td { border-bottom: none; }
 @media (max-width: 700px) {
   body { padding: 10px; }
   .container { padding: 18px; }
@@ -56,6 +70,7 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
   body { background: white; padding: 0; }
   body > *:not(#dokumentPrint) { display: none !important; }
   #dokumentPrint { display: block !important; }
+  .vodic { display: none !important; }
 }
 </style>
 </head>
@@ -67,7 +82,7 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
 </div>
 
 <div class="container">
-  <h1>🚗 Putni nalog</h1>
+  <h1>🚗 Putni nalog i obračun dnevnica</h1>
   <p class="podnaslov">Upiši podatke o putovanju. Sati i dnevnice izračunaju se sami, a nalog s obračunom ispišeš jednim klikom.</p>
 
   <div class="sekcija-naslov">📋 Podaci naloga</div>
@@ -210,6 +225,51 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
 
   <button class="btn btn-main" onclick="ispisPutnog()" style="margin-top:18px;">🖨️ Ispiši putni nalog</button>
   <p class="napomena-mala" style="text-align:center;">Podaci se ne šalju nikamo, sve radi u tvom pregledniku. Iznose i obračun prije isplate provjeri prema važećim propisima.</p>
+
+  <section class="vodic">
+    <h2>Što je putni nalog?</h2>
+    <p>Putni nalog je isprava kojom poslodavac upućuje radnika na službeno putovanje i na temelju koje se obračunavaju dnevnice i ostali putni troškovi. Bez urednog putnog naloga dnevnice i naknada za kilometražu ne mogu se isplatiti neoporezivo. Ovim alatom nalog ispunite u par minuta: sati na putu, dnevnice, umanjenje za obroke i kilometraža izračunaju se sami, a nalog s obračunom putnih troškova ispišete jednim klikom.</p>
+
+    <h2>Dnevnice u tuzemstvu 2026.</h2>
+    <div class="tablica-okvir">
+      <table>
+        <tr><th>Trajanje putovanja</th><th>Bez obroka</th><th>Osiguran 1 obrok (−30 %)</th><th>Osigurana 2 obroka (−60 %)</th></tr>
+        <tr><td>Više od 12 sati (puna dnevnica)</td><td>30,00 €</td><td>21,00 €</td><td>12,00 €</td></tr>
+        <tr><td>Više od 8, a manje od 12 sati (pola dnevnice)</td><td>15,00 €</td><td>10,50 €</td><td>6,00 €</td></tr>
+        <tr><td>Do 8 sati</td><td colspan="3">nema dnevnice</td></tr>
+      </table>
+    </div>
+    <p>Iznosi su najviši neoporezivi iznosi prema Pravilniku o porezu na dohodak. Poslodavac može isplatiti i manje, a iznos veći od propisanog oporeziv je kao plaća. Naknada za korištenje privatnog automobila iznosi do 0,50 € po km.</p>
+    <p><em>Iznosi vrijede za 2026. godinu (zadnja provjera: listopad 2026.).</em></p>
+
+    <h2>Česta pitanja o putnom nalogu</h2>
+
+    <h3>Kada radnik ima pravo na dnevnicu?</h3>
+    <p>Za službeno putovanje u tuzemstvu koje traje više od 12 sati pripada puna dnevnica, a za putovanje koje traje više od 8, a manje od 12 sati pola dnevnice. Za putovanje kraće od 8 sati dnevnica se ne isplaćuje.</p>
+
+    <h3>Kako se računaju dnevnice za višednevno putovanje?</h3>
+    <p>Za svaka puna 24 sata putovanja pripada jedna puna dnevnica. Za preostale sate pripada još pola dnevnice ako ih je više od 8, a manje od 12, odnosno puna dnevnica ako ih je više od 12. Alat broj dnevnica predloži sam iz datuma i vremena polaska i povratka.</p>
+
+    <h3>Kada se dnevnica umanjuje?</h3>
+    <p>Ako je radniku na teret poslodavca osiguran ručak ili večera, dnevnica se umanjuje za 30 %, a ako su osigurana oba obroka, za 60 %. Puna dnevnica tada iznosi 21,00 €, odnosno 12,00 €. U alatu za svaki red dnevnica odaberete broj osiguranih obroka i umanjenje se izračuna samo.</p>
+
+    <h3>Koliko iznosi naknada za korištenje privatnog automobila?</h3>
+    <p>Neoporeziva naknada za korištenje privatnog automobila u službene svrhe iznosi do 0,50 € po prijeđenom kilometru. U tu naknadu uključeni su gorivo, amortizacija i održavanje vozila, a cestarine i parking ne ulaze u nju, nego se nadoknađuju posebno, uz račune. U alatu upišete početno i završno stanje brojila, a kilometri i iznos naknade izračunaju se sami.</p>
+
+    <h3>Kako se dnevnice i kilometraža prijavljuju u JOPPD obrascu?</h3>
+    <p>Neoporezive isplate dnevnica za službeno putovanje iskazuju se u JOPPD obrascu pod oznakom neoporezivog primitka 17, a naknada za korištenje privatnog automobila u službene svrhe pod oznakom 18.</p>
+
+    <h3>Što mora sadržavati putni nalog?</h3>
+    <p>Putni nalog treba sadržavati ime i prezime radnika, datum i vrijeme polaska i povratka, odredište i svrhu putovanja, prijevozno sredstvo (za privatni automobil i marku i registraciju te stanje brojila), obračun dnevnica i ostalih troškova, izvješće s putovanja te potpise. Uz nalog se prilažu računi za prijevoz, smještaj, cestarine i druge troškove.</p>
+
+    <h3>Može li se alat koristiti za putovanja u inozemstvo?</h3>
+    <p>Može. Iznos jedne dnevnice možete promijeniti ručno i upisati iznos propisan za državu u koju se putuje. Pravila za punu i pola dnevnice te umanjenje za obroke ista su kao u tuzemstvu.</p>
+
+    <h3>Spremaju li se negdje moji podaci?</h3>
+    <p>Ne. Alat radi u vašem pregledniku i podaci se ne šalju nikamo. Spremljene osobe ostaju samo u pregledniku na uređaju na kojem ste ih unijeli.</p>
+
+    <p><em>Iznose i obračun prije isplate provjerite prema važećim propisima.</em></p>
+  </section>
 </div>
 
 <div id="dokumentPrint"></div>
