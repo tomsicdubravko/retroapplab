@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Radni sati 2028. po mjesecima — fond sati, radni dani i blagdani | RetroAppLab</title>
-<meta name="description" content="Radni sati 2028. po mjesecima: fond sati, radni dani i blagdani za 8-satni radni dan. Besplatna tablica radnih sati za obračun plaće.">
+<meta name="description" content="Fond sati 2028. iznosi 2.080 sati (2.000 radnih sati i 80 sati blagdana). Radni sati po mjesecima, radni dani i blagdani za 8-satni radni dan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -63,7 +63,7 @@
   .year-switcher a:hover { color: var(--neon-cyan); }
 
   .stat-row {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
     margin: 32px 0;
   }
   .stat-card {
@@ -80,6 +80,11 @@
   .stat-card:nth-child(3)::after { background: rgba(255,0,127,0.07); }
   .stat-card .num { position: relative; z-index: 1; font-size: 1.7rem; font-weight: 800; color: var(--neon-gold); }
   .stat-card .label { position: relative; z-index: 1; font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+  .stat-card:nth-child(4)::after { background: rgba(16,185,129,0.07); }
+  .stat-card.stat-main { border-color: rgba(245,158,11,0.55); background: rgba(245,158,11,0.09); box-shadow: 0 0 18px rgba(245,158,11,0.12); }
+  .stat-card.stat-main .num { font-size: 2.15rem; }
+  .stat-card.stat-main .label { color: #f5d38a; font-weight: 600; }
+  @media (max-width: 860px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
 
   table {
     width: 100%; border-collapse: collapse; margin: 20px 0 40px;
@@ -151,15 +156,16 @@
   <div class="wrap">
     <span class="eyebrow">OBRAČUN PLAĆA · 2028</span>
     <h1>Radni sati i fond sati 2028. po mjesecima</h1>
-    <p class="lead">Broj radnih dana i radnih sati za svaki mjesec 2028. godine, za standardni 8-satni radni dan i 40-satni radni tjedan. Državni praznici koji padaju na radni dan automatski su isključeni iz fonda.</p>
+    <p class="lead">Broj radnih dana i radnih sati za svaki mjesec 2028. godine, za standardni 8-satni radni dan i 40-satni radni tjedan. Ukupan fond sati za 2028. iznosi 2.080 sati, od čega je 2.000 radnih sati i 80 sati blagdana koji padaju na radni dan.</p>
     <div class="year-switcher">Ostale godine: <a href="/fond-sati-2024/fond-sati-2024.html">2024</a> <a href="/fond-sati-2025/fond-sati-2025.html">2025</a> <a href="/fond-sati-2026/fond-sati-2026.html">2026</a> <a href="/fond-sati-2027/fond-sati-2027.html">2027</a> <a href="/fond-sati-2028/fond-sati-2028.html" style="color:var(--neon-gold);font-weight:700;">2028</a></div>
   </div>
 </header>
 
 <main class="wrap">
   <div class="stat-row">
-    <div class="stat-card"><div class="num">250</div><div class="label">radna dana u 2028.</div></div>
-    <div class="stat-card"><div class="num">2,000</div><div class="label">radnih sati ukupno</div></div>
+    <div class="stat-card stat-main"><div class="num">2.080</div><div class="label">fond sati u 2028.</div></div>
+    <div class="stat-card"><div class="num">2.000</div><div class="label">radnih sati</div></div>
+    <div class="stat-card"><div class="num">250</div><div class="label">radnih dana</div></div>
     <div class="stat-card"><div class="num">10</div><div class="label">blagdana na radni dan</div></div>
   </div>
 
@@ -168,9 +174,9 @@
       <tr>
         <th>Mjesec</th>
         <th class="num">Radni dani</th>
-        <th class="num">Fond sati</th>
+        <th class="num">Radni sati</th>
         <th class="num">Blagdani</th>
-        <th class="num">Ukupno sati</th>
+        <th class="num">Fond sati</th>
       </tr>
     </thead>
     <tbody>
@@ -192,9 +198,9 @@
 
   <p class="note">
     <strong>Radni dani</strong> = broj dana od ponedjeljka do petka u mjesecu, umanjen za državne blagdane koji padaju na radni dan.<br>
-    <strong>Fond sati</strong> = radni dani × 8 sati — ovo je broj sati koje zaposlenik treba odraditi.<br>
-    <strong>Blagdani</strong> = broj državnih praznika koji te godine padaju na radni dan (plaćaju se kao neradni dan).<br>
-    <strong>Ukupno sati</strong> = fond sati + sati blagdana, tj. svi radni dani od ponedjeljka do petka × 8, uključujući blagdane.
+    <strong>Radni sati</strong> = radni dani × 8 sati, broj sati koje zaposlenik stvarno odradi.<br>
+    <strong>Blagdani</strong> = broj državnih blagdana koji padaju na radni dan; ti se sati u obračunu plaće iskazuju posebno i plaćaju kao naknada.<br>
+    <strong>Fond sati</strong> = svi dani od ponedjeljka do petka × 8 sati, uključujući blagdane. To je ukupan broj sati za obračun plaće.
   </p>
 
   <div class="cta-card">
