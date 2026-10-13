@@ -29,10 +29,13 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
 .putni-input { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; font-family: inherit; background: white; }
 .red-2 { display: flex; gap: 6px; }
 .trosak-red { display: grid; grid-template-columns: 1fr 140px auto; gap: 8px; margin-bottom: 6px; align-items: center; }
-.dnevnica-red { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+.dnevnica-red { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1.3fr auto; gap: 6px; margin-bottom: 6px; align-items: center; }
+.dnev-umanjeno { grid-column: 1 / -1; font-size: 12px; color: #b9770e; margin: -2px 0 2px; }
+.prov-check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
+.prov-check input { width: 18px; height: 18px; }
 .obrisi { padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; }
 .okvir { background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; padding: 12px; margin-bottom: 15px; }
-.zbroj { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; background: #f0f9f0; border-radius: 8px; padding: 12px 15px; margin: 10px 0; }
+.zbroj { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; background: #f0f9f0; border-radius: 8px; padding: 12px 15px; margin: 10px 0; }
 .zbroj div div:first-child { font-size: 11px; color: #666; }
 .zbroj div div:last-child { font-size: 18px; font-weight: bold; }
 .napomena-mala { font-size: 12px; color: #888; margin-top: 4px; }
@@ -46,6 +49,7 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
   .container { padding: 18px; }
   .mreza { grid-template-columns: 1fr; }
   .dnevnica-red { grid-template-columns: 1fr 1fr; }
+  .dnevnica-red .obrisi { justify-self: start; }
   .zbroj { grid-template-columns: 1fr; }
 }
 @media print {
@@ -137,7 +141,7 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
     </div>
     <div><label class="putni-label" for="pDestinacija">Odredište:</label><input type="text" id="pDestinacija" class="putni-input"></div>
     <div><label class="putni-label" for="pSvrha">Svrha putovanja:</label><input type="text" id="pSvrha" class="putni-input"></div>
-    <div><label class="putni-label" for="pPrijevoz">Prijevoz:</label><input type="text" id="pPrijevoz" class="putni-input"></div>
+    <div><label class="putni-label" for="pPrijevoz">Prijevoz:</label><input type="text" id="pPrijevoz" class="putni-input" oninput="provjeriPrijevoz()"></div>
     <div><label class="putni-label" for="pVozilo">Vozilo (marka):</label><input type="text" id="pVozilo" class="putni-input"></div>
     <div><label class="putni-label" for="pRegistracija">Registracija:</label><input type="text" id="pRegistracija" class="putni-input"></div>
   </div>
@@ -159,11 +163,26 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
       <small style="color:#666;font-weight:bold;">Do datuma</small>
       <small style="color:#666;font-weight:bold;">Broj dnevnica</small>
       <small style="color:#666;font-weight:bold;">Iznos jedne (€)</small>
+      <small style="color:#666;font-weight:bold;">Osigurani obroci</small>
       <span></span>
     </div>
     <div id="dnevniceRedovi"></div>
     <button class="mali-btn" onclick="dodajDnevnicu()">+ Dodaj red dnevnica</button>
     <p class="napomena-mala">Broj dnevnica predloži se sam: puna dnevnica za svaka 24 sata, za ostatak 8 do 12 sati pola, a preko 12 sati puna. Zadani iznos je 30 €, provjeri važeći neoporezivi iznos i promijeni ga po potrebi.</p>
+    <p class="napomena-mala">Ako je na teret poslodavca osiguran ručak ili večera, dnevnica se umanjuje za 30 %, a za dva obroka za 60 %.</p>
+  </div>
+
+  <div class="sekcija-naslov">🚙 Privatni automobil</div>
+  <label class="prov-check"><input type="checkbox" id="pPrivatniAuto" onchange="togglePrivatniAuto()"> Korišten privatni automobil</label>
+  <div id="privatniBlok" class="okvir" style="display:none;">
+    <div class="mreza">
+      <div><label class="putni-label" for="pKmPocetno">Početno stanje brojila (km):</label><input type="number" id="pKmPocetno" class="putni-input" step="1" min="0" oninput="izracunajKmRazliku()"></div>
+      <div><label class="putni-label" for="pKmZavrsno">Završno stanje brojila (km):</label><input type="number" id="pKmZavrsno" class="putni-input" step="1" min="0" oninput="izracunajKmRazliku()"></div>
+      <div><label class="putni-label" for="pKmPrijedeno">Prijeđeno km:</label><input type="number" id="pKmPrijedeno" class="putni-input" step="1" min="0" oninput="izracunajKilometrazu()"></div>
+      <div><label class="putni-label" for="pKmNaknada">Naknada po km (€):</label><input type="number" id="pKmNaknada" class="putni-input" step="0.01" min="0" value="0.50" oninput="izracunajKilometrazu()"></div>
+      <div><label class="putni-label" for="pKmUkupno">Ukupno (€):</label><input type="text" id="pKmUkupno" class="putni-input" readonly style="background:#e8f5e9;"></div>
+    </div>
+    <p class="napomena-mala">Neoporeziva naknada iznosi do 0,50 € po km. Cestarine i parking ne ulaze u naknadu, upiši ih pod Ostale troškove.</p>
   </div>
 
   <div class="sekcija-naslov">🧾 Ostali troškovi</div>
@@ -172,6 +191,7 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
 
   <div class="zbroj">
     <div><div>Dnevnice</div><div style="color:#27ae60;" id="pSumaDnevnice">0,00 €</div></div>
+    <div><div>Kilometraža</div><div style="color:#8e44ad;" id="pSumaKm">0,00 €</div></div>
     <div><div>Ostali troškovi</div><div style="color:#2980b9;" id="pSumaTroskovi">0,00 €</div></div>
     <div><div>Sveukupno</div><div id="pSveukupno">0,00 €</div></div>
   </div>
@@ -224,25 +244,42 @@ function dodajDnevnicu(od, do_, br, iznos) {
     '<input type="text" class="putni-input dnev-do" placeholder="dd.mm.gggg" aria-label="Do datuma">' +
     '<input type="number" class="putni-input dnev-broj" placeholder="npr. 1,5" step="0.5" min="0" aria-label="Broj dnevnica">' +
     '<input type="number" class="putni-input dnev-iznos" step="0.01" min="0" aria-label="Iznos jedne dnevnice">' +
-    '<button class="obrisi" aria-label="Obriši red">✕</button>';
+    '<select class="putni-input dnev-obrok" aria-label="Osigurani obroci"><option value="0">Bez obroka</option><option value="1">1 obrok (−30 %)</option><option value="2">2 obroka (−60 %)</option></select>' +
+    '<button class="obrisi" aria-label="Obriši red">✕</button>' +
+    '<div class="dnev-umanjeno" hidden></div>';
   div.querySelector('.dnev-od').value = od || '';
   div.querySelector('.dnev-do').value = do_ || '';
   div.querySelector('.dnev-broj').value = br || '';
   div.querySelector('.dnev-iznos').value = iznos != null ? iznos : 30;
   div.querySelector('.dnev-broj').addEventListener('input', izracunajDnevnice);
   div.querySelector('.dnev-iznos').addEventListener('input', izracunajDnevnice);
+  div.querySelector('.dnev-obrok').addEventListener('change', izracunajDnevnice);
   div.querySelector('.obrisi').addEventListener('click', () => { div.remove(); izracunajDnevnice(); });
   document.getElementById('dnevniceRedovi').appendChild(div);
   if (window.flatpickr) div.querySelectorAll('.dnev-od,.dnev-do').forEach(el => flatpickr(el, { dateFormat: 'd.m.Y', locale: 'hr', allowInput: true }));
   izracunajDnevnice();
 }
 
+// Osigurani obroci umanjuju dnevnicu: 1 obrok −30 %, 2 obroka −60 %
+const OBROCI = { 0: { k: 1, tekst: '' }, 1: { k: 0.70, tekst: 'osiguran 1 obrok, −30 %' }, 2: { k: 0.40, tekst: 'osigurana 2 obroka, −60 %' } };
+function zaokruzi(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
+function podaciDnevnice(red) {
+  let osnovni = broj(red.querySelector('.dnev-iznos').value);
+  let ob = OBROCI[red.querySelector('.dnev-obrok').value] || OBROCI[0];
+  let iz = zaokruzi(osnovni * ob.k), br = broj(red.querySelector('.dnev-broj').value);
+  return { br, osnovni, iz, uk: zaokruzi(br * iz), obrok: ob.tekst };
+}
+
 function izracunajDnevnice() {
   let ukupno = 0;
   document.querySelectorAll('#dnevniceRedovi .dnevnica-red').forEach(red => {
     let b = red.querySelector('.dnev-broj'); if (!b) return;
-    ukupno += broj(b.value) * broj(red.querySelector('.dnev-iznos').value);
+    let d = podaciDnevnice(red), prikaz = red.querySelector('.dnev-umanjeno');
+    prikaz.hidden = !d.obrok;
+    prikaz.textContent = d.obrok ? fmtEur(d.osnovni) + ' → ' + fmtEur(d.iz) + ' (' + d.obrok + ')' : '';
+    ukupno += d.uk;
   });
+  ukupno = zaokruzi(ukupno);
   document.getElementById('pUkupnoDnevnice').value = fmt2(ukupno);
   document.getElementById('pUkupnoDnevnice').dataset.v = ukupno;
   izracunajUkupno();
@@ -252,7 +289,9 @@ function izracunajUkupno() {
   let dnevnice = broj(document.getElementById('pUkupnoDnevnice').dataset.v);
   let troskovi = 0;
   document.querySelectorAll('#putniTroskovi .tr-iznos').forEach(i => troskovi += broj(i.value));
-  let sve = dnevnice + troskovi;
+  let km = podaciKm().uk;
+  let sve = zaokruzi(dnevnice + km + troskovi);
+  document.getElementById('pSumaKm').textContent = fmtEur(km);
   let ostatak = sve - broj(document.getElementById('pPredujam').value);
   document.getElementById('pSumaDnevnice').textContent = fmtEur(dnevnice);
   document.getElementById('pSumaTroskovi').textContent = fmtEur(troskovi);
@@ -289,6 +328,33 @@ function izracunajSate() {
     r.querySelector('.dnev-broj').value = dnev;
   }
   izracunajDnevnice();
+}
+
+// ── privatni automobil ──────────────────────────────────────
+function podaciKm() {
+  let on = document.getElementById('pPrivatniAuto').checked;
+  let km = broj(document.getElementById('pKmPrijedeno').value), nak = broj(document.getElementById('pKmNaknada').value);
+  return { on, km, nak, uk: on ? zaokruzi(km * nak) : 0,
+    pocetno: document.getElementById('pKmPocetno').value, zavrsno: document.getElementById('pKmZavrsno').value };
+}
+function togglePrivatniAuto() {
+  document.getElementById('privatniBlok').style.display = document.getElementById('pPrivatniAuto').checked ? 'block' : 'none';
+  izracunajKilometrazu();
+}
+function izracunajKmRazliku() {
+  let p = document.getElementById('pKmPocetno').value, z = document.getElementById('pKmZavrsno').value;
+  if (p !== '' && z !== '' && broj(z) >= broj(p)) document.getElementById('pKmPrijedeno').value = broj(z) - broj(p);
+  izracunajKilometrazu();
+}
+function izracunajKilometrazu() {
+  let d = podaciKm();
+  document.getElementById('pKmUkupno').value = fmt2(zaokruzi(d.km * d.nak));
+  izracunajUkupno();
+}
+// Prijevoz osobnim ili privatnim automobilom automatski uključi blok kilometraže
+function provjeriPrijevoz() {
+  let cb = document.getElementById('pPrivatniAuto');
+  if (!cb.checked && /osobn|privat/i.test(document.getElementById('pPrijevoz').value)) { cb.checked = true; togglePrivatniAuto(); }
 }
 
 // ── troškovi ────────────────────────────────────────────────
@@ -364,6 +430,7 @@ function popuniVozaca() {
   let v = ucitajVozace().find(x => x.id === document.getElementById('pVozacOdabir').value); if (!v) return;
   const map = { ime:'pIme', radnoMjesto:'pRadnoMjesto', jedinica:'pJedinica', prijevoz:'pPrijevoz', vozilo:'pVozilo', registracija:'pRegistracija' };
   for (let k in map) document.getElementById(map[k]).value = v[k] || '';
+  provjeriPrijevoz();
 }
 
 // ── ispis ───────────────────────────────────────────────────
@@ -379,17 +446,20 @@ function ispisPutnog() {
   let dnev = [], ukDnev = 0, brDnev = 0;
   document.querySelectorAll('#dnevniceRedovi .dnevnica-red').forEach(r => {
     let b = r.querySelector('.dnev-broj'); if (!b) return;
-    let br = broj(b.value), iz = broj(r.querySelector('.dnev-iznos').value);
-    if (br > 0) { dnev.push({ od: esc(r.querySelector('.dnev-od').value), do_: esc(r.querySelector('.dnev-do').value), br, iz, uk: br * iz }); ukDnev += br * iz; brDnev += br; }
+    let d = podaciDnevnice(r);
+    if (d.br > 0) { dnev.push({ od: esc(r.querySelector('.dnev-od').value), do_: esc(r.querySelector('.dnev-do').value), br: d.br, iz: d.iz, osnovni: d.osnovni, uk: d.uk, obrok: d.obrok }); ukDnev += d.uk; brDnev += d.br; }
   });
-  let iznosiDnevnice = [...new Set(dnev.map(d => fmt2(d.iz) + ' EUR'))].join(', ') || '—';
+  ukDnev = zaokruzi(ukDnev);
+  let iznosiDnevnice = [...new Set(dnev.map(d => fmt2(d.osnovni) + ' EUR'))].join(', ') || '—';
+  let km = podaciKm(), imaKm = km.on && km.uk > 0;
+  const kmBr = n => Number(n).toLocaleString('hr-HR');
 
   let tr = [], ukTr = 0;
   document.querySelectorAll('#putniTroskovi .trosak-red').forEach(r => {
     let n = r.querySelector('.tr-naziv').value.trim(), iz = broj(r.querySelector('.tr-iznos').value);
     if (n || iz > 0) { tr.push({ n: esc(n), iz }); ukTr += iz; }
   });
-  let sve = ukDnev + ukTr, predujam = broj(document.getElementById('pPredujam').value);
+  let sve = zaokruzi(ukDnev + km.uk + ukTr), predujam = broj(document.getElementById('pPredujam').value);
   let datumObr = document.getElementById('pDatumLik').value.trim();
   let datumObrTekst = datumObr ? hrDugiDatum(datumObr) : danas;
   let td = 'border:1px solid #000;padding:4px;';
@@ -432,11 +502,13 @@ function ispisPutnog() {
       <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;">
         <tr style="background:#f0f0f0;"><th style="${td}" colspan="5">I. DNEVNICE</th></tr>
         <tr style="background:#f0f0f0;"><th style="${td}">Od</th><th style="${td}">Do</th><th style="${td}">Broj dnevnica</th><th style="${td}">Iznos jedne</th><th style="${td}">Ukupno</th></tr>
-        ${dnev.map(d => `<tr><td style="${td}">${d.od || '—'}</td><td style="${td}">${d.do_ || '—'}</td><td style="${td}text-align:center;">${String(d.br).replace('.', ',')}</td><td style="${td}text-align:right;">${fmt2(d.iz)} EUR</td><td style="${td}text-align:right;">${fmt2(d.uk)} EUR</td></tr>`).join('')}
+        ${dnev.map(d => `<tr><td style="${td}">${d.od || '—'}</td><td style="${td}">${d.do_ || '—'}</td><td style="${td}text-align:center;">${String(d.br).replace('.', ',')}</td><td style="${td}text-align:right;">${fmt2(d.iz)} EUR${d.obrok ? '<br><small>(' + d.obrok + ')</small>' : ''}</td><td style="${td}text-align:right;">${fmt2(d.uk)} EUR</td></tr>`).join('')}
         <tr style="font-weight:bold;"><td style="${td}" colspan="4">Ukupno dnevnice</td><td style="${td}text-align:right;">${fmt2(ukDnev)} EUR</td></tr>
       </table>
       <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px;">
-        <tr style="background:#f0f0f0;"><th style="${td}" colspan="3">II. OSTALI TROŠKOVI</th></tr>
+        ${imaKm ? `<tr style="background:#f0f0f0;"><th style="${td}" colspan="3">II. PRIVATNI AUTOMOBIL</th></tr>
+        <tr><td style="${td}" colspan="2">Naknada za korištenje privatnog automobila: ${kmBr(km.km)} km × ${fmt2(km.nak)} € = ${fmt2(km.uk)} €${km.pocetno !== '' && km.zavrsno !== '' ? ' <small>(brojilo ' + kmBr(km.pocetno) + ' → ' + kmBr(km.zavrsno) + ' km)</small>' : ''}</td><td style="${td}text-align:right;"><strong>${fmt2(km.uk)} EUR</strong></td></tr>
+        <tr style="background:#f0f0f0;"><th style="${td}" colspan="3">III. OSTALI TROŠKOVI</th></tr>` : `<tr style="background:#f0f0f0;"><th style="${td}" colspan="3">II. OSTALI TROŠKOVI</th></tr>`}
         <tr><th style="${td}">Br.</th><th style="${td}">Vrsta troška</th><th style="${td}">Iznos</th></tr>
         ${tr.map((t, i) => `<tr><td style="${td}">${i + 1}.</td><td style="${td}">${t.n}</td><td style="${td}text-align:right;">${fmt2(t.iz)} EUR</td></tr>`).join('')}
         <tr><td style="${td}" colspan="2"><strong>Ukupno ostali troškovi</strong></td><td style="${td}text-align:right;"><strong>${fmt2(ukTr)} EUR</strong></td></tr>
