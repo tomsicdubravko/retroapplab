@@ -72,6 +72,98 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
   #dokumentPrint { display: block !important; }
   .vodic { display: none !important; }
 }
+
+/* V2 presentation only; the original print styles and business script are preserved. */
+@media screen {
+  :root { --ink:#23384b; --muted:#627487; --line:#dce5ec; --blue:#247aa8; --surface:#f5f8fb; }
+  html { scroll-behavior:smooth; }
+  body { background:#edf2f6; color:var(--ink); padding:28px 24px 48px; font-size:14px; }
+  .top { max-width:1080px; margin-bottom:24px; gap:16px; }
+  .top a { font-size:16px; letter-spacing:-.3px; }
+  .container { max-width:1080px; padding:36px; border:1px solid #e1e8ee; border-radius:20px; box-shadow:0 12px 40px #23384b08; }
+  .eyebrow { color:var(--blue); font-size:11px; font-weight:700; letter-spacing:1.8px; margin-bottom:12px; }
+  h1 { text-align:left; font-size:34px; letter-spacing:-1.2px; line-height:1.2; display:flex; align-items:center; gap:12px; }
+  .version { font-size:11px; letter-spacing:1px; padding:5px 8px; border-radius:6px; color:var(--blue); background:#eaf4fa; }
+  .podnaslov { text-align:left; max-width:680px; color:var(--muted); margin:14px 0 30px; line-height:1.7; }
+  .form-section { border:1px solid var(--line); border-radius:14px; padding:24px; margin-top:18px; min-width:0; }
+  .section-heading { display:flex; align-items:center; gap:14px; margin-bottom:24px; }
+  .section-number { display:grid; place-items:center; flex:0 0 38px; height:38px; border:1px solid #d8e8f1; background:#edf6fa; color:var(--blue); border-radius:10px; font-size:13px; font-weight:700; }
+  .section-heading h2 { font-size:18px; line-height:1.3; margin:0 0 4px; letter-spacing:-.25px; }
+  .section-heading p { margin:0; color:var(--muted); font-size:12px; }
+  .mreza { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 20px; }
+  .mreza > *, .red-2 > *, .trosak-red > *, .dnevnica-red > * { min-width:0; }
+  .putni-label { font-size:12px; color:#4b5f72; margin-bottom:7px; font-weight:600; }
+  .putni-input { height:44px; padding:10px 12px; font-size:14px; color:var(--ink); border:1px solid #cedae3; border-radius:8px; transition:border-color .15s,box-shadow .15s; }
+  .putni-input::placeholder { color:#8695a3; opacity:1; }
+  .putni-input:hover { border-color:#9eb2c2; }
+  .putni-input:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px #247aa819; }
+  .putni-input[readonly] { background:#f0f5f8 !important; border-color:#dce5ec; font-weight:600; }
+  textarea.putni-input { height:150px; line-height:1.6; }
+  .red-2 { gap:8px; }
+  .duration { padding:14px 16px; border-radius:10px; background:#f0f6fa; }
+  .duration .putni-input { background:transparent !important; border:0; padding:0; height:32px; box-shadow:none; }
+  .okvir { background:var(--surface); border-color:var(--line); padding:16px; border-radius:10px; margin-bottom:0; }
+  .dnevnica-red { grid-template-columns:repeat(4,minmax(0,1fr)) minmax(155px,1.35fr) 40px; gap:8px; margin-bottom:12px; }
+  .trosak-red { grid-template-columns:minmax(0,1fr) 150px 40px; gap:10px; margin-bottom:10px; }
+  .mali-btn { min-height:38px; padding:9px 14px; background:#e9f3f9; border:1px solid #cee3ef; color:#216b94; border-radius:8px; font-size:12px; }
+  .mali-btn:hover { background:#dceef8; }
+  #btnBazaVozaca { background:#e9f3f9 !important; }
+  .obrisi { width:40px; height:44px; background:#fff; border:1px solid #edcdd0; color:#b34b55; border-radius:8px; }
+  .obrisi:hover { background:#fff0f1; }
+  button { font-family:inherit; transition:background .15s; }
+  button:focus-visible, a:focus-visible { outline:3px solid #60a8d0; outline-offset:3px; }
+  .prov-check { padding:14px 16px; background:var(--surface); border:1px solid var(--line); border-radius:10px; font-size:14px; margin-bottom:14px; }
+  .prov-check input { accent-color:var(--blue); flex-shrink:0; }
+  .subheading { font-size:14px; margin:24px 0 12px; }
+  .napomena-mala { color:var(--muted); font-size:12px; line-height:1.65; margin:12px 0 0; }
+  .settlement-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start; }
+  .summary-card { background:#f1f7fb; border:1px solid #d4e4ef; border-radius:12px; padding:22px; }
+  .summary-caption { color:var(--blue); font-size:10px; font-weight:700; letter-spacing:1.6px; margin-bottom:16px; }
+  .zbroj { display:block; padding:0; margin:0 0 18px; background:transparent; text-align:left; }
+  .zbroj > div { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; }
+  .zbroj div div:first-child { color:var(--muted); font-size:13px; }
+  .zbroj div div:last-child { color:var(--ink) !important; font-size:16px; font-variant-numeric:tabular-nums; }
+  .zbroj > div:last-child { border-top:1px solid #d4e4ef; margin-top:8px; padding-top:16px; }
+  .summary-card .mreza { grid-template-columns:1fr; gap:18px; }
+  #pOstatak { background:#23384b !important; color:white; font-size:26px; height:60px; border:0; font-variant-numeric:tabular-nums; }
+  .btn-main { background:#23384b; border-radius:10px; height:52px; margin-bottom:0; box-shadow:0 4px 10px #23384b12; }
+  .btn-main:hover { background:#32536d; }
+  .vozac-info { min-width:0; overflow-wrap:anywhere; }
+  .vozac-card { flex-wrap:wrap; }
+  .vodic { border-top:1px solid var(--line); margin-top:36px; padding-top:10px; }
+  .vodic p { color:#536576; }
+  .tablica-okvir { max-width:100%; }
+}
+@media screen and (max-width:900px) {
+  .dnevnica-red { grid-template-columns:repeat(2,minmax(0,1fr)); padding:14px; border:1px solid var(--line); border-radius:10px; background:white; }
+  .okvir > .dnevnica-red { display:none; }
+  #dnevniceRedovi .putni-input { margin-top:19px; }
+  #dnevniceRedovi .dnevnica-red { position:relative; }
+  .dnevnica-red .field-obrok { grid-column:1; }
+  .dnevnica-red .obrisi { justify-self:end; margin-top:19px; }
+}
+@media screen and (max-width:600px) {
+  body { padding:16px 10px 28px; }
+  .top { margin:0 6px 18px; font-size:11px; align-items:start; }
+  .top span { max-width:120px; text-align:right; }
+  .container { padding:22px 14px; border-radius:14px; }
+  h1 { font-size:28px; }
+  .eyebrow { font-size:9px; letter-spacing:1px; }
+  .form-section { padding:18px 14px; }
+  .section-heading { align-items:start; gap:10px; margin-bottom:20px; }
+  .section-heading p { line-height:1.5; }
+  .mreza, .settlement-grid { grid-template-columns:minmax(0,1fr); gap:16px; }
+  .putni-input { font-size:16px; }
+  .okvir { padding:10px; }
+  .trosak-red { grid-template-columns:minmax(0,1fr) 40px; padding:12px; border:1px solid var(--line); border-radius:10px; }
+  .field-naziv { grid-column:1 / -1; }
+  .trosak-red .obrisi { grid-column:2; }
+  .summary-card { padding:18px; }
+  .vodic table { min-width:0; table-layout:fixed; font-size:11px; }
+  .vodic th,.vodic td { padding:8px 5px; overflow-wrap:anywhere; }
+  .vodic td + td,.vodic th + th { white-space:normal; }
+}
+
 </style>
 </head>
 <body>
@@ -82,10 +174,10 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
 </div>
 
 <div class="container">
-  <h1>🚗 Putni nalog i obračun dnevnica</h1>
+  <div class="eyebrow">RETROAPPLAB / RAČUNOVODSTVENI ALATI</div><h1>Putni nalog <span class="version">V2.1</span></h1>
   <p class="podnaslov">Upiši podatke o putovanju. Sati i dnevnice izračunaju se sami, a nalog s obračunom ispišeš jednim klikom.</p>
 
-  <div class="sekcija-naslov">📋 Podaci naloga</div>
+  <section class="form-section" aria-labelledby="section-1"><header class="section-heading"><span class="section-number">01</span><div><h2 id="section-1">Podaci naloga</h2><p>Tvrtka, broj naloga i osoba koja putuje.</p></div></header>
   <div class="mreza">
     <div>
       <label class="putni-label" for="pTvrtka">Tvrtka:</label>
@@ -99,7 +191,6 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
       <label class="putni-label" for="pMjesto">Mjesto izdavanja:</label>
       <input type="text" id="pMjesto" class="putni-input" placeholder="npr. Zagreb">
     </div>
-    <div></div>
 
     <div class="puna">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
@@ -139,7 +230,10 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
     <div><label class="putni-label" for="pIme">Ime i prezime:</label><input type="text" id="pIme" class="putni-input"></div>
     <div><label class="putni-label" for="pRadnoMjesto">Radno mjesto:</label><input type="text" id="pRadnoMjesto" class="putni-input"></div>
     <div><label class="putni-label" for="pJedinica">Organizacijska jedinica:</label><input type="text" id="pJedinica" class="putni-input"></div>
-    <div></div>
+  </div>
+</section>
+<section class="form-section" aria-labelledby="section-2"><header class="section-heading"><span class="section-number">02</span><div><h2 id="section-2">Putovanje</h2><p>Odredište, termini i prijevoz na službenom putovanju.</p></div></header>
+<div class="mreza">
     <div>
       <label class="putni-label" for="pDatumPolaska">Polazak (datum i vrijeme):</label>
       <div class="red-2">
@@ -154,6 +248,10 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
         <select id="pVrijemePovratka" class="putni-input" onchange="izracunajSate()" style="flex:1;" aria-label="Vrijeme povratka"></select>
       </div>
     </div>
+    <div class="duration puna">
+      <label class="putni-label" for="pSatiPrikaz">Vrijeme na putu:</label>
+      <input type="text" id="pSatiPrikaz" class="putni-input" readonly style="background:#f4f6f7;" placeholder="izračuna se iz polaska i povratka">
+    </div>
     <div><label class="putni-label" for="pDestinacija">Odredište:</label><input type="text" id="pDestinacija" class="putni-input"></div>
     <div><label class="putni-label" for="pSvrha">Svrha putovanja:</label><input type="text" id="pSvrha" class="putni-input"></div>
     <div><label class="putni-label" for="pPrijevoz">Prijevoz:</label><input type="text" id="pPrijevoz" class="putni-input" oninput="provjeriPrijevoz()"></div>
@@ -161,14 +259,11 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
     <div><label class="putni-label" for="pRegistracija">Registracija:</label><input type="text" id="pRegistracija" class="putni-input"></div>
   </div>
 
-  <div class="sekcija-naslov">💰 Dnevnice</div>
+  </section>
+<section class="form-section" aria-labelledby="section-3"><header class="section-heading"><span class="section-number">03</span><div><h2 id="section-3">Dnevnice</h2><p>Obračun trajanja putovanja i umanjenja za osigurane obroke.</p></div></header>
   <div class="mreza" style="margin-bottom:10px;">
     <div>
-      <label class="putni-label">Vrijeme na putu:</label>
-      <input type="text" id="pSatiPrikaz" class="putni-input" readonly style="background:#f4f6f7;" placeholder="izračuna se iz polaska i povratka">
-    </div>
-    <div>
-      <label class="putni-label">Ukupno dnevnice (€):</label>
+      <label class="putni-label" for="pUkupnoDnevnice">Ukupno dnevnice (€):</label>
       <input type="text" id="pUkupnoDnevnice" class="putni-input" readonly style="background:#e8f5e9;">
     </div>
   </div>
@@ -183,11 +278,12 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
     </div>
     <div id="dnevniceRedovi"></div>
     <button class="mali-btn" onclick="dodajDnevnicu()">+ Dodaj red dnevnica</button>
-    <p class="napomena-mala">Broj dnevnica predloži se sam: puna dnevnica za svaka 24 sata, za ostatak 8 do 12 sati pola, a preko 12 sati puna. Zadani iznos je 30 €, provjeri važeći neoporezivi iznos i promijeni ga po potrebi.</p>
+    <p class="napomena-mala">Broj dnevnica predloži se sam: puna dnevnica za svaka 24 sata, za ostatak više od 8 sati pola, a više od 12 sati puna. Zadani iznos je 30 €, provjeri važeći neoporezivi iznos i promijeni ga po potrebi.</p>
     <p class="napomena-mala">Ako je na teret poslodavca osiguran ručak ili večera, dnevnica se umanjuje za 30 %, a za dva obroka za 60 %.</p>
   </div>
 
-  <div class="sekcija-naslov">🚙 Privatni automobil</div>
+  </section>
+<section class="form-section" aria-labelledby="section-4"><header class="section-heading"><span class="section-number">04</span><div><h2 id="section-4">Troškovi</h2><p>Kilometraža privatnim automobilom i ostali troškovi putovanja.</p></div></header>
   <label class="prov-check"><input type="checkbox" id="pPrivatniAuto" onchange="togglePrivatniAuto()"> Korišten privatni automobil</label>
   <div id="privatniBlok" class="okvir" style="display:none;">
     <div class="mreza">
@@ -200,10 +296,13 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
     <p class="napomena-mala">Neoporeziva naknada iznosi do 0,50 € po km. Cestarine i parking ne ulaze u naknadu, upiši ih pod Ostale troškove.</p>
   </div>
 
-  <div class="sekcija-naslov">🧾 Ostali troškovi</div>
+  <h3 class="subheading">Ostali troškovi</h3>
   <div id="putniTroskovi"></div>
   <button class="mali-btn" onclick="dodajTrosak()" style="margin-bottom:15px;">+ Dodaj trošak</button>
 
+</section>
+<section class="form-section" aria-labelledby="section-5"><header class="section-heading"><span class="section-number">05</span><div><h2 id="section-5">Završni obračun</h2><p>Pregled iznosa, predujam i podaci za završetak naloga.</p></div></header>
+<div class="settlement-grid"><div class="summary-card"><div class="summary-caption">FINANCIJSKI SAŽETAK</div>
   <div class="zbroj">
     <div><div>Dnevnice</div><div style="color:#27ae60;" id="pSumaDnevnice">0,00 €</div></div>
     <div><div>Kilometraža</div><div style="color:#8e44ad;" id="pSumaKm">0,00 €</div></div>
@@ -213,19 +312,22 @@ h1 { text-align: center; margin: 0 0 6px; font-size: 1.6rem; }
 
   <div class="mreza" style="margin:10px 0;">
     <div><label class="putni-label" for="pPredujam">Predujam (€):</label><input type="number" id="pPredujam" class="putni-input" step="0.01" value="0" oninput="izracunajUkupno()"></div>
-    <div><label class="putni-label">Ostatak za isplatu / povrat (€):</label><input type="text" id="pOstatak" class="putni-input" readonly style="background:#fff3cd;"></div>
+    <div><label class="putni-label" for="pOstatak">Ostatak za isplatu / povrat (€):</label><input type="text" id="pOstatak" class="putni-input" readonly style="background:#fff3cd;"></div>
   </div>
 
-  <div class="sekcija-naslov">📝 Izvješće s putovanja</div>
+</div><div class="report-card">
+  <label class="putni-label" for="pIzvjesce">Izvješće s putovanja</label>
   <textarea id="pIzvjesce" class="putni-input" style="min-height:70px;resize:vertical;" placeholder="Kratko izvješće o obavljenom putovanju..."></textarea>
 
   <div class="mreza" style="margin-top:10px;">
     <div><label class="putni-label" for="pDatumLik">Datum obračuna:</label><input type="text" id="pDatumLik" class="putni-input fp-datum" placeholder="dd.mm.gggg"></div>
   </div>
 
+</div></div>
   <button class="btn btn-main" onclick="ispisPutnog()" style="margin-top:18px;">🖨️ Ispiši putni nalog</button>
   <p class="napomena-mala" style="text-align:center;">Podaci se ne šalju nikamo, sve radi u tvom pregledniku. Iznose i obračun prije isplate provjeri prema važećim propisima.</p>
 
+</section>
   <section class="vodic">
     <h2>Što je putni nalog?</h2>
     <p>Putni nalog je isprava kojom poslodavac upućuje radnika na službeno putovanje i na temelju koje se obračunavaju dnevnice i ostali putni troškovi. Bez urednog putnog naloga dnevnice i naknada za kilometražu ne mogu se isplatiti neoporezivo. Ovim alatom nalog ispunite u par minuta: sati na putu, dnevnice, umanjenje za obroke i kilometraža izračunaju se sami, a nalog s obračunom putnih troškova ispišete jednim klikom.</p>
@@ -373,7 +475,7 @@ function izracunajSate() {
   let sati = Math.floor(ukMin / 60), min = ukMin % 60;
   let puniDani = Math.floor(ukMin / 1440);
   let ostatakSati = (ukMin - puniDani * 1440) / 60;
-  let dnev = puniDani + (ostatakSati >= 12 ? 1 : ostatakSati >= 8 ? 0.5 : 0);
+  let dnev = puniDani + (ostatakSati > 12 ? 1 : ostatakSati > 8 ? 0.5 : 0); // više od 12 h puna, više od 8 h pola
 
   prikaz.value = sati + ' h' + (min ? ' ' + min + ' min' : '') + '  →  ' + String(dnev).replace('.', ',') + ' dnevnica';
   prikaz.dataset.sati = sati + (min ? ' h ' + min + ' min' : ' h');
@@ -463,7 +565,7 @@ function urediVozaca(id) {
   document.getElementById('vozacId').value = v.id;
   for (let k in POLJA_OSOBE) document.getElementById(POLJA_OSOBE[k]).value = v[k] || '';
   document.getElementById('vozacFormaTitle').textContent = '✏️ Uredi osobu';
-  document.getElementById('bazaVozacaPanel').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('bazaVozacaPanel').scrollIntoView({ behavior: 'auto' });
 }
 function resetFormuVozaca() {
   document.getElementById('vozacId').value = '';
@@ -618,6 +720,150 @@ function ispisPutnog() {
   dodajTrosak(); dodajTrosak(); dodajTrosak();
   azurirajSelectVozaca();
   izracunajUkupno();
+})();
+</script>
+<style>@media screen { .dynamic-field { display:block; min-width:0; } .dynamic-field span { display:none; } } @media screen and (max-width:900px) { .dynamic-field span { display:block; font-size:11px; color:#4b5f72; font-weight:600; margin-bottom:6px; } #dnevniceRedovi .dynamic-field .putni-input { margin-top:0; } }</style>
+<script data-presentation-only>
+// Visible field labels for dynamically added rows; no calculation or storage changes.
+(function () {
+  function labelRows() {
+    document.querySelectorAll('#dnevniceRedovi .putni-input, #putniTroskovi .putni-input').forEach(function (input) {
+      if (input.parentElement.classList.contains('dynamic-field')) return;
+      var label = document.createElement('label');
+      label.className = 'dynamic-field' + (input.classList.contains('dnev-obrok') ? ' field-obrok' : '') + (input.classList.contains('tr-naziv') ? ' field-naziv' : '');
+      var caption = document.createElement('span');
+      caption.textContent = input.getAttribute('aria-label');
+      input.before(label); label.append(caption, input);
+    });
+  }
+  labelRows();
+  ['dnevniceRedovi', 'putniTroskovi'].forEach(function (id) {
+    new MutationObserver(labelRows).observe(document.getElementById(id), {childList:true, subtree:true});
+  });
+})();
+</script>
+<style>
+@media screen {
+ html { scroll-behavior:auto; }
+ .putni-label,.dynamic-field span { color:#40556a; }
+ .putni-input::placeholder { color:#687c8e; }
+ .required-mark { color:#a43745; margin-left:4px; }
+ .field-error { display:block; color:#a12535; font-size:12px; line-height:1.5; margin-top:6px; }
+ .field-error:empty { display:none; }
+ [aria-invalid="true"] { border-color:#b63c4e !important; box-shadow:0 0 0 1px #b63c4e; }
+ .putni-input:focus-visible,button:focus-visible,a:focus-visible,input[type=checkbox]:focus-visible { outline:3px solid #247aa8; outline-offset:3px; }
+ .putni-input,button { transition:box-shadow .12s,border-color .12s,background-color .12s; }
+ #bazaVozacaPanel,#privatniBlok { animation:section-enter .12s ease-out; }
+ .field-help { color:#52677a; font-size:12px; margin:0 0 18px; }
+ .form-section > .napomena-mala { color:#52677a; }
+ .dynamic-field .field-error { display:block; color:#a12535; font-weight:400; }
+ .dynamic-field .field-error:empty { display:none; }
+ .money-field { font-variant-numeric:tabular-nums; }
+}
+@keyframes section-enter { from { opacity:.8; } to { opacity:1; } }
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+@page { size:A4; margin:12mm; }
+@media print {
+ #dokumentPrint > div { max-width:100% !important; padding:0 !important; }
+ #dokumentPrint > div > div { padding:10px !important; }
+ #dokumentPrint table { table-layout:fixed; overflow-wrap:anywhere; }
+ #dokumentPrint tr,#dokumentPrint > div > div > div:last-child { break-inside:avoid; page-break-inside:avoid; }
+ #dokumentPrint h2,#dokumentPrint h3 { break-after:avoid; }
+ #dokumentPrint p { orphans:3; widows:3; overflow-wrap:anywhere; }
+ #dokumentPrint > div > div:first-child { break-after:page; }
+ #dokumentPrint > div > div:last-child > p:last-of-type { break-after:avoid; }
+ #dokumentPrint > div > div:last-child > div:nth-last-child(2) { break-after:avoid; }
+}
+</style>
+<script data-ux-polish>
+(function () {
+ const required=['pTvrtka','pBroj','pIme','pDatumPolaska','pDatumPovratka','pDestinacija','pSvrha'];
+ const moneySelector='#pPredujam,#pKmNaknada,.dnev-iznos,.tr-iznos';
+ let nextId=0;
+ function money(el) { return el.matches(moneySelector); }
+ function numberField(el) { return el.matches(moneySelector+',#pKmPocetno,#pKmZavrsno,#pKmPrijedeno,.dnev-broj'); }
+ function dateField(el) { return el.matches('.fp-datum,.dnev-od,.dnev-do'); }
+ function parseDate(value) {
+  const m=value.trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})\.?$/);
+  if(!m)return null;
+  const d=new Date(+m[3],+m[2]-1,+m[1]);
+  return d.getFullYear()===+m[3]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[1]?d:null;
+ }
+ function error(el,message) {
+  const node=document.getElementById(el.dataset.errorId);
+  if(node&&node.textContent!==message)node.textContent=message;
+  if(message)el.setAttribute('aria-invalid','true');else el.removeAttribute('aria-invalid');
+ }
+ function validate(el,empty=false) {
+  let msg='',v=el.value.trim();
+  if(!v&&empty&&el.getAttribute('aria-required')==='true')msg='Ispunite ovo polje za potpun putni nalog.';
+  if(v&&dateField(el)&&!parseDate(v))msg='Upišite postojeći datum u obliku dd.mm.gggg., npr. 14.10.2026.';
+  if(v&&numberField(el)) {
+   const n=Number(v.replace(',','.'));
+   if(Number.isFinite(n)&&n<0)msg='Vrijednost ne može biti negativna.';
+   else if(!/^\d+(?:[.,]\d+)?$/.test(v)||!Number.isFinite(n))msg='Upišite broj bez razmaka, npr. '+(money(el)?'125,50.':'125.');
+   else if(money(el)&&/[.,]\d{3,}$/.test(v))msg='Novčani iznos unesite s najviše dvije decimale.';
+   else if(el.matches('#pKmPocetno,#pKmZavrsno,#pKmPrijedeno')&&!Number.isInteger(n))msg='Kilometražu unesite kao cijeli broj.';
+   else if(el.matches('.dnev-broj')&&!Number.isInteger(n*2))msg='Broj dnevnica unesite u koracima od 0,5.';
+  }
+  error(el,msg); return !msg;
+ }
+ function validateTrip() {
+  const start=document.getElementById('pDatumPolaska'),end=document.getElementById('pDatumPovratka');
+  const a=parseDate(start.value),b=parseDate(end.value);
+  const t1=document.getElementById('pVrijemePolaska'),t2=document.getElementById('pVrijemePovratka');
+  [t1,t2].forEach(el=>error(el,/^([01]\d|2[0-3]):[0-5]\d$/.test(el.value)?'':'Odaberite vrijeme polaska ili povratka.'));
+  if(a&&b) {
+   const from=new Date(a.getFullYear(),a.getMonth(),a.getDate(),...t1.value.split(':').map(Number));
+   const to=new Date(b.getFullYear(),b.getMonth(),b.getDate(),...t2.value.split(':').map(Number));
+   if(to<=from)error(end,'Povratak mora biti nakon polaska. Provjerite datum i vrijeme.');
+   else {error(end,'');izracunajSate();}
+  }
+  const p=document.getElementById('pKmPocetno'),z=document.getElementById('pKmZavrsno');
+  if(p.value&&z.value&&Number(z.value)<Number(p.value))error(z,'Završno stanje brojila mora biti veće ili jednako početnom.');
+ }
+ function setup() {
+  document.querySelectorAll('.putni-input').forEach(el=>{
+   if(el.dataset.uxReady)return;
+   el.dataset.uxReady='true';
+   if(!el.id)el.id='ux-field-'+(++nextId);
+   if(el.readOnly)el.tabIndex=-1;
+   if(numberField(el)) {
+    if(money(el)) {el.type='text';el.classList.add('money-field');}
+    el.inputMode=el.matches('#pKmPocetno,#pKmZavrsno,#pKmPrijedeno')?'numeric':'decimal';
+   }
+   if(required.includes(el.id)) {
+    el.setAttribute('aria-required','true');
+    const label=document.querySelector('label[for="'+el.id+'"]');
+    if(label){const mark=document.createElement('span');mark.className='required-mark';mark.textContent='*';mark.setAttribute('aria-hidden','true');label.append(mark);}
+   }
+   if(!el.getAttribute('aria-label')&&!document.querySelector('label[for="'+el.id+'"]')&&!el.closest('label')) {
+    const label=el.parentElement.querySelector('.putni-label');
+    el.setAttribute('aria-label',label?label.textContent:'Vrijednost');
+   }
+   if(el.readOnly)return;
+   const note=document.createElement('span');note.className='field-error';note.id=el.id+'-error';note.setAttribute('aria-live','polite');
+   el.dataset.errorId=note.id;el.setAttribute('aria-describedby',note.id);
+   // Keep date and time in their shared row; place messages below the row.
+   if(el.parentElement.classList.contains('red-2'))el.parentElement.after(note);else el.after(note);
+   el.addEventListener('input',()=>{validate(el);validateTrip();});
+   el.addEventListener('change',()=>{validate(el);validateTrip();});
+   el.addEventListener('blur',()=>{
+    if(validate(el,true)&&money(el)&&el.value.trim())el.value=Number(el.value.replace(',','.')).toLocaleString('hr-HR',{minimumFractionDigits:2,maximumFractionDigits:2,useGrouping:false});
+   });
+   if(money(el)&&el.value)el.value=Number(el.value).toLocaleString('hr-HR',{minimumFractionDigits:2,maximumFractionDigits:2,useGrouping:false});
+  });
+ }
+ const help=document.createElement('p');help.className='field-help';help.textContent='* Obvezni podaci za potpun nalog. Iznose unosite decimalnim zarezom. Tab prelazi na sljedeće polje.';
+ document.querySelector('.form-section .section-heading').after(help);
+ document.querySelectorAll('.zbroj').forEach(el=>{el.setAttribute('role','status');el.setAttribute('aria-live','polite');el.setAttribute('aria-atomic','true');});
+ const button=document.getElementById('btnBazaVozaca');button.setAttribute('aria-controls','bazaVozacaPanel');
+ const checkbox=document.getElementById('pPrivatniAuto');checkbox.setAttribute('aria-controls','privatniBlok');
+ function expanded(){button.setAttribute('aria-expanded',String(document.getElementById('bazaVozacaPanel').style.display!=='none'));checkbox.setAttribute('aria-expanded',String(checkbox.checked));}
+ new MutationObserver(expanded).observe(document.getElementById('bazaVozacaPanel'),{attributes:true,attributeFilter:['style']});
+ checkbox.addEventListener('change',expanded);expanded();
+ setup();
+ ['dnevniceRedovi','putniTroskovi'].forEach(id=>new MutationObserver(setup).observe(document.getElementById(id),{childList:true,subtree:true}));
 })();
 </script>
 </body>
