@@ -2260,7 +2260,7 @@ function renderHeader() {
   const parts = [g('C29'), g('C27') ? 'OIB ' + g('C27') : ''].filter(Boolean);
   firm.textContent = parts.length ? parts.join(' · ') : 'Obveznik još nije upisan';
   firm.classList.toggle('empty', !parts.length);
-  document.title = (g('C29') ? g('C29') + ' – ' : '') + 'Završni račun ' + year;
+  document.title = (g('C29') ? g('C29') + ' – ' : '') + 'Završni račun ' + year + ' — GFI-POD obrazac | RetroAppLab';
 }
 function buildStatus() {
   const st = document.getElementById('status');
