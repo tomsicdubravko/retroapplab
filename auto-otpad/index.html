@@ -73,6 +73,7 @@
 canvas {min-height:0;flex-shrink:1;}
 #audio-settings {flex-shrink:0;}
 </style>
+<style>h1.ov-title{margin:0;font-weight:normal}</style>
 </head>
 <body>
 <div id="flash"></div>
@@ -92,7 +93,7 @@ canvas {min-height:0;flex-shrink:1;}
 <details id="audio-settings" style="width:min(444px,94%);color:#a9c2b9;font:12px sans-serif;margin:8px 0"><summary style="cursor:pointer">Postavke zvuka</summary><label style="display:flex;align-items:center;gap:12px;padding:10px 0">Ukupna glasnoća <input id="master-volume" type="range" min="0" max="100" step="1" aria-label="Ukupna glasnoća"><output id="volume-value"></output></label></details>
 <div id="wind-alert" role="status" hidden></div><div id="risk-choice" role="dialog" aria-modal="true" aria-labelledby="risk-title" hidden><h2 id="risk-title">Drobilica je spremna!</h2><p id="risk-info"></p><div class="risk-actions"><button id="crush-now">ZDROBI I NAPLATI</button><button id="risk-more">JOŠ 3 AUTA</button></div></div><div id="overlay">
   <div class="brand-present brand-intro">RETROAPPLAB PRESENTS</div>
-  <div class="ov-title" id="ov-title">AUTO<br>OTPAD</div>
+  <h1 class="ov-title" id="ov-title">AUTO<br>OTPAD</h1>
   <div class="brand-tagline brand-intro">FROM SCRAP TO HIGH SCORE</div>
   <div class="ov-sub" id="ov-sub">Složi 10 auta i pokreni drobilicu. Imaš 3 života. Nakon 10 auta zdrobi hrpu ili riskiraj s još 3 auta za veći bonus!</div>
   <div class="ov-final" id="ov-final">Složio si <span id="ov-val">0</span> auta!<div style="font-size:22px" id="ov-points"></div></div>

@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dubrovnik Chess</title>
+  <title>Dubrovnik Chess — šahovska priča iz Dubrovnika 1950. | RetroAppLab</title>
+  <meta name="description" content="Dubrovnik Chess — besplatna online igra šaha u pregledniku protiv bota, u dvoje ili online, inspirirana Šahovskom olimpijadom u Dubrovniku 1950. Uz igru: mapa šahovske povijesti grada i povijesne partije.">
+  <link rel="canonical" href="https://retroapplab.com/sah/">
   <style>
     body {
       margin: 0;
@@ -79,10 +81,33 @@
       to   { opacity: 1; }
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .sah-uvod {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 20px 56px;
+      line-height: 1.7;
+      font-size: 16px;
+      border-top: 1px solid rgba(224,184,90,0.25);
+    }
+    .sah-uvod h1 {
+      color: #e0b85a;
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: normal;
+      letter-spacing: 1px;
+      line-height: 1.3;
+      margin: 0 0 18px;
+    }
+    .sah-uvod p { margin: 0 0 14px; color: #d8c9a3; }
+    .sah-uvod a { color: #e0b85a; }
   </style>
   <script src="chess-engine.js"></script></head>
 <body>
   <div id="root"></div>
+  <section class="sah-uvod" aria-labelledby="sah-uvod-naslov">
+    <h1 id="sah-uvod-naslov">Dubrovnik Chess — šahovska priča iz Dubrovnika 1950.</h1>
+    <p>Dubrovnik Chess je besplatna online igra šaha u pregledniku, nastala iz priče o IX. Šahovskoj olimpijadi održanoj u Dubrovniku u rujnu 1950. Grad je tada ugostio 16 nacija i 84 šahista, a Jugoslavija je osvojila zlatnu medalju. Dubrovčanin Petar Trifunović na trećoj je ploči pobijedio u 10 od 13 partija.</p>
+    <p>Igraj protiv bota s odabirom težine i stila igre, u dvoje na istom uređaju ili <a href="/sah/online.html">online s prijateljem</a>. Na <a href="/sah/mapa.html">interaktivnoj mapi</a> istraži šahovsku povijest grada: od legende o Richardu Lavljem Srcu na Lokrumu, preko Aljehinove simultanke 1936., do Kasparova na Stradunu. Pogledaj i povijesne partije potez po potez: <a href="/sah/partija2.html">Niemela – Trifunović s olimpijade 1950.</a> i <a href="/sah/partija.html">Fischer – Trifunović s turnira na Bledu 1961.</a></p>
+  </section>
   <div id="boot-status" role="status" aria-live="polite">
     <div>
       <strong>Dubrovnik Chess</strong>
