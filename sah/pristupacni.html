@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Šah za slijepe i slabovidne — igraj protiv računala uz glasovnu najavu | RetroAppLab</title>
+  <meta name="description" content="Šah za slijepe i slabovidne: igrajte protiv računala upisom poteza u šahovskoj notaciji, uz glasovnu najavu svakog poteza. Radi s čitačima zaslona VoiceOver, TalkBack i NVDA.">
+  <link rel="canonical" href="https://retroapplab.com/sah/pristupacni.html">
+  <style>
+    :root {
+      --bg: #0b0602;
+      --panel: #1c1106;
+      --text: #fff6e0;
+      --muted: #f0d9a8;
+      --gold: #ffd36b;
+      --line: #c79a3e;
+      --focus: #ffff00;
+      --light-sq: #f4e3b8;
+      --dark-sq: #8a5a26;
+      --sel: #2f7dff;
+      --last: #3fae5a;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      line-height: 1.55;
+    }
+    a { color: var(--gold); }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; }
+    .top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; font-size: 17px; margin-bottom: 18px; }
+    h1 { color: var(--gold); font-size: clamp(28px, 6vw, 40px); line-height: 1.2; margin: 0 0 12px; font-weight: normal; letter-spacing: .5px; }
+    h2 { color: var(--gold); font-size: 26px; margin: 0 0 12px; font-weight: normal; }
+    .uvod { color: var(--muted); margin: 0 0 24px; }
+    .panel { background: var(--panel); border: 2px solid var(--line); border-radius: 12px; padding: 18px 16px; margin-bottom: 20px; }
+    fieldset { border: 2px solid var(--line); border-radius: 10px; margin: 0 0 16px; padding: 10px 14px 12px; min-width: 0; }
+    legend { color: var(--gold); padding: 0 6px; font-size: 21px; }
+    .opcija { display: flex; align-items: center; gap: 12px; padding: 6px 0; font-size: 20px; cursor: pointer; }
+    .opcija input { width: 28px; height: 28px; margin: 0; accent-color: var(--gold); flex-shrink: 0; }
+    button {
+      font: inherit;
+      font-size: 20px;
+      min-height: 52px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 2px solid var(--gold);
+      background: #2b1a08;
+      color: var(--text);
+      cursor: pointer;
+    }
+    button:hover { background: #3d260c; }
+    button.glavna { background: var(--gold); color: #1a0f04; font-weight: bold; }
+    button.glavna:hover { background: #ffe39b; }
+    :focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
+    .unos-red { display: flex; gap: 10px; flex-wrap: wrap; }
+    label.velika { display: block; color: var(--gold); font-size: 22px; margin-bottom: 6px; }
+    #potez {
+      flex: 1 1 200px;
+      min-width: 0;
+      font: inherit;
+      font-size: 26px;
+      min-height: 56px;
+      padding: 8px 14px;
+      border: 3px solid var(--gold);
+      border-radius: 10px;
+      background: #000;
+      color: #fff;
+    }
+    .uputa { color: var(--muted); font-size: 17px; margin: 8px 0 0; }
+    .naredbe { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+    .naredbe button { font-size: 18px; padding: 8px 10px; }
+    #poruka {
+      min-height: 3em;
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-left: 6px solid var(--gold);
+      background: #000;
+      font-size: 22px;
+      white-space: pre-line;
+    }
+    #stanje { color: var(--gold); font-size: 21px; margin: 0 0 10px; }
+    .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    .ploca-okvir { width: 100%; max-width: 560px; margin: 0 auto; }
+    table.ploca { border-collapse: collapse; width: 100%; table-layout: fixed; border: 3px solid var(--line); }
+    table.ploca td { padding: 0; }
+    table.ploca th { color: var(--muted); font-size: 16px; font-weight: normal; }
+    table.ploca thead td { width: 24px; }
+    table.ploca thead th, table.ploca tfoot th { height: 24px; }
+    .polje {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      font-size: clamp(26px, 8vw, 50px);
+      line-height: 1;
+      font-family: "Segoe UI Symbol", "DejaVu Sans", "Noto Sans Symbols 2", serif;
+    }
+    .polje.svijetlo { background: var(--light-sq); }
+    .polje.tamno { background: var(--dark-sq); }
+    .polje:hover { filter: brightness(1.1); }
+    .polje.zadnji { box-shadow: inset 0 0 0 5px var(--last); }
+    .polje.odabrano { box-shadow: inset 0 0 0 6px var(--sel); }
+    .polje.cilj::after { content: ""; display: block; width: 26%; height: 26%; margin: auto; border-radius: 50%; background: var(--sel); opacity: .75; }
+    .polje.cilj.ima::after { display: none; }
+    .polje:focus-visible { outline: 5px solid var(--focus); outline-offset: -5px; position: relative; z-index: 1; }
+    .fig-w { color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; }
+    .fig-b { color: #000; text-shadow: 0 0 2px #fff, 1px 1px 0 #fff8, -1px -1px 0 #fff8; }
+    #kraj { border-color: var(--gold); }
+    #kraj .unos-red button { flex: 1 1 220px; }
+    ol#popis { margin: 0; padding-left: 1.6em; }
+    ol#popis li { margin: 4px 0; }
+    details summary { cursor: pointer; color: var(--gold); font-size: 21px; min-height: 44px; display: flex; align-items: center; }
+    [hidden] { display: none !important; }
+    @media (max-width: 420px) {
+      body { font-size: 19px; }
+      .panel { padding: 14px 12px; }
+      table.ploca th { font-size: 13px; }
+      table.ploca thead td { width: 16px; }
+    }
+  </style>
+  <script src="chess-engine.js"></script>
+  <script src="najava.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a href="/sah/">← Dubrovnik Chess</a>
+    <a href="/">RetroAppLab</a>
+  </div>
+
+  <header>
+    <h1>♿ Šah za slijepe i slabovidne</h1>
+    <p class="uvod">Šah za slijepe i slabovidne: igrajte protiv računala upisom poteza u šahovskoj notaciji, uz glasovnu najavu svakog poteza. Radi s čitačima zaslona VoiceOver, TalkBack i NVDA. Nema sata ni vremenskog ograničenja.</p>
+  </header>
+
+  <main>
+    <!-- IZBORNIK -->
+    <section id="izbornik" class="panel" aria-labelledby="izbornik-naslov">
+      <h2 id="izbornik-naslov">Nova partija</h2>
+      <form id="postavke">
+        <fieldset>
+          <legend>Boja</legend>
+          <label class="opcija"><input type="radio" name="boja" value="w" checked> Bijeli (igrate prvi)</label>
+          <label class="opcija"><input type="radio" name="boja" value="b"> Crni</label>
+          <label class="opcija"><input type="radio" name="boja" value="r"> Nasumično</label>
+        </fieldset>
+        <fieldset>
+          <legend>Težina bota</legend>
+          <label class="opcija"><input type="radio" name="tezina" value="easy" checked> Lakši — Tajfunović, pozicijski</label>
+          <label class="opcija"><input type="radio" name="tezina" value="medium"> Srednji — Bobby, agresivan</label>
+          <label class="opcija"><input type="radio" name="tezina" value="hard"> Teži — Gari, dinamičan</label>
+        </fieldset>
+        <fieldset>
+          <legend>Govor</legend>
+          <label class="opcija"><input type="radio" name="govor" value="glas" checked> Ugrađeni glas</label>
+          <label class="opcija"><input type="radio" name="govor" value="citac"> Samo čitač zaslona</label>
+          <label class="opcija"><input type="radio" name="govor" value="oboje"> Oboje</label>
+        </fieldset>
+        <fieldset>
+          <legend>Brzina govora</legend>
+          <label class="opcija"><input type="radio" name="brzina" value="0.75"> Sporo</label>
+          <label class="opcija"><input type="radio" name="brzina" value="1" checked> Normalno</label>
+          <label class="opcija"><input type="radio" name="brzina" value="1.35"> Brzo</label>
+        </fieldset>
+        <button type="submit" class="glavna" id="zapocni">Započni partiju</button>
+      </form>
+    </section>
+
+    <!-- IGRA -->
+    <section id="igra" hidden aria-labelledby="igra-naslov">
+      <h2 id="igra-naslov">Partija</h2>
+      <p id="stanje"></p>
+      <div id="poruka"></div>
+
+      <div class="panel">
+        <form id="unos" autocomplete="off">
+          <label class="velika" for="potez">Vaš potez</label>
+          <div class="unos-red">
+            <input id="potez" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-describedby="potez-uputa">
+            <button type="submit" class="glavna">Odigraj</button>
+          </div>
+          <p class="uputa" id="potez-uputa">Npr. e4, Sf3, exd5, 0-0 ili g1f3. Za popis naredbi upišite „pomoć”.</p>
+        </form>
+        <div class="naredbe" role="group" aria-label="Naredbe">
+          <button type="button" data-naredba="ploča">Ploča</button>
+          <button type="button" data-naredba="moje">Moje figure</button>
+          <button type="button" data-naredba="protivnik">Protivnik</button>
+          <button type="button" data-naredba="zadnji">Zadnji potez</button>
+          <button type="button" data-naredba="potezi">Potezi</button>
+          <button type="button" data-naredba="materijal">Materijal</button>
+          <button type="button" data-naredba="gdje">Gdje je…</button>
+          <button type="button" data-naredba="polje">Polje…</button>
+          <button type="button" data-naredba="napadnuto">Napadnuto…</button>
+          <button type="button" data-naredba="pomoć">Pomoć</button>
+          <button type="button" data-naredba="predaja">Predaja</button>
+          <button type="button" data-naredba="nova partija">Nova partija</button>
+        </div>
+      </div>
+
+      <div id="kraj" class="panel" hidden>
+        <h2>Partija je završena</h2>
+        <div class="unos-red">
+          <button type="button" class="glavna" id="kraj-nova">Nova partija</button>
+          <button type="button" id="kraj-potezi">Pročitaj sve poteze partije</button>
+        </div>
+      </div>
+
+      <section class="panel" aria-labelledby="ploca-naslov">
+        <h2 id="ploca-naslov">Ploča</h2>
+        <p class="uputa" id="ploca-uputa">Strelicama se krećete po poljima. Enter na vlastitoj figuri je odabire, Enter na odredištu odigrava potez, Escape poništava odabir.</p>
+        <div class="ploca-okvir">
+          <table class="ploca" id="ploca" aria-describedby="ploca-uputa"></table>
+        </div>
+      </section>
+
+      <details class="panel">
+        <summary>Odigrani potezi</summary>
+        <ol id="popis"></ol>
+      </details>
+    </section>
+  </main>
+
+  <div id="live-polite" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <div id="live-assertive" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  var FIG = { K: "kralj", Q: "dama", R: "top", B: "lovac", N: "skakač", P: "pješak" };
+  var FIG_AK = { K: "kralja", Q: "damu", R: "topa", B: "lovca", N: "skakača", P: "pješaka" };
+  var FIG_MN = { K: "kraljevi", Q: "dame", R: "topovi", B: "lovci", N: "skakači", P: "pješaci" };
+  var SLOVO_HR = { K: "K", Q: "D", R: "T", B: "L", N: "S", P: "" };
+  var ZNAK = { K: "♚", Q: "♛", R: "♜", B: "♝", N: "♞", P: "♟" };
+  var VRIJ = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0 };
+  var RED = ["K", "Q", "R", "B", "N", "P"];
+  var TEZINE = {
+    easy: { depth: 3, personality: "trifunovic" },
+    medium: { depth: 4, personality: "fischer" },
+    hard: { depth: 4, personality: "kasparov" }
+  };
+  var SLOVO_FIG = { k: "K", d: "Q", q: "Q", t: "R", r: "R", l: "B", b: "B", s: "N", n: "N" };
+  var RIJEC_FIG = {
+    kralj: "K", kralja: "K", kraljevi: "K",
+    dama: "Q", damu: "Q", dame: "Q", kraljica: "Q", kraljicu: "Q",
+    top: "R", topa: "R", topovi: "R", kula: "R",
+    lovac: "B", lovca: "B", lovci: "B",
+    skakac: "N", skakaca: "N", skakaci: "N", konj: "N", konja: "N",
+    pjesak: "P", pjesaka: "P", pjesaci: "P", pijun: "P", pijuni: "P"
+  };
+
+  var cfg = { boja: "w", tezina: "easy", govor: "glas", brzina: 1 };
+  var g = null; // stanje partije
+  var botWorker = null;
+  var fokusPolje = [6, 4];
+  var odabrano = null;
+
+  function P(r, c) { return najavaPoljeGovor(r, c); }
+  function protivna(col) { return col === "w" ? "b" : "w"; }
+  function strana(col) { return col === "w" ? "bijeli" : "crni"; }
+  function norm(s) {
+    return s.toLowerCase().replace(/[čć]/g, "c").replace(/š/g, "s").replace(/ž/g, "z").replace(/đ/g, "d").replace(/\s+/g, " ").trim();
+  }
+  function parsePolje(s) {
+    var m = /^([a-h])\s*([1-8])$/i.exec(s.trim());
+    return m ? [8 - +m[2], "abcdefgh".indexOf(m[1].toLowerCase())] : null;
+  }
+  function kopija(b) { return b.map(function (r) { return r.slice(); }); }
+
+  // ── GOVOR I ARIA-LIVE ────────────────────────────────────────────────────
+  function trajanje(tekst) { return 600 + tekst.length * 65 / cfg.brzina; }
+  function koristiGlas() { return cfg.govor !== "citac"; }
+  function koristiCitac() { return cfg.govor !== "glas"; }
+  var liveTimer = null;
+  function reci(tekst, opts) {
+    opts = opts || {};
+    $("poruka").textContent = tekst;
+    if (koristiCitac()) {
+      var el = opts.hitno ? $("live-assertive") : $("live-polite");
+      var drugi = opts.hitno ? $("live-polite") : $("live-assertive");
+      drugi.textContent = "";
+      el.textContent = "";
+      clearTimeout(liveTimer);
+      liveTimer = setTimeout(function () { el.textContent = tekst; }, 60);
+    }
+    if (koristiGlas()) {
+      najavaGovori(tekst, { rate: cfg.brzina, onEnd: opts.onEnd });
+    } else if (opts.onEnd) {
+      setTimeout(opts.onEnd, trajanje(tekst));
+    }
+  }
+  // samo glas (za kretanje po ploči; čitač zaslona sam čita fokus)
+  function reciGlasom(tekst) { if (koristiGlas()) najavaGovori(tekst, { rate: cfg.brzina }); }
+
+  // ── IZBORNIK ─────────────────────────────────────────────────────────────
+  try {
+    var spremljeno = JSON.parse(localStorage.getItem("dubch_pristupacni") || "null");
+    if (spremljeno) {
+      ["boja", "tezina", "govor", "brzina"].forEach(function (k) {
+        var el = document.querySelector('input[name="' + k + '"][value="' + spremljeno[k] + '"]');
+        if (el) el.checked = true;
+      });
+    }
+  } catch (e) {}
+
+  $("postavke").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var f = new FormData(e.target);
+    cfg.boja = f.get("boja");
+    cfg.tezina = f.get("tezina");
+    cfg.govor = f.get("govor");
+    cfg.brzina = parseFloat(f.get("brzina")) || 1;
+    try { localStorage.setItem("dubch_pristupacni", JSON.stringify({ boja: cfg.boja, tezina: cfg.tezina, govor: cfg.govor, brzina: String(f.get("brzina")) })); } catch (err) {}
+    zapocni();
+  });
+
+  function zapocni() {
+    var col = cfg.boja === "r" ? (Math.random() < 0.5 ? "w" : "b") : cfg.boja;
+    if (botWorker) { botWorker.terminate(); botWorker = null; }
+    g = {
+      board: initBoard(), turn: "w", ep: null, cs: { wK: true, wQ: true, bK: true, bQ: true },
+      ja: col, bot: protivna(col), povijest: [], gotovo: false, status: null, razmislja: false, zadnji: null, lastMv: null,
+      dubina: TEZINE[cfg.tezina].depth, osobnost: TEZINE[cfg.tezina].personality, id: Math.random()
+    };
+    odabrano = null;
+    fokusPolje = col === "w" ? [6, 4] : [1, 3];
+    $("izbornik").hidden = true;
+    $("igra").hidden = false;
+    $("kraj").hidden = true;
+    $("popis").innerHTML = "";
+    nacrtaj();
+    $("potez").focus();
+    var uvod = "Partija je počela. Igrate " + (col === "w" ? "bijelim" : "crnim") + " figurama. ";
+    if (col === "w") {
+      reci(uvod + "Vaš potez.");
+    } else {
+      g.razmislja = true;
+      azurirajStanje();
+      reci(uvod + "Bijeli je na potezu. Bot razmišlja.", { onEnd: botIgra(Date.now()) });
+    }
+  }
+
+  function natragUIzbornik() {
+    if (botWorker) { botWorker.terminate(); botWorker = null; }
+    najavaStop();
+    g = null;
+    $("igra").hidden = true;
+    $("izbornik").hidden = false;
+    var prvi = document.querySelector('#postavke input[name="boja"]:checked');
+    (prvi || $("zapocni")).focus();
+    reci("Nova partija. Odaberite postavke i pritisnite Započni partiju.");
+  }
+
+  // ── PRAVILA ──────────────────────────────────────────────────────────────
+  function statusZa(board, col, ep, cs) {
+    var chk = isInCheck(board, col);
+    var ima = getAllMoves(board, col, ep, cs).length > 0;
+    return !ima ? (chk ? "checkmate" : "stalemate") : (chk ? "check" : null);
+  }
+
+  // potez = {from, to, promo}; vraća opis
+  function odigraj(m) {
+    var prije = g.board;
+    var col = g.turn;
+    var res = applyMove(prije, m.from, m.to, g.ep, g.cs);
+    var nb = res.board;
+    var piece = prije[m.from[0]][m.from[1]];
+    if (piece[1] === "P" && (m.to[0] === 0 || m.to[0] === 7)) nb[m.to[0]][m.to[1]] = col + (m.promo || "Q");
+    var hvatanje = !!prije[m.to[0]][m.to[1]] || (piece[1] === "P" && m.from[1] !== m.to[1]);
+    var nt = protivna(col);
+    var st = statusZa(nb, nt, res.enPassant, res.castling);
+    var opis = najavaOpis(prije, nb, m.from, m.to, st);
+    g.board = nb; g.ep = res.enPassant; g.cs = res.castling; g.turn = nt; g.status = st;
+    g.lastMv = [m.from, m.to];
+    g.povijest.push({ col: col, opis: opis });
+    if (col === g.bot) g.zadnji = opis;
+    var li = document.createElement("li");
+    li.textContent = opis;
+    $("popis").appendChild(li);
+    try { if (hvatanje) playCapture(); else playMove(); if (st === "checkmate") setTimeout(playCheckmate, 120); } catch (e) {}
+    if (st === "checkmate" || st === "stalemate") g.gotovo = true;
+    odabrano = null;
+    nacrtaj();
+    return { opis: opis, status: st };
+  }
+
+  // ── BOT ──────────────────────────────────────────────────────────────────
+  // vraća onEnd callback za najavu mog poteza; bot igra najmanje 1,5 s nakon kraja te najave
+  function botIgra() {
+    var igraId = g.id;
+    var rezultat = null, najavaGotova = 0, gotovPotez = false;
+    function pokusaj() {
+      if (!g || g.id !== igraId || g.gotovo || !rezultat || !najavaGotova || gotovPotez) return;
+      var cekaj = najavaGotova + 1500 - Date.now();
+      if (cekaj > 0) { setTimeout(pokusaj, cekaj); return; }
+      if (koristiGlas() && window.speechSynthesis && window.speechSynthesis.speaking && Date.now() - najavaGotova < 20000) { setTimeout(pokusaj, 250); return; }
+      gotovPotez = true;
+      g.razmislja = false;
+      var r = odigraj(rezultat);
+      var hitno = !!r.status;
+      reci(r.opis + (g.gotovo ? kraj() : " Vaš potez."), { hitno: hitno });
+      azurirajStanje();
+      $("potez").focus();
+    }
+    var b = kopija(g.board), col = g.bot, ep = g.ep, cs = { wK: g.cs.wK, wQ: g.cs.wQ, bK: g.cs.bK, bQ: g.cs.bQ };
+    function primi(m) {
+      if (!g || g.id !== igraId) return;
+      if (!m) { var sve = getAllMoves(b, col, ep, cs); m = sve[Math.floor(Math.random() * sve.length)]; }
+      rezultat = { from: m.from, to: m.to, promo: "Q" };
+      pokusaj();
+    }
+    try {
+      if (!botWorker) botWorker = createBotWorker();
+      botWorker.onmessage = function (e) { primi(e.data); };
+      botWorker.onerror = function () { primi(getBotMove(b, col, ep, cs, 2)); };
+      botWorker.postMessage({ board: b, botCol: col, ep: ep, cs: cs, depth: g.dubina, personality: g.osobnost });
+    } catch (e) {
+      setTimeout(function () { primi(getBotMove(b, col, ep, cs, 2)); }, 0);
+    }
+    return function () { najavaGotova = Date.now(); pokusaj(); };
+  }
+
+  function kraj() {
+    $("kraj").hidden = false;
+    var t = " Partija je završena.";
+    if (g.status === "checkmate") t += g.turn === g.ja ? " Izgubili ste." : " Pobijedili ste!";
+    return t + " Upišite „nova partija” ili „svi potezi”, ili koristite tipke Nova partija i Pročitaj sve poteze partije.";
+  }
+
+  // ── UNOS POTEZA ──────────────────────────────────────────────────────────
+  function nomVas(t) { return t === "Q" ? "nijedna vaša dama" : "nijedan vaš " + FIG[t]; }
+
+  var FIG_GEN = { K: "kralja", Q: "dame", R: "topa", B: "lovca", N: "skakača", P: "pješaka" };
+  function razlogNedozvoljeno(t, kandidati, to, spec) {
+    // kandidati: polja mojih figura tipa t koje odgovaraju unosu; spec: {ff, fr} iz unosa
+    if (!kandidati.length) {
+      var ima = false;
+      for (var rr = 0; rr < 8; rr++) for (var cc = 0; cc < 8; cc++) if (g.board[rr][cc] === g.ja + t) ima = true;
+      if (!ima) return "Nedozvoljen potez: nemate " + FIG_AK[t] + ".";
+      if (spec && spec.ff && spec.fr) return "Nedozvoljen potez: na " + spec.ff.toLowerCase() + " " + spec.fr + " nema vašeg " + FIG_GEN[t] + ".";
+      if (spec && spec.ff && t !== "P") return "Nedozvoljen potez: " + nomVas(t) + " s linije " + spec.ff.toLowerCase() + " ne može na " + P(to[0], to[1]) + ".";
+      if (spec && spec.fr) return "Nedozvoljen potez: " + nomVas(t) + " s " + spec.fr + ". reda ne može na " + P(to[0], to[1]) + ".";
+      return "Nedozvoljen potez: " + nomVas(t) + " ne može na " + P(to[0], to[1]) + ".";
+    }
+    var cilj = g.board[to[0]][to[1]];
+    if (cilj && cilj[0] === g.ja) return "Nedozvoljen potez: na " + P(to[0], to[1]) + " je vaša figura, " + FIG[cilj[1]] + ".";
+    for (var i = 0; i < kandidati.length; i++) {
+      var raw = getRawMoves(g.board, kandidati[i][0], kandidati[i][1], g.ep, g.cs);
+      for (var j = 0; j < raw.length; j++) {
+        if (raw[j][0] === to[0] && raw[j][1] === to[1]) {
+          return isInCheck(g.board, g.ja)
+            ? "Nedozvoljen potez: vaš kralj je u šahu, a taj ga potez ne brani."
+            : "Nedozvoljen potez: kralj bi bio u šahu.";
+        }
+      }
+    }
+    return "Nedozvoljen potez: " + nomVas(t) + " ne može na " + P(to[0], to[1]) + ".";
+  }
+
+  function rokada(strana) {
+    var row = g.ja === "w" ? 7 : 0;
+    var from = [row, 4], to = [row, strana === "K" ? 6 : 2];
+    var legal = getLegalMoves(g.board, row, 4, g.ep, g.cs);
+    var piece = g.board[row][4];
+    if (piece === g.ja + "K" && legal.some(function (m) { return m[0] === to[0] && m[1] === to[1]; })) return { potez: { from: from, to: to } };
+    var naziv = strana === "K" ? "mala rokada" : "velika rokada";
+    if (!g.cs[g.ja + strana] || piece !== g.ja + "K") return { greska: "Nedozvoljen potez: " + naziv + " više nije moguća, kralj ili top su se već pomicali." };
+    if (isInCheck(g.board, g.ja)) return { greska: "Nedozvoljen potez: " + naziv + " nije moguća dok je kralj u šahu." };
+    var izmedju = strana === "K" ? [5, 6] : [1, 2, 3];
+    for (var i = 0; i < izmedju.length; i++) if (g.board[row][izmedju[i]]) return { greska: "Nedozvoljen potez: za " + (strana === "K" ? "malu" : "veliku") + " rokadu između kralja i topa ne smije biti figura." };
+    return { greska: "Nedozvoljen potez: kralj bi pri rokadi prošao kroz napadnuto polje ili završio u šahu." };
+  }
+
+  // vraća {potez} | {greska} | null (nije potez)
+  function protumaci(ulaz) {
+    var s = ulaz.replace(/\s+/g, "").replace(/e\.?p\.?$/i, "").replace(/[+#!?=]/g, "").replace(/[x:×]/gi, "");
+    var bezCrtica = s.replace(/[-–]/g, "");
+    if (/^(000|ooo)$/i.test(bezCrtica)) return rokada("Q");
+    if (/^(00|oo)$/i.test(bezCrtica)) return rokada("K");
+    s = bezCrtica;
+    var moji = getAllMoves(g.board, g.ja, g.ep, g.cs);
+    var m = /^([a-h][1-8])([a-h][1-8])([dtlsqrbn])?$/i.exec(s);
+    if (m) {
+      var from = parsePolje(m[1]), to = parsePolje(m[2]);
+      var piece = g.board[from[0]][from[1]];
+      if (!piece || piece[0] !== g.ja) return { greska: "Nedozvoljen potez: na " + P(from[0], from[1]) + " nema vaše figure." };
+      var ok = moji.filter(function (x) { return x.from[0] === from[0] && x.from[1] === from[1] && x.to[0] === to[0] && x.to[1] === to[1]; });
+      if (!ok.length) {
+        var raz = razlogNedozvoljeno(piece[1], [from], to);
+        if (/ne može na/.test(raz)) raz = "Nedozvoljen potez: " + FIG[piece[1]] + " s " + P(from[0], from[1]) + " ne može na " + P(to[0], to[1]) + ".";
+        return { greska: raz };
+      }
+      return dodajPromociju(ok[0], m[3]);
+    }
+    m = /^([kdtlsnbrq])?([a-h])?([1-8])?([a-h][1-8])([dtlsqrbn])?$/i.exec(s);
+    if (!m) return null;
+    var to2 = parsePolje(m[4]);
+    var kand = [];
+    if (m[1]) {
+      if (/[bd]/.test(m[1]) && !m[2] && "abcdefgh".indexOf(m[1]) !== to2[1]) kand.push({ t: "P", ff: m[1], fr: m[3] });
+      kand.push({ t: SLOVO_FIG[m[1].toLowerCase()], ff: m[2], fr: m[3] });
+    } else {
+      kand.push({ t: "P", ff: m[2], fr: m[3] });
+    }
+    var prvi = null;
+    for (var k = 0; k < kand.length; k++) {
+      var kd = kand[k];
+      var odgovara = function (r, c) {
+        var p = g.board[r][c];
+        if (!p || p[0] !== g.ja || p[1] !== kd.t) return false;
+        if (kd.ff && "abcdefgh"[c] !== kd.ff.toLowerCase()) return false;
+        if (kd.fr && String(8 - r) !== kd.fr) return false;
+        if (kd.t === "P" && !kd.ff && c !== to2[1]) return false;
+        return true;
+      };
+      var nadjeni = moji.filter(function (x) { return x.to[0] === to2[0] && x.to[1] === to2[1] && odgovara(x.from[0], x.from[1]); });
+      if (nadjeni.length === 1) return dodajPromociju(nadjeni[0], m[5]);
+      if (nadjeni.length > 1) return { greska: pitajKoji(kd.t, nadjeni, to2) };
+      if (!prvi) {
+        var polja = [];
+        for (var r = 0; r < 8; r++) for (var c = 0; c < 8; c++) if (odgovara(r, c)) polja.push([r, c]);
+        prvi = { t: kd.t, polja: polja, spec: kd };
+      }
+    }
+    return { greska: razlogNedozvoljeno(prvi.t, prvi.polja, to2, prvi.spec) };
+  }
+
+  function dodajPromociju(mv, slovo) {
+    var piece = g.board[mv.from[0]][mv.from[1]];
+    var zadnji = mv.to[0] === 0 || mv.to[0] === 7;
+    if (slovo && !(piece[1] === "P" && zadnji)) return { greska: "Nedozvoljen potez: promocija je moguća samo kad pješak stigne na zadnji red." };
+    var promo = slovo ? SLOVO_FIG[slovo.toLowerCase()] : "Q";
+    if (promo === "K") return { greska: "Nedozvoljen potez: pješak ne može promovirati u kralja." };
+    return { potez: { from: mv.from, to: mv.to, promo: promo } };
+  }
+
+  function pitajKoji(t, nadjeni, to) {
+    var polja = nadjeni.map(function (x) { return x.from; });
+    var opisi = polja.map(function (p) { return "s " + P(p[0], p[1]); });
+    var lista = opisi.length === 2 ? opisi[0] + " ili " + opisi[1] : opisi.slice(0, -1).join(", ") + " ili " + opisi[opisi.length - 1];
+    var istaLinija = polja.filter(function (p) { return p[1] === polja[0][1]; }).length > 1;
+    var oznaka = istaLinija ? String(8 - polja[0][0]) : "abcdefgh"[polja[0][1]];
+    var primjer = (SLOVO_HR[t] || "") + oznaka + najavaPolje(to[0], to[1]);
+    if (t === "P") primjer = "abcdefgh"[polja[0][1]] + "x" + najavaPolje(to[0], to[1]);
+    return (t === "Q" ? "Koja dama, " : "Koji " + FIG[t] + ", ") + lista + "? Upišite npr. " + primjer + ".";
+  }
+
+  function mojPotez(m) {
+    var r = odigraj(m);
+    var hitno = !!r.status;
+    if (g.gotovo) {
+      reci(r.opis + kraj(), { hitno: hitno });
+    } else {
+      g.razmislja = true;
+      reci(r.opis + " Bot razmišlja.", { hitno: hitno, onEnd: botIgra() });
+    }
+    azurirajStanje();
+  }
+
+  // ── NAREDBE ──────────────────────────────────────────────────────────────
+  function popisFigura(col) {
+    var po = {};
+    for (var r = 0; r < 8; r++) for (var c = 0; c < 8; c++) {
+      var p = g.board[r][c];
+      if (p && p[0] === col) (po[p[1]] = po[p[1]] || []).push(P(r, c));
+    }
+    var dijelovi = [];
+    RED.forEach(function (t) {
+      var l = po[t];
+      if (!l) return;
+      var polja = l.length === 1 ? l[0] : l.slice(0, -1).join(", ") + " i " + l[l.length - 1];
+      dijelovi.push((l.length === 1 ? FIG[t] : FIG_MN[t]) + " " + polja);
+    });
+    return (col === "w" ? "Bijeli: " : "Crni: ") + dijelovi.join(", ") + ".";
+  }
+
+  function napadaci(to) {
+    var rez = { w: [], b: [] };
+    ["w", "b"].forEach(function (col) {
+      var b = kopija(g.board);
+      var cilj = b[to[0]][to[1]];
+      if (!cilj || cilj[0] === col) b[to[0]][to[1]] = protivna(col) + "P";
+      for (var r = 0; r < 8; r++) for (var c = 0; c < 8; c++) {
+        var p = b[r][c];
+        if (!p || p[0] !== col || (r === to[0] && c === to[1])) continue;
+        var ms = getRawMoves(b, r, c, null, null);
+        if (ms.some(function (m) { return m[0] === to[0] && m[1] === to[1]; })) rez[col].push(FIG[p[1]] + " " + P(r, c));
+      }
+    });
+    return rez;
+  }
+
+  function materijal(col) {
+    var t = 0;
+    for (var r = 0; r < 8; r++) for (var c = 0; c < 8; c++) { var p = g.board[r][c]; if (p && p[0] === col) t += VRIJ[p[1]]; }
+    return t;
+  }
+
+  var POMOC = "Naredbe: „ploča” ili „p” čita cijelu poziciju. „moje” i „protivnik” čitaju samo jednu stranu. „gdje skakač” kaže gdje su vaše figure te vrste. „polje e4” kaže što je na polju. „napadnuto e4” kaže koje figure napadaju polje. „zadnji” ponavlja zadnji potez protivnika. „potezi” čita zadnjih šest poteza, a „svi potezi” cijelu partiju. „materijal” kaže tko ima više materijala. „predaja” i „nova partija” traže potvrdu. Potezi: e4, Sf3, Lb5, Txe1, Dd8, Kg1, exd5, 0-0, 0-0-0, e8D, ili engleski Nf3, ili s polja na polje, npr. g1f3. Prečaci na računalu: Alt+P ploča, Alt+Z zadnji potez, Alt+H pomoć.";
+
+  function svaPotezi() {
+    if (!g.povijest.length) return "Još nije odigran nijedan potez.";
+    return g.povijest.map(function (h, i) { return (i + 1) + ". " + h.opis; }).join(" ");
+  }
+
+  function naredba(ulaz) {
+    var n = norm(ulaz);
+    var m;
+    if (n === "ploca" || n === "p") return popisFigura("w") + " " + popisFigura("b") + " " + (g.gotovo ? "" : (g.turn === g.ja ? "Vi ste na potezu." : "Bot je na potezu."));
+    if (n === "moje" || n === "moje figure") return popisFigura(g.ja);
+    if (n === "protivnik" || n === "protivnikove" || n === "protivnikove figure") return popisFigura(g.bot);
+    if (n === "zadnji" || n === "z" || n === "zadnji potez") return g.zadnji ? "Zadnji potez protivnika: " + g.zadnji : "Protivnik još nije odigrao nijedan potez.";
+    if (n === "potezi") {
+      if (!g.povijest.length) return "Još nije odigran nijedan potez.";
+      var od = Math.max(0, g.povijest.length - 6);
+      return "Zadnji potezi: " + g.povijest.slice(od).map(function (h, i) { return (od + i + 1) + ". " + h.opis; }).join(" ");
+    }
+    if (n === "svi potezi" || n === "procitaj sve poteze" || n === "procitaj sve poteze partije") return "Svi potezi partije: " + svaPotezi();
+    if (n === "materijal") {
+      var mw = materijal("w"), mb = materijal("b");
+      var mojM = g.ja === "w" ? mw : mb, njegM = g.ja === "w" ? mb : mw;
+      var t = "Materijal: bijeli " + mw + ", crni " + mb + " bodova. ";
+      if (mojM === njegM) return t + "Materijal je izjednačen.";
+      return t + (mojM > njegM ? "Vi ste u prednosti za " : "Protivnik je u prednosti za ") + Math.abs(mojM - njegM) + ".";
+    }
+    if (n === "pomoc" || n === "?" || n === "h" || n === "help") return POMOC;
+    if ((m = /^gdje(?: je| su)? (\w+)$/.exec(n))) {
+      var t2 = RIJEC_FIG[m[1]] || SLOVO_FIG[m[1]];
+      if (!t2) return "Ne znam figuru „" + m[1] + "”. Upišite npr. „gdje skakač”.";
+      var l = [];
+      for (var r = 0; r < 8; r++) for (var c = 0; c < 8; c++) if (g.board[r][c] === g.ja + t2) l.push(P(r, c));
+      if (!l.length) return "Nemate " + FIG_AK[t2] + ".";
+      return (l.length === 1 ? "Vaš " + FIG[t2] + " je na " + l[0] : "Vaši " + FIG_MN[t2] + " su na " + l.slice(0, -1).join(", ") + " i " + l[l.length - 1]) .replace("Vaš dama je", "Vaša dama je") + ".";
+    }
+    if (n === "gdje") return "Upišite npr. „gdje skakač” ili „gdje lovac”.";
+    if ((m = /^polje ?([a-h]) ?([1-8])$/.exec(n))) {
+      var sq = parsePolje(m[1] + m[2]);
+      var p = g.board[sq[0]][sq[1]];
+      return "Polje " + P(sq[0], sq[1]) + ": " + (p ? strana(p[0]) + " " + FIG[p[1]] : "prazno") + ".";
+    }
+    if (n === "polje") return "Upišite npr. „polje e4”.";
+    if ((m = /^napad(?:nuto|nut|i|a)? ?([a-h]) ?([1-8])$/.exec(n))) {
+      var sq2 = parsePolje(m[1] + m[2]);
+      var nap = napadaci(sq2);
+      var dio = function (col) { return (col === "w" ? "bijeli: " : "crni: ") + (nap[col].length ? nap[col].join(", ") : "nitko"); };
+      return "Polje " + P(sq2[0], sq2[1]) + " napadaju — " + dio("w") + "; " + dio("b") + ".";
+    }
+    if (n === "napadnuto") return "Upišite npr. „napadnuto e4”.";
+    if (n === "predaja" || n === "predajem") {
+      if (g.gotovo) return "Partija je već završena.";
+      if (!window.confirm("Sigurno se želite predati?")) return "Predaja je otkazana. Partija se nastavlja.";
+      g.gotovo = true;
+      g.razmislja = false;
+      if (botWorker) { botWorker.terminate(); botWorker = null; }
+      $("kraj").hidden = false;
+      azurirajStanje();
+      return { tekst: "Predali ste partiju. Pobijedio je " + strana(g.bot) + ". Upišite „nova partija” ili „svi potezi”, ili koristite tipke ispod.", hitno: true };
+    }
+    if (n === "nova partija" || n === "nova") {
+      if (!g.gotovo && g.povijest.length && !window.confirm("Prekinuti ovu partiju i započeti novu?")) return "Partija se nastavlja.";
+      natragUIzbornik();
+      return { tekst: null };
+    }
+    return undefined;
+  }
+
+  function obradi(ulaz) {
+    if (!g) return;
+    var tekst = ulaz.trim();
+    if (!tekst) { reci("Upišite potez, npr. e4, ili naredbu, npr. „ploča”."); return; }
+    var odg = naredba(tekst);
+    if (odg !== undefined) {
+      if (odg && typeof odg === "object") { if (odg.tekst) reci(odg.tekst, { hitno: odg.hitno }); }
+      else reci(odg);
+      return;
+    }
+    if (g.gotovo) { reci("Partija je završena. Upišite „nova partija” ili „svi potezi”."); return; }
+    if (g.turn !== g.ja || g.razmislja) { reci("Pričekajte, bot je na potezu."); return; }
+    var r = protumaci(tekst);
+    if (!r) { reci("Ne razumijem „" + tekst + "”. Upišite potez, npr. e4 ili Sf3, ili „pomoć” za popis naredbi."); return; }
+    if (r.greska) { reci(r.greska); return; }
+    mojPotez(r.potez);
+  }
+
+  $("unos").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("potez").value;
+    $("potez").value = "";
+    obradi(v);
+    if (g) $("potez").focus();
+  });
+
+  var TRAZI_ARG = { gdje: "gdje", polje: "polje", napadnuto: "napadnuto" };
+  document.querySelector(".naredbe").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-naredba]");
+    if (!b || !g) return;
+    var nar = b.dataset.naredba;
+    var v = $("potez").value.trim();
+    if (TRAZI_ARG[nar]) {
+      if (v) { $("potez").value = ""; obradi(nar + " " + v); }
+      else reci(nar === "gdje" ? "Upišite vrstu figure u polje za unos, npr. skakač, pa pritisnite Gdje je. Ili upišite „gdje skakač”." : "Upišite polje u polje za unos, npr. e4, pa pritisnite " + (nar === "polje" ? "Polje" : "Napadnuto") + ".");
+    } else {
+      obradi(nar);
+    }
+    if (g) $("potez").focus();
+  });
+
+  $("kraj-nova").addEventListener("click", function () { natragUIzbornik(); });
+  $("kraj-potezi").addEventListener("click", function () { if (g) reci("Svi potezi partije: " + svaPotezi()); });
+
+  document.addEventListener("keydown", function (e) {
+    if (!g || !e.altKey || e.ctrlKey || e.metaKey) return;
+    var k = e.code;
+    if (k === "KeyP") { e.preventDefault(); obradi("ploča"); }
+    else if (k === "KeyZ") { e.preventDefault(); obradi("zadnji"); }
+    else if (k === "KeyH") { e.preventDefault(); obradi("pomoć"); }
+  });
+
+  // ── PLOČA ────────────────────────────────────────────────────────────────
+  function oznakaPolja(r, c) {
+    var p = g.board[r][c];
+    return najavaPolje(r, c) + ", " + (p ? strana(p[0]) + " " + FIG[p[1]] : "prazno");
+  }
+  function dispUBoard(i, j) { return g.ja === "w" ? [i, j] : [7 - i, 7 - j]; }
+  function boardUDisp(r, c) { return g.ja === "w" ? [r, c] : [7 - r, 7 - c]; }
+
+  function nacrtaj() {
+    var t = $("ploca");
+    var slova = g.ja === "w" ? "abcdefgh" : "hgfedcba";
+    var html = '<thead><tr><td></td>';
+    for (var j = 0; j < 8; j++) html += '<th scope="col" aria-hidden="true">' + slova[j] + "</th>";
+    html += "<td></td></tr></thead><tbody>";
+    var ciljevi = odabrano ? getLegalMoves(g.board, odabrano[0], odabrano[1], g.ep, g.cs) : [];
+    for (var i = 0; i < 8; i++) {
+      var rb = dispUBoard(i, 0)[0];
+      html += '<tr><th scope="row" aria-hidden="true">' + (8 - rb) + "</th>";
+      for (j = 0; j < 8; j++) {
+        var rc = dispUBoard(i, j), r = rc[0], c = rc[1];
+        var p = g.board[r][c];
+        var cls = "polje " + ((r + c) % 2 === 0 ? "svijetlo" : "tamno");
+        if (g.lastMv && ((g.lastMv[0][0] === r && g.lastMv[0][1] === c) || (g.lastMv[1][0] === r && g.lastMv[1][1] === c))) cls += " zadnji";
+        if (odabrano && odabrano[0] === r && odabrano[1] === c) cls += " odabrano";
+        if (ciljevi.some(function (m) { return m[0] === r && m[1] === c; })) cls += " cilj" + (p ? " ima" : "");
+        var fokus = fokusPolje[0] === r && fokusPolje[1] === c;
+        html += '<td><button type="button" class="' + cls + '" data-r="' + r + '" data-c="' + c + '" tabindex="' + (fokus ? 0 : -1) + '" aria-label="' + oznakaPolja(r, c) + '"' +
+          (odabrano && odabrano[0] === r && odabrano[1] === c ? ' aria-pressed="true"' : "") + ">" +
+          (p ? '<span aria-hidden="true" class="' + (p[0] === "w" ? "fig-w" : "fig-b") + '">' + ZNAK[p[1]] + "︎</span>" : "") + "</button></td>";
+      }
+      html += '<th scope="row" aria-hidden="true">' + (8 - rb) + "</th></tr>";
+    }
+    html += '</tbody><tfoot><tr><td></td>';
+    for (j = 0; j < 8; j++) html += '<th aria-hidden="true">' + slova[j] + "</th>";
+    html += "<td></td></tr></tfoot>";
+    var imaFokus = t.contains(document.activeElement);
+    t.innerHTML = html;
+    if (imaFokus) fokusirajPolje();
+    azurirajStanje();
+  }
+
+  function fokusirajPolje() {
+    var b = $("ploca").querySelector('button[data-r="' + fokusPolje[0] + '"][data-c="' + fokusPolje[1] + '"]');
+    if (b) b.focus();
+  }
+
+  function azurirajStanje() {
+    if (!g) return;
+    var t;
+    if (g.gotovo) t = "Partija je završena.";
+    else if (g.razmislja || g.turn !== g.ja) t = "Bot razmišlja…";
+    else t = "Vi ste na potezu (" + (g.ja === "w" ? "bijeli" : "crni") + ")" + (g.status === "check" ? " — šah!" : ".");
+    $("stanje").textContent = t + " Potez " + (Math.floor(g.povijest.length / 2) + 1) + ".";
+  }
+
+  $("ploca").addEventListener("keydown", function (e) {
+    var b = e.target.closest("button.polje");
+    if (!b || !g) return;
+    var r = +b.dataset.r, c = +b.dataset.c;
+    var d = boardUDisp(r, c), i = d[0], j = d[1];
+    var pomak = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[e.key];
+    if (pomak) {
+      e.preventDefault();
+      var ni = Math.min(7, Math.max(0, i + pomak[0])), nj = Math.min(7, Math.max(0, j + pomak[1]));
+      var nb = dispUBoard(ni, nj);
+      fokusPolje = nb;
+      $("ploca").querySelectorAll("button.polje").forEach(function (x) { x.tabIndex = -1; });
+      fokusirajPolje();
+      var f = document.activeElement;
+      if (f) f.tabIndex = 0;
+      reciGlasom(najavaPoljeGovor(nb[0], nb[1]) + ", " + (g.board[nb[0]][nb[1]] ? strana(g.board[nb[0]][nb[1]][0]) + " " + FIG[g.board[nb[0]][nb[1]][1]] : "prazno"));
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      if (odabrano) { odabrano = null; nacrtaj(); reci("Odabir poništen."); }
+    }
+  });
+
+  $("ploca").addEventListener("click", function (e) {
+    var b = e.target.closest("button.polje");
+    if (!b || !g) return;
+    var r = +b.dataset.r, c = +b.dataset.c;
+    fokusPolje = [r, c];
+    var p = g.board[r][c];
+    if (g.gotovo) { reci("Partija je završena."); return; }
+    if (g.turn !== g.ja || g.razmislja) { reci("Pričekajte, bot je na potezu."); return; }
+    if (p && p[0] === g.ja) {
+      odabrano = [r, c];
+      var ciljevi = getLegalMoves(g.board, r, c, g.ep, g.cs);
+      nacrtaj();
+      fokusirajPolje();
+      reci("Odabran " + FIG[p[1]] + " na " + P(r, c) + ". " + (ciljevi.length ? "Može na: " + ciljevi.map(function (m) { return P(m[0], m[1]); }).join(", ") + "." : "Ta figura nema dozvoljenih poteza."));
+      return;
+    }
+    if (!odabrano) { reci(p ? "Na " + P(r, c) + " je protivnička figura. Prvo odaberite svoju figuru." : "Polje " + P(r, c) + " je prazno. Prvo odaberite svoju figuru."); return; }
+    var legal = getLegalMoves(g.board, odabrano[0], odabrano[1], g.ep, g.cs);
+    if (legal.some(function (m) { return m[0] === r && m[1] === c; })) {
+      var potez = { from: odabrano, to: [r, c], promo: "Q" };
+      mojPotez(potez);
+      $("potez").focus();
+    } else {
+      var op = g.board[odabrano[0]][odabrano[1]];
+      var raz = razlogNedozvoljeno(op[1], [odabrano], [r, c]);
+      if (/ne može na/.test(raz)) raz = "Nedozvoljen potez: " + FIG[op[1]] + " s " + P(odabrano[0], odabrano[1]) + " ne može na " + P(r, c) + ".";
+      reci(raz);
+    }
+  });
+})();
+</script>
+</body>
+</html>

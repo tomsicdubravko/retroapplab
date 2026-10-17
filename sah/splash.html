@@ -136,6 +136,17 @@
       color: #e0b85a;
       box-shadow: 0 0 12px rgba(224,184,90,0.2);
     }
+    .a11y-link {
+      margin-top: 18px;
+      color: #ffd36b;
+      font-family: Georgia, serif;
+      font-size: 17px;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      padding: 10px 14px;
+      border-radius: 6px;
+    }
+    .a11y-link:focus-visible { outline: 3px solid #ffff00; outline-offset: 2px; }
     @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
     @keyframes scaleIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
     @keyframes textIn  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -329,9 +340,11 @@
       ULAZI
     </button>
 
+    <a class="a11y-link" href="pristupacni.html" onfocus="clearTimeout(window.splashTimer)" onmouseenter="clearTimeout(window.splashTimer)">♿ Šah za slijepe i slabovidne</a>
+
   </div>
   <script>
-    setTimeout(goNext, 7500);
+    window.splashTimer = setTimeout(goNext, 7500);
   </script>
 </body>
 </html>

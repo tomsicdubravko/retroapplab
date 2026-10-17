@@ -865,6 +865,44 @@ function GameScreen({
       onlineMqtt.removeListener("message", onMsg);
     };
   }, [isOnline, onlineMqtt]);
+  // ── Najava poteza (glas + aria-live) ──
+  var [najava, setNajava] = useState(function () {
+    return typeof najavaUkljucena === "function" && najavaUkljucena();
+  });
+  var [najavaTekst, setNajavaTekst] = useState("");
+  var najavaRef = useRef({
+    board: board,
+    half: halfMove
+  });
+  useEffect(function () {
+    var prev = najavaRef.current;
+    if (promo) return;
+    if (najava && halfMove > prev.half && lastMv && typeof najavaOpis === "function") {
+      var txt = najavaOpis(prev.board, board, lastMv[0], lastMv[1], status);
+      if (txt) {
+        setNajavaTekst(txt);
+        najavaGovori(txt);
+      }
+    }
+    najavaRef.current = {
+      board: board,
+      half: halfMove
+    };
+  }, [halfMove, promo]);
+  useEffect(function () {
+    return function () {
+      if (typeof najavaStop === "function") najavaStop();
+    };
+  }, []);
+  function toggleNajava() {
+    var v = !najava;
+    setNajava(v);
+    if (typeof najavaPostavi === "function") najavaPostavi(v);
+    if (!v) {
+      if (typeof najavaStop === "function") najavaStop();
+      setNajavaTekst("");
+    }
+  }
   var handleClick = useCallback(function (r, c) {
     if (status === "checkmate" || status === "stalemate" || promo || thinking) return;
     if ((isBot || isOnline) && turn !== playerColor) return;
@@ -1310,7 +1348,8 @@ function GameScreen({
     style: {
       display: "flex",
       gap: 10,
-      marginTop: 12
+      marginTop: 12,
+      flexWrap: "wrap"
     }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: onMenu,
@@ -1325,6 +1364,31 @@ function GameScreen({
       fontFamily: "Georgia,serif"
     }
   }, "Izbornik"), /*#__PURE__*/React.createElement("button", {
+    onClick: toggleNajava,
+    "aria-pressed": najava ? "true" : "false",
+    title: najava ? "Najava poteza je uključena" : "Najava poteza je isključena",
+    style: {
+      background: najava ? "#3a2510" : MID,
+      border: "1.5px solid " + (najava ? GOLD : BORDER),
+      color: najava ? GOLD : TXT2,
+      padding: "11px 20px",
+      borderRadius: 8,
+      cursor: "pointer",
+      fontSize: 13,
+      fontFamily: "Georgia,serif"
+    }
+  }, najava ? "🔊 Najava poteza" : "🔇 Najava poteza"), /*#__PURE__*/React.createElement("div", {
+    role: "status",
+    "aria-live": "polite",
+    style: {
+      position: "absolute",
+      width: 1,
+      height: 1,
+      overflow: "hidden",
+      clip: "rect(0 0 0 0)",
+      whiteSpace: "nowrap"
+    }
+  }, najavaTekst), /*#__PURE__*/React.createElement("button", {
     onClick: restart,
     style: {
       background: MID,
