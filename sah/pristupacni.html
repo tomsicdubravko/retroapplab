@@ -71,6 +71,7 @@
       color: #fff;
     }
     .uputa { color: var(--muted); font-size: 17px; margin: 8px 0 0; }
+    .uputa-gore { margin: 0 0 10px; font-size: 18px; }
     .naredbe { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
     .naredbe button { font-size: 18px; padding: 8px 10px; }
     #poruka {
@@ -182,11 +183,11 @@
       <div class="panel">
         <form id="unos" autocomplete="off">
           <label class="velika" for="potez">Vaš potez</label>
+          <p class="uputa uputa-gore" id="potez-uputa">Upišite potez, npr. e2e4 (s polja na polje), Sf3 ili konj f3. Naredba pomoć čita sve upute.</p>
           <div class="unos-red">
             <input id="potez" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-describedby="potez-uputa">
             <button type="submit" class="glavna">Odigraj</button>
           </div>
-          <p class="uputa" id="potez-uputa">Npr. e4, Sf3, exd5, 0-0 ili g1f3. Za popis naredbi upišite „pomoć”.</p>
         </form>
         <div class="naredbe" role="group" aria-label="Naredbe">
           <button type="button" data-naredba="ploča">Ploča</button>
@@ -198,6 +199,7 @@
           <button type="button" data-naredba="gdje">Gdje je…</button>
           <button type="button" data-naredba="polje">Polje…</button>
           <button type="button" data-naredba="napadnuto">Napadnuto…</button>
+          <button type="button" data-naredba="kako upisivati poteze">Kako upisivati poteze</button>
           <button type="button" data-naredba="pomoć">Pomoć</button>
           <button type="button" data-naredba="predaja">Predaja</button>
           <button type="button" data-naredba="nova partija">Nova partija</button>
@@ -439,6 +441,7 @@
   // ── UNOS POTEZA ──────────────────────────────────────────────────────────
   function nomVas(t) { return t === "Q" ? "nijedna vaša dama" : "nijedan vaš " + FIG[t]; }
 
+  function velikoSlovo(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
   var FIG_GEN = { K: "kralja", Q: "dame", R: "topa", B: "lovca", N: "skakača", P: "pješaka" };
   function razlogNedozvoljeno(t, kandidati, to, spec) {
     // kandidati: polja mojih figura tipa t koje odgovaraju unosu; spec: {ff, fr} iz unosa
@@ -481,7 +484,36 @@
   }
 
   // vraća {potez} | {greska} | null (nije potez)
+  var RIJEC_POTEZ = {
+    kralj: "K", kralja: "K", dama: "Q", damu: "Q", kraljica: "Q", kraljicu: "Q",
+    top: "R", topa: "R", lovac: "B", lovca: "B", konj: "N", konja: "N", skakac: "N", skakaca: "N",
+    pjesak: "P", pjesaka: "P", pijun: "P", pijuna: "P"
+  };
+  var ENG_SLOVO = { K: "K", Q: "Q", R: "R", B: "B", N: "N", P: "" };
+
+  // riječi, razmaci, zarezi, crtice, točke i "na" -> oblik koji parser razumije
+  function pripremi(ulaz) {
+    var n = norm(ulaz);
+    if (/^mala rokada$/.test(n)) return { tekst: "0-0" };
+    if (/^velika rokada$/.test(n)) return { tekst: "0-0-0" };
+    var m = /^([a-z]+)\s+(.+)$/.exec(n);
+    var t = m && RIJEC_POTEZ[m[1]];
+    var ostatak = t ? m[2] : ulaz;
+    var polja = ostatak.replace(/\s+na\s+/gi, " ").replace(/[\s,.\-–x:×]+/gi, " ").trim();
+    var sp = /^([a-h])\s?([1-8])(?:\s?([a-h])\s?([1-8]))?(?:\s?([dtlsqrbn]))?$/i.exec(polja);
+    if (t) {
+      if (!sp) return { nijePotez: true };
+      if (sp[3]) return { tekst: sp[1] + sp[2] + sp[3] + sp[4] + (sp[5] || ""), vrsta: t };
+      return { tekst: ENG_SLOVO[t] + sp[1] + sp[2] + (sp[5] || "") };
+    }
+    if (sp && sp[3]) return { tekst: sp[1] + sp[2] + sp[3] + sp[4] + (sp[5] || "") };
+    return { tekst: ulaz };
+  }
+
   function protumaci(ulaz) {
+    var pr = pripremi(ulaz);
+    if (pr.nijePotez) return null;
+    ulaz = pr.tekst;
     var s = ulaz.replace(/\s+/g, "").replace(/e\.?p\.?$/i, "").replace(/[+#!?=]/g, "").replace(/[x:×]/gi, "");
     var bezCrtica = s.replace(/[-–]/g, "");
     if (/^(000|ooo)$/i.test(bezCrtica)) return rokada("Q");
@@ -492,11 +524,12 @@
     if (m) {
       var from = parsePolje(m[1]), to = parsePolje(m[2]);
       var piece = g.board[from[0]][from[1]];
-      if (!piece || piece[0] !== g.ja) return { greska: "Nedozvoljen potez: na " + P(from[0], from[1]) + " nema vaše figure." };
+      if (!piece || piece[0] !== g.ja) return { greska: "Na " + P(from[0], from[1]) + " nema vaše figure." };
+      if (pr.vrsta && piece[1] !== pr.vrsta) return { greska: "Na " + P(from[0], from[1]) + " nema vašeg " + FIG_GEN[pr.vrsta] + ", ondje je " + FIG[piece[1]] + "." };
       var ok = moji.filter(function (x) { return x.from[0] === from[0] && x.from[1] === from[1] && x.to[0] === to[0] && x.to[1] === to[1]; });
       if (!ok.length) {
         var raz = razlogNedozvoljeno(piece[1], [from], to);
-        if (/ne može na/.test(raz)) raz = "Nedozvoljen potez: " + FIG[piece[1]] + " s " + P(from[0], from[1]) + " ne može na " + P(to[0], to[1]) + ".";
+        if (/ne može na/.test(raz)) raz = velikoSlovo(FIG[piece[1]]) + " s " + P(from[0], from[1]) + " ne može na " + P(to[0], to[1]) + ".";
         return { greska: raz };
       }
       return dodajPromociju(ok[0], m[3]);
@@ -605,7 +638,8 @@
     return t;
   }
 
-  var POMOC = "Naredbe: „ploča” ili „p” čita cijelu poziciju. „moje” i „protivnik” čitaju samo jednu stranu. „gdje skakač” kaže gdje su vaše figure te vrste. „polje e4” kaže što je na polju. „napadnuto e4” kaže koje figure napadaju polje. „zadnji” ponavlja zadnji potez protivnika. „potezi” čita zadnjih šest poteza, a „svi potezi” cijelu partiju. „materijal” kaže tko ima više materijala. „predaja” i „nova partija” traže potvrdu. Potezi: e4, Sf3, Lb5, Txe1, Dd8, Kg1, exd5, 0-0, 0-0-0, e8D, ili engleski Nf3, ili s polja na polje, npr. g1f3. Prečaci na računalu: Alt+P ploča, Alt+Z zadnji potez, Alt+H pomoć.";
+  var KAKO = "Kako upisivati poteze: ploča ima stupce a do h i redove 1 do 8. Bijele figure počinju na redovima 1 i 2, crne na redovima 7 i 8. Najlakše je upisati s kojeg polja na koje, npr. e2e4. Figure su K kralj, D dama, T top, L lovac, S skakač. Možete upisati i riječ, npr. konj f3 ili lovac c4. Pješak se upisuje samo poljem, npr. e4. Uzimanje se piše s x, npr. Lxc6. Rokada je 0-0 za malu i 0-0-0 za veliku. Promocija se piše poljem i slovom figure, npr. e8D.";
+  var POMOC = "Naredbe: „kako upisivati poteze” objašnjava upis poteza. „ploča” ili „p” čita cijelu poziciju. „moje” i „protivnik” čitaju samo jednu stranu. „gdje skakač” kaže gdje su vaše figure te vrste. „polje e4” kaže što je na polju. „napadnuto e4” kaže koje figure napadaju polje. „zadnji” ponavlja zadnji potez protivnika. „potezi” čita zadnjih šest poteza, a „svi potezi” cijelu partiju. „materijal” kaže tko ima više materijala. „predaja” i „nova partija” traže potvrdu. Potezi: s polja na polje, npr. e2e4, b1 c3 ili b1 na c3; slovom figure, npr. Sf3, Lb5, Txe1, Dd8, Kg1, exd5, e8D, ili engleski Nf3; riječima, npr. konj f3, konj b1 c3, dama d1 h5; rokada 0-0, 0-0-0, mala rokada ili velika rokada. Prečaci na računalu: Alt+P ploča, Alt+Z zadnji potez, Alt+H pomoć.";
 
   function svaPotezi() {
     if (!g.povijest.length) return "Još nije odigran nijedan potez.";
@@ -632,6 +666,7 @@
       if (mojM === njegM) return t + "Materijal je izjednačen.";
       return t + (mojM > njegM ? "Vi ste u prednosti za " : "Protivnik je u prednosti za ") + Math.abs(mojM - njegM) + ".";
     }
+    if (n === "kako upisivati poteze" || n === "kako" || n === "upute" || n === "kako upisivati") return KAKO;
     if (n === "pomoc" || n === "?" || n === "h" || n === "help") return POMOC;
     if ((m = /^gdje(?: je| su)? (\w+)$/.exec(n))) {
       var t2 = RIJEC_FIG[m[1]] || SLOVO_FIG[m[1]];
@@ -686,7 +721,7 @@
     if (g.gotovo) { reci("Partija je završena. Upišite „nova partija” ili „svi potezi”."); return; }
     if (g.turn !== g.ja || g.razmislja) { reci("Pričekajte, bot je na potezu."); return; }
     var r = protumaci(tekst);
-    if (!r) { reci("Ne razumijem „" + tekst + "”. Upišite potez, npr. e4 ili Sf3, ili „pomoć” za popis naredbi."); return; }
+    if (!r) { reci("Nisam razumio potez. Upišite npr. e2e4, Sf3 ili konj f3. Za pomoć upišite pomoć."); return; }
     if (r.greska) { reci(r.greska); return; }
     mojPotez(r.potez);
   }
@@ -827,7 +862,7 @@
     } else {
       var op = g.board[odabrano[0]][odabrano[1]];
       var raz = razlogNedozvoljeno(op[1], [odabrano], [r, c]);
-      if (/ne može na/.test(raz)) raz = "Nedozvoljen potez: " + FIG[op[1]] + " s " + P(odabrano[0], odabrano[1]) + " ne može na " + P(r, c) + ".";
+      if (/ne može na/.test(raz)) raz = velikoSlovo(FIG[op[1]]) + " s " + P(odabrano[0], odabrano[1]) + " ne može na " + P(r, c) + ".";
       reci(raz);
     }
   });
