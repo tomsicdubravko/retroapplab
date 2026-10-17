@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poker 90s — kako se igra, pravila i savjeti | RetroAppLab</title>
+<meta name="description" content="Pravila igre Poker 90s: besplatni video poker u stilu kafićkih aparata iz 90-ih. Isplatna tablica, duplanje veće/manje, džoker sedmica, kontrole i savjeti.">
+<link rel="canonical" href="https://retroapplab.com/poker/o-igri.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RetroAppLab">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Poker 90s — kako se igra, pravila i savjeti">
+<meta property="og:description" content="Pravila igre Poker 90s: besplatni video poker u stilu kafićkih aparata iz 90-ih. Isplatna tablica, duplanje veće/manje, džoker sedmica, kontrole i savjeti.">
+<meta property="og:image" content="https://retroapplab.com/shot-poker.jpg">
+<meta property="og:url" content="https://retroapplab.com/poker/o-igri.html">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#07131b;
+  --deep:#0e2230;
+  --accent:#f4d35e;
+  --accent-dark:#9a6b12;
+  --soft:#d9f1ff;
+  --text:#e9f2f6;
+  --muted:#9fb6c3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--text);font:400 1.06rem/1.7 Nunito,"Segoe UI",system-ui,sans-serif;padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+a{color:var(--accent)}
+a:focus-visible{outline:3px solid var(--soft);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.15;color:#fff}
+h2{font-size:clamp(1.6rem,3.6vw,2.2rem);margin-bottom:.6rem}
+h3{font-size:1.2rem;margin-bottom:.25rem}
+p+p{margin-top:.9rem}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.text{max-width:68ch}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 22px;max-width:1040px;margin:0 auto;font-weight:700}
+.top a{text-decoration:none;color:var(--muted)}
+.top a:hover{color:#fff}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:42px;align-items:center;padding:30px 22px 64px;max-width:1040px;margin:0 auto}
+.hero h1{font-size:clamp(2.3rem,6.4vw,4rem);font-weight:800;color:var(--accent);letter-spacing:-.01em;text-shadow:0 4px 0 var(--accent-dark),0 14px 40px rgba(0,0,0,.35)}
+.hero .lead{font-size:1.15rem;color:var(--soft);margin:.6rem 0 1.6rem;max-width:44ch}
+.cta{display:inline-block;background:var(--accent);color:#1c1300;font:800 1.25rem "Baloo 2",sans-serif;padding:.75rem 2rem;border-radius:999px;text-decoration:none;box-shadow:0 6px 0 var(--accent-dark)}
+.cta:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--accent-dark)}
+.cta:active{transform:translateY(3px);box-shadow:0 3px 0 var(--accent-dark)}
+.hero .sub{display:block;margin-top:1rem;color:var(--muted);font-size:.95rem}
+.shot{border-radius:28px;overflow:hidden;aspect-ratio:4/5;background:#123 url('/shot-poker.jpg') center top/cover;box-shadow:0 0 0 6px var(--deep),0 30px 60px rgba(0,0,0,.45);transform:rotate(2deg)}
+section{padding:52px 0}
+section.alt{background:var(--deep)}
+.text ul,.text ol{padding-left:1.3rem;margin-top:.8rem}
+.text li{margin:.4rem 0}
+.text li::marker{color:var(--accent)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:1.2rem}
+.cols>div{border-top:3px solid var(--accent);padding-top:.9rem}
+.cols p,.cols li{color:var(--muted)}
+.cols ul{padding-left:1.2rem}
+kbd{font:700 .9em Nunito,sans-serif;background:#1d3a4c;border-radius:6px;padding:.05em .45em;color:#fff;white-space:nowrap}
+table{border-collapse:collapse;margin-top:1rem;width:100%;max-width:520px}
+td{padding:.45rem .2rem;border-bottom:1px solid #1f3a4b;color:var(--muted)}
+td:last-child{text-align:right;color:#fff;font-weight:700;white-space:nowrap}
+details{border-bottom:1px solid #1f3a4b;padding:.9rem 0}
+summary{cursor:pointer;font-weight:700;color:#fff;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";float:right;color:var(--accent);font-weight:800;margin-left:12px}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:.5rem}
+.end{text-align:center;padding:64px 22px}
+.end h2{color:var(--accent)}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(7,19,27,.94);backdrop-filter:blur(8px);border-top:1px solid #1f3a4b;font-size:.9rem;color:var(--muted)}
+.dock-home{color:#fff;font-weight:700;text-decoration:none;white-space:nowrap}
+.dock-home:hover{color:var(--accent)}
+.dock-text{flex:1;text-align:center}
+.dock-play{background:var(--accent);color:#1c1300;font-weight:800;text-decoration:none;padding:.35rem 1.1rem;border-radius:999px;white-space:nowrap}
+@media (max-width:640px){.dock-text{display:none}}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;gap:30px;text-align:center}
+  .hero .lead{margin-left:auto;margin-right:auto}
+  .shot{width:100%;max-width:340px;margin:0 auto;transform:none}
+  .cols{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="/">RetroAppLab</a>
+  <a href="/#arkada">Sve igre</a>
+</nav>
+
+<header class="hero">
+  <div>
+    <h1>Poker 90s — o igri</h1>
+    <p class="lead">Video poker kakav se igrao na aparatima po kafićima devedesetih: pet karata, jedna zamjena i isplatna tablica koja svijetli. Najviše zabave donosi duplanje, kad pogađaš je li sljedeća karta veća ili manja.</p>
+    <a class="cta" href="/poker/">▶ Igraj odmah</a>
+    <span class="sub">Besplatno, u pregledniku, za kredite bez stvarne vrijednosti.</span>
+  </div>
+  <div class="shot" role="img" aria-label="Snimka zaslona igre Poker 90s"></div>
+</header>
+
+<section class="alt">
+  <div class="wrap text">
+    <h2>Kako se igra</h2>
+    <p>Počinješ s 500 kredita. Prije dijeljenja odabereš ulog od 5 do 50 kredita, u koracima po 5. Tipka DEAL oduzme ulog i podijeli pet karata. Zatim označiš karte koje želiš zadržati (HOLD), a DRAW zamijeni sve ostale. Ruka se nakon zamjene ocjenjuje prema isplatnoj tablici. Najslabija ruka koja plaća je par dečka ili jači par (J, Q, K ili A).</p>
+    <p>Kad dobiješ, biraš: dobitak odmah naplatiš (COLLECT) ili ga riskiraš u duplanju (GAMBLE). U duplanju se otvara karta po karta. MANJA znači as do šestice, VEĆA osmica do kralja, a sedmica je džoker koji uvijek dobiva. Svaki pogodak udvostruči iznos, a jedan promašaj ga briše. Tipka HALVE prebaci polovicu iznosa na kredit, a s drugom polovicom nastavljaš. Nakon deset pogodaka zaredom iznos se sam naplati.</p>
+    <p>Kad krediti padnu ispod najmanjeg uloga, aparat ti „zahvali na donaciji”, a NEW GAME vraća početnih 500 kredita.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Kontrole</h2>
+    <div class="cols">
+      <div>
+        <h3>Računalo</h3>
+        <p>Sve tipke na ekranu rade mišem. Tipkovnica prati raspored pravog aparata sa sedam gumba: <kbd>1</kbd>–<kbd>5</kbd> označavaju karte (prije dijeljenja <kbd>5</kbd> diže ulog), <kbd>6</kbd> naplaćuje, a <kbd>7</kbd> ili <kbd>Enter</kbd> dijeli i mijenja karte. U duplanju je <kbd>2</kbd> manja, <kbd>4</kbd> veća, <kbd>5</kbd> pola i <kbd>6</kbd> naplata. Rade i <kbd>razmak</kbd>, <kbd>G</kbd> za duplanje, <kbd>C</kbd> za naplatu, strelice gore i dolje za veću i manju te lijevo i desno za ulog.</p>
+      </div>
+      <div>
+        <h3>Mobitel</h3>
+        <p>Dodirni kartu ili tipku HOLD ispod nje da je zadržiš, a ostalo radiš dodirom na velike tipke aparata: ulog −/+, DEAL, DRAW, GAMBLE, COLLECT te u duplanju LOWER, HIGHER i HALVE.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap text">
+    <h2>Bodovanje i razine</h2>
+    <p>Isplata je umnožak uloga. Uz ulog od 10 kredita, na primjer, ful donosi 90 kredita.</p>
+    <table>
+      <tr><td>Par dečka ili jači</td><td>1 ×</td></tr>
+      <tr><td>Dva para</td><td>2 ×</td></tr>
+      <tr><td>Tris</td><td>3 ×</td></tr>
+      <tr><td>Skala</td><td>4 ×</td></tr>
+      <tr><td>Boja</td><td>6 ×</td></tr>
+      <tr><td>Ful</td><td>9 ×</td></tr>
+      <tr><td>Poker (četiri iste)</td><td>25 ×</td></tr>
+      <tr><td>Skala u boji</td><td>50 ×</td></tr>
+      <tr><td>Kraljevska skala</td><td>250 ×</td></tr>
+    </table>
+    <p>Razina nema: igra traje dok imaš kredita. Krediti se pamte na tvom uređaju, pa se nakon zatvaranja igre vraćaš na isto stanje.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap text">
+    <h2>Savjeti za bolji rezultat</h2>
+    <ul>
+      <li>Par dečka ili jači uvijek zadrži, jer je to već dobitna ruka.</li>
+      <li>Četiri karte iste boje vrijedi zadržati: boja plaća 6 ×, a skala 4 × ulog.</li>
+      <li>Mali par, npr. dvije petice, ne plaća sam, ali može narasti u tris, dva para ili ful. Bolje ga je zadržati nego mijenjati svih pet karata.</li>
+      <li>U duplanju je šest vrijednosti manjih (A–6) i šest većih (8–K), a sedmica uvijek dobiva. Kad iznos naraste, HALVE je dobar kompromis između rizika i sigurnosti.</li>
+      <li>Veći ulog množi i dobitak: kraljevska skala uz ulog 50 donosi 12.500 kredita.</li>
+      <li>Dobitak koji ne želiš riskirati odmah naplati, jer promašaj u duplanju briše sve što je u igri.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap text">
+    <h2>Česta pitanja</h2>
+    <details><summary>Je li igra besplatna? Igra li se za pravi novac?</summary><p>Igra je besplatna. Krediti nemaju nikakvu vrijednost, ne mogu se kupiti ni isplatiti. Igra je samo za zabavu.</p></details>
+    <details><summary>Treba li registracija?</summary><p>Ne. Igra se otvori u pregledniku i odmah se igra.</p></details>
+    <details><summary>Sprema li se stanje kredita?</summary><p>Da, krediti se spremaju u pregledniku na tvom uređaju. Ako obrišeš podatke preglednika ili igraš na drugom uređaju, krećeš od 500.</p></details>
+    <details><summary>Radi li na mobitelu?</summary><p>Da, aparat se prilagođava zaslonu, a sve tipke rade na dodir.</p></details>
+  </div>
+</section>
+
+<div class="end">
+  <h2>Spreman za podjelu?</h2>
+  <p style="margin:.4rem 0 1.4rem;color:var(--muted)">Aparat je upaljen, krediti te čekaju.</p>
+  <a class="cta" href="/poker/">▶ Igraj odmah</a>
+</div>
+
+<footer class="dock">
+  <a class="dock-home" href="/">← RetroAppLab</a>
+  <span class="dock-text">Poker 90s je dio RetroAppLaba, male radionice igara iz Dubrovnika.</span>
+  <a class="dock-play" href="/poker/">Igraj</a>
+</footer>
+
+</body>
+</html>
