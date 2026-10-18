@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Završni račun i GFI-POD obrazac za knjigovođe | RetroAppLab</title>
 <link rel="canonical" href="https://retroapplab.com/zavrsni/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RetroAppLab">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Završni račun i GFI-POD obrazac za knjigovođe | RetroAppLab">
+<meta property="og:description" content="Aplikacija za knjigovođe: od bruto bilance do FINA GFI-POD obrasca i XML-a za ePoreznu. Bilanca, RDG, porez na dobit, članarina TZ i temeljnica zaključnih knjiženja.">
+<meta property="og:image" content="https://retroapplab.com/zavrsni/icons/icon-512.png">
+<meta property="og:url" content="https://retroapplab.com/zavrsni/">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1B4B8D">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
@@ -171,6 +178,30 @@ details[open] summary{border-bottom:1px solid var(--rule)}
 .tabs{-ms-overflow-style:none;scroll-behavior:smooth}
 #tab-exp{color:#11734F;font-weight:700}
 @media (max-width:640px){ .tabs{-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent);padding-right:24px} .tab{padding:8px 11px} }
+/* Opis aplikacije za posjetitelje i tražilice: vidi se bez licence (ispod prijave ili ispod demo aplikacije), skriva se kad je licenca aktivna */
+.about{max-width:760px;margin:0 auto 40px;padding:26px 26px 30px;background:var(--surface);color:var(--ink);border:1px solid var(--rule);border-radius:14px;font-size:15px;line-height:1.65}
+.about h2{font-size:20px;font-weight:600;margin:26px 0 8px;line-height:1.3}
+.about h2:first-child{margin-top:0}
+.about h3{font-size:16px;font-weight:600;margin:22px 0 8px}
+.about p{margin:0 0 10px}
+.about ol,.about ul{margin:0 0 12px;padding-left:22px}
+.about li{margin:0 0 6px}
+.about a{color:var(--link)}
+.about .acts{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px}
+.about .acts a{display:inline-block;padding:9px 16px;border-radius:8px;border:1px solid var(--link);text-decoration:none;font-weight:600}
+.about .acts a.main{background:#11734F;border-color:#11734F;color:#fff}
+.about .vid{position:relative;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;margin:6px 0 4px}
+.about .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.about details{border-top:1px solid var(--rule);padding:10px 0}
+.about details:last-child{border-bottom:1px solid var(--rule)}
+.about summary{cursor:pointer;font-weight:600}
+.about details p{margin:8px 0 0;color:var(--muted)}
+body.zr-licenced #o-aplikaciji{display:none}
+#gate{overflow-y:auto}
+#gate:has(.about){align-content:start;padding-top:max(16px,6vh)}
+#gate .about{margin-top:18px;width:min(760px,100%)}
+@media (max-width:640px){.about{padding:18px 16px 22px;font-size:15px}.about h2{font-size:18px}}
+@media print{#o-aplikaciji{display:none!important}}
 #gate{position:fixed;inset:0;z-index:100;background:rgba(17,22,28,.55);display:grid;place-items:center;padding:16px;backdrop-filter:blur(3px)}
 #gate[hidden]{display:none}
 .gatecard{background:var(--surface);border-radius:14px;padding:26px 28px;width:min(400px,100%);display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
@@ -246,6 +277,49 @@ details[open] summary{border-bottom:1px solid var(--rule)}
   <nav class="tabs" role="tablist" id="tabs"></nav>
 </header>
 <main id="main"></main>
+
+<section id="o-aplikaciji" class="about" aria-labelledby="oa-naslov">
+  <h2 id="oa-naslov">Što je aplikacija Završni račun</h2>
+  <p>Završni račun je web aplikacija za knjigovođe koja iz bruto bilance i prošlogodišnjeg GFI-POD-a priprema godišnji financijski izvještaj: bilancu, račun dobiti i gubitka i dodatne podatke. Uz to izračuna prijavu poreza na dobit (PD obrazac), članarinu turističkoj zajednici i temeljnicu zaključnih knjiženja, a na kraju sve prenese u FINA-in GFI-POD obrazac. Nastala je iz svakodnevnog knjigovodstvenog posla, da se završni račun ne slaže ručno, poziciju po poziciju.</p>
+
+  <h2>Kako radi</h2>
+  <ol>
+    <li>Učitate prošlogodišnji GFI-POD klijenta (.xls), onaj predan FINA-i. Aplikacija iz njega preuzme podatke o tvrtki i iznose prethodne godine, a stopu članarine TZ odredi prema djelatnosti i sjedištu.</li>
+    <li>Učitate bruto bilancu u PDF-u, sa stanjem na 31.12. prije zaključnih knjiženja. Konta se raspoređuju na pozicije bilance i računa dobiti i gubitka prema pravilima mapiranja. Konto bez pozicije označi se crveno i poziciju mu odaberete jednom, a pravilo se pamti za sve klijente.</li>
+    <li>Nakon prijenosa dobijete bilancu, RDG i dodatne podatke, s tekućom i prethodnom godinom jednu uz drugu, pa se odmah vidi ako je neko konto otišlo na krivu poziciju.</li>
+    <li>Iz istih podataka računa se prijava poreza na dobit te članarina turističkoj zajednici i naknada za šume. Za PD i TZ-1 aplikacija priprema i XML za ePoreznu.</li>
+    <li>Temeljnica zaključnih knjiženja složi se sama, a duguje i potražuje moraju biti jednaki.</li>
+    <li>FINA kontrole provjeravaju obrazac prije predaje i razlikuju pogreške, koje bi FINA odbila, od upozorenja.</li>
+    <li>Na kraju odaberete prazan FINA-in GFI-POD obrazac za tu godinu. Aplikacija u njega upiše referentnu stranicu, bilancu, RDG i dodatne podatke, a formule i kontrole u FINA-inoj datoteci ostaju netaknute. Popunjeni obrazac predaje se kroz e-RGFI.</li>
+  </ol>
+  <p>Učitavanje je prilagođeno bruto bilanci iz programa PSPnet. Za druge knjigovodstvene programe prilagodba se dogovara: pošaljete bruto bilancu iz svog programa i uskladi se učitavanje i mapiranje konta.</p>
+
+  <h3>Pogledajte kako radi</h3>
+  <div class="vid">
+    <iframe src="https://www.youtube-nocookie.com/embed/qfDws6e1jKw?rel=0" title="Završni račun – kako radi aplikacija" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <h2>Za koga je</h2>
+  <p>Za knjigovodstvene servise i knjigovođe koji vode knjige malih poduzetnika i svake godine slažu više završnih računa. Svaki klijent sprema se u svoju datoteku, pa se između klijenata prelazi jednim učitavanjem, a pravila mapiranja konta vrijede za sve klijente.</p>
+
+  <h2>Podaci klijenata</h2>
+  <p>Podaci klijenata ne prikupljaju se i ne šalju na server. Bruto bilanca, GFI obrasci i upisani iznosi obrađuju se u pregledniku na vašem računalu. Čuvaju se samo u tom pregledniku i u datotekama koje sami spremite. Preko interneta se provjerava samo licenca, prijavom e-mailom i lozinkom.</p>
+
+  <h2>Licenca i demo</h2>
+  <p>Licenca je godišnja, jer se obrasci PD i GFI mijenjaju svake godine. Jedna licenca vrijedi za jedno računalo. Aplikacija radi uz internetsku vezu, koja je potrebna za prijavu, provjeru licence i učitavanje datoteka.</p>
+  <p>Za isprobavanje postoji demo s ručnim unosom iznosa, bez prijave. U demu se vide svi obračuni, a uvoz bilance, spremanje i izvoz rade uz licencu. Za licencu, ili ako želite da vam pokažemo aplikaciju na podacima iz vašeg programa, javite se putem kontakt obrasca.</p>
+  <div class="acts">
+    <a class="main" href="/zavrsni/?demo=1">Isprobaj demo</a>
+    <a href="https://retroapplab.com/#kontakt">Zatraži demo ili licencu</a>
+  </div>
+
+  <h2>Česta pitanja</h2>
+  <details><summary>Radi li s mojim knjigovodstvenim programom?</summary><p>Učitavanje bruto bilance prilagođeno je programu PSPnet. Za drugi program pošaljite bruto bilancu iz njega pa se dogovara prilagodba učitavanja i mapiranja konta. Bilanca mora biti PDF ispisan iz programa, ne skeniran.</p></details>
+  <details><summary>Gdje su spremljeni podaci?</summary><p>U pregledniku na vašem računalu. Preglednik pamti zadnjeg klijenta na kojem ste radili, a svakog klijenta gumbom Spremi spremate u njegovu datoteku i po potrebi je ponovno učitate.</p></details>
+  <details><summary>Treba li instalacija?</summary><p>Ne. Aplikacija radi u pregledniku. U preglednicima koji to podržavaju može se instalirati i kao aplikacija na računalo, tipkom za instalaciju u prozoru za prijavu.</p></details>
+  <details><summary>Što kad se obrasci promijene?</summary><p>Izvoz popunjava FINA-in GFI-POD obrazac koji sami preuzmete za godinu predaje, a aplikacija pri izvozu javlja verziju obrasca. Zbog promjena obrazaca licenca je godišnja.</p></details>
+  <details><summary>Može li se isprobati prije kupnje?</summary><p>Može. Demo s ručnim unosom otvara se bez prijave, a za prikaz na vlastitim podacima javite se putem kontakt obrasca.</p></details>
+</section>
 
 <script>
 // Mini Excel formula engine: parses and evaluates the subset of Excel used in the workbook.
@@ -2377,6 +2451,7 @@ function applyLicence(r) {
   renderLicence();
 }
 function renderLicence() {
+  document.body.classList.toggle('zr-licenced', !!LIC.ok);
   const el = document.getElementById('hLic'); if (!el) return;
   el.replaceChildren();
   const fd = (s) => s ? String(s).slice(0, 10).split('-').reverse().join('.') + '.' : '';
@@ -2408,6 +2483,7 @@ function installBtn() {
   return b;
 }
 function showGate(kind, msg) {
+  aboutHome();
   let g = document.getElementById('gate');
   if (!g) { g = h('div', { id: 'gate', role: 'dialog', 'aria-modal': 'true' }); document.body.append(g); }
   g.hidden = false;
@@ -2474,8 +2550,11 @@ function showGate(kind, msg) {
     setTimeout(() => (em.value ? pw : em).focus(), 50);
   }
   g.replaceChildren(card);
+  if (kind !== 'loading' && !LIC.ok && aboutEl()) g.append(aboutEl());
 }
-function hideGate() { const g = document.getElementById('gate'); if (g) g.hidden = true; renderLicence(); }
+function aboutEl() { return aboutEl.n || (aboutEl.n = document.getElementById('o-aplikaciji')); }
+function aboutHome() { const a = aboutEl(), m = document.getElementById('main'); if (a && m && a.previousElementSibling !== m) m.after(a); }
+function hideGate() { const g = document.getElementById('gate'); if (g) g.hidden = true; aboutHome(); renderLicence(); }
 async function start() {
   showGate('loading');
   if (!navigator.onLine) { showGate('offline'); return; }
