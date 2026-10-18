@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Završni račun i GFI-POD — upute za aplikaciju | RetroAppLab</title>
+<meta name="description" content="Upute za aplikaciju Završni račun: kako iz bruto bilance i prošlogodišnjeg GFI-a složiti Bilancu, RDG i Dodatne podatke, provjeriti FINA kontrole i izvesti GFI-POD i XML za ePoreznu.">
+<link rel="canonical" href="https://retroapplab.com/zavrsni/upute.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="RetroAppLab">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Završni račun i GFI-POD — upute za aplikaciju">
+<meta property="og:description" content="Upute za aplikaciju Završni račun: kako iz bruto bilance i prošlogodišnjeg GFI-a složiti Bilancu, RDG i Dodatne podatke, provjeriti FINA kontrole i izvesti GFI-POD i XML za ePoreznu.">
+<meta property="og:image" content="https://retroapplab.com/zavrsni/icons/icon-512.png">
+<meta property="og:url" content="https://retroapplab.com/zavrsni/upute.html">
+<link rel="icon" type="image/png" sizes="32x32" href="/zavrsni/icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0b0d16;   /* tamna pozadina kao na vodičima portala */
+  --deep:#141726;
+  --gold:#f59e0b;    /* zlatna boja Završnog računa s naslovnice */
+  --gold-soft:#fde3a7;
+  --text:#e9edf4;
+  --muted:#a3adbf;
+  --rule:#2a2f45;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--text);font:400 1.04rem/1.7 Nunito,"Segoe UI",system-ui,sans-serif;padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+a{color:var(--gold)}
+a:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.2;color:#fff}
+.wrap{max-width:860px;margin:0 auto;padding:0 22px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 22px;max-width:860px;margin:0 auto;font-weight:700}
+.top a{text-decoration:none;color:var(--muted)}
+.top a:hover{color:#fff}
+.hero{padding:30px 0 40px}
+.hero h1{font-size:clamp(2rem,5.2vw,3.1rem);font-weight:800;color:var(--gold);letter-spacing:-.01em;text-shadow:0 4px 0 #8a5300,0 14px 40px rgba(245,158,11,.18)}
+.hero .lead{font-size:1.15rem;color:var(--gold-soft);margin:.8rem 0 0;max-width:62ch}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:22px}
+.zr-btn{display:inline-block;padding:11px 18px;border-radius:8px;border:1px solid var(--gold);background:rgba(245,158,11,.15);color:#fff;font-weight:700;font-size:.95rem;text-decoration:none;transition:background .2s}
+.zr-btn:hover{background:var(--gold);color:#070611}
+.zr-login{font-size:.85rem;color:var(--muted);font-weight:600;text-decoration:none}
+.zr-login:hover{color:var(--gold);text-decoration:underline}
+.upute{background:var(--deep);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:44px 0 50px}
+.upute h2{font-size:clamp(1.45rem,3.4vw,1.9rem);margin:2.2rem 0 .7rem}
+.upute h2:first-child{margin-top:0}
+.upute p{margin:0 0 .8rem}
+.upute ol,.upute ul{margin:.2rem 0 1rem;padding-left:1.4rem}
+.upute li{margin:.35rem 0}
+.upute li::marker{color:var(--gold);font-weight:700}
+.upute strong{color:#fff}
+.upute em{color:var(--gold-soft);font-style:normal}
+.tbl{overflow-x:auto;margin:.6rem 0 1.2rem;-webkit-overflow-scrolling:touch}
+.upute table{border-collapse:collapse;width:100%;min-width:0;font-size:.95rem}
+.upute th,.upute td{text-align:left;vertical-align:top;padding:.55rem .6rem;border-bottom:1px solid var(--rule)}
+.upute th{color:var(--gold);font-weight:700;white-space:nowrap}
+.upute td:first-child{font-weight:700;color:#fff;width:32%}
+.end{text-align:center;padding:56px 22px}
+.end h2{color:var(--gold);font-size:clamp(1.5rem,3.6vw,2rem)}
+.end p{color:var(--muted);margin:.4rem 0 0}
+.end .acts{justify-content:center}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(11,13,22,.94);backdrop-filter:blur(8px);border-top:1px solid var(--rule);font-size:.9rem;color:var(--muted)}
+.dock-home{color:#fff;font-weight:700;text-decoration:none;white-space:nowrap}
+.dock-home:hover{color:var(--gold)}
+.dock-text{flex:1;text-align:center}
+.dock-play{background:var(--gold);color:#1c1300;font-weight:800;text-decoration:none;padding:.35rem 1.1rem;border-radius:999px;white-space:nowrap}
+@media (max-width:640px){
+  .dock-text{display:none}
+  .upute td:first-child{width:auto}
+  .upute th,.upute td{padding:.5rem .4rem;font-size:.92rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="/">RetroAppLab</a>
+  <a href="/#software">Software</a>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Završni račun i GFI-POD — upute za aplikaciju</h1>
+    <p class="lead">Završni račun je web aplikacija za knjigovođe: iz bruto bilance i prošlogodišnjeg GFI-POD-a složi Bilancu, Račun dobiti i gubitka i Dodatne podatke, izračuna prijavu poreza na dobit, članarinu TZ i temeljnicu zaključnih knjiženja, a na kraju popuni FINA-in GFI-POD obrazac i pripremi XML za ePoreznu. Ovo su upute koje se u aplikaciji nalaze na kartici Upute.</p>
+    <div class="acts">
+      <a class="zr-btn" href="/zavrsni/?demo=1">Isprobaj demo</a>
+      <a class="zr-btn" href="/#kontakt">Zatraži licencu</a>
+      <a class="zr-login" href="/zavrsni/">Prijava za korisnike →</a>
+    </div>
+  </div>
+</header>
+
+<main class="upute">
+  <div class="wrap">
+    <h2>Prije početka</h2>
+    <p>Aplikacija iz prošlogodišnjeg GFI-POD-a i bruto bilance za tekuću godinu automatski priprema završni račun i sve povezane obračune i kontrole.</p>
+    <p>Na kraju se podaci prenose u FINA-in GFI-POD obrazac.</p>
+    <p>Aplikacija je usklađena s bruto bilancom iz knjigovodstvenog programa PSPnet. Ako koristite drugi program, stojimo na raspolaganju za prilagodbu Vašem postojećem sustavu: pošaljite nam bruto bilancu iz svog programa i uskladit ćemo učitavanje i mapiranje konta.</p>
+    <p><strong>Vaši podaci ostaju kod Vas.</strong> Aplikacija sve obrađuje lokalno, u pregledniku na Vašem računalu. Bruto bilanca, GFI obrasci i svi upisani iznosi nikamo se ne šalju i ne spremaju se ni na kakav server. Čuvaju se samo u Vašem pregledniku i u datotekama koje sami spremite.</p>
+    <p><strong>Za početak su potrebne 3 datoteke</strong></p>
+    <p>Za svakog klijenta pripremi:</p>
+    <ol>
+    <li><strong>Prošlogodišnji GFI-POD</strong> klijenta (Excel, .xls), onaj koji je predan FINA-i.</li>
+    <li><strong>Bruto bilancu u PDF-u</strong> iz programa, sa stanjem <strong>prije zaključnih knjiženja</strong>: ispis na 31.12., ali bez završne temeljnice. Bilanca sa završnom temeljnicom ne valja, jer aplikacija zaključna knjiženja radi sama.</li>
+    <li><strong>Prazan FINA-in GFI-POD obrazac</strong> za godinu koja se predaje, skinut s FINA-ine stranice. Jedan obrazac služi za sve klijente.</li>
+    </ol>
+    <p>Za učitavanje datoteka računalo mora biti spojeno na internet.</p>
+    <h2>Korak po korak</h2>
+    <p>Cijeli unos za jednog klijenta ide ovim redom, na kartici <strong>Uvoz</strong>:</p>
+    <ol>
+    <li>Klikni <strong>Novi obrazac</strong> (gore desno) da kreneš od praznog. Prethodni klijent neka je prije toga spremljen (vidi Spremanje).</li>
+    <li>U dio <strong>Prethodna godina</strong> ubaci prošlogodišnji GFI-POD. Zelenim slovima mora pisati:<ul>
+    <li>Učitani podaci o tvrtki (naziv, OIB, adresa, djelatnost, sjedište),</li>
+    <li>Učitana prošla godina (broj pozicija u Bilanci, RDG-u i Dodatnim podacima),</li>
+    <li>Stopa članarine TZ određena prema djelatnosti i sjedištu.</li>
+    </ul>
+    </li>
+    <li>U dio <strong>Tekuća godina – bruto bilanca</strong> ubaci PDF bruto bilance. Provjeri da pored naziva firme piše zeleno <strong>Zbroj konta = promet u razdoblju</strong>. Ako piše crveno, PDF nije dobro pročitan.</li>
+    <li>Pregledaj dvije tablice konta (RDG i bilanca). <strong>Crveno</strong> označeno konto nema poziciju i neće se prenijeti: odaberi mu poziciju u padajućem izborniku u tom retku.</li>
+    <li>Klikni <strong>Prenesi u obrazac</strong>. Ispod gumba mora pisati <strong>Aktiva i pasiva se slažu</strong>.</li>
+    <li>Na kartici <strong>Obveznik</strong> provjeri podatke koji se ne prepisuju sami: broj zaposlenih i sati rada za tekuću godinu, te dokumente koji se predaju (bilješke, odluke).</li>
+    </ol>
+    <h2>Pregled i ispravci</h2>
+    <p>Najbrža provjera je usporedba stupaca: prethodna i tekuća godina trebaju imati sličan raspored po pozicijama. Pozicija koja je prošle godine imala iznos, a sad je prazna (ili obrnuto), znak je da je neko konto otišlo na krivo mjesto.</p>
+    <div class="tbl"><table>
+    <thead>
+    <tr>
+    <th>Kartica</th>
+    <th>Što pogledati</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>RDG</td>
+    <td>Prihodi i rashodi po pozicijama, usporedi s prošlom godinom.</td>
+    </tr>
+    <tr>
+    <td>Bilanca</td>
+    <td>Aktiva i pasiva; nijedna pozicija ne smije biti negativna (osim kapitala i rezervi).</td>
+    </tr>
+    <tr>
+    <td>Dodatni</td>
+    <td>Prihodi po djelatnosti, kamate, zajmovi, naknade zaposlenima.</td>
+    </tr>
+    <tr>
+    <td>PD</td>
+    <td>Nepriznati troškovi (reprezentacija, osobni automobili), potpore, preneseni gubitak.</td>
+    </tr>
+    <tr>
+    <td>TZ</td>
+    <td>Stopa članarine, umanjenje za potpomognuto područje, uplaćeni predujmovi.</td>
+    </tr>
+    <tr>
+    <td>Temeljnica</td>
+    <td>Mora pisati zeleno <strong>Duguje = potražuje</strong>.</td>
+    </tr>
+    <tr>
+    <td>Kontrole</td>
+    <td>Pogreške bi FINA odbila; provjere su upozorenja. Broj se stalno vidi gore u statusu.</td>
+    </tr>
+    </tbody>
+    </table></div>
+    <p><strong>Plava polja</strong> upisuješ ili ispravljaš ručno. <strong>Siva polja</strong> su zbrojevi i računaju se sama. Gdje iznos dolazi s druge kartice, uz njega piše odakle (npr. <em>PD</em>, <em>temeljnica</em>), a klik vodi tamo.</p>
+    <p>Kod AOP 051, 121 i 145 podebljani iznos je konačan; ručno se ispravlja malo polje ispod njega (stanje prije zaključnih knjiženja).</p>
+    <p>Stopa članarine TZ određuje se sama po djelatnosti. Ako je upišeš ručno, ostaje dok ne klikneš <strong>vrati automatsku stopu</strong>.</p>
+    <h2>Izvoz i predaja</h2>
+    <p>Aplikacija ne slaže novu Excel datoteku, nego popuni FINA-in obrazac: upiše referentnu stranicu, Bilancu, RDG i Dodatne podatke, a formule, kontrole i skriveni list ostaju netaknuti.</p>
+    <ol>
+    <li>Klikni zeleni gumb <strong>Izvezi FINA GFI</strong> (ili karticu <strong>GFI</strong>) i odaberi prazan FINA-in GFI-POD obrazac. Ako kontrole javljaju pogreške, aplikacija prvo pita želiš li nastaviti.</li>
+    <li>Spremi ponuđenu datoteku (naziv je <em>GFI-POD_naziv firme_godina.xls</em>). Original obrasca ostaje prazan.</li>
+    <li>Otvori datoteku u Excelu. Dok je u zaštićenom prikazu, list Kont može javljati pogreške: to je normalno, jer Excel tada ne računa.</li>
+    <li>Klikni <strong>Omogući uređivanje</strong>. Excel preračuna sve formule i kontrolni broj, i pogreške nestanu.</li>
+    <li>Pogledaj list <strong>Kont</strong>: treba pokazivati isto što i kartica Kontrole u aplikaciji.</li>
+    <li>Spremi s <strong>Ctrl+S</strong> i ostavi format <strong>.xls</strong> (Excel 97-2003). Ne spremaj kao .xlsx.</li>
+    <li>Predaj spremljenu datoteku kroz <strong>e-RGFI</strong>.</li>
+    </ol>
+    <h2>Spremanje, mapiranje i česti problemi</h2>
+    <p><strong>Spremanje.</strong> Gumb <strong>Spremi u datoteku</strong> napravi datoteku <em>naziv firme_godina_zavrsni.json</em> sa svim podacima klijenta, uključujući učitanu bruto bilancu. <strong>Učitaj</strong> vraća točno to stanje. Za svakog klijenta drži svoju datoteku, jer aplikacija u pregledniku pamti samo zadnjeg.</p>
+    <p><strong>Mapiranje konta.</strong> Na dnu kartice Uvoz su dva seta pravila: za RDG i Bilancu, te za Dodatne podatke. Pravilo vrijedi za sva konta koja počinju tim brojem, a duže pravilo ima prednost (4613 pred 46). Pravila se pamte za sve klijente, pa se svako novo konto razvrstava samo jednom.</p>
+    <div class="tbl"><table>
+    <thead>
+    <tr>
+    <th>Problem</th>
+    <th>Rješenje</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>Konto je crveno u tablici uvoza</td>
+    <td>Odaberi mu poziciju u retku, ili dodaj pravilo za njegovu skupinu.</td>
+    </tr>
+    <tr>
+    <td>Aktiva i pasiva se ne slažu</td>
+    <td>Provjeri ima li crvenih konta; zatim je li bilanca stanje prije zaključnih knjiženja.</td>
+    </tr>
+    <tr>
+    <td>Negativna pozicija u Bilanci (kontrola 48)</td>
+    <td>Konto ima saldo na krivoj strani (npr. preplaćena plaća); provjeri knjiženja ili prebaci iznos na suprotnu poziciju.</td>
+    </tr>
+    <tr>
+    <td>Prihodi po djelatnostima (kontrola 67)</td>
+    <td>Aplikacija ih stavlja na poziciju iz prošle godine, ili po NKD-u; ispravi na kartici Dodatni podaci.</td>
+    </tr>
+    <tr>
+    <td>Stopa TZ je 0</td>
+    <td>Djelatnost nije na zakonskom popisu; ako firma pretežno radi nešto drugo, upiši stopu ručno.</td>
+    </tr>
+    <tr>
+    <td>PDF se ne učitava</td>
+    <td>Mora biti PDF ispisan iz programa, ne skeniran; računalo mora biti na internetu.</td>
+    </tr>
+    <tr>
+    <td>U Excelu su pogreške na listu Kont</td>
+    <td>Klikni Omogući uređivanje; ako ostanu, usporedi s karticom Kontrole.</td>
+    </tr>
+    </tbody>
+    </table></div>
+  </div>
+</main>
+
+<div class="end">
+  <h2>Isprobajte na svojim podacima</h2>
+  <p>Demo s ručnim unosom otvara se bez prijave.</p>
+  <div class="acts">
+      <a class="zr-btn" href="/zavrsni/?demo=1">Isprobaj demo</a>
+      <a class="zr-btn" href="/#kontakt">Zatraži licencu</a>
+      <a class="zr-login" href="/zavrsni/">Prijava za korisnike →</a>
+    </div>
+</div>
+
+<footer class="dock">
+  <a class="dock-home" href="/">← RetroAppLab</a>
+  <span class="dock-text">Završni račun je dio RetroAppLaba, nastao iz svakodnevnog knjigovodstvenog posla.</span>
+  <a class="dock-play" href="/zavrsni/?demo=1">Demo</a>
+</footer>
+
+</body>
+</html>

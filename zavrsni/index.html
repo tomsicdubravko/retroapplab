@@ -2469,7 +2469,8 @@ function showGate(kind, msg) {
       h('label', {}, 'E-mail', em), h('label', {}, 'Lozinka', pw), btn,
       h('button', { class: 'src', type: 'button', style: 'margin-top:10px', onclick: () => { LIC.demo = true; renderLicence(); hideGate(); } }, 'Isprobaj demo (samo ručni unos)'),
       installBtn(),
-      h('p', { class: 'note', style: 'border:none;padding:8px 0 0;text-align:center' }, 'Licenca vrijedi za jedno računalo. Podaci iz bilanci ostaju na Vašem računalu.'));
+      h('p', { class: 'note', style: 'border:none;padding:8px 0 0;text-align:center' }, 'Licenca vrijedi za jedno računalo. Podaci iz bilanci ostaju na Vašem računalu.'),
+      h('a', { href: 'upute.html', style: 'align-self:center;font-size:12px;color:var(--muted)' }, 'Upute za aplikaciju'));
     setTimeout(() => (em.value ? pw : em).focus(), 50);
   }
   g.replaceChildren(card);
