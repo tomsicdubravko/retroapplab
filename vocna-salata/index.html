@@ -1704,16 +1704,16 @@ body.theme-retro .reels-container::after {
   <!-- Paytable -->
   <div class="paytable">
     <h3>📋 ISPLATNA TABLICA</h3>
-    <div class="pay-row"><span class="pay-symbols">💎💎💎</span><span class="pay-amount">× 100 — JACKPOT!</span></div>
-    <div class="pay-row"><span class="pay-symbols">🍌🍌🍌</span><span class="pay-amount">× 50</span></div>
-    <div class="pay-row"><span class="pay-symbols">🍊🍊🍊</span><span class="pay-amount">× 20</span></div>
-    <div class="pay-row"><span class="pay-symbols">🍇🍇🍇</span><span class="pay-amount">× 15</span></div>
-    <div class="pay-row"><span class="pay-symbols">🍉🍉🍉</span><span class="pay-amount">× 10</span></div>
-    <div class="pay-row"><span class="pay-symbols">🍋🍋🍋</span><span class="pay-amount">× 8</span></div>
-    <div class="pay-row"><span class="pay-symbols">🍒🍒🍒</span><span class="pay-amount">× 5</span></div>
-    <div class="pay-row"><span class="pay-symbols">🍒🍒 (bilo gdje)</span><span class="pay-amount">× 2</span></div>
+    <div class="pay-row"><span class="pay-symbols">💎💎💎</span><span class="pay-amount bonus-color">🎰 DIJAMANTSKI TREZOR · 3 vrtnje</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍌🍌🍌</span><span class="pay-amount bonus-color">🎰 BANANA SPLIT · 5 vrtnji</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍊🍊🍊</span><span class="pay-amount bonus-color">🎰 NARANČA EXPRESS · 5 vrtnji</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍇🍇🍇</span><span class="pay-amount bonus-color">🎰 VINSKI PODRUM · 5 vrtnji</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍉🍉🍉</span><span class="pay-amount bonus-color">🎰 LUBENICA SMASH · 5 vrtnji</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍋🍋🍋</span><span class="pay-amount bonus-color">🎰 LIMUNADA BAR · 5 vrtnji</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍒🍒🍒</span><span class="pay-amount bonus-color">🎰 TREŠNJIN VRT · 5 vrtnji</span></div>
+    <div class="pay-row"><span class="pay-symbols">🍒🍒 (u redu)</span><span class="pay-amount">× 2</span></div>
     <div class="pay-row"><span class="pay-symbols">🎁🎁🎁</span><span class="pay-amount bonus-color">🎲 BONUS RUNDA!</span></div>
-    <div class="pay-row"><span class="pay-symbols">🎁🎁 (bilo gdje)</span><span class="pay-amount free-color">🎰 5× FREE SPIN</span></div>
+    <div class="pay-row"><span class="pay-symbols">🎁🎁 (u redu)</span><span class="pay-amount free-color">🎰 5× FREE SPIN</span></div>
   </div>
 
   <button class="reset-btn" onclick="resetGame()">↺ Resetiraj igru</button>
@@ -1757,6 +1757,15 @@ body.theme-retro .reels-container::after {
   </div>
 </div>
 
+<script>
+// Na retroapplab.com nema window.storage (postoji samo u Claude pregledu): ljestvica se tada sprema u pregledniku na ovom uređaju.
+if (!window.storage) {
+  window.storage = {
+    get: async (k) => { const v = localStorage.getItem(k); return v === null ? null : { key: k, value: v }; },
+    set: async (k, v) => { localStorage.setItem(k, v); return { key: k, value: v }; }
+  };
+}
+</script>
 <script>
 // ── AUDIO ENGINE ──
 let audioCtx = null;
@@ -2482,7 +2491,7 @@ async function saveScore() {
     scores = scores.slice(0, 20); // keep top 20
 
     await window.storage.set('vocna-salata-scores', JSON.stringify(scores), true);
-    document.getElementById('cashoutSavedMsg').textContent = '✅ Rezultat spremen!';
+    document.getElementById('cashoutSavedMsg').textContent = '✅ Rezultat spremljen!';
     btn.textContent = '✓';
     renderLeaderboard(scores);
   } catch(e) {
