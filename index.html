@@ -710,7 +710,15 @@
     grid-template-columns: 1.1fr 1fr;
     border-color: rgba(245, 158, 11, 0.55);
     box-shadow: 0 0 40px rgba(245, 158, 11, 0.12);
+    cursor: pointer;
+    transition: border-color 0.25s, box-shadow 0.25s;
   }
+  .featured-card.fc-zr:hover,
+  .featured-card.fc-zr:focus-visible {
+    border-color: rgba(245, 158, 11, 0.95);
+    box-shadow: 0 0 46px rgba(245, 158, 11, 0.3);
+  }
+  .featured-card.fc-zr:focus-visible { outline: 2px solid var(--neon-gold); outline-offset: 3px; }
   .fc-zr-media { padding: 22px; display: flex; align-items: center; background: rgba(245, 158, 11, 0.05); }
   .fc-zr-media .ft-zr-video { width: 100%; }
   .fc-zr .featured-content p { margin-bottom: 10px; }
@@ -851,7 +859,7 @@
     </div>
   </div>
   <span class="featured-label fl-zr">ZA KNJIGOVOĐE<span class="fl-cursor">_</span></span>
-  <div class="featured-card fc-zr">
+  <div class="featured-card fc-zr" role="link" tabindex="0" aria-label="Završni račun — više u Custom Software">
     <div class="fc-zr-media">
       <div class="ft-zr-video">
         <iframe src="https://www.youtube-nocookie.com/embed/qfDws6e1jKw?rel=0" title="Završni račun – prikaz aplikacije" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -1281,6 +1289,22 @@
     var url = id === 'pocetna' ? location.pathname : '#' + id;
     if(location.hash !== '#' + id) history.pushState(null, '', url);
   });
+  // Kartica Završnog računa na Početnoj vodi na karticu u Software tabu; tipke, poveznice i video rade kao i prije
+  var zrCard = document.querySelector('.featured-card.fc-zr');
+  if(zrCard){
+    var goZr = function(){
+      show('zavrsni-racun', true);
+      if(location.hash !== '#zavrsni-racun') history.pushState(null, '', '#zavrsni-racun');
+    };
+    zrCard.addEventListener('click', function(e){
+      if(e.target.closest('a, button, iframe, .ft-zr-video')) return;
+      if(window.getSelection && String(window.getSelection())) return;
+      goZr();
+    });
+    zrCard.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && e.target === zrCard){ e.preventDefault(); goZr(); }
+    });
+  }
   window.addEventListener('popstate', function(){ show(location.hash.slice(1), true); });
   if('scrollRestoration' in history) history.scrollRestoration = 'manual';
   var start = location.hash.slice(1);
