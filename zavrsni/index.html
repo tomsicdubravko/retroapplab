@@ -4,20 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Završni račun i GFI-POD obrazac za knjigovođe | RetroAppLab</title>
-<link rel="canonical" href="https://retroapplab.com/zavrsni/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="RetroAppLab">
-<meta property="og:locale" content="hr_HR">
-<meta property="og:title" content="Završni račun i GFI-POD obrazac za knjigovođe | RetroAppLab">
-<meta property="og:description" content="Aplikacija za knjigovođe: od bruto bilance do FINA GFI-POD obrasca i XML-a za ePoreznu. Bilanca, RDG, porez na dobit, članarina TZ i temeljnica zaključnih knjiženja.">
-<meta property="og:image" content="https://retroapplab.com/zavrsni/icons/icon-512.png">
-<meta property="og:url" content="https://retroapplab.com/zavrsni/">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1B4B8D">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="Završni račun">
 <meta name="description" content="Aplikacija za knjigovođe: od bruto bilance do FINA GFI-POD obrasca i XML-a za ePoreznu. Bilanca, RDG, porez na dobit, članarina TZ i temeljnica zaključnih knjiženja. Isprobajte demo.">
+<meta name="keywords" content="završni račun, GFI-POD, GFI, FINA, e-RGFI, porez na dobit, PD obrazac, TZ 1, članarina turističke zajednice, bilješke uz financijske izvještaje, odluka o raspodjeli dobiti, knjigovodstvo, računovodstvo, PSPnet">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://retroapplab.com/zavrsni/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="hr_HR">
+<meta property="og:title" content="Završni račun – od bruto bilance do FINA GFI-POD obrasca u par klikova">
+<meta property="og:description" content="Bilanca, RDG, porez na dobit, članarina TZ, odluke i bilješke te FINA kontrole i izvoz u originalni GFI-POD obrazac. Podaci ostaju na Vašem računalu.">
+<meta property="og:url" content="https://retroapplab.com/zavrsni/">
+<meta property="og:image" content="https://retroapplab.com/zavrsni/icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Završni račun","applicationCategory":"BusinessApplication","operatingSystem":"Web, Windows, macOS","inLanguage":"hr","url":"https://retroapplab.com/zavrsni/","image":"https://retroapplab.com/zavrsni/icons/icon-512.png","description":"Aplikacija za knjigovođe koja iz bruto bilance i prošlogodišnjeg GFI-POD obrasca priprema završni račun: Bilancu, RDG, Dodatne podatke, prijavu poreza na dobit, obrazac TZ 1, temeljnicu zaključnih knjiženja, odluke i bilješke, provjerava FINA kontrole i popunjava originalni FINA GFI-POD obrazac te XML za ePoreznu.","featureList":["Učitavanje bruto bilance iz PDF-a","Prijenos prošlogodišnjeg GFI-POD obrasca","FINA kontrole prije predaje","Izvoz u originalni FINA GFI-POD obrazac","XML za ePoreznu (PD i TZ 1)","Odluke i bilješke uz financijske izvještaje"],"offers":{"@type":"Offer","category":"Godišnja licenca"}}</script>
+<noscript><h1>Završni račun – od bruto bilance do FINA GFI-POD obrasca</h1><p>Aplikacija za knjigovođe: Bilanca, RDG, Dodatni podaci, porez na dobit, članarina TZ, temeljnica, odluke i bilješke, FINA kontrole i izvoz u originalni GFI-POD obrazac. Za rad je potreban JavaScript i internetska veza.</p></noscript>
 <script src="vendor/supabase.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1210,7 +1214,7 @@ const DEFAULT_MAP = [
   ['71', 'RDG!J18'], ['72', 'RDG!J52'], ['724', 'RDG!J51'], ['75', 'RDG!J10'], ['753', 'RDG!J13'], ['76', 'RDG!J10'], ['764', 'RDG!J13'], ['77', 'RDG!J45'], ['774', 'RDG!J44'], ['78', 'RDG!J13'],
 ];
 const BIL_DEFAULT = [
-  ['01', 'Bilanca!J13'], ['02', 'Bilanca!J21'], ['022', 'Bilanca!J22'], ['0292', 'Bilanca!J22'], ['10', 'Bilanca!J71'], ['12', 'Bilanca!J57'], ['15', 'Bilanca!J69'], ['16', 'Bilanca!K59'], ['18', 'Bilanca!K59'],
+  ['00', 'Bilanca!J13'], ['01', 'Bilanca!J19'], ['020', 'Bilanca!J20'], ['0290', 'Bilanca!J20'], ['043', 'Bilanca!J36'], ['110', 'Bilanca!J57'], ['156', 'Bilanca!J60'], ['165', 'Bilanca!J58'], ['951', 'Bilanca!J112'], ['4771', 'RDG!J22'], ['73', 'RDG!J36'], ['02', 'Bilanca!J21'], ['022', 'Bilanca!J22'], ['0292', 'Bilanca!J22'], ['10', 'Bilanca!J71'], ['12', 'Bilanca!J57'], ['15', 'Bilanca!J69'], ['16', 'Bilanca!K59'], ['18', 'Bilanca!K59'],
   ['19', 'Bilanca!J72'], ['31', 'Bilanca!J47'], ['35', 'Bilanca!J47'], ['66', 'Bilanca!J50'],
   ['22', 'Bilanca!J127'], ['25', 'Bilanca!J124'], ['257', 'Bilanca!J126'], ['26', 'Bilanca!K130'], ['263', 'Bilanca!J129'], ['27', 'Bilanca!J129'], ['272', 'Bilanca!K130'], ['273', 'Bilanca!K130'], ['28', 'Bilanca!K130'], ['29', 'Bilanca!J134'],
   ['83', 'PD!Q81'], ['91', 'Bilanca!J77'], ['94', 'Bilanca!J94'], ['941', 'Bilanca!J95'], ['943', 'Bilanca!J95'], ['95', 'Bilanca!J113'],
@@ -1246,7 +1250,7 @@ const TARGETS = (() => {
 })();
 const TARGET = Object.fromEntries(TARGETS.map(t => [t.key, t]));
 const MAP2_STORE = 'zavrsni-racun:mapiranje-dodatni';
-const DEFAULT_MAP2 = [['1512', 'Dodatni!J10'], ['44', 'Dodatni!J65'], ['764', 'Dodatni!J43'], ['774', 'Dodatni!J73'], ['724', 'Dodatni!J76']];
+const DEFAULT_MAP2 = [['1512', 'Dodatni!J10'], ['44', 'Dodatni!J65'], ['764', 'Dodatni!J43'], ['774', 'Dodatni!J73'], ['724', 'Dodatni!J76'], ['401', 'Dodatni!J50'], ['4180', 'Dodatni!J51'], ['4188', 'Dodatni!J51'], ['4122', 'Dodatni!J58'], ['423', 'Dodatni!J60'], ['464', 'Dodatni!J62'], ['468', 'Dodatni!J62']];
 let MAP2 = (() => { try { const m = JSON.parse(localStorage.getItem(MAP2_STORE) || 'null'); if (Array.isArray(m)) return m; } catch (e) {} return DEFAULT_MAP2.map(x => x.slice()); })();
 const saveMap2 = () => { try { localStorage.setItem(MAP2_STORE, JSON.stringify(MAP2)); } catch (e) {} };
 let MAP = (() => { try { const m = JSON.parse(localStorage.getItem(MAP_STORE) || 'null'); if (Array.isArray(m)) return m; } catch (e) {} return DEFAULT_MAP.map(x => x.slice()); })();
@@ -1274,7 +1278,12 @@ let BB = (() => { try { return JSON.parse(localStorage.getItem(BB_STORE) || 'nul
     if (i76 >= 0) { MAP2.splice(i76, 1); try { localStorage.setItem(MAP2_STORE, JSON.stringify(MAP2)); } catch (e) {} }
   }
   if (v < 9) { for (const r of [['941', 'Bilanca!J95'], ['943', 'Bilanca!J95']]) if (!MAP.some(x => x[0] === r[0])) MAP.push(r.slice()); }
-  try { localStorage.setItem(MAP_STORE + ':v', '9'); localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {}
+  if (v < 10) {
+    const r01 = MAP.find(x => x[0] === '01'); if (r01 && r01[1] === 'Bilanca!J13') r01[1] = 'Bilanca!J19';
+    for (const r of [['00', 'Bilanca!J13'], ['01', 'Bilanca!J19'], ['020', 'Bilanca!J20'], ['0290', 'Bilanca!J20'], ['043', 'Bilanca!J36'], ['110', 'Bilanca!J57'], ['156', 'Bilanca!J60'], ['165', 'Bilanca!J58'], ['951', 'Bilanca!J112'], ['4771', 'RDG!J22'], ['73', 'RDG!J36']]) if (!MAP.some(x => x[0] === r[0])) MAP.push(r.slice());
+  }
+  if (v < 10) { for (const r of [['401', 'Dodatni!J50'], ['4180', 'Dodatni!J51'], ['4188', 'Dodatni!J51'], ['4122', 'Dodatni!J58'], ['423', 'Dodatni!J60'], ['464', 'Dodatni!J62'], ['468', 'Dodatni!J62']]) if (!MAP2.some(x => x[0] === r[0])) MAP2.push(r.slice()); try { localStorage.setItem(MAP2_STORE, JSON.stringify(MAP2)); } catch (e) {} }
+  try { localStorage.setItem(MAP_STORE + ':v', '10'); localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {}
 })();
 const saveMap = () => { try { localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {} };
 const saveBB = () => { try { localStorage.setItem(BB_STORE, JSON.stringify(BB)); } catch (e) {} };
@@ -1359,9 +1368,12 @@ function parsePspnet(lines) {
     if ((m = ln.match(/RAZDOBLJA OD\s*([\d.]+)\s*DO\s*([\d.]+)/))) { od = m[1]; doo = m[2]; }
     if (/PROMET U RAZDOBLJU/.test(ln)) total = (ln.match(NUM) || []).map(toN);
     if ((m = ln.match(/^(\d{6})\s+(.*)$/))) {
-      const nums = (m[2].match(NUM) || []).map(toN);
+      const toks = m[2].split(' '), isN = (s) => /^-?\d{1,3}(?:\.\d{3})*,\d{2}$/.test(s);
+      const i0 = toks.findIndex(isN);
+      if (i0 < 0) continue;
+      const nums = toks.slice(i0).filter(isN).map(toN);
       if (nums.length < 6) continue;
-      leaves.push({ k: m[1], name: m[2].split(NUM)[0].trim(), v: nums.slice(0, 6) });
+      leaves.push({ k: m[1], name: toks.slice(0, i0).join(' ').trim(), v: nums.slice(0, 6) });
     }
   }
   return { firm, od, do: doo, leaves, total };
