@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RetroAppLab — igre, eksperimenti i alati</title>
 <link rel="canonical" href="https://retroapplab.com/">
-<meta name="description" content="RetroAppLab — besplatne browser igre i poslovni alati za knjigovođe: Završni račun i GFI, Evidencija radnog vremena, Kompenzacija, Konto Detektiv, Fond sati.">
+<meta name="description" content="RetroAppLab — besplatne browser igre i poslovni alati za knjigovođe: Završni račun i GFI, Kompenzacija, Konto Detektiv i radni-sati.hr.">
 <meta property="og:title" content="RetroAppLab — igre, eksperimenti i alati">
-<meta property="og:description" content="RetroAppLab — besplatne browser igre i poslovni alati za knjigovođe: Završni račun i GFI, Evidencija radnog vremena, Kompenzacija, Konto Detektiv, Fond sati.">
+<meta property="og:description" content="RetroAppLab — besplatne browser igre i poslovni alati za knjigovođe: Završni račun i GFI, Kompenzacija, Konto Detektiv i radni-sati.hr.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://retroapplab.com/">
 <meta property="og:image" content="https://retroapplab.com/og-image.jpg">
@@ -536,6 +536,19 @@
     .featured-tool { grid-template-columns: 1fr; }
     .featured-tool img { max-width: 160px; margin: 0 auto; }
     .featured-tool .ft-gallery img { max-width: 100%; margin: 0; }
+  }
+  .featured-tool.ft-rs { grid-template-columns: minmax(0, 300px) 1fr; align-items: start; }
+  .ft-rs img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+  .ft-rs-sub { font-size: 0.85rem; color: var(--neon-green); font-weight: 600; margin-bottom: 6px; }
+  .ft-rs-btn {
+    display: inline-block; margin-top: 10px; padding: 9px 16px; border-radius: 8px;
+    border: 1px solid var(--neon-green); background: rgba(16, 185, 129, 0.15);
+    color: #fff; font-weight: 700; font-size: 0.88rem; transition: background 0.2s;
+  }
+  .ft-rs-btn:hover { background: var(--neon-green); color: #070611; }
+  @media (max-width: 700px) {
+    .featured-tool.ft-rs { grid-template-columns: 1fr; }
+    .featured-tool.ft-rs img { max-width: 100%; }
   }
   .featured-tool.ft-zr {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
@@ -1187,38 +1200,18 @@
         </div>
       </div>
 
-      <div class="featured-tool">
-        <img src="shot-evidencija.jpg" alt="Evidencija Radnog Vremena">
+      <div class="featured-tool ft-rs">
+        <a href="https://radni-sati.hr/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="images/radni-sati-preview.webp" alt="Naslovnica stranice radni-sati.hr" width="1280" height="800" loading="lazy"></a>
         <div>
-          <span class="ft-badge">ISTAKNUTO · AKTIVNO</span>
-          <h4>Evidencija Radnog Vremena</h4>
-          <p style="font-size:0.85rem;color:var(--text-muted);">Usklađena sa Zakonom o radu. Unosiš djelatnika, biraš mjesec, i alat sam vodi evidenciju uz automatski prepoznate praznike.</p>
-          <div class="ft-features">
-            <span>⚠️ Upozorenja (prekovremeni, noćni)</span>
-            <span>📅 Praznici i Uskrs automatski</span>
-            <span>📊 Excel i PDF izvoz</span>
-          </div>
-          <div class="lab-item-links" style="margin-top:4px;">
-            <a href="/evidencija-rada/evidencija-rada.html" target="_blank">Isprobaj →</a>
-            <a href="/evidencija-rada/evidencija-rada.html" download>Preuzmi besplatno ↓</a>
-            <a href="/evidencija-rada/o-alatu.html">Vodič</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="featured-tool">
-        <img src="shot-fond-sati.jpg" alt="Fond Sati po Mjesecima">
-        <div>
-          <span class="ft-badge">ISTAKNUTO · AKTIVNO</span>
-          <h4>Fond Sati po Mjesecima</h4>
-          <p style="font-size:0.85rem;color:var(--text-muted);">Besplatna tablica radnih dana, sati i blagdana za obračun plaće — po mjesecima, za godine 2024. – 2028.</p>
-          <div class="ft-features">
-            <span>📅 5 godina (2024. – 2028.)</span>
-            <span>🧮 Radni dani, fond sati, blagdani</span>
-            <span>🔗 Poveznica na Evidenciju rada</span>
-          </div>
-          <div class="lab-item-links" style="margin-top:4px;">
-            <a href="/fond-sati-2026/fond-sati-2026.html" target="_blank">Otvori →</a>
+          <span class="ft-badge">VLASTITA STRANICA</span>
+          <h4>radni-sati.hr</h4>
+          <p class="ft-rs-sub">Projekt nastao u RetroAppLabu</p>
+          <p style="font-size:0.85rem;color:var(--text-muted);">Sve o radnim satima na jednom mjestu: fond sati po mjesecima za 2024.–2028., besplatna evidencija radnog vremena, kalendar blagdana s računovodstvenim rokovima, kalkulator sati i planer godišnjeg odmora.</p>
+          <a class="ft-rs-btn" href="https://radni-sati.hr/" target="_blank" rel="noopener">Otvori radni-sati.hr ↗</a>
+          <div class="lab-item-links" style="margin-top:12px;flex-wrap:wrap;">
+            <a href="https://radni-sati.hr/fond-sati-2026/fond-sati-2026.html" target="_blank" rel="noopener">Fond sati 2026</a>
+            <a href="https://radni-sati.hr/evidencija-rada/evidencija-rada.html" target="_blank" rel="noopener">Evidencija rada</a>
+            <a href="https://radni-sati.hr/kalendar-blagdana/kalendar-blagdana.html" target="_blank" rel="noopener">Kalendar blagdana</a>
           </div>
         </div>
       </div>
