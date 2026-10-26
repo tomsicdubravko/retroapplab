@@ -66,47 +66,64 @@
 <header class="hero">
   <div class="wrap">
     <h1>Pravila privatnosti</h1>
-    <p class="updated">Zadnje ažurirano: rujan 2026.</p>
+    <p class="updated">Zadnje ažurirano: 26. listopada 2026.</p>
   </div>
 </header>
 
 <main class="wrap">
 
   <section>
-    <h2>Tko smo mi</h2>
-    <p>RetroAppLab (retroapplab.com) je osobni projekt koji izrađuje i vodi Dubo, iz Dubrovnika, Hrvatska. Stranica objedinjuje besplatne browser igre, hardverske eksperimente i poslovne alate.</p>
+    <h2>Tko stoji iza stranice</h2>
+    <p>RetroAppLab (retroapplab.com) privatni je projekt koji vodi <strong>Dubravko Tomšić</strong>, Bartola Kašića 13, 20236 Nova Mokošica, Hrvatska. RetroAppLab nije registrirana tvrtka. Voditelj obrade osobnih podataka na ovoj stranici je navedena osoba, osim za licence aplikacije Završni račun (vidi dolje).</p>
+    <p>Kontakt za sva pitanja o privatnosti: <a href="mailto:kontakt@retroapplab.com">kontakt@retroapplab.com</a></p>
   </section>
 
   <section>
-    <h2>Kolačići (cookies)</h2>
-    <p>Ova stranica koristi kolačiće i slične tehnologije radi prikaza oglasa i poboljšanja korisničkog iskustva. Neki od tih kolačića postavljaju treće strane, uključujući Google.</p>
+    <h2>Igre i alati</h2>
+    <p>Većina igara i alata radi u vašem pregledniku. Postavke, rezultati i podaci koje upišete spremaju se lokalno u pregledniku (localStorage) i ne šalju se na naš poslužitelj. Možete ih obrisati brisanjem podataka web-stranice u postavkama preglednika.</p>
   </section>
 
   <section>
-    <h2>Google AdSense</h2>
-    <p>RetroAppLab koristi Google AdSense za prikaz oglasa. Google i njegovi partneri koriste kolačiće za prikazivanje oglasa na temelju prethodnih posjeta ovoj i drugim web stranicama.</p>
-    <p>Google koristi kolačiće oglašavanja koji omogućuju Googleu i njegovim partnerima prikazivanje oglasa vašim korisnicima na temelju njihovog posjeta vašim stranicama i/ili drugim stranicama na internetu.</p>
-    <p>Možete isključiti personalizirano oglašavanje odlaskom na <a href="https://adssettings.google.com/" target="_blank">Postavke oglasa (Google Ads Settings)</a>, ili posjetom <a href="https://www.aboutads.info/choices/" target="_blank">www.aboutads.info/choices</a> za isključivanje kolačića trećih strana za personalizirano oglašavanje.</p>
+    <h2>Online igra (Kvart Kings i Party Games)</h2>
+    <p>Online način igre u Kvart Kings i Party Games povezuje igrače izravno, preglednik s preglednikom (tehnologija WebRTC). Za to se koriste vanjske usluge:</p>
+    <ul>
+      <li><strong>PeerJS Cloud</strong> (0.peerjs.com) za uspostavu veze pomoću koda sobe,</li>
+      <li><strong>Google STUN</strong> poslužitelj za otkrivanje mrežne veze,</li>
+      <li><strong>PeerJS TURN</strong> poslužitelji u EU i SAD-u, samo ako izravna veza nije moguća; tada promet igre ide preko tih poslužitelja.</li>
+    </ul>
+    <p>Pritom se obrađuju IP adrese, kod sobe, imena koja igrači upišu u predvorju i stanje igre. Igrači u istoj sobi međusobno vide IP adrese, što je svojstvo WebRTC tehnologije. Ništa od toga ne spremamo na naš poslužitelj. Biblioteka PeerJS učitava se s javnih CDN-ova (cdnjs.cloudflare.com, cdn.jsdelivr.net ili unpkg.com), pri čemu se tim poslužiteljima šalje IP adresa.</p>
   </section>
 
   <section>
-    <h2>Kontakt forma</h2>
-    <p>Podaci koje unesete u kontakt formu (ime, email adresa, poruka) prosljeđuju se putem usluge Formspree izravno na email vlasnika stranice, isključivo radi odgovora na vaš upit. Ti podaci se ne koriste u druge svrhe niti se dijele s trećim stranama.</p>
+    <h2>Aplikacija Završni račun</h2>
+    <p>Prijava u aplikaciju Završni račun koristi uslugu <strong>Supabase</strong>, s poslužiteljem u Frankfurtu (EU). U Supabaseu se sprema samo e-mail adresa za prijavu. Financijski podaci (bruto bilanca, GFI i ostalo) obrađuju se u vašem pregledniku i ne šalju se na poslužitelj.</p>
+    <p>Licence za Završni račun ugovara i naplaćuje <strong>PSP net d.o.o.</strong>, Marka Marojice 33, 20000 Dubrovnik, OIB 73794418618, koji je voditelj obrade podataka kupaca licenci (korisnički račun, podaci za račun).</p>
   </section>
 
   <section>
-    <h2>Google Analytics / Search Console</h2>
-    <p>Stranica može koristiti Google alate (npr. Search Console) za praćenje osnovnih statistika posjećenosti i tehničku analizu, radi poboljšanja rada stranice.</p>
+    <h2>Kontakt obrazac</h2>
+    <p>Poruke poslane kontakt obrascem tehnički obrađuje usluga Formspree (Formspree, Inc., SAD) i prosljeđuje ih na našu e-mail adresu. Ime, e-mail i sadržaj poruke koristimo samo za odgovor na upit. Poruke čuvamo dok je potrebno za rješavanje upita, a na zahtjev ih brišemo.</p>
+  </section>
+
+  <section>
+    <h2>Oglasi i kolačići</h2>
+    <p>Stranica prikazuje oglase putem usluge Google AdSense. Google i njegovi partneri koriste kolačiće za prikaz i mjerenje oglasa, uključujući oglase temeljene na vašim prethodnim posjetima ovoj i drugim web-stranicama. Posjetiteljima iz EU, Ujedinjenog Kraljevstva i Švicarske Google prije postavljanja takvih kolačića prikazuje obavijest o privoli, a izbor možete kasnije promijeniti.</p>
+    <p>Personalizirane oglase možete isključiti u <a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer">Googleovim postavkama oglasa</a>. Više o tome kako Google koristi podatke pročitajte na stranici <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Kako Google koristi informacije s web-lokacija partnera</a>.</p>
+  </section>
+
+  <section>
+    <h2>Hosting i vanjski resursi</h2>
+    <p>Stranica se poslužuje putem usluge GitHub Pages (GitHub, Inc.), a domena koristi DNS usluge tvrtke Cloudflare. Ti pružatelji radi sigurnosti bilježe tehničke podatke poput IP adrese. Fontovi se učitavaju s poslužitelja Google Fonts, pa vaš preglednik pritom Googleu šalje IP adresu.</p>
   </section>
 
   <section>
     <h2>Vaša prava</h2>
-    <p>Sukladno Općoj uredbi o zaštiti podataka (GDPR), imate pravo zatražiti uvid, ispravak ili brisanje podataka koje ste nam dobrovoljno dostavili (npr. putem kontakt forme). Za takve zahtjeve, javite se putem <a href="/#kontakt">kontakt forme</a> na početnoj stranici.</p>
+    <p>Prema Općoj uredbi o zaštiti podataka (GDPR) imate pravo na pristup, ispravak i brisanje podataka, ograničenje obrade, prigovor i povlačenje privole u svakom trenutku. Zahtjeve šaljite na <a href="mailto:kontakt@retroapplab.com">kontakt@retroapplab.com</a>. Pritužbu možete podnijeti Agenciji za zaštitu osobnih podataka (<a href="https://azop.hr/" target="_blank" rel="noopener noreferrer">azop.hr</a>).</p>
   </section>
 
   <section>
-    <h2>Izmjene ovih pravila</h2>
-    <p>Ova pravila privatnosti mogu se povremeno ažurirati. Datum zadnje izmjene naveden je na vrhu ove stranice.</p>
+    <h2>Izmjene</h2>
+    <p>Ova pravila možemo povremeno ažurirati. Važeća verzija uvijek je objavljena na ovoj stranici.</p>
   </section>
 
 </main>
