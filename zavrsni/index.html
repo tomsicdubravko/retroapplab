@@ -795,7 +795,7 @@ function refField([addr, label, type, cls]) {
   const key = 'RefStr!' + addr;
   let input;
   const get = () => E.inputs[key];
-  const set = (v) => { if (NUMCODES.includes(addr) && /^\d+$/.test(String(v))) v = +v; E.setInput(key, v); saveState(); recalc(); renderHeader(); if (addr === 'C42' || addr === 'C39') applyTz();
+  const set = (v) => { if (NUMCODES.includes(addr) && /^\d+$/.test(String(v))) v = +v; E.setInput(key, v); saveState(); recalc(); renderHeader(); if (addr === 'C42' || addr === 'C39') applyTz(); if (addr === 'C39') { applyPorezna(); recalc(); }
     if (addr === 'C4' || addr === 'F4') applyMonths();
     if (addr === 'C19') { const d = +v === 1 ? 'NE' : 'DA'; for (const a of ['I56', 'I66', 'I68']) E.setInput('RefStr!' + a, d); saveState(); recalc(); sections.ref.replaceChildren(...buildRef()); }
   };
@@ -1012,6 +1012,18 @@ function tzSuggest() {
   const group = best ? best[1] : 0;
   return { nkd, op, group, rate: group ? R.rates[group] : 0, potp: R.potp[op] || 0 };
 }
+
+// Šifre Porezne uprave po sjedištu (šifra grada/općine iz FINA popisa)
+const POREZNA_SIFRE = { '98': ['3588', '3318'] }; // Dubrovnik
+function applyPorezna() {
+  const v = POREZNA_SIFRE[String(E.inputs['RefStr!C39'] || '')];
+  if (!v) return;
+  for (const [k, val] of [['PU', v[0]], ['ISP', v[1]]]) {
+    const cur = E.inputs['RefStr!' + k], a = E.inputs['_auto:RefStr!' + k];
+    if (!cur || String(cur) === String(a)) { E.setInput('RefStr!' + k, val); E.setInput('_auto:RefStr!' + k, val); }
+  }
+  saveState();
+}
 function applyTz() {
   if (E.inputs['_tzManual']) return;
   const s = tzSuggest();
@@ -1176,6 +1188,7 @@ function xmlBox(kind) {
     const field = (key, label) => {
       const i = h('input', { inputmode: 'numeric', maxlength: 4, placeholder: '0000', style: 'width:90px;border:1px solid var(--rule);background:var(--in-bg);color:var(--in-ink);border-radius:5px;padding:5px 8px', value: E.inputs['RefStr!' + key] || '' });
       i.addEventListener('change', () => { const v = i.value.replace(/\D/g, '').slice(0, 4); i.value = v; E.setInput('RefStr!' + key, v); saveState(); try { localStorage.setItem('zavrsni-racun:' + key, v); } catch (e) {} });
+      hooks.push(() => { if (document.activeElement !== i) i.value = E.inputs['RefStr!' + key] || ''; });
       return h('label', { style: 'display:flex;gap:6px;align-items:center;font-size:13px' }, label, i);
     };
     kids.push(h('div', { style: 'display:flex;gap:16px;flex-wrap:wrap;margin-top:10px' }, field('PU', 'Šifra područnog ureda'), field('ISP', 'Šifra ispostave')),
@@ -1548,7 +1561,7 @@ async function importPrevGfi(file) {
   saveState();
   sections.ref.replaceChildren(...buildRef());
   if (!E.inputs['_odl_potpis'] && E.inputs['RefStr!A75']) { E.setInput('_odl_potpis', E.inputs['RefStr!A75']); E.setInput('_auto:_odl_potpis', E.inputs['RefStr!A75']); saveState(); }
-  renderHeader(); applyTz(); applyMonths(); for (const n of numInputs) n.show(); recalc();
+  renderHeader(); applyTz(); applyPorezna(); applyMonths(); for (const n of numInputs) n.show(); recalc();
   return report;
 }
 function buildPrevImport() {
@@ -2279,8 +2292,8 @@ const CHECK = [
   { key: '_dar', label: 'Darovanja (donacije) tijekom godine', where: 'PD, tablica darovanja r.br. 3.1.–3.7.', dar: true },
   { key: '_odl_datum', label: 'Datum donošenja odluka', where: 'odluke' },
   { key: '_odl_potpis', label: 'Potpisnik (direktor)', where: 'odluke i bilješke', auto: 'ovlaštena osoba iz prošlogodišnjeg GFI-ja' },
-  { key: 'RefStr!PU', label: 'Šifra područnog ureda Porezne', where: 'XML TZ 1' },
-  { key: 'RefStr!ISP', label: 'Šifra ispostave Porezne', where: 'XML TZ 1' },
+  { key: 'RefStr!PU', label: 'Šifra područnog ureda Porezne', where: 'XML TZ 1', auto: 'po sjedištu firme' },
+  { key: 'RefStr!ISP', label: 'Šifra ispostave Porezne', where: 'XML TZ 1', auto: 'po sjedištu firme' },
 ];
 const DAR_ROWS = [109, 110, 111, 112, 113, 114, 115];
 function oibValid(s) { s = String(s || ''); if (!/^\d{11}$/.test(s)) return false; let a = 10; for (let i = 0; i < 10; i++) { a = (a + +s[i]) % 10; if (a === 0) a = 10; a = (a * 2) % 11; } let k = 11 - a; if (k === 10) k = 0; return k === +s[10]; }
