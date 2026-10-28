@@ -1419,6 +1419,7 @@ function buildImport() {
       const used = new Set([...MAP, ...MAP2].map(r => r[1]).filter(k => TARGET[k]));
       for (const k of used) E.setInput(k, sums[k] ? sums[k] : '');
       for (const k of used) E.setInput('_auto:' + k, sums[k] ? sums[k] : '');
+      const pdAuto = pdFromBB();
       recalc();
       const act = activityRow();
       for (const r of ACT_ROWS) E.setInput('Dodatni!J' + r, '');
@@ -1428,7 +1429,7 @@ function buildImport() {
       const actLbl = M.dod.find(x => x.r === act.row);
       const diff = (E.num('Bilanca!J73') || 0) - (E.num('Bilanca!J135') || 0);
       const bal = Math.abs(diff) < 0.005;
-      done.textContent = `Preneseno na ${Object.keys(sums).length} pozicija. Prihodi od prodaje u dodatnim podacima raspoređeni su na AOP ${actLbl.aop} (${act.why}). ` + (bal ? 'Aktiva i pasiva se slažu.' : `Aktiva i pasiva se razlikuju za ${fmt(diff)}, provjeri konta bez pozicije.`);
+      done.textContent = `Preneseno na ${Object.keys(sums).length} pozicija. Prihodi od prodaje u dodatnim podacima raspoređeni su na AOP ${actLbl.aop} (${act.why}). ` + (bal ? 'Aktiva i pasiva se slažu.' : `Aktiva i pasiva se razlikuju za ${fmt(diff)}, provjeri konta bez pozicije.`) + (pdAuto.length ? ` U PD (nepriznati troškovi) preneseno: ${pdAuto.map(([n, v]) => n.toLowerCase() + ' ' + fmt(v) + ' €').join(', ')}.` : '');
       doneTop.className = bal ? 'okline' : 'pill bad';
       doneTop.textContent = bal ? '✓ Preneseno u obrazac, aktiva i pasiva se slažu' : `Preneseno, ali aktiva i pasiva se razlikuju za ${fmt(diff)}`;
     };
@@ -2241,6 +2242,32 @@ function buildBiljeskeTab() {
     docEditor('_doc_bilj', 'Bilješke uz financijske izvještaje', buildBiljeske, 'Biljeske', { pages: true })];
 }
 
+
+// ---------- Nepriznati troškovi u PD iz bruto bilance ----------
+function kontaMatch(spec, k) {
+  for (const tok of String(spec).split(/\s+/).filter(Boolean)) {
+    if (tok.includes('-')) { const [a, b] = tok.split('-'); const hi = a.slice(0, a.length - b.length) + b; if (+k >= +a && +k <= +hi) return true; }
+    else if (k === tok) return true;
+  }
+  return false;
+}
+function pdFromBB() {
+  if (!BB || !BB.leaves) return [];
+  const out = [], seen = new Set(), sal = (l) => (l.v[4] || 0) - (l.v[5] || 0);
+  const put = (key, val, label) => {
+    const v = Math.round(val * 100) / 100, prevAuto = E.inputs['_auto:' + key];
+    if (v) { E.setInput(key, v); E.setInput('_auto:' + key, v); out.push([label, v]); }
+    else if (prevAuto !== undefined && prevAuto !== '' && Math.abs(Number(prevAuto) - Number(E.inputs[key] || 0)) < 0.005) { E.setInput(key, ''); E.setInput('_auto:' + key, ''); }
+  };
+  for (const r of M.pdHelper) {
+    if (r.r === 8 || r.r === 10) continue;
+    const ls = BB.leaves.filter(l => !seen.has(l.k) && kontaMatch(r.konta, l.k) && (r.naziv !== 'Parking' || /park|garaž/i.test(l.name)));
+    ls.forEach(l => seen.add(l.k));
+    put('PD!V' + r.r, ls.reduce((s, l) => s + sal(l), 0), r.naziv);
+  }
+  put('PD!Q16', BB.leaves.filter(l => l.k.startsWith('735')).reduce((s, l) => s + sal(l), 0), 'Kazne (r.br. 11.)');
+  return out;
+}
 
 // ---------- Ručni unos i provjera ----------
 const CHECK = [
