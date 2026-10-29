@@ -262,6 +262,8 @@ body.zr-licenced #o-aplikaciji{display:none}
 .dartbl [hidden]{display:none}
 .dartbl td,.dartbl th{padding:4px 6px}
 .lic .user{font-weight:600;color:var(--ink)}
+.printbtn{float:right;margin:2px 0 8px 12px;padding:6px 10px;font-size:13px}
+@media print{ button,.printbtn{display:none!important} body{background:#fff} body.print-one section[hidden]{display:none!important} body.print-one .status{display:none} }
 </style>
 </head>
 <body>
@@ -779,7 +781,7 @@ function recalc() {
 
 // ---------- tabs ----------
 const TABS = [
-  ['upute', 'Upute'], ['ref', 'Obveznik'], ['bb', 'Uvoz', 'Uvoz podataka (prošla godina i bruto bilanca)'], ['bil', 'Bilanca'], ['rdg', 'RDG', 'Račun dobiti i gubitka'], ['dod', 'Dodatni', 'Dodatni podaci'], ['pd', 'PD', 'Prijava poreza na dobit'], ['tz', 'TZ', 'Članarina TZ i naknada za šume'], ['tem', 'Temeljnica'], ['kont', 'Kontrole', 'FINA kontrole'], ['odl', 'Odluke', 'Odluke o utvrđivanju i raspodjeli'], ['bilj', 'Bilješke', 'Bilješke uz financijske izvještaje'], ['exp', 'GFI', 'Izvoz u FINA-in GFI-POD obrazac'],
+  ['upute', 'Upute'], ['ref', 'Obveznik'], ['bb', 'Uvoz', 'Uvoz podataka (prošla godina i bruto bilanca)'], ['bil', 'Bilanca'], ['rdg', 'RDG', 'Račun dobiti i gubitka'], ['dod', 'Dodatni', 'Dodatni podaci'], ['pd', 'PD', 'Prijava poreza na dobit'], ['tz', 'TZ/šume', 'Članarina TZ i naknada za šume'], ['tem', 'Temeljnica'], ['kont', 'Kontrole', 'FINA kontrole'], ['odl', 'Odluke', 'Odluke o utvrđivanju i raspodjeli'], ['bilj', 'Bilješke', 'Bilješke uz financijske izvještaje'], ['exp', 'GFI', 'Izvoz u FINA-in GFI-POD obrazac'],
 ];
 const sections = {};
 function showTab(id) {
@@ -1399,6 +1401,7 @@ function buildImport() {
   const drop = h('label', { class: 'drop', for: 'bbFile' }, h('b', {}, 'Odaberi bruto bilancu (PDF)'), h('span', {}, 'ili je povuci ovdje. Ispis na 31.12., ali bez završne temeljnice (prije zaključnih knjiženja).'));
   const body = h('div');
   const rules = h('div', { style: 'margin-top:22px' });
+  let autoXfer = null;
   async function handle(f) {
     if (!f) return; if (!(await requireLicence())) return; 
     msg.textContent = 'Čitam ' + f.name + '…';
@@ -1409,6 +1412,7 @@ function buildImport() {
       if (!E.inputs['RefStr!C29'] && parsed.firm) { E.setInput('RefStr!C29', parsed.firm); saveState(); renderHeader(); }
       msg.textContent = '';
       render();
+      if (autoXfer) await autoXfer();
     } catch (e) { msg.textContent = 'Nisam uspio pročitati datoteku: ' + e.message; }
   }
   file.addEventListener('change', () => handle(file.files[0]));
@@ -1446,6 +1450,7 @@ function buildImport() {
       doneTop.className = bal ? 'okline' : 'pill bad';
       doneTop.textContent = bal ? '✓ Preneseno u obrazac, aktiva i pasiva se slažu' : `Preneseno, ali aktiva i pasiva se razlikuju za ${fmt(diff)}`;
     };
+    autoXfer = ok && !unmapped.length ? transfer : null;
     body.append(h('div', { class: 'sheet', style: 'padding:12px 14px' },
       h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;align-items:center' },
         h('b', {}, BB.file || 'Bruto bilanca'), h('span', { style: 'color:var(--muted)' }, `razdoblje ${BB.od} – ${BB.do}, ${BB.leaves.length} konta`),
@@ -2444,7 +2449,10 @@ function build() {
   };
   for (const [id, name, full] of TABS) {
     tabs.append(h('button', { class: 'tab', role: 'tab', title: full || name, id: 'tab-' + id, 'aria-controls': 'sec-' + id, type: 'button', onclick: () => showTab(id) }, name));
-    sections[id] = h('section', { id: 'sec-' + id, role: 'tabpanel', 'aria-labelledby': 'tab-' + id }, builders[id]());
+    const kids = [].concat(builders[id]());
+    if (['ref', 'bil', 'rdg', 'dod', 'pd', 'tz', 'tem', 'kont'].includes(id)) kids.unshift(h('button', { class: 'btn printbtn', type: 'button', title: 'Ispiši ili spremi kao PDF samo ovaj obrazac', onclick: () => { document.body.classList.add('print-one'); window.print(); } },
+      (() => { const s = document.createElement('span'); s.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>'; return s.firstChild; })(), h('span', {}, 'PDF / Ispis')));
+    sections[id] = h('section', { id: 'sec-' + id, role: 'tabpanel', 'aria-labelledby': 'tab-' + id }, kids);
     main.append(sections[id]);
   }
   buildStatus();
@@ -2454,6 +2462,7 @@ function build() {
   let start = 'ref'; try { start = sessionStorage.getItem('zr-tab') || (fresh ? 'upute' : 'ref'); } catch (e) {}
   showTab(TABS.some(t => t[0] === start) ? start : 'ref');
   document.getElementById('btnPrint').onclick = () => window.print();
+  window.addEventListener('afterprint', () => document.body.classList.remove('print-one'));
   document.getElementById('btnSave').onclick = saveToFile;
   document.getElementById('btnFina').onclick = () => { showTab('exp'); const f = document.getElementById('finaFile'); if (f) f.click(); };
   const lf = document.getElementById('loadFile');
