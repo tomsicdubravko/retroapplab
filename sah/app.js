@@ -1882,7 +1882,7 @@ function GameScreen({
     }
   }
   var pt = isBot ? turn === playerColor : true;
-  var dl = depth === 0 ? "Lagan" : depth === 3 ? "Srednji" : "Tezak";
+  var dl = personality === "fischer" ? "Srednji" : personality === "kasparov" ? "Težak" : "Lagan";
   var ml = isBot ? "Bot - " + dl : isOnline ? "Online" : "Multiplayer";
   var tl = isBot ? flip ? "Ti" : "Bot" : "Crni";
   var bl = isBot ? flip ? "Bot" : "Ti" : "Bijeli";
