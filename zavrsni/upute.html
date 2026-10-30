@@ -74,6 +74,11 @@ h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.2;color:#fff}
   .upute th,.upute td{padding:.5rem .4rem;font-size:.92rem}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.dock{flex-wrap:wrap;row-gap:2px}
+.dock-legal{flex-basis:100%;text-align:center;font-size:.72rem;line-height:1.5;color:var(--muted)}
+.dock-legal a{color:var(--muted);text-decoration:none}
+.dock-legal a:hover{color:#fff;text-decoration:underline}
+body{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -237,6 +242,7 @@ h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.2;color:#fff}
   <a class="dock-home" href="/">← RetroAppLab</a>
   <span class="dock-text">Završni račun je dio RetroAppLaba, nastao iz svakodnevnog knjigovodstvenog posla.</span>
   <a class="dock-play" href="/zavrsni/?demo=1">Demo</a>
+  <nav class="dock-legal" aria-label="O stranici"><a href="/o-nama.html">O nama</a> · <a href="/kontakt.html">Kontakt</a> · <a href="/privatnost.html">Pravila privatnosti</a> · <a href="/uvjeti.html">Uvjeti korištenja</a></nav>
 </footer>
 
 </body>

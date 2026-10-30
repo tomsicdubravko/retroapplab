@@ -83,6 +83,11 @@ details p{color:var(--muted);margin-top:.5rem}
   .cols{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.dock{flex-wrap:wrap;row-gap:2px}
+.dock-legal{flex-basis:100%;text-align:center;font-size:.72rem;line-height:1.5;color:var(--muted)}
+.dock-legal a{color:var(--muted);text-decoration:none}
+.dock-legal a:hover{color:#fff;text-decoration:underline}
+body{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -182,6 +187,7 @@ details p{color:var(--muted);margin-top:.5rem}
   <a class="dock-home" href="/">← RetroAppLab</a>
   <span class="dock-text">Blokopad je dio RetroAppLaba, male radionice igara iz Dubrovnika.</span>
   <a class="dock-play" href="/blokopad/">Igraj</a>
+  <nav class="dock-legal" aria-label="O stranici"><a href="/o-nama.html">O nama</a> · <a href="/kontakt.html">Kontakt</a> · <a href="/privatnost.html">Pravila privatnosti</a> · <a href="/uvjeti.html">Uvjeti korištenja</a></nav>
 </footer>
 
 </body>
