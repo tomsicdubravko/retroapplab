@@ -725,6 +725,8 @@ function GameScreen({
   var botWorkerRef = useRef(null);
   var thinkingRef = useRef(false);
   var gsRef = useRef({});
+  var myIdRef = useRef(Math.random().toString(36).slice(2, 10));
+  var resetRef = useRef(null);
   useEffect(function () {
     gsRef.current = {
       board: board,
@@ -825,6 +827,11 @@ function GameScreen({
       } catch (e) {
         return;
       }
+      if (data && data.type === "restart") {
+        if (data.sender !== myIdRef.current && resetRef.current) resetRef.current();
+        return;
+      }
+      if (!data || !data.from || !data.to) return;
       var gs = gsRef.current;
       if (!gs.board || gs.status === "checkmate" || gs.status === "stalemate") return;
       var from = data.from,
@@ -1016,7 +1023,20 @@ function GameScreen({
       });
     }
   }
+  // Nova partija vrijedi za oba igrača: šaljemo poruku "restart" protivniku
   function restart() {
+    if (isOnline && onlineMqtt) {
+      if (!window.confirm("Započeti novu partiju za oba igrača?")) return;
+      onlineMqtt.publish("dubch/" + roomCode + "/move", JSON.stringify({
+        type: "restart",
+        sender: myIdRef.current
+      }), {
+        qos: 1
+      });
+    }
+    resetBoard();
+  }
+  function resetBoard() {
     setBoard(initBoard());
     setTurn("w");
     setSel(null);
@@ -1035,6 +1055,7 @@ function GameScreen({
     setHalfMove(0);
     setAnimKey(0);
   }
+  resetRef.current = resetBoard;
   var flip = false;
   var rows = flip ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0];
   var cols = flip ? [7, 6, 5, 4, 3, 2, 1, 0] : [0, 1, 2, 3, 4, 5, 6, 7];
