@@ -80,6 +80,13 @@ footer{text-align:center;color:#555;font-size:9px;letter-spacing:2px;margin-top:
 @media (max-width:340px){.card-slot{max-width:56px;}#cardsRow.duel-mode .card-slot{max-width:56px;}.rank{font-size:14px;}.suit{font-size:15px;}.marquee h1{font-size:19px;letter-spacing:2px;}}
 /* RetroAppLab deck branding on every card back, including intro and gameplay. */
 .card-face.back::before{content:'RETROAPPLAB';position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);font-family:'Courier New',monospace;font-size:clamp(8px,1.8vw,12px);font-weight:900;letter-spacing:.5px;white-space:nowrap;color:#f4d35e;text-shadow:0 1px 3px #160400,0 0 5px #b66a12;pointer-events:none;}
+/* Safari fix: the pseudo-elements on the card back have their own transform, and WebKit does not hide them with the parent's backface-visibility.
+   1) hide their backface explicitly, 2) also fade the label out while the card is turned over (belt and braces). */
+.card-face.back::before,.card-face.back::after{backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.flip-inner.flip-anim .flip-front::before{animation:labelHide 700ms linear forwards;}
+.flip-inner.flip-close .flip-front::before{animation:labelShow 450ms linear forwards;}
+@keyframes labelHide{0%{opacity:1}44.9%{opacity:1}45%{opacity:0}100%{opacity:0}}
+@keyframes labelShow{0%{opacity:0}54.9%{opacity:0}55%{opacity:1}100%{opacity:1}}
 /* HOF shares the exact PAYS footprint: the original table reserves its space. */
 .paytable-body{position:relative;}
 .paytable.hall-of-fame #paytableRows{visibility:hidden;}
