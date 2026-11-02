@@ -13,6 +13,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://retroapplab.com/memory-duel/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://retroapplab.com/pcelica/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
