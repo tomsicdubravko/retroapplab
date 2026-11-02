@@ -264,6 +264,12 @@ body.zr-licenced #o-aplikaciji{display:none}
 .lic .user{font-weight:600;color:var(--ink)}
 .printbtn{float:right;margin:2px 0 8px 12px;padding:6px 10px;font-size:13px}
 @media print{ button,.printbtn{display:none!important} body{background:#fff} body.print-one section[hidden]{display:none!important} body.print-one .status{display:none} }
+.pblock{position:relative;margin:0 0 6px}
+.pblock>.pbtn{float:right;margin:16px 0 6px 10px;padding:4px 9px;font-size:12px}
+.pblock>.sheet,.pblock>details,.pblock>div{clear:both}
+.pblock::after{content:'';display:block;clear:both}
+.pblock>.pbtn .ico{width:15px;height:15px}
+@media print{.pbtn{display:none!important}}
 </style>
 </head>
 <body>
@@ -977,12 +983,54 @@ function buildPd() {
 
   return [h('h2', {}, 'Prijava poreza na dobit (PD)'),
     h('p', { class: 'lead' }, 'Prihodi i rashodi dolaze iz RDG-a. Nepriznate troškove upisuješ u pomoćne tablice ispod, a porezna obveza se vraća u RDG (AOP 185) i u temeljnicu.'),
-    xmlBox('pd'), legend(), main,
-    h('h2', {}, 'Nepriznati troškovi'), h('p', { class: 'lead' }, 'Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24.'), helper,
-    ...pdSourceBox(),
-    h('div', { class: 'grid2' }, h('div', {}, h('h2', {}, 'Državna potpora za obrazovanje'), pot), h('div', {}, h('h2', {}, 'Ostalo'), other)),
-    h('h2', {}, 'Neiskorišteni porezni gubici po godinama'), ix,
-    h('h2', {}, 'Rashodi darovanja'), dar];
+    xmlBox('pd'), legend(), printBlock('Prijava poreza na dobit (PD)', main),
+    printBlock('Nepriznati troškovi', h('h2', {}, 'Nepriznati troškovi'), h('p', { class: 'lead' }, 'Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24.'), helper),
+    ...(() => { const s = pdSourceBox(); return [printBlock('Kazne', s[0], s[1], s[2]), printBlock('Povučeno iz bruto bilance u PD', s[3])]; })(),
+    h('div', { class: 'grid2' }, printBlock('Državna potpora za obrazovanje', h('h2', {}, 'Državna potpora za obrazovanje'), pot), printBlock('Ostali podaci za obračun PD', h('h2', {}, 'Ostalo'), other)),
+    printBlock('Neiskorišteni porezni gubici po godinama', h('h2', {}, 'Neiskorišteni porezni gubici po godinama'), ix),
+    printBlock('Rashodi darovanja', h('h2', {}, 'Rashodi darovanja'), dar)];
+}
+
+
+// ---------- Zasebni ispis dijelova obrazaca ----------
+function printPart(el, title) {
+  const clone = el.cloneNode(true);
+  const src = el.querySelectorAll('input,select,textarea'), dst = clone.querySelectorAll('input,select,textarea');
+  dst.forEach((d, i) => {
+    const s = src[i], sp = document.createElement('span'); sp.className = 'pv';
+    sp.textContent = s.tagName === 'SELECT' ? ((s.options[s.selectedIndex] || {}).text || '') : s.type === 'checkbox' ? (s.checked ? '☑' : '☐') : s.value;
+    d.replaceWith(sp);
+  });
+  clone.querySelectorAll('button').forEach(b => b.remove());
+  clone.querySelectorAll('details').forEach(d => { d.open = true; const s = d.querySelector('summary'); if (s) s.remove(); });
+  const g = (a) => E.inputs['RefStr!' + a] || '', dd = (s) => s ? String(s).slice(0, 10).split('-').reverse().join('.') + '.' : '';
+  const css = [...document.querySelectorAll('style')].map(s => s.textContent).join('\n');
+  const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;width:0;height:0;border:0;right:0;bottom:0'; document.body.append(f);
+  const d = f.contentDocument; d.open();
+  d.write(`<!DOCTYPE html><html lang="hr"><head><meta charset="utf-8"><title>${title} – ${g('C29')}</title><style>${css}
+    body.printdoc{background:#fff;padding:0;margin:0}
+    .printdoc .phead{border-bottom:2px solid #000;margin:0 0 14px;padding:0 0 8px}
+    .printdoc .phead h1{font-size:18px;margin:0 0 4px}
+    .printdoc .phead p{margin:0;font-size:12px}
+    .printdoc .pv{display:block;text-align:right}
+    .printdoc td.v{text-align:right}
+    .printdoc .sheet{box-shadow:none}
+    .printdoc .grid2{display:block}
+    .printdoc .pblock{padding-top:0!important}
+    .printdoc .pblock>h2:first-of-type{display:none}
+    @page{size:A4;margin:1.5cm}
+  </style></head><body class="printdoc"><div class="phead"><h1>${title}</h1><p><b>${g('C29')}</b>${g('C27') ? ', OIB ' + g('C27') : ''} · razdoblje ${dd(g('C4'))} – ${dd(g('F4'))}</p></div></body></html>`);
+  d.close();
+  d.body.append(d.importNode(clone, true));
+  setTimeout(() => { f.contentWindow.focus(); f.contentWindow.print(); setTimeout(() => f.remove(), 2000); }, 250);
+}
+function printBlock(title, ...kids) {
+  const box = h('div', { class: 'pblock' });
+  const btn = h('button', { class: 'btn pbtn', type: 'button', title: 'Ispiši ili spremi kao PDF samo: ' + title, onclick: () => printPart(box, title) },
+    (() => { const s = document.createElement('span'); s.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>'; return s.firstChild; })(), 'PDF / Ispis');
+  const fl = kids.flat();
+  box.append(btn, ...fl);
+  return box;
 }
 
 // ---------- TZ i šume ----------
@@ -1003,8 +1051,8 @@ function buildTz() {
   return [h('h2', {}, 'Članarina TZ i naknada za šume'),
     h('p', { class: 'lead' }, 'Osnovica su ukupni prihodi iz PD obrasca umanjeni za potpore. Naknada za općekorisne funkcije šuma obračunava se samo kad su prihodi veći od 1.000.000 €.'),
     tzInfoBox(), xmlBox('tz'), legend(), h('div', { class: 'grid2' },
-      h('div', {}, h('h2', {}, 'Obrazac TZ 1 – članarina turističkoj zajednici'), tz),
-      h('div', {}, h('h2', {}, 'Obrazac OKFŠ – naknada za šume'), okfs))];
+      printBlock('Obrazac TZ 1 – članarina turističkoj zajednici', h('h2', {}, 'Obrazac TZ 1 – članarina turističkoj zajednici'), tz),
+      printBlock('Obrazac OKFŠ – naknada za šume', h('h2', {}, 'Obrazac OKFŠ – naknada za šume'), okfs))];
 }
 
 // ---------- automatska stopa članarine TZ ----------
@@ -2477,7 +2525,7 @@ function build() {
   for (const [id, name, full] of TABS) {
     tabs.append(h('button', { class: 'tab', role: 'tab', title: full || name, id: 'tab-' + id, 'aria-controls': 'sec-' + id, type: 'button', onclick: () => showTab(id) }, name));
     const kids = [].concat(builders[id]());
-    if (['ref', 'bil', 'rdg', 'dod', 'pd', 'tz', 'tem', 'kont'].includes(id)) kids.unshift(h('button', { class: 'btn printbtn', type: 'button', title: 'Ispiši ili spremi kao PDF samo ovaj obrazac', onclick: () => { document.body.classList.add('print-one'); window.print(); } },
+    if (['ref', 'bil', 'rdg', 'dod', 'tem', 'kont'].includes(id)) kids.unshift(h('button', { class: 'btn printbtn', type: 'button', title: 'Ispiši ili spremi kao PDF samo ovaj obrazac', onclick: () => { document.body.classList.add('print-one'); window.print(); } },
       (() => { const s = document.createElement('span'); s.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>'; return s.firstChild; })(), h('span', {}, 'PDF / Ispis')));
     sections[id] = h('section', { id: 'sec-' + id, role: 'tabpanel', 'aria-labelledby': 'tab-' + id }, kids);
     main.append(sections[id]);
