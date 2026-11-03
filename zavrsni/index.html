@@ -270,6 +270,13 @@ body.zr-licenced #o-aplikaciji{display:none}
 .pblock::after{content:'';display:block;clear:both}
 .pblock>.pbtn .ico{width:15px;height:15px}
 @media print{.pbtn{display:none!important}}
+.krefs{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.krefs:empty{display:none}
+.krl{font-size:12px;color:var(--muted)}
+.kref{font:inherit;font-size:12px;border:1px solid var(--rule);background:var(--surface);color:var(--in-ink);border-radius:999px;padding:2px 10px;cursor:pointer}
+.kref:hover{border-color:var(--in-ink);text-decoration:underline}
+@keyframes flashrow{0%{background:#FFE38A}100%{background:transparent}}
+.flash,.flash td{animation:flashrow 2.4s ease-out}
 </style>
 </head>
 <body>
@@ -850,6 +857,7 @@ function refField([addr, label, type, cls]) {
     hooks.push(() => { const o = LISTS.opcine.find(x => x[0] === String(get())); const z = o && LISTS.zupanije.find(x => x[0] === String(o[2])); hint.textContent = z ? 'Županija: ' + z[1] : ''; });
     lab.append(hint);
   }
+  lab.dataset.ref = key;
   return lab;
 }
 function buildRef() {
@@ -913,7 +921,7 @@ function buildGfi(sheet, rows, title, lead) {
     if (r.aop === null) { tb.append(h('tr', { class: 'sec' }, h('td', { colspan: 5 }, r.label))); continue; }
     const kI = `${sheet}!I${r.r}`, kJ = `${sheet}!J${r.r}`;
     const isSum = E.isFormula(kI) && E.isFormula(kJ) && !sourceSheets(kJ).length;
-    const tr = h('tr', { class: (isSum ? 'sum ' : '') + 'l' + level(r.label) },
+    const tr = h('tr', { class: (isSum ? 'sum ' : '') + 'l' + level(r.label), 'data-row': `${sheet}!${r.r}` },
       h('td', { class: 'lbl' }, r.label),
       h('td', { class: 'aop' }, String(r.aop).padStart(3, '0')),
       h('td', { style: 'width:64px' }, h('input', { class: 'txt', 'aria-label': 'Bilješka', value: E.inputs[`${sheet}!H${r.r}`] ?? '', onchange: (e) => { E.setInput(`${sheet}!H${r.r}`, e.target.value.trim()); saveState(); } })),
@@ -936,11 +944,20 @@ function simpleTable(head, rows, foot) {
   return h('div', { class: 'sheet' }, h('table', {}, h('thead', {}, h('tr', {}, head.map(([t, c]) => h('th', { class: c || null }, t)))), h('tbody', {}, rows), foot ? h('tfoot', {}, foot) : null));
 }
 function buildPd() {
+  hooks.push(autoU47);
   const rows = M.pd.map(r => {
     if (r.head) return h('tr', { class: 'sec' }, h('td', { colspan: 3 }, r.head));
     const k = 'PD!Q' + r.r;
     const isF = E.isFormula(k);
     const sumRow = isF && /UKUPN|r\. ?br\.|Porezna obveza|Razlika|Dobit|Gubitak|DOBIT|GUBITAK/.test(r.label) && !sourceSheets(k).length;
+    if (r.r === 51) {
+      const inp = numInput('PD!U47');
+      inp.addEventListener('change', () => { E.setInput('_u47manual', 1); saveState(); recalc(); });
+      const note = h('div', { class: 'adj' });
+      const back = h('button', { class: 'src', type: 'button', onclick: () => { E.setInput('_u47manual', ''); saveState(); recalc(); } }, 'vrati iz tablice gubitaka');
+      hooks.push(() => { const man = !!E.inputs['_u47manual']; note.replaceChildren(man ? 'upisano ručno · ' : 'zbroj gubitaka za prijenos iz prošlih godina (tablica dolje)', ...(man ? [back] : [])); });
+      return h('tr', {}, h('td', { class: 'aop' }, r.no), h('td', {}, r.label || '—'), h('td', { class: 'v' }, inp, note));
+    }
     return h('tr', { class: sumRow ? 'sum' : '' }, h('td', { class: 'aop' }, r.no), h('td', {}, r.label || '—'), h('td', { class: 'v' }, cell(k)));
   });
   const main = simpleTable([['R.br.'], ['Opis'], ['Iznos (EUR)', 'n']], rows);
@@ -1131,6 +1148,15 @@ function prevPdBox() {
     inp, msg);
 }
 
+
+// r.br. 37./40.: preneseni porezni gubitak iz tablice gubitaka (PD!E99), osim ako je upisan ručno
+let _u47busy = false;
+function autoU47() {
+  if (_u47busy || E.inputs['_u47manual']) return;
+  let tot = Number(E.num('PD!Q98')) || 0; for (let r = 89; r <= 94; r++) tot += Number(E.num('PD!Q' + r)) || 0;
+  const v = Math.round(tot * 100) / 100, cur = Number(E.inputs['PD!U47'] || 0);
+  if (Math.abs(v - cur) > 0.004) { _u47busy = true; E.setInput('PD!U47', v || ''); saveState(); setTimeout(() => { recalc(); for (const x of numInputs) x.show(); _u47busy = false; }, 0); }
+}
 // ---------- TZ i šume ----------
 function buildTz() {
   const rate = new Set(['ČLANARINE!J27', 'ČLANARINE!K68']);
@@ -1414,9 +1440,10 @@ const TARGET = Object.fromEntries(TARGETS.map(t => [t.key, t]));
 const MAP2_STORE = 'zavrsni-racun:mapiranje-dodatni';
 const DEFAULT_MAP2 = [['1512', 'Dodatni!J10'], ['44', 'Dodatni!J65'], ['764', 'Dodatni!J43'], ['774', 'Dodatni!J73'], ['724', 'Dodatni!J76'], ['401', 'Dodatni!J50'], ['4180', 'Dodatni!J51'], ['4188', 'Dodatni!J51'], ['4122', 'Dodatni!J58'], ['423', 'Dodatni!J60'], ['464', 'Dodatni!J62'], ['468', 'Dodatni!J62']];
 let MAP2 = (() => { try { const m = JSON.parse(localStorage.getItem(MAP2_STORE) || 'null'); if (Array.isArray(m)) return m; } catch (e) {} return DEFAULT_MAP2.map(x => x.slice()); })();
-const saveMap2 = () => { try { localStorage.setItem(MAP2_STORE, JSON.stringify(MAP2)); } catch (e) {} };
+const saveMap2 = () => { try { localStorage.setItem(PROFILE === 'pspnet' ? MAP2_STORE : MAP2_STORE + ':' + PROFILE, JSON.stringify(MAP2)); } catch (e) {} };
 let MAP = (() => { try { const m = JSON.parse(localStorage.getItem(MAP_STORE) || 'null'); if (Array.isArray(m)) return m; } catch (e) {} return DEFAULT_MAP.map(x => x.slice()); })();
 let BB = (() => { try { return JSON.parse(localStorage.getItem(BB_STORE) || 'null'); } catch (e) { return null; } })();
+setTimeout(() => { if (BB && BB.profile && BB.profile !== 'pspnet') { setProfile(BB.profile); if (typeof recalc === 'function') recalc(); } }, 0);
 (() => { // dodaj nova zadana pravila u već spremljeno mapiranje
   let v = 0; try { v = +(localStorage.getItem(MAP_STORE + ':v') || 0); } catch (e) {}
   if (v < 2) { for (const r of [['72', 'RDG!J52'], ['724', 'RDG!J51']]) if (!MAP.some(x => x[0] === r[0])) MAP.push(r.slice()); }
@@ -1448,7 +1475,26 @@ let BB = (() => { try { return JSON.parse(localStorage.getItem(BB_STORE) || 'nul
   if (v < 11) { if (!MAP.some(x => x[0] === '025')) MAP.push(['025', 'Bilanca!J25']); }
   try { localStorage.setItem(MAP_STORE + ':v', '11'); localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {}
 })();
-const saveMap = () => { try { localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {} };
+// ---------- Program iz kojeg je bilanca (svaki ima svoja pravila) ----------
+let PROFILE = 'pspnet';
+const PROFILE_NAMES = { pspnet: 'PSPnet', integrator: 'Integrator' };
+const INTEGRATOR_EXTRA = [['020', 'Bilanca!J20'], ['0290', 'Bilanca!J20'], ['021', 'Bilanca!J21'], ['0291', 'Bilanca!J21'], ['022', 'Bilanca!J22'], ['0292', 'Bilanca!J22'], ['023', 'Bilanca!J23'], ['0293', 'Bilanca!J23'], ['11', 'Bilanca!J71'], ['131', 'Bilanca!K59'], ['165', 'Bilanca!J58'], ['231', 'Bilanca!J133'], ['63', 'Bilanca!J49'], ['913', 'Bilanca!J77'], ['930', 'Bilanca!J94'], ['936', 'Bilanca!J94'], ['941', 'Bilanca!J113'], ['942', 'Bilanca!J112'], ['947', 'Bilanca!J117'], ['4620', 'RDG!K25'], ['763', 'RDG!J13'], ['721', 'RDG!J51'], ['49', ''], ['70', ''], ['79', ''], ['82', '']];
+function defaultMapFor(p) {
+  const base = DEFAULT_MAP.map(x => x.slice());
+  if (p !== 'integrator') return base;
+  return base.filter(x => !INTEGRATOR_EXTRA.some(y => y[0] === x[0])).concat(INTEGRATOR_EXTRA.map(x => x.slice()));
+}
+const defaultMap2For = () => DEFAULT_MAP2.map(x => x.slice());
+const pkey = (base) => PROFILE === 'pspnet' ? base : base + ':' + PROFILE;
+function setProfile(p) {
+  if (!p || !PROFILE_NAMES[p] || p === PROFILE) return;
+  PROFILE = p;
+  let m = null, m2 = null;
+  try { m = JSON.parse(localStorage.getItem(pkey(MAP_STORE)) || 'null'); m2 = JSON.parse(localStorage.getItem(pkey(MAP2_STORE)) || 'null'); } catch (e) {}
+  MAP = Array.isArray(m) ? m : defaultMapFor(p);
+  MAP2 = Array.isArray(m2) ? m2 : defaultMap2For(p);
+}
+const saveMap = () => { try { localStorage.setItem(pkey(MAP_STORE), JSON.stringify(MAP)); } catch (e) {} };
 const saveBB = () => { try { localStorage.setItem(BB_STORE, JSON.stringify(BB)); } catch (e) {} };
 
 function ruleFor(konto, map = MAP) {
@@ -1478,6 +1524,7 @@ function computeTransfer() {
   for (const l of BB.leaves) {
     if (l.k.startsWith('99')) continue;
     const rule = ruleFor(l.k);
+    if (rule && rule[1] === '') continue;
     if (!rule || !TARGET[rule[1]]) { if (Math.abs(l.v[4] - l.v[5]) > 0.004) unmapped.push(l); continue; }
     sums[rule[1]] = (sums[rule[1]] || 0) + leafValue(l, rule[1]);
   }
@@ -1542,11 +1589,45 @@ function parsePspnet(lines) {
   return { firm, od, do: doo, leaves, total };
 }
 
+
+function parseExcelBB(wb) {
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '' });
+  let firm = '', od = '', doo = '', total = null;
+  for (const r of rows.slice(0, 12)) {
+    const txt = r.filter(c => typeof c === 'string' && c.trim()).join(' ');
+    const m = txt.match(/od\s*(\d{1,2}\.\d{1,2}\.\d{4})\.?\s*do\s*(\d{1,2}\.\d{1,2}\.\d{4})/i);
+    if (m) { od = m[1]; doo = m[2]; }
+    if (!firm) { const c = r.find(c => typeof c === 'string' && /d\.o\.o\.|d\.d\.|j\.d\.o\.o\./i.test(c)); if (c) firm = c.trim(); }
+  }
+  const num = (c) => typeof c === 'number' ? c : (typeof c === 'string' && /^-?[\d.]+,\d{1,2}$/.test(c.trim()) ? toN(c.trim()) : null);
+  const isK = (k) => /^\d{1,}(\/\d+)?$/.test(k);
+  // stupci duguje / potražuje: prva dva brojčana stupca u većini redaka s kontom
+  const cnt = {};
+  const kk = (r) => { const s = String(r[0] ?? '').replace(/\s+/g, ''); const m = s.match(/^(\d+)\/(\d+)$/); return m ? m[1] + m[2].padStart(3, '0') : s; };
+  for (const r of rows) { const k = kk(r); if (!isK(k)) continue; const idx = []; r.forEach((c, i) => { if (i > 0 && num(c) !== null && idx.length < 2) idx.push(i); }); if (idx.length === 2) { const key = idx.join(','); cnt[key] = (cnt[key] || 0) + 1; } }
+  const best = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+  if (!best) return { firm, od, do: doo, leaves: [], total };
+  const [dI, pI] = best[0].split(',').map(Number), val = (r, i) => num(r[i]) ?? 0;
+  const cand = [];
+  for (const r of rows) {
+    const k = kk(r);
+    if (/^UKUPNO/i.test(k)) { total = [0, 0, val(r, dI), val(r, pI), val(r, dI), val(r, pI)]; continue; }
+    if (!isK(k)) continue;
+    if (num(r[dI]) === null && num(r[pI]) === null) continue;
+    const name = String(r.slice(1).find(c => typeof c === 'string' && c.trim()) || '').trim();
+    const sraw = String(r[0] ?? '').replace(/\s+/g, ''), isA = sraw.includes('/');
+    cand.push({ isA, syn: isA ? sraw.split('/')[0] : k, k, name, v: [0, 0, val(r, dI), val(r, pI), val(r, dI), val(r, pI)] });
+  }
+  const leaves = cand.filter(c => c.isA || !cand.some(o => o !== c && (o.isA ? o.syn.startsWith(c.k) : (o.k.length > c.k.length && o.k.startsWith(c.k)))));
+  return { firm, od, do: doo, leaves: leaves.map(({ k, name, v }) => ({ k, name, v })), total };
+}
+
 function buildImport() {
   const sec = h('div');
-  const file = h('input', { type: 'file', accept: '.pdf,application/pdf', id: 'bbFile', style: 'position:absolute;width:1px;height:1px;opacity:0' });
+  const file = h('input', { type: 'file', accept: '.pdf,.xls,.xlsx', id: 'bbFile', style: 'position:absolute;width:1px;height:1px;opacity:0' });
   const msg = h('p', { class: 'lead', 'aria-live': 'polite' });
-  const drop = h('label', { class: 'drop', for: 'bbFile' }, h('b', {}, 'Odaberi bruto bilancu (PDF)'), h('span', {}, 'ili je povuci ovdje. Ispis na 31.12., ali bez završne temeljnice (prije zaključnih knjiženja).'));
+  const drop = h('label', { class: 'drop', for: 'bbFile' }, h('b', {}, 'Odaberi bruto bilancu (PDF ili Excel)'), h('span', {}, 'ili je povuci ovdje. Ispis na 31.12., ali bez završne temeljnice (prije zaključnih knjiženja).'));
   const body = h('div');
   const rules = h('div', { style: 'margin-top:22px' });
   let autoXfer = null;
@@ -1554,9 +1635,11 @@ function buildImport() {
     if (!f) return; if (!(await requireLicence())) return; 
     msg.textContent = 'Čitam ' + f.name + '…';
     try {
-      const parsed = parsePspnet(await pdfLines(f));
-      if (!parsed.leaves.length) throw new Error('U datoteci nisam našao nijedan konto. Je li to bruto bilanca iz PSPnet-a?');
-      BB = { file: f.name, ...parsed }; saveBB();
+      let parsed;
+      if (/\.xlsx?$/i.test(f.name)) { await loadXlsx(); parsed = parseExcelBB(XLSX.read(new Uint8Array(await f.arrayBuffer()), { type: 'array' })); }
+      else parsed = parsePspnet(await pdfLines(f));
+      if (!parsed.leaves.length) throw new Error('U datoteci nisam našao nijedan konto. Je li to bruto bilanca?');
+      BB = { file: f.name, ...parsed, profile: /\.xlsx?$/i.test(f.name) ? 'integrator' : 'pspnet' }; saveBB(); setProfile(BB.profile);
       if (!E.inputs['RefStr!C29'] && parsed.firm) { E.setInput('RefStr!C29', parsed.firm); saveState(); renderHeader(); }
       msg.textContent = '';
       render();
@@ -1581,7 +1664,7 @@ function buildImport() {
     const doneTop = h('span', { class: 'okline', style: 'margin:0' });
     const transfer = async () => {
       if (!(await requireLicence())) return; 
-      const used = new Set([...MAP, ...MAP2].map(r => r[1]).filter(k => TARGET[k]));
+      const used = new Set([...MAP, ...MAP2, ...Object.keys(PROFILE_NAMES).flatMap(p => defaultMapFor(p))].map(r => r[1]).filter(k => TARGET[k]));
       for (const k of used) E.setInput(k, sums[k] ? sums[k] : '');
       for (const k of used) E.setInput('_auto:' + k, sums[k] ? sums[k] : '');
       const pdAuto = pdFromBB();
@@ -1602,7 +1685,11 @@ function buildImport() {
     body.append(h('div', { class: 'sheet', style: 'padding:12px 14px' },
       h('div', { style: 'display:flex;gap:10px;flex-wrap:wrap;align-items:center' },
         h('b', {}, BB.file || 'Bruto bilanca'), h('span', { style: 'color:var(--muted)' }, `razdoblje ${BB.od} – ${BB.do}, ${BB.leaves.length} konta`),
-        h('span', { class: 'pill ' + (ok ? 'ok' : 'bad') }, ok ? 'Zbroj konta = promet u razdoblju' : 'Zbroj konta se ne slaže s ukupnim prometom, provjeri PDF')),
+        h('label', { style: 'display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)' }, 'program:',
+          h('select', { class: 'tsel', style: 'width:auto', onchange: (e) => { BB.profile = e.target.value; saveBB(); setProfile(BB.profile); render(); } },
+            Object.entries(PROFILE_NAMES).map(([k, n]) => { const o = h('option', { value: k }, n); if ((BB.profile || 'pspnet') === k) o.selected = true; return o; }))),
+        h('span', { class: 'pill ' + (ok ? 'ok' : 'bad') }, ok ? 'Zbroj konta = promet u razdoblju' : 'Zbroj konta se ne slaže s ukupnim prometom, provjeri datoteku'),
+        (() => { const rz = BB.leaves.filter(l => /^[47]/.test(l.k)); const turn = rz.reduce((s, l) => s + Math.abs(l.v[4]), 0), sal = rz.reduce((s, l) => s + Math.abs(l.v[4] - l.v[5]), 0); return rz.length && turn > 1 && sal < 0.01 ? h('span', { class: 'pill bad' }, 'Bilanca je nakon zaključnih knjiženja (konta razreda 4 i 7 su zatvorena). Treba ispis prije zaključka, inače RDG ostaje prazan.') : null; })()),
       h('div', { style: 'display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:10px' },
         h('button', { class: 'btn primary', type: 'button', onclick: transfer }, 'Prenesi u obrazac'),
         unmapped.length ? h('span', { class: 'pill bad' }, `${unmapped.length} konta bez pozicije (crveno ispod)`) : h('span', { class: 'lead', style: 'margin:0' }, 'Pregledaj konta ispod, pa prenesi.'),
@@ -1636,8 +1723,8 @@ function buildImport() {
     rules.replaceChildren(...mapEditor());
   }
 
-  function mapEditor() { return [ruleEditor(MAP, saveMap, ['RDG', 'Bilanca', 'Ostalo'], 'Pravila mapiranja', 'Pravilo vrijedi za sva konta koja počinju tim brojem. Kad se više pravila poklapa, vrijedi duže (npr. 4613 ima prednost pred 46). Pravila se pamte za sve klijente.', () => { MAP = DEFAULT_MAP.map(x => x.slice()); saveMap(); }),
-    ruleEditor(MAP2, saveMap2, ['Dodatni'], 'Pravila za dodatne podatke', 'Dodatni podaci su raščlamba iznosa koji su već u RDG-u, pa se isti konto ovdje prenosi još jednom, na poziciju dodatnih podataka.', () => { MAP2 = DEFAULT_MAP2.map(x => x.slice()); saveMap2(); })]; }
+  function mapEditor() { return [ruleEditor(MAP, saveMap, ['RDG', 'Bilanca', 'Ostalo'], 'Pravila mapiranja (' + PROFILE_NAMES[PROFILE] + ')', 'Pravilo vrijedi za sva konta koja počinju tim brojem. Kad se više pravila poklapa, vrijedi duže (npr. 4613 ima prednost pred 46). Pravila se pamte za sve klijente.', () => { MAP = defaultMapFor(PROFILE); saveMap(); }),
+    ruleEditor(MAP2, saveMap2, ['Dodatni'], 'Pravila za dodatne podatke (' + PROFILE_NAMES[PROFILE] + ')', 'Dodatni podaci su raščlamba iznosa koji su već u RDG-u, pa se isti konto ovdje prenosi još jednom, na poziciju dodatnih podataka.', () => { MAP2 = defaultMap2For(PROFILE); saveMap2(); })]; }
   function ruleEditor(map, save, groups, title, help, reset) {
     const rows = map.slice().sort((a, b) => a[0].localeCompare(b[0])).map(rule => {
       const pre = h('input', { class: 'txt', value: rule[0], style: 'max-width:90px', inputmode: 'numeric', 'aria-label': 'Konto ili početak konta', onchange: (e) => { rule[0] = e.target.value.replace(/\D/g, ''); save(); render(); } });
@@ -1756,6 +1843,49 @@ function kontStatus(r) {
   return 'ok';
 }
 function kontCounts() { let e = 0, w = 0; for (const k of M.kont) { const s = kontStatus(k.r); if (s === 'err') e++; else if (s === 'warn') w++; } return { e, w }; }
+// ---------- Pozicije uz FINA kontrole ----------
+const KREF_TAB = { Bilanca: 'bil', RDG: 'rdg', Dodatni: 'dod', RefStr: 'ref', PD: 'pd', 'ČLANARINE': 'tz' };
+function kontRefs(r) {
+  const out = new Map(), seen = new Set();
+  const RE = /(?:'?([A-Za-zČĆŽŠĐčćžšđ_]+)'?!)?\$?([A-Z]{1,2})\$?(\d+)(?::\$?([A-Z]{1,2})\$?(\d+))?/g;
+  const walk = (key, depth) => {
+    if (seen.has(key) || depth > 3) return; seen.add(key);
+    const f = M.formulas[key]; if (!f) return;
+    const sh0 = key.split('!')[0];
+    for (const m of f.matchAll(RE)) {
+      const sh = m[1] || sh0;
+      if (sh !== 'Kont') {
+        if (!KREF_TAB[sh]) continue;
+        const add = (row) => { const k = sh + '!' + m[2] + row; if (!out.has(k)) out.set(k, { sh, col: m[2], row: +row }); };
+        add(m[3]); if (m[5] && +m[5] !== +m[3] && +m[5] - +m[3] < 4) for (let x = +m[3] + 1; x <= +m[5]; x++) add(x);
+        continue;
+      }
+      const sub = 'Kont!' + m[2] + m[3];
+      if (depth === 0 && /^(N|O|P|Q|R|S|T)$/.test(m[2])) { const v = E.get(sub); if (!(v === 1 || v === true || (v && typeof v === 'object'))) continue; }
+      walk(sub, depth + 1);
+    }
+  };
+  walk('Kont!L' + r, 0); walk('Kont!M' + r, 0);
+  return [...out.values()];
+}
+function refLabel(x) {
+  const rows = x.sh === 'Bilanca' ? M.bil : x.sh === 'RDG' ? M.rdg : x.sh === 'Dodatni' ? M.dod : null;
+  const yr = x.col === 'I' ? 'prethodna' : x.col === 'J' ? 'tekuća' : '';
+  if (rows) { const r = rows.find(y => y.r === x.row); if (r && r.aop !== null && r.aop !== undefined) return `${x.sh} AOP ${String(r.aop).padStart(3, '0')} ${r.label.slice(0, 50)}${yr ? ' (' + yr + ')' : ''}`; }
+  if (x.sh === 'RefStr') { const el = document.querySelector(`[data-ref="RefStr!${x.col}${x.row}"]`); const l = el && el.childNodes[0] && el.childNodes[0].textContent.trim(); return 'Obveznik: ' + (l ? l.slice(0, 50) : x.col + x.row); }
+  if (x.sh === 'PD') { const r = M.pd.find(y => y.r === x.row); return 'PD ' + (r && r.no ? 'r.br. ' + r.no + ' ' : '') + ((r && r.label) || '').slice(0, 45); }
+  return x.sh + ' ' + x.col + x.row;
+}
+function goToRef(x) {
+  const tab = KREF_TAB[x.sh]; if (!tab) return;
+  showTab(tab);
+  setTimeout(() => {
+    const el = document.querySelector(`[data-row="${x.sh}!${x.row}"]`) || document.querySelector(`[data-ref="${x.sh}!${x.col}${x.row}"]`) || (document.querySelector(`[data-key="${x.sh}!${x.col}${x.row}"]`) || {}).closest?.('tr');
+    if (!el) return;
+    el.scrollIntoView({ block: 'center' });
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  }, 60);
+}
 function buildKont() {
   let onlyBad = true;
   const sum = h('p', { class: 'lead', 'aria-live': 'polite' });
@@ -1766,8 +1896,9 @@ function buildKont() {
   for (const k of M.kont) {
     while (heads.length && heads[0].r < k.r) { const hd = heads.shift(); const tr = h('tr', { class: 'sec' }, h('td', { colspan: 3 }, hd.text)); rows.push({ tr, head: true }); tb.append(tr); }
     const pill = h('span', { class: 'pill' });
-    const tr = h('tr', {}, h('td', { class: 'aop' }, String(k.r - 11)), h('td', { style: 'width:110px' }, pill), h('td', { style: 'font-size:13px' }, k.text));
-    rows.push({ tr, r: k.r, pill }); tb.append(tr);
+    const refs = h('div', { class: 'krefs' });
+    const tr = h('tr', {}, h('td', { class: 'aop' }, String(k.r - 11)), h('td', { style: 'width:110px' }, pill), h('td', { style: 'font-size:13px' }, k.text, refs));
+    rows.push({ tr, r: k.r, pill, refs }); tb.append(tr);
   }
   function paint() {
     const c = kontCounts();
@@ -1780,6 +1911,25 @@ function buildKont() {
       x.pill.className = 'pill ' + (s === 'ok' ? 'ok' : 'bad') + (s === 'warn' ? ' warn' : '');
       x.pill.textContent = s === 'ok' ? 'OK' : s === 'warn' ? 'Provjera' : 'Pogreška';
       x.tr.hidden = onlyBad && s === 'ok';
+      if (s !== 'ok') {
+        const neg = /negativn/i.test((M.kont.find(k => k.r === x.r) || {}).text || '');
+        const hasAop = (y) => { const rows = y.sh === 'Bilanca' ? M.bil : y.sh === 'RDG' ? M.rdg : y.sh === 'Dodatni' ? M.dod : null; if (!rows) return true; const rr = rows.find(z => z.r === y.row); return !!(rr && rr.aop !== null && rr.aop !== undefined); };
+        const ktext = (M.kont.find(k => k.r === x.r) || {}).text || '';
+        let negRefs = null;
+        if (neg && /mogu biti negativne/i.test(ktext)) {
+          const allowed = new Set(); const seg = ktext.split(/mogu biti negativne/i)[0];
+          for (const m of seg.matchAll(/(\d{3})(?:\s+do\s+(\d{3}))?/g)) { const a = +m[1], z = m[2] ? +m[2] : a; for (let q = a; q <= z; q++) allowed.add(q); }
+          const sh = /Bilanc/i.test(ktext) ? 'Bilanca' : 'RDG', rowsM = sh === 'Bilanca' ? M.bil : M.rdg;
+          negRefs = [];
+          for (const rr of rowsM) { if (rr.aop === null || rr.aop === undefined || allowed.has(+rr.aop)) continue; for (const col of ['J', 'I']) if ((Number(E.get(sh + '!' + col + rr.r)) || 0) < -0.004) negRefs.push({ sh, col, row: rr.r }); }
+        }
+        const rs = negRefs ? negRefs.slice(0, 8) : kontRefs(x.r).filter(hasAop).filter(y => !neg || (Number(E.get(y.sh + '!' + y.col + y.row)) < -0.004))
+          .sort((a, b) => (a.col === 'J' ? 0 : 1) - (b.col === 'J' ? 0 : 1)).slice(0, 8);
+        x.refs.replaceChildren(...(rs.length ? [h('span', { class: 'krl' }, 'Pozicije: ')] : []), ...rs.map(y => {
+          const v = E.get(y.sh + '!' + y.col + y.row), val = typeof v === 'number' ? ' = ' + fmt(v) : (v !== null && v !== undefined && v !== '' && typeof v !== 'object' ? ' = ' + v : '');
+          return h('button', { class: 'kref', type: 'button', onclick: () => goToRef(y) }, refLabel(y) + val);
+        }));
+      } else x.refs.replaceChildren();
       if (!x.tr.hidden) visibleInGroup++;
     }
     finishHead();
