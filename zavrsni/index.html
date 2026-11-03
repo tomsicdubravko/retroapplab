@@ -987,7 +987,7 @@ function buildPd() {
     printBlock('Nepriznati troškovi', h('h2', {}, 'Nepriznati troškovi'), h('p', { class: 'lead' }, 'Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24.'), helper),
     ...(() => { const s = pdSourceBox(); return [printBlock('Kazne', s[0], s[1], s[2]), printBlock('Povučeno iz bruto bilance u PD', s[3])]; })(),
     h('div', { class: 'grid2' }, printBlock('Državna potpora za obrazovanje', h('h2', {}, 'Državna potpora za obrazovanje'), pot), printBlock('Ostali podaci za obračun PD', h('h2', {}, 'Ostalo'), other)),
-    printBlock('Neiskorišteni porezni gubici po godinama', h('h2', {}, 'Neiskorišteni porezni gubici po godinama'), ix),
+    printBlock('Neiskorišteni porezni gubici po godinama', h('h2', {}, 'Neiskorišteni porezni gubici po godinama'), prevPdBox(), ix),
     printBlock('Rashodi darovanja', h('h2', {}, 'Rashodi darovanja'), dar)];
 }
 
@@ -1018,6 +1018,7 @@ function printPart(el, title) {
     .printdoc .grid2{display:block}
     .printdoc .pblock{padding-top:0!important}
     .printdoc .pblock>h2:first-of-type{display:none}
+    .printdoc input[type=file]{display:none}
     @page{size:A4;margin:1.5cm}
   </style></head><body class="printdoc"><div class="phead"><h1>${title}</h1><p><b>${g('C29')}</b>${g('C27') ? ', OIB ' + g('C27') : ''} · razdoblje ${dd(g('C4'))} – ${dd(g('F4'))}</p></div></body></html>`);
   d.close();
@@ -1031,6 +1032,103 @@ function printBlock(title, ...kids) {
   const fl = kids.flat();
   box.append(btn, ...fl);
   return box;
+}
+
+
+// ---------- Prošlogodišnji PD: preneseni porezni gubici po godinama ----------
+function lossFromPrevXml(text) {
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  const g = (n) => { const el = doc.getElementsByTagNameNS('*', n)[0]; return el ? el.textContent.trim() : null; };
+  if (g('Godina00') === null) throw new Error('U datoteci nema tablice prenesenih gubitaka (nije PD obrazac).');
+  const rows = {};
+  for (let nn = 0; nn <= 10; nn++) {
+    const s = String(nn).padStart(2, '0'), num = (t) => { const v = g('Podatak' + t + s); return v ? Number(v) || 0 : 0; };
+    rows[nn] = { y: Number(g('Godina' + s)) || null, PG: num('PG'), DO: num('DO'), GU: num('GU'), GPPP: num('GPPP'), GP: num('GP') };
+  }
+  return rows;
+}
+function lossFromPrevJson(text) {
+  const data = JSON.parse(text), inputs = data.inputs || data;
+  const e = Engine.create();
+  for (const [k, f] of Object.entries(M.formulas)) e.setFormula(k, f);
+  for (const [k, v] of Object.entries(inputs)) if (!k.startsWith('_')) e.setInput(k, v);
+  const y0 = Number(inputs['RefStr!F12']) || null, rows = {};
+  for (let nn = 0; nn <= 10; nn++) {
+    const r = 99 - nn, n = (c) => Number(e.num('PD!' + c + r)) || 0;
+    rows[nn] = { y: y0 ? y0 - nn : null, PG: n('E'), DO: n('H'), GU: n('K'), GPPP: n('N'), GP: n('Q') };
+  }
+  return rows;
+}
+
+async function lossFromPrevPdf(file) {
+  const lines = (await pdfLines(file)).map(l => l.replace(/\s+/g, ' ').trim());
+  const Y = Number(E.inputs['RefStr!F12']) || 0, AMT = /^-?\d{1,3}(?:\.\d{3})*,\d{2}$/;
+  let start = lines.findIndex(l => /prijenos\s+poreznog\s+gubitka|preneseni\s+porezni\s+gubit|IX\.\s/i.test(l));
+  if (start < 0) start = 0;
+  const found = {};
+  for (const l of lines.slice(start)) {
+    const toks = l.split(' ');
+    const yi = toks.findIndex(t => /^(19|20)\d{2}\.?$/.test(t));
+    if (yi < 0 || yi > 2) continue;
+    const yr = parseInt(toks[yi]);
+    if (Y && (yr < Y - 12 || yr > Y - 1)) continue;
+    const am = toks.slice(yi + 1).filter(t => AMT.test(t)).map(toN);
+    if (am.length === 5 && found[yr] === undefined) found[yr] = am;
+  }
+  const yrs = Object.keys(found).map(Number);
+  if (!yrs.length) throw new Error('U PDF-u nisam našao tablicu prenesenih gubitaka po godinama (godina i pet iznosa u retku).');
+  const y00 = Math.max(...yrs), rows = {};
+  for (let nn = 0; nn <= 10; nn++) { const a = found[y00 - nn] || [0, 0, 0, 0, 0]; rows[nn] = { y: y00 - nn, PG: a[0], DO: a[1], GU: a[2], GPPP: a[3], GP: a[4] }; }
+  return rows;
+}
+
+function lossFromWorkbook(wb) {
+  const ws = wb.Sheets['PD'] || wb.Sheets[wb.SheetNames.find(n => /^PD$/i.test(n.trim()))];
+  if (!ws) return null;
+  const v = (a) => { const c = ws[a]; return c && typeof c.v === 'number' ? c.v : 0; };
+  const rs = wb.Sheets['RefStr'];
+  const y0 = Number(rs && rs['F12'] && rs['F12'].v) || Number(ws['C99'] && ws['C99'].v) || null;
+  const rows = {};
+  let any = false;
+  for (let nn = 0; nn <= 10; nn++) {
+    const r = 99 - nn;
+    rows[nn] = { y: y0 ? y0 - nn : null, PG: v('E' + r), DO: v('H' + r), GU: v('K' + r), GPPP: v('N' + r), GP: v('Q' + r) };
+    if (['PG', 'GU', 'GPPP', 'GP'].some(k => Math.abs(rows[nn][k]) > 0.004)) any = true;
+  }
+  return { rows, any };
+}
+function applyPrevLoss(rows) {
+  const Y = Number(E.inputs['RefStr!F12']) || null;
+  if (Y && rows[0].y && rows[0].y !== Y - 1) throw new Error(`Učitani PD je za ${rows[0].y}. godinu, a ovaj obrazac za ${Y}. Treba PD za ${Y - 1}. godinu.`);
+  let n = 0;
+  for (let r = 89; r <= 98; r++) {
+    const p = rows[98 - r];
+    const set = (c, v) => { const k = 'PD!' + c + r; if (M.formulas[k]) return; E.setInput(k, Math.abs(v) > 0.004 ? Math.round(v * 100) / 100 : ''); if (Math.abs(v) > 0.004) n++; };
+    set('E', p.PG); set('H', p.DO); set('K', p.GU); set('N', p.GPPP);
+  }
+  saveState(); for (const x of numInputs) x.show(); recalc();
+  return n;
+}
+function prevPdBox() {
+  const msg = h('p', { class: 'lead', style: 'margin:6px 0 0', 'aria-live': 'polite' });
+  const inp = h('input', { type: 'file', accept: '.pdf,.xml,.json,.xls,.xlsx', hidden: true });
+  inp.addEventListener('change', async () => {
+    const f = inp.files[0]; inp.value = ''; if (!f) return;
+    if (!(await requireLicence())) return;
+    try {
+      let rows;
+      if (/\.pdf$/i.test(f.name)) rows = await lossFromPrevPdf(f);
+      else if (/\.xlsx?$/i.test(f.name)) { await loadXlsx(); const wb = XLSX.read(new Uint8Array(await f.arrayBuffer()), { type: 'array' }); const L = lossFromWorkbook(wb); if (!L) throw new Error('U Excelu nema lista PD.'); rows = L.rows; }
+      else { const text = await f.text(); rows = /\.json$/i.test(f.name) || text.trim().startsWith('{') ? lossFromPrevJson(text) : lossFromPrevXml(text); }
+      const n = applyPrevLoss(rows);
+      msg.className = 'okline'; msg.textContent = n ? `✓ Preneseni gubici po godinama učitani iz ${f.name}. Tablica je pomaknuta za jednu godinu.` : `Učitano iz ${f.name}, ali u prošlogodišnjem PD-u nema prenesenih gubitaka.`;
+    } catch (e) { msg.className = 'pill bad'; msg.textContent = 'Nisam uspio učitati: ' + e.message; }
+  });
+  return h('div', { class: 'sheet', style: 'padding:10px 14px;margin-bottom:10px' },
+    h('div', { style: 'display:flex;gap:12px;align-items:center;flex-wrap:wrap' },
+      h('button', { class: 'btn', type: 'button', onclick: () => inp.click() }, 'Učitaj prošlogodišnji PD'),
+      h('span', { class: 'lead', style: 'margin:0' }, 'Samo ako se prenosi porezni gubitak iz prošlih godina. Prihvaća prošlogodišnji Excel s listom PD, PD obrazac kao PDF ili XML (iz ePorezne ili iz ove aplikacije), ili spremljenu datoteku klijenta (.json).')),
+    inp, msg);
 }
 
 // ---------- TZ i šume ----------
@@ -1278,7 +1376,7 @@ const DEFAULT_MAP = [
   ['71', 'RDG!J18'], ['72', 'RDG!J52'], ['724', 'RDG!J51'], ['75', 'RDG!J10'], ['753', 'RDG!J13'], ['76', 'RDG!J10'], ['764', 'RDG!J13'], ['77', 'RDG!J45'], ['774', 'RDG!J44'], ['78', 'RDG!J13'],
 ];
 const BIL_DEFAULT = [
-  ['00', 'Bilanca!J13'], ['01', 'Bilanca!J19'], ['020', 'Bilanca!J20'], ['0290', 'Bilanca!J20'], ['043', 'Bilanca!J36'], ['110', 'Bilanca!J57'], ['156', 'Bilanca!J60'], ['165', 'Bilanca!J58'], ['951', 'Bilanca!J112'], ['4771', 'RDG!J22'], ['73', 'RDG!J36'], ['02', 'Bilanca!J21'], ['022', 'Bilanca!J22'], ['0292', 'Bilanca!J22'], ['10', 'Bilanca!J71'], ['12', 'Bilanca!J57'], ['15', 'Bilanca!J69'], ['16', 'Bilanca!K59'], ['18', 'Bilanca!K59'],
+  ['00', 'Bilanca!J13'], ['01', 'Bilanca!J19'], ['025', 'Bilanca!J25'], ['020', 'Bilanca!J20'], ['0290', 'Bilanca!J20'], ['043', 'Bilanca!J36'], ['110', 'Bilanca!J57'], ['156', 'Bilanca!J60'], ['165', 'Bilanca!J58'], ['951', 'Bilanca!J112'], ['4771', 'RDG!J22'], ['73', 'RDG!J36'], ['02', 'Bilanca!J21'], ['022', 'Bilanca!J22'], ['0292', 'Bilanca!J22'], ['10', 'Bilanca!J71'], ['12', 'Bilanca!J57'], ['15', 'Bilanca!J69'], ['16', 'Bilanca!K59'], ['18', 'Bilanca!K59'],
   ['19', 'Bilanca!J72'], ['31', 'Bilanca!J47'], ['35', 'Bilanca!J47'], ['66', 'Bilanca!J50'],
   ['22', 'Bilanca!J127'], ['25', 'Bilanca!J124'], ['257', 'Bilanca!J126'], ['26', 'Bilanca!K130'], ['263', 'Bilanca!J129'], ['27', 'Bilanca!J129'], ['272', 'Bilanca!K130'], ['273', 'Bilanca!K130'], ['28', 'Bilanca!K130'], ['29', 'Bilanca!J134'],
   ['83', 'PD!Q81'], ['91', 'Bilanca!J77'], ['94', 'Bilanca!J94'], ['941', 'Bilanca!J95'], ['943', 'Bilanca!J95'], ['95', 'Bilanca!J113'],
@@ -1347,7 +1445,8 @@ let BB = (() => { try { return JSON.parse(localStorage.getItem(BB_STORE) || 'nul
     for (const r of [['00', 'Bilanca!J13'], ['01', 'Bilanca!J19'], ['020', 'Bilanca!J20'], ['0290', 'Bilanca!J20'], ['043', 'Bilanca!J36'], ['110', 'Bilanca!J57'], ['156', 'Bilanca!J60'], ['165', 'Bilanca!J58'], ['951', 'Bilanca!J112'], ['4771', 'RDG!J22'], ['73', 'RDG!J36']]) if (!MAP.some(x => x[0] === r[0])) MAP.push(r.slice());
   }
   if (v < 10) { for (const r of [['401', 'Dodatni!J50'], ['4180', 'Dodatni!J51'], ['4188', 'Dodatni!J51'], ['4122', 'Dodatni!J58'], ['423', 'Dodatni!J60'], ['464', 'Dodatni!J62'], ['468', 'Dodatni!J62']]) if (!MAP2.some(x => x[0] === r[0])) MAP2.push(r.slice()); try { localStorage.setItem(MAP2_STORE, JSON.stringify(MAP2)); } catch (e) {} }
-  try { localStorage.setItem(MAP_STORE + ':v', '10'); localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {}
+  if (v < 11) { if (!MAP.some(x => x[0] === '025')) MAP.push(['025', 'Bilanca!J25']); }
+  try { localStorage.setItem(MAP_STORE + ':v', '11'); localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {}
 })();
 const saveMap = () => { try { localStorage.setItem(MAP_STORE, JSON.stringify(MAP)); } catch (e) {} };
 const saveBB = () => { try { localStorage.setItem(BB_STORE, JSON.stringify(BB)); } catch (e) {} };
@@ -1616,6 +1715,8 @@ async function importPrevGfi(file) {
   sections.ref.replaceChildren(...buildRef());
   if (!E.inputs['_odl_potpis'] && E.inputs['RefStr!A75']) { E.setInput('_odl_potpis', E.inputs['RefStr!A75']); E.setInput('_auto:_odl_potpis', E.inputs['RefStr!A75']); saveState(); }
   renderHeader(); applyTz(); applyPorezna(); applyMonths(); for (const n of numInputs) n.show(); recalc();
+  const L = lossFromWorkbook(wb);
+  if (L && L.any) { try { report.loss = applyPrevLoss(L.rows); } catch (e) { report.lossErr = e.message; } }
   return report;
 }
 function buildPrevImport() {
@@ -1633,6 +1734,8 @@ function buildPrevImport() {
       lines.push(ok(`Učitana prošla godina: ${r.set} pozicija u Bilanci, RDG-u i Dodatnim podacima`));
       if (r.missing.length) lines.push(h('p', { class: 'pill bad' }, 'Nisam našao: ' + r.missing.join(', ')));
       if (E.inputs['RefStr!C42']) lines.push(ok('Stopa članarine TZ određena prema djelatnosti i sjedištu'));
+      if (r.loss) lines.push(ok('Preneseni porezni gubici po godinama učitani iz lista PD'));
+      if (r.lossErr) lines.push(h('p', { class: 'pill bad' }, 'Gubici iz lista PD: ' + r.lossErr));
       out.replaceChildren(...lines);
     } catch (e) { out.replaceChildren(h('p', { class: 'pill bad' }, 'Nisam uspio pročitati datoteku: ' + e.message)); }
   }
@@ -2032,7 +2135,7 @@ const POLITIKE = [
   ['h2', 'Dugotrajna materijalna imovina'],
   ['p', 'Dugotrajna materijalna imovina obuhvaća sredstva koja Društvo koristi pri isporuci roba i usluga te u administrativne svrhe i čiji je procijenjeni vijek upotrebe duži od godine dana. Ova imovina početno se priznaje u bilanci po trošku nabave koji obuhvaća neto kupovnu cijenu i sve druge ovisne troškove do stavljanja sredstva u upotrebu. Nakon početnog priznavanja dugotrajna imovina se mjeri po trošku nabave umanjenom za ispravak vrijednosti i akumulirane gubitke od umanjenja sukladno HSFI 6. Društvo može odlučiti da dugotrajnu materijalnu imovinu čija se fer vrijednost može pouzdano mjeriti iskazuje po revaloriziranom iznosu nakon početnog priznavanja imovine. Ako se pojedina dugotrajna materijalna imovina revalorizira, sva dugotrajna materijalna imovina iz iste skupine također se mjeri metodom revalorizacije.'],
   ['p', 'Amortizacija dugotrajne materijalne imovine obračunava se primjenom linearne metode u procijenjenom vijeku upotrebe svakog pojedinog sredstva primjenom sljedećih stopa:'],
-  ...['Građevinski objekti 5%', 'Brodovi veći od 1000 BRT 5%', 'Osobni automobili 20%', 'Osnovno stado 20%', 'Oprema 25%', 'Dostavna vozila 25%', 'Mehanička oprema 25%', 'Računalna oprema 50%', 'Telekomunikacijska oprema 50%', 'Ostala nespomenuta imovina 10%'].map(t => ['li', t]),
+  ['table', { head: ['Vrsta imovine', 'Godišnja stopa'], body: [['Građevinski objekti', '5%'], ['Brodovi veći od 1000 BRT', '5%'], ['Osobni automobili', '20%'], ['Osnovno stado', '20%'], ['Oprema', '25%'], ['Dostavna vozila', '25%'], ['Mehanička oprema', '25%'], ['Računalna oprema', '50%'], ['Telekomunikacijska oprema', '50%'], ['Ostala nespomenuta imovina', '10%']], foot: null }],
   ['p', 'Ako Društvo donese odluku, primjenjuju se uvećane amortizacijske stope sukladno odredbama Zakona o porezu na dobit.'],
   ['p', 'Zemljište i druga imovina koja ima neograničen vijek trajanja (umjetnički radovi i sl.) te imovina u pripremi se ne amortizira.'],
   ['p', 'Naknadni izdaci uključuju se u knjigovodstvenu vrijednost imovine ili se prema potrebi priznaju kao zasebna imovina samo ako će Društvo imati buduće ekonomske koristi od imovine te ako se trošak nabave može pouzdano mjeriti. Knjigovodstvena vrijednost zamijenjenog dijela prestaje se priznavati. Svi ostali troškovi investicijskog i tekućeg održavanja terete račun dobitka i gubitka u razdoblju u kojem su nastali. Amortizacija se obračunava primjenom linearne metode.'],
@@ -2293,19 +2396,12 @@ function buildBiljeske() {
   b.push(['h1', 'VII. PRIHVAĆANJE I OBJAVA FINANCIJSKIH IZVJEŠTAJA OD STRANE UPRAVE DRUŠTVA']);
   H('Objava financijskih izvještaja');
   P(`Uprava društva, na temelju odluke Skupštine o utvrđivanju godišnjih financijskih izvještaja za poslovnu godinu ${A(Y)}., svojom ovjerom odobrava njihovu objavu.`);
-  const sast = E.inputs['_bilj_sastavio'] || '';
-  b.push(sast ? ['sig3', `<span>Osoba odgovorna za sastavljanje bilješki:<br>${A(sast)}</span><span>Direktor:<br>${A(uprava)}</span>`] : ['sig2', `Direktor:<br>${A(uprava)}`]);
+  b.push(['sig2', `Direktor:<br>${A(uprava)}`]);
   return b;
 }
 function buildBiljeskeTab() {
   return [h('h2', {}, 'Bilješke uz financijske izvještaje'),
     h('p', { class: 'lead' }, 'Bilješke se slažu iz Bilance i RDG-a, za obje godine, s tablicama i indeksima. Uprava se uzima iz potpisnika na kartici Odluke. Tekst možeš mijenjati izravno na papiru, a izmjene se pamte uz klijenta.'),
-    (() => {
-      const i = h('input', { type: 'text', placeholder: 'ime i prezime', value: E.inputs['_bilj_sastavio'] || (() => { try { return localStorage.getItem('zavrsni-racun:sastavio') || ''; } catch (e) { return ''; } })() });
-      if (!E.inputs['_bilj_sastavio'] && i.value) E.setInput('_bilj_sastavio', i.value);
-      i.addEventListener('change', () => { E.setInput('_bilj_sastavio', i.value.trim()); try { localStorage.setItem('zavrsni-racun:sastavio', i.value.trim()); } catch (e) {} saveState(); recalc(); });
-      return h('div', { class: 'sheet' }, h('div', { class: 'form' }, h('label', {}, 'Osoba odgovorna za sastavljanje bilješki', i), h('p', { class: 'hint', style: 'align-self:end;margin:0' }, 'Pamti se i za sljedeće klijente.')));
-    })(),
     docEditor('_doc_bilj', 'Bilješke uz financijske izvještaje', buildBiljeske, 'Biljeske', { pages: true })];
 }
 
@@ -2426,7 +2522,9 @@ function buildChecklist() {
         st0.className = 'pill ' + (s === 'missing' ? 'bad warn' : 'ok');
         st0.textContent = s === 'auto' ? '✓ nije bilo' : s === 'manual' ? '✎ upisano' : '⚠ nedostaje';
         const sum = DAR_ROWS.reduce((x, r) => x + (E.num('PD!Q' + r) || 0), 0);
-        note0.textContent = s === 'manual' ? `ukupno ${fmt(sum)} € · ide u ${c.where}` : s === 'missing' ? 'upiši primatelje ili označi da ih nije bilo · ide u ' + c.where : 'ide u ' + c.where;
+        const k731 = BB && BB.leaves ? BB.leaves.filter(l => l.k.startsWith('731')).reduce((x, l) => x + (l.v[4] || 0) - (l.v[5] || 0), 0) : 0;
+        const bbTxt = Math.abs(k731) > 0.004 ? `u bruto bilanci na kontu 731: ${fmt(k731)} €` + (s === 'manual' && Math.abs(k731 - sum) > 0.004 ? ' (ne slaže se s upisanim!)' : '') + ' · ' : '';
+        note0.textContent = bbTxt + (s === 'manual' ? `upisano ukupno ${fmt(sum)} € · ide u ${c.where}` : s === 'missing' ? 'upiši primatelje ili označi da ih nije bilo · ide u ' + c.where : 'ide u ' + c.where);
         none.checked = !!E.inputs['_dar_none'];
       });
       tb.append(h('tr', {}, h('td', {}, h('b', { style: 'font-weight:600' }, c.label), note0, box), h('td', { style: 'width:170px' }, input), h('td', { style: 'width:130px' }, st0)));
