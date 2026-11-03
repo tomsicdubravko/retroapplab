@@ -1,0 +1,8 @@
+MOJE TVRTKE v1.23 – PWA
+
+1. Na GitHub (repozitorij retroapplab) prenesi sadržaj ove mape u mapu /moje-tvrtke/ (index.html, manifest.webmanifest, sw.js, icons/). Mapa bez broja verzije, da adresa ostane ista zauvijek.
+2. Otvori https://retroapplab.com/moje-tvrtke/ . U Chrome/Edge: Instaliraj aplikaciju.
+3. Javna verzija je prazna – nema nikakvih tvrtki. Svaki korisnik unosi svoje, podaci ostaju samo u njegovom pregledniku.
+4. Svoje podatke prenosiš ovako: u staroj verziji Sigurnosne kopije > Preuzmi JSON kopiju, zatim na https adresi Uvezi JSON kopiju.
+5. Nikad ne stavljaj osobne JSON kopije u GitHub repozitorij.
+6. Za buduće verzije: zamijeni datoteke u istoj mapi /moje-tvrtke/ i promijeni ime CACHE u sw.js. Stranica se sama osvježi kad ima internet.
