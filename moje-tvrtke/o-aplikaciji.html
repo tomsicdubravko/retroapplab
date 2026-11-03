@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moje tvrtke – podsjetnik knjigovodstvenih obveza i rokova | RetroAppLab</title>
+<meta name="description" content="Moje tvrtke je besplatan podsjetnik za knjigovođe: obveze i rokovi svih klijenata na jednom mjestu – PDV, JOPPD, GFI, PD, DOH i ostali obrasci, kalendar s hrvatskim blagdanima. Podaci ostaju na Vašem uređaju.">
+<link rel="canonical" href="https://retroapplab.com/moje-tvrtke/o-aplikaciji.html">
+<meta property="og:title" content="Moje tvrtke – obveze i rokovi svih klijenata na jednom mjestu">
+<meta property="og:description" content="Podsjetnik knjigovodstvenih obveza i rokova za sve tvrtke klijente. Bez prijave, podaci ostaju na uređaju.">
+<meta property="og:image" content="https://retroapplab.com/moje-tvrtke/icons/icon-512.png">
+<meta property="og:url" content="https://retroapplab.com/moje-tvrtke/o-aplikaciji.html">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Moje tvrtke","url":"https://retroapplab.com/moje-tvrtke/","image":"https://retroapplab.com/moje-tvrtke/icons/icon-512.png","description":"Podsjetnik knjigovodstvenih obveza i rokova za sve tvrtke klijente: PDV, JOPPD, GFI, PD, DOH i ostali obrasci, kalendar s hrvatskim blagdanima. Podaci ostaju na uređaju korisnika.","applicationCategory":"BusinessApplication","operatingSystem":"Web preglednik","inLanguage":"hr","publisher":{"@type":"Organization","name":"RetroAppLab","url":"https://retroapplab.com/"},"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}
+</script>
+<style>
+:root{
+  --night:#0c1422;   /* pozadina, ista kao u aplikaciji */
+  --deep:#142238;
+  --line:#293b52;
+  --green:#5ad6a0;
+  --green-dark:#16845c;
+  --blue:#2d67a0;
+  --text:#e9eff8;
+  --muted:#9aaec6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--text);font:400 1.04rem/1.7 Inter,"Segoe UI",system-ui,sans-serif}
+a{color:var(--green)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:6px}
+h1,h2,h3{line-height:1.2;color:#fff}
+h2{font-size:clamp(1.5rem,3.4vw,2rem);margin-bottom:.6rem}
+h3{font-size:1.12rem;margin-bottom:.3rem}
+p+p{margin-top:.9rem}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+.text{max-width:68ch}
+
+/* gornja traka */
+.top{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;max-width:1040px;margin:0 auto;font-weight:700}
+.top a{text-decoration:none;color:var(--muted)}
+.top a:hover{color:#fff}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:42px;align-items:center;padding:30px 22px 70px;max-width:1040px;margin:0 auto}
+.hero h1{font-size:clamp(2.6rem,8vw,4.6rem);font-weight:800;letter-spacing:-.02em;color:#fff}
+.hero h1 span{color:var(--green)}
+.hero .lead{font-size:1.18rem;color:#cfe0f2;margin:.6rem 0 1.6rem;max-width:40ch}
+.cta{display:inline-block;background:var(--green-dark);color:#fff;font-weight:800;font-size:1.1rem;
+  padding:.75rem 1.8rem;border-radius:12px;text-decoration:none;box-shadow:0 5px 0 #0b5a3e}
+.cta:hover{transform:translateY(-2px);box-shadow:0 7px 0 #0b5a3e}
+.cta:active{transform:translateY(3px);box-shadow:0 2px 0 #0b5a3e}
+.hero .sub{display:block;margin-top:1rem;color:var(--muted);font-size:.95rem}
+.shot{border-radius:28px;overflow:hidden;aspect-ratio:1/1;max-width:380px;justify-self:center;width:100%;
+  background:#0c1422 url('/moje-tvrtke/icons/icon-512.png') center/cover;
+  box-shadow:0 0 0 6px var(--deep),0 30px 60px rgba(0,0,0,.45)}
+
+section{padding:56px 0}
+section.alt{background:var(--deep)}
+
+/* značajke */
+.items{display:grid;grid-template-columns:1fr 1fr;gap:22px 40px;margin-top:1.6rem}
+.item{display:flex;gap:14px;align-items:flex-start}
+.item .ico{font-size:1.6rem;line-height:1.25}
+.item p{color:var(--muted);font-size:.98rem}
+
+/* obrasci */
+.forms{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.2rem}
+.forms span{background:#1c2f48;border:1px solid #3c526d;border-radius:8px;padding:.2rem .7rem;font-weight:700;font-size:.92rem}
+
+/* kako početi */
+.steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:1.6rem;counter-reset:k}
+.steps li{border-top:3px solid var(--green);padding-top:.9rem;counter-increment:k}
+.steps li::before{content:counter(k);display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;
+  background:var(--green-dark);color:#fff;font-weight:800;margin-bottom:.5rem}
+.steps p{color:var(--muted)}
+.status{display:inline-block;font-weight:700;border-radius:6px;padding:0 .45em;font-size:.92em}
+.s-ceka{background:#5a4a1c;color:#ffe08a}
+.s-pred{background:#1f4a73;color:#cfe6ff}
+.s-potv{background:#14573f;color:#b9f5d8}
+
+/* napomena */
+.note{border-left:4px solid #e0b04a;background:#1b2536;padding:1rem 1.2rem;border-radius:0 10px 10px 0;color:#e6dcc4}
+
+/* pitanja */
+details{border-bottom:1px solid var(--line);padding:.9rem 0}
+summary{cursor:pointer;font-weight:700;color:#fff;list-style:none}
+summary::after{content:"+";float:right;color:var(--green);font-weight:800}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:.5rem}
+
+.end{text-align:center;padding:70px 22px}
+.end h2{color:var(--green)}
+
+body{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;flex-wrap:wrap;row-gap:2px;align-items:center;justify-content:space-between;gap:14px;
+  padding:10px 18px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(12,20,34,.94);backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);font-size:.9rem;color:var(--muted)}
+.dock-home{color:#fff;font-weight:700;text-decoration:none;white-space:nowrap}
+.dock-home:hover{color:var(--green)}
+.dock-text{flex:1;text-align:center}
+.dock-play{background:var(--green-dark);color:#fff;font-weight:800;text-decoration:none;padding:.35rem 1.1rem;border-radius:999px;white-space:nowrap}
+.dock-legal{flex-basis:100%;text-align:center;font-size:.72rem;line-height:1.5;color:var(--muted)}
+.dock-legal a{color:var(--muted);text-decoration:none}
+.dock-legal a:hover{color:#fff;text-decoration:underline}
+@media (max-width:640px){.dock-text{display:none}}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;gap:30px;text-align:center}
+  .hero .lead{margin-left:auto;margin-right:auto}
+  .shot{max-width:260px}
+  .items{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <a href="/">RetroAppLab</a>
+  <a href="#kako-poceti">Kako početi</a>
+</nav>
+
+<header class="hero">
+  <div>
+    <h1>Moje <span>tvrtke</span></h1>
+    <p class="lead">Podsjetnik knjigovodstvenih obveza i rokova za sve tvrtke klijente na jednom mjestu. Mjesečni PDV i JOPPD, godišnji GFI, PD, DOH i ostali obrasci, uz kalendar s hrvatskim blagdanima.</p>
+    <a class="cta" href="/moje-tvrtke/">Otvori aplikaciju</a>
+    <span class="sub">Besplatno, bez prijave. Podaci ostaju na Vašem uređaju.</span>
+  </div>
+  <div class="shot" role="img" aria-label="Ikona aplikacije Moje tvrtke"></div>
+</header>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="text">
+      <h2>Kome je namijenjena</h2>
+      <p>Moje tvrtke je namijenjena knjigovođama i računovodstvenim servisima koji vode više klijenata odjednom. Kad imate desetke tvrtki, svaka sa svojim obvezama, lako je izgubiti pregled nad tim što je predano, a što još čeka. Aplikacija na jednom mjestu pokazuje sve obveze i rokove za odabrani mjesec, za sve klijente zajedno.</p>
+      <p>Alat je nastao iz svakodnevnog knjigovodstvenog posla, kao zamjena za tablice i papirnate podsjetnike.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Što radi</h2>
+    <div class="items">
+      <div class="item"><span class="ico">🏢</span><div><h3>Popis tvrtki i obveza</h3><p>Za svaku tvrtku vodite koje obrasce predaje i u kojim rokovima, uz bilješke i kontakte klijenta.</p></div></div>
+      <div class="item"><span class="ico">📋</span><div><h3>Pregled mjeseca</h3><p>Sve obveze svih tvrtki za odabrani mjesec, s rokom i trenutnim statusom, tako da se odmah vidi što još treba predati.</p></div></div>
+      <div class="item"><span class="ico">📊</span><div><h3>Excel tablica po mjesecima</h3><p>Pregled u obliku tablice: tvrtke u redovima, obrasci u stupcima, mjesec po mjesec. Prikladno za brzu provjeru cijelog portfelja.</p></div></div>
+      <div class="item"><span class="ico">📅</span><div><h3>Kalendar s rokovima i blagdanima</h3><p>Kalendar pokazuje rokove, vikende i hrvatske blagdane, uključujući pomične poput Uskrsa i Tijelova.</p></div></div>
+      <div class="item"><span class="ico">↪️</span><div><h3>Pomicanje roka na radni dan</h3><p>Rok koji padne na subotu, nedjelju ili blagdan automatski se pomiče na prvi sljedeći radni dan.</p></div></div>
+      <div class="item"><span class="ico">✅</span><div><h3>„Predano danas”</h3><p>Jednim klikom obveza se označi kao predana, uz današnji datum.</p></div></div>
+      <div class="item"><span class="ico">🧩</span><div><h3>Profili tvrtki</h3><p>Gotovi profili poput d.o.o. u sustavu PDV-a, d.o.o. izvan PDV-a, obrta na dohodak (u PDV-u ili izvan njega) i paušalnog obrta odmah dodaju uobičajene obveze.</p></div></div>
+      <div class="item"><span class="ico">📇</span><div><h3>Kontakti klijenata</h3><p>Uz svaku tvrtku spremite osobu za kontakt, mobitel i e-mail, da su pri ruci kad nešto nedostaje.</p></div></div>
+      <div class="item"><span class="ico">🌗</span><div><h3>Svijetla i tamna tema</h3><p>Prikaz se može prebaciti između svijetle i tamne teme, ovisno o tome što Vam je ugodnije za rad.</p></div></div>
+      <div class="item"><span class="ico">🔔</span><div><h3>Promjene i podsjetnici</h3><p>Bilježite promjene kod klijenata i postavite podsjetnik na odabrani datum. Podsjetnici se prikazuju kad otvorite aplikaciju.</p></div></div>
+    </div>
+    <p class="text" style="margin-top:2rem">Obrasci koje aplikacija prati:</p>
+    <div class="forms" aria-label="Obrasci">
+      <span>PDV</span><span>PDV-S</span><span>JOPPD</span><span>PP-MI-PO</span><span>GFI-POD</span><span>PD</span><span>TZ</span><span>DOH</span><span>OPZ-STAT</span>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="kako-poceti">
+  <div class="wrap">
+    <h2>Kako početi</h2>
+    <ol class="steps">
+      <li><h3>Dodajte tvrtku</h3><p>Čarobnjak „Nova tvrtka” vodi Vas korak po korak: naziv, osnovni podaci i kontakt klijenta.</p></li>
+      <li><h3>Odaberite profil ili obveze</h3><p>Izaberite gotov profil, npr. d.o.o. u PDV-u, ili sami označite obrasce koje tvrtka predaje.</p></li>
+      <li><h3>Pratite statuse</h3><p>Svaka obveza ima status <span class="status s-ceka">Čeka</span>, <span class="status s-pred">Predano</span> ili <span class="status s-potv">Potvrđeno</span>. U pregledu mjeseca odmah vidite što je ostalo.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="text">
+      <h2>Privatnost</h2>
+      <p>Aplikacija nema prijave ni poslužitelja. Podaci o tvrtkama, obvezama i kontaktima nigdje se ne šalju, nego ostaju samo u pregledniku na uređaju na kojem ih unesete. Javna verzija je prazna: svaki korisnik unosi svoje tvrtke.</p>
+      <h2 style="margin-top:2.4rem">Sigurnosne kopije</h2>
+      <p>Budući da su podaci spremljeni samo u pregledniku, brisanje podataka preglednika briše i cijelu evidenciju. Zato redovito preuzimajte JSON kopiju u kartici „Sigurnosne kopije” i spremite je na sigurno mjesto. Istom kopijom podatke možete prenijeti na drugo računalo ili u drugi preglednik.</p>
+      <h2 style="margin-top:2.4rem">Instalacija na računalo i mobitel</h2>
+      <p>Moje tvrtke se može instalirati kao aplikacija. U Chromeu ili Edgeu na računalu odaberite instalaciju aplikacije iz adresne trake, a na mobitelu „Dodaj na početni zaslon”. Instalirana aplikacija otvara se u vlastitom prozoru i radi i bez interneta.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap text">
+    <p class="note"><strong>Napomena:</strong> aplikacija je pomoćni podsjetnik i ne zamjenjuje provjeru važećih zakonskih rokova. Rokovi i obveze mogu se promijeniti, pa ih uvijek provjerite u propisima i uputama Porezne uprave, FINA-e i drugih nadležnih institucija.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap text">
+    <h2>Česta pitanja</h2>
+    <details><summary>Je li aplikacija besplatna?</summary><p>Da, Moje tvrtke je besplatna i ne traži registraciju.</p></details>
+    <details><summary>Gdje su spremljeni moji podaci?</summary><p>Samo u pregledniku na Vašem uređaju. Nitko drugi, pa ni RetroAppLab, nema pristup Vašim podacima.</p></details>
+    <details><summary>Mogu li koristiti aplikaciju na više računala?</summary><p>Mogu, ali podaci se ne sinkroniziraju sami. Na jednom uređaju preuzmite JSON kopiju, a na drugom je uvezite.</p></details>
+    <details><summary>Što ako obrišem podatke preglednika?</summary><p>Evidencija se briše zajedno s podacima preglednika. Vratiti je možete samo iz JSON kopije, zato je redovito preuzimajte.</p></details>
+  </div>
+</section>
+
+<div class="end">
+  <h2>Sve obveze na jednom mjestu</h2>
+  <p style="margin:.4rem 0 1.4rem;color:var(--muted)">Dodajte prvu tvrtku i pogledajte pregled mjeseca.</p>
+  <a class="cta" href="/moje-tvrtke/">Otvori aplikaciju</a>
+</div>
+
+<footer class="dock">
+  <a class="dock-home" href="/">← RetroAppLab</a>
+  <span class="dock-text">Moje tvrtke je dio RetroAppLaba.</span>
+  <a class="dock-play" href="/moje-tvrtke/">Otvori</a>
+  <nav class="dock-legal" aria-label="O stranici"><a href="/o-nama.html">O nama</a> · <a href="/kontakt.html">Kontakt</a> · <a href="/privatnost.html">Pravila privatnosti</a> · <a href="/uvjeti.html">Uvjeti korištenja</a></nav>
+</footer>
+
+</body>
+</html>
