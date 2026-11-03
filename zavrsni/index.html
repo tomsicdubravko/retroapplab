@@ -1590,6 +1590,30 @@ function parsePspnet(lines) {
 }
 
 
+
+function parseIntegratorPdf(lines) {
+  let firm = '', od = '', doo = '', total = null;
+  const AMT = /^-?\d{1,3}(?:\.\d{3})*,\d{2}$/;
+  const cand = [];
+  for (const raw of lines) {
+    const ln = raw.replace(/\s+/g, ' ').trim();
+    if (!ln) continue;
+    let m;
+    if (!firm && /d\.o\.o\.|d\.d\.|j\.d\.o\.o\./i.test(ln) && !/^\d/.test(ln)) firm = ln.replace(/\s*Str\.\s*\d+\s*$/i, '').trim();
+    if ((m = ln.match(/razdoblje\s+od\s*(\d{1,2}\.\d{1,2}\.\d{4})\.?\s*do\s*(\d{1,2}\.\d{1,2}\.\d{4})/i))) { od = m[1]; doo = m[2]; }
+    if (/^UKUPNO/i.test(ln)) { const n = ln.split(' ').filter(x => AMT.test(x)).map(toN); if (n.length >= 2) total = [0, 0, n[0], n[1], n[0], n[1]]; continue; }
+    if (!(m = ln.match(/^(\d+)(?:\s*\/\s*(\d+))?\s+(.*)$/))) continue;
+    const toks = m[3].split(' '), i0 = toks.findIndex(x => AMT.test(x));
+    if (i0 < 0) continue;
+    const nums = toks.slice(i0).filter(x => AMT.test(x)).map(toN);
+    if (nums.length < 2) continue;
+    const isA = m[2] !== undefined, k = isA ? m[1] + m[2].padStart(3, '0') : m[1];
+    cand.push({ isA, syn: m[1], k, name: toks.slice(0, i0).join(' ').trim(), v: [0, 0, nums[0], nums[1], nums[0], nums[1]] });
+  }
+  const leaves = cand.filter(c => c.isA || !cand.some(o => o !== c && (o.isA ? o.syn.startsWith(c.k) : (o.k.length > c.k.length && o.k.startsWith(c.k)))));
+  return { firm, od, do: doo, leaves: leaves.map(({ k, name, v }) => ({ k, name, v })), total };
+}
+
 function parseExcelBB(wb) {
   const ws = wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '' });
@@ -1637,9 +1661,9 @@ function buildImport() {
     try {
       let parsed;
       if (/\.xlsx?$/i.test(f.name)) { await loadXlsx(); parsed = parseExcelBB(XLSX.read(new Uint8Array(await f.arrayBuffer()), { type: 'array' })); }
-      else parsed = parsePspnet(await pdfLines(f));
+      else { const ls = await pdfLines(f); parsed = ls.some(l => /Analiti[čc]ka bilanca za razdoblje/i.test(l)) ? Object.assign(parseIntegratorPdf(ls), { profile: 'integrator' }) : parsePspnet(ls); }
       if (!parsed.leaves.length) throw new Error('U datoteci nisam našao nijedan konto. Je li to bruto bilanca?');
-      BB = { file: f.name, ...parsed, profile: /\.xlsx?$/i.test(f.name) ? 'integrator' : 'pspnet' }; saveBB(); setProfile(BB.profile);
+      BB = { file: f.name, ...parsed, profile: parsed.profile || (/\.xlsx?$/i.test(f.name) ? 'integrator' : 'pspnet') }; saveBB(); setProfile(BB.profile);
       if (!E.inputs['RefStr!C29'] && parsed.firm) { E.setInput('RefStr!C29', parsed.firm); saveState(); renderHeader(); }
       msg.textContent = '';
       render();
