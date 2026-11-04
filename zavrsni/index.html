@@ -1375,10 +1375,13 @@ function xmlBox(kind) {
 }
 
 // ---------- Temeljnica ----------
+const TEM_INTEGRATOR = { '461300': '461/200', '265200': '265/200', '162600': '162/500', '462000': '462/300', '265500': '265/100', '162500': '162/300', '261000': '261/000', '161400': '161/000' };
 function buildTem() {
   const rows = [];
   for (let r = 3; r <= 14; r++) {
-    const tr = h('tr', {}, h('td', {}, calcEl('TEM!A' + r, 'text', true)), h('td', { style: 'width:110px' }, calcEl('TEM!D' + r, 'text', true)),
+    const dEl = calcEl('TEM!D' + r, 'text', true);
+    hooks.push(() => { if (PROFILE !== 'integrator') return; const k = dEl.textContent.trim(); if (TEM_INTEGRATOR[k]) dEl.textContent = TEM_INTEGRATOR[k]; });
+    const tr = h('tr', {}, h('td', {}, calcEl('TEM!A' + r, 'text', true)), h('td', { style: 'width:110px' }, dEl),
       h('td', { class: 'v' }, calcEl('TEM!F' + r, null, true)), h('td', { class: 'v' }, calcEl('TEM!I' + r, null, true)));
     hooks.push(() => { const f = E.num('TEM!F' + r) || 0, i = E.num('TEM!I' + r) || 0; tr.className = Math.abs(f) < 0.005 && Math.abs(i) < 0.005 ? 'dim' : ''; });
     rows.push(tr);
@@ -1479,26 +1482,59 @@ setTimeout(() => { if (BB && BB.profile && BB.profile !== 'pspnet') { setProfile
 // ---------- Program iz kojeg je bilanca (svaki ima svoja pravila) ----------
 let PROFILE = 'pspnet';
 const PROFILE_NAMES = { pspnet: 'PSPnet', integrator: 'Integrator' };
-const INTEGRATOR_EXTRA = [['020', 'Bilanca!J20'], ['0290', 'Bilanca!J20'], ['021', 'Bilanca!J21'], ['0291', 'Bilanca!J21'], ['022', 'Bilanca!J22'], ['0292', 'Bilanca!J22'], ['023', 'Bilanca!J23'], ['0293', 'Bilanca!J23'], ['11', 'Bilanca!J71'], ['131', 'Bilanca!K59'], ['165', 'Bilanca!J58'], ['231', 'Bilanca!J133'], ['63', 'Bilanca!J49'], ['913', 'Bilanca!J77'], ['930', 'Bilanca!J94'], ['936', 'Bilanca!J94'], ['941', 'Bilanca!J113'], ['942', 'Bilanca!J112'], ['947', 'Bilanca!J117'], ['4620', 'RDG!K25'], ['763', 'RDG!J13'], ['721', 'RDG!J51'], ['49', ''], ['70', ''], ['79', ''], ['82', '']];
+const INTEGRATOR_MAP = [ // Integrator (stari kontni plan) – vidi Integrator_mapiranje_GFI.xlsx
+  ['000', 'Bilanca!J17'], ['002', 'Bilanca!J13'], ['003', 'Bilanca!J13'], ['005', 'Bilanca!J16'], ['009', 'Bilanca!J13'], ['0093', 'Bilanca!J17'],
+  ['010', 'Bilanca!J19'], ['020', 'Bilanca!J20'], ['021', 'Bilanca!J21'], ['022', 'Bilanca!J22'], ['023', 'Bilanca!J23'], ['024', 'Bilanca!J26'], ['025', 'Bilanca!J25'], ['026', 'Bilanca!J24'],
+  ['029', 'Bilanca!J21'], ['0290', 'Bilanca!J20'], ['0292', 'Bilanca!J22'], ['0293', 'Bilanca!J22'], ['0294', 'Bilanca!J22'], ['0295', 'Bilanca!J23'], ['0296', 'Bilanca!J26'], ['0297', 'Bilanca!J13'],
+  ['040', 'Bilanca!J29'], ['043', 'Bilanca!J36'], ['048', 'Bilanca!J38'], ['060', 'Bilanca!J9'], ['090', 'Bilanca!J95'],
+  ['10', 'Bilanca!J71'], ['11', 'Bilanca!J71'], ['114', 'Bilanca!J60'], ['117', 'Bilanca!J60'], ['12', 'Bilanca!J57'], ['13', 'Bilanca!J60'],
+  ['151', 'Bilanca!J64'], ['152', 'Bilanca!J69'], ['156', 'Bilanca!J60'], ['157', 'Bilanca!J69'], ['16', 'Bilanca!J60'], ['160', 'Bilanca!K59'], ['161', 'Bilanca!K59'], ['162', 'Bilanca!K59'],
+  ['165', 'Bilanca!J58'], ['18', 'Bilanca!K59'], ['19', 'Bilanca!J72'],
+  ['22', 'Bilanca!J127'], ['23', 'Bilanca!J133'], ['244', 'Bilanca!J127'], ['247', 'Bilanca!J133'], ['247100', 'Bilanca!K130'],
+  ['250', 'Bilanca!J121'], ['251', 'Bilanca!J125'], ['252', 'Bilanca!J124'], ['256', 'Bilanca!J124'], ['257', 'Bilanca!J124'],
+  ['26', 'Bilanca!K130'], ['263', 'Bilanca!J129'], ['263600', 'Bilanca!J133'], ['266400', 'Bilanca!J133'], ['268', 'Bilanca!J125'], ['269', 'Bilanca!J133'],
+  ['27', 'Bilanca!K130'], ['270', 'Bilanca!J129'], ['271', 'Bilanca!J129'], ['271100', 'Bilanca!J133'], ['28', 'Bilanca!K130'], ['29', 'Bilanca!J134'],
+  ['31', 'Bilanca!J47'], ['35', 'Bilanca!J47'], ['60', 'Bilanca!J48'], ['63', 'Bilanca!J49'], ['65', 'Bilanca!J50'], ['66', 'Bilanca!J50'], ['67', 'Bilanca!J51'],
+  ['40', 'RDG!J17'], ['41', 'RDG!J19'], ['42', 'RDG!J19'], ['421', 'RDG!K25'], ['423', 'RDG!K25'], ['426', 'RDG!K25'], ['428', 'RDG!K25'],
+  ['43', 'RDG!J24'], ['44', 'RDG!K25'], ['444', 'RDG!J19'], ['46', 'RDG!K25'], ['461200', 'ČLANARINE!K76'], ['462300', 'ČLANARINE!J29'],
+  ['47', 'RDG!J21'], ['470200', 'RDG!J22'], ['470300', 'RDG!J22'], ['471', 'RDG!J22'], ['472', 'RDG!J23'],
+  ['49', ''], ['70', ''], ['71', 'RDG!J18'], ['721', 'RDG!J51'], ['724', 'RDG!J51'], ['725', 'RDG!J52'], ['727', 'RDG!J55'],
+  ['73', 'RDG!J36'], ['731', 'RDG!K25'], ['736', 'RDG!J28'],
+  ['75', 'RDG!J10'], ['76', 'RDG!J10'], ['763', 'RDG!J13'], ['771', 'RDG!J44'], ['775', 'RDG!J45'], ['77', 'RDG!J47'], ['78', 'RDG!J13'], ['79', ''], ['8', ''],
+  ['91', 'Bilanca!J77'], ['929', 'Bilanca!J84'], ['929000', 'Bilanca!J78'], ['929100', 'Bilanca!J78'],
+  ['930', 'Bilanca!J94'], ['930100', 'Bilanca!J95'], ['936', 'Bilanca!J94'], ['939', 'Bilanca!J95'],
+  ['940', 'Bilanca!J113'], ['940200', 'Bilanca!J112'], ['941', 'Bilanca!J113'], ['942', 'Bilanca!J112'], ['943', 'Bilanca!J113'], ['944', 'Bilanca!J113'],
+  ['9442', 'Bilanca!J112'], ['9443', 'Bilanca!J112'], ['9444', 'Bilanca!J112'], ['947', 'Bilanca!J117'], ['949', 'Bilanca!J112'],
+];
+// isti broj konta u različitim kontnim planovima Integratora znači različito – presuđuje naziv konta
+const INTEGRATOR_NAME_RULES = [[/^029/, /vinogr|nasad/i, 'Bilanca!J23'], [/^25/, /predujm/i, 'Bilanca!J126'], [/^94/, /predujm/i, 'Bilanca!J114']];
+const INTEGRATOR_MAP2 = [['401', 'Dodatni!J50'], ['418000', 'Dodatni!J51'], ['412200', 'Dodatni!J58'], ['415100', 'Dodatni!J56'], ['415101', 'Dodatni!J56'], ['422200', 'Dodatni!J57'], ['423', 'Dodatni!J60'],
+  ['464', 'Dodatni!J62'], ['468', 'Dodatni!J62'], ['449100', 'Dodatni!J62'], ['44', 'Dodatni!J65'], ['442', ''], ['444', ''], ['448', 'Dodatni!J63'], ['449', ''],
+  ['763', 'Dodatni!J43'], ['757', 'Dodatni!J45'], ['771', 'Dodatni!J73'], ['721', 'Dodatni!J76'], ['724', 'Dodatni!J76']];
+const INTEGRATOR_PD = [{ r: 6, konta: '442000-999', naziv: 'Reprezentacija' }];
+const INTEGRATOR_MAP_V = 2;
 function defaultMapFor(p) {
-  const base = DEFAULT_MAP.map(x => x.slice());
-  if (p !== 'integrator') return base;
-  return base.filter(x => !INTEGRATOR_EXTRA.some(y => y[0] === x[0])).concat(INTEGRATOR_EXTRA.map(x => x.slice()));
+  if (p === 'integrator') return INTEGRATOR_MAP.map(x => x.slice());
+  return DEFAULT_MAP.map(x => x.slice());
 }
-const defaultMap2For = () => DEFAULT_MAP2.map(x => x.slice());
+const defaultMap2For = (p) => (p === 'integrator' ? INTEGRATOR_MAP2 : DEFAULT_MAP2).map(x => x.slice());
 const pkey = (base) => PROFILE === 'pspnet' ? base : base + ':' + PROFILE;
 function setProfile(p) {
   if (!p || !PROFILE_NAMES[p] || p === PROFILE) return;
   PROFILE = p;
   let m = null, m2 = null;
   try { m = JSON.parse(localStorage.getItem(pkey(MAP_STORE)) || 'null'); m2 = JSON.parse(localStorage.getItem(pkey(MAP2_STORE)) || 'null'); } catch (e) {}
+  if (p === 'integrator') { let v = 0; try { v = +(localStorage.getItem(pkey(MAP_STORE) + ':v') || 0); } catch (e) {}
+    if (v < INTEGRATOR_MAP_V) { m = null; m2 = null; try { localStorage.removeItem(pkey(MAP_STORE)); localStorage.removeItem(pkey(MAP2_STORE)); localStorage.setItem(pkey(MAP_STORE) + ':v', String(INTEGRATOR_MAP_V)); } catch (e) {} } }
   MAP = Array.isArray(m) ? m : defaultMapFor(p);
   MAP2 = Array.isArray(m2) ? m2 : defaultMap2For(p);
 }
 const saveMap = () => { try { localStorage.setItem(pkey(MAP_STORE), JSON.stringify(MAP)); } catch (e) {} };
 const saveBB = () => { try { localStorage.setItem(BB_STORE, JSON.stringify(BB)); } catch (e) {} };
 
-function ruleFor(konto, map = MAP) {
+function ruleFor(konto, map = MAP, name) {
+  if (name && map === MAP && PROFILE === 'integrator' && !map.some(r => r[0] === konto))
+    for (const [kr, nr, t] of INTEGRATOR_NAME_RULES) if (kr.test(konto) && nr.test(name)) return [konto, t, 'naziv'];
   let best = null;
   for (const r of map) if (r[0] && konto.startsWith(r[0]) && (!best || r[0].length > best[0].length)) best = r;
   return best;
@@ -1524,7 +1560,7 @@ function computeTransfer() {
   if (!BB) return { sums, unmapped };
   for (const l of BB.leaves) {
     if (l.k.startsWith('99')) continue;
-    const rule = ruleFor(l.k);
+    const rule = ruleFor(l.k, MAP, l.name);
     if (rule && rule[1] === '') continue;
     if (!rule || !TARGET[rule[1]]) { if (Math.abs(l.v[4] - l.v[5]) > 0.004) unmapped.push(l); continue; }
     sums[rule[1]] = (sums[rule[1]] || 0) + leafValue(l, rule[1]);
@@ -1533,6 +1569,10 @@ function computeTransfer() {
     const rule = ruleFor(l.k, MAP2);
     if (rule && TARGET[rule[1]]) sums[rule[1]] = (sums[rule[1]] || 0) + leafValue(l, rule[1]);
   }
+  // stari kontni plan (Integrator): troškovi su po prirodi u razredu 4, pa se promjena zaliha
+  // proizvodnje i gotovih proizvoda računa iz razlike stanja (prošla godina − tekuća)
+  if (PROFILE === 'integrator' && BB.leaves.some(l => /^6[03]/.test(l.k)) && Math.abs(E.num('Bilanca!I73') || 0) > 0.004)
+    sums['RDG!J15'] = (E.num('Bilanca!I48') || 0) + (E.num('Bilanca!I49') || 0) - (sums['Bilanca!J48'] || 0) - (sums['Bilanca!J49'] || 0);
   for (const k in sums) sums[k] = r2(sums[k]);
   return { sums, unmapped };
 }
@@ -1682,7 +1722,7 @@ function buildImport() {
 
   function render() {
     body.replaceChildren();
-    if (!BB) { body.append(h('p', { class: 'note', style: 'border:none;padding:0' }, 'Još nije učitana nijedna bilanca. Za sada je podržan ispis bilance analitike iz PSPnet-a.')); rules.replaceChildren(...mapEditor()); return; }
+    if (!BB) { body.append(h('p', { class: 'note', style: 'border:none;padding:0' }, 'Još nije učitana nijedna bilanca. Podržani su PSPnet (bilanca analitike, PDF) i Integrator (analitička bilanca, PDF ili Excel).')); rules.replaceChildren(...mapEditor()); return; }
     const sum = [0, 0, 0, 0, 0, 0]; BB.leaves.forEach(l => l.v.forEach((x, i) => sum[i] += x));
     const ok = BB.total && [0, 1, 2, 3, 4, 5].every(i => Math.abs(r2(sum[i]) - BB.total[i]) < 0.01);
     const { sums, unmapped } = computeTransfer();
@@ -1690,7 +1730,7 @@ function buildImport() {
     const doneTop = h('span', { class: 'okline', style: 'margin:0' });
     const transfer = async () => {
       if (!(await requireLicence())) return; 
-      const used = new Set([...MAP, ...MAP2, ...Object.keys(PROFILE_NAMES).flatMap(p => defaultMapFor(p))].map(r => r[1]).filter(k => TARGET[k]));
+      const used = new Set([...MAP, ...MAP2, ...Object.keys(PROFILE_NAMES).flatMap(p => defaultMapFor(p).concat(defaultMap2For(p)))].map(r => r[1]).concat(['RDG!J15'].filter(k => PROFILE === 'integrator' || sums[k] !== undefined)).filter(k => TARGET[k]));
       for (const k of used) E.setInput(k, sums[k] ? sums[k] : '');
       for (const k of used) E.setInput('_auto:' + k, sums[k] ? sums[k] : '');
       const pdAuto = pdFromBB();
@@ -1722,12 +1762,12 @@ function buildImport() {
         doneTop)));
 
     const kRow = (l) => {
-      const rule = ruleFor(l.k), tk = rule && rule[1];
+      const rule = ruleFor(l.k, MAP, l.name), tk = rule && rule[1];
       const val = tk && TARGET[tk] ? leafValue(l, tk) : l.v[4] - l.v[5];
       const sel = targetSelect(tk || '', (v) => { MAP = MAP.filter(r => r[0] !== l.k); if (v && v !== (rule && rule[1])) MAP.push([l.k, v]); saveMap(); render(); });
       const nil = Math.abs(l.v[4] - l.v[5]) < 0.005;
       return h('tr', { class: tk ? (nil ? 'dim' : '') : (nil ? 'dim' : 'warn') }, h('td', { class: 'aop', style: 'width:72px' }, l.k), h('td', {}, l.name), h('td', { class: 'v' }, h('span', { class: 'calc' }, fmt(val))),
-        h('td', { style: 'min-width:260px' }, sel, rule && rule[0] !== l.k ? h('div', { class: 'adj', style: 'justify-content:flex-start' }, 'pravilo: konta ' + rule[0] + '…') : null,
+        h('td', { style: 'min-width:260px' }, sel, rule && rule[2] === 'naziv' ? h('div', { class: 'adj', style: 'justify-content:flex-start' }, 'prema nazivu konta') : rule && rule[0] !== l.k ? h('div', { class: 'adj', style: 'justify-content:flex-start' }, 'pravilo: konta ' + rule[0] + '…') : null,
           (() => { const r2_ = ruleFor(l.k, MAP2); return r2_ && TARGET[r2_[1]] ? h('div', { class: 'adj', style: 'justify-content:flex-start' }, '+ ' + TARGET[r2_[1]].label) : null; })()));
     };
     const isRdg = (l) => '47'.includes(l.k[0]);
@@ -2603,16 +2643,18 @@ function kontaMatch(spec, k) {
   }
   return false;
 }
-const KAZNE_KONTA = '735000 735100';
+const KAZNE_KONTA_PSP = '735000 735100';
+const kazneKonta = () => PROFILE === 'integrator' ? '735000' : KAZNE_KONTA_PSP;
+const pdHelperRows = () => PROFILE === 'integrator' ? INTEGRATOR_PD : M.pdHelper;
 function pdSourceRows() {
   if (!BB || !BB.leaves) return [];
   const rows = [], seen = new Set(), sal = (l) => Math.round(((l.v[4] || 0) - (l.v[5] || 0)) * 100) / 100;
-  for (const r of M.pdHelper) {
+  for (const r of pdHelperRows()) {
     if (r.r === 8 || r.r === 10) continue;
     for (const l of BB.leaves) if (!seen.has(l.k) && kontaMatch(r.konta, l.k)) { seen.add(l.k); if (sal(l)) rows.push([r.naziv, l.k, l.name, sal(l), 'r.br. 7']); }
   }
   for (const row of rows) { if (row[0] === 'Reprezentacija') row[4] = 'r.br. 6'; if (row[0] === 'Nepriznati') row[4] = 'r.br. 24'; }
-  for (const l of BB.leaves) if (kontaMatch(KAZNE_KONTA, l.k) && sal(l)) rows.push(['Kazne', l.k, l.name, sal(l), 'r.br. 11']);
+  for (const l of BB.leaves) if (kontaMatch(kazneKonta(), l.k) && sal(l)) rows.push(['Kazne', l.k, l.name, sal(l), 'r.br. 11']);
   return rows;
 }
 function pdSourceBox() {
@@ -2622,11 +2664,11 @@ function pdSourceBox() {
     const kr = rows.filter(r => r[0] === 'Kazne'), ks = kr.reduce((s, r) => s + r[3], 0);
     kz.replaceChildren(simpleTable([['Konto'], ['Naziv konta'], ['Iznos', 'n']],
       kr.length ? [...kr.map(r => h('tr', {}, h('td', {}, r[1]), h('td', {}, r[2]), h('td', { class: 'v', style: 'text-align:right;padding-right:14px' }, fmt(r[3])))), h('tr', { class: 'sum' }, h('td', {}), h('td', {}, h('b', {}, 'Ukupno → r.br. 11.')), h('td', { class: 'v', style: 'text-align:right;padding-right:14px' }, h('b', {}, fmt(ks))))]
-        : [h('tr', {}, h('td', { colspan: 3, style: 'color:var(--muted)' }, BB ? 'U bruto bilanci nema iznosa na kontima ' + KAZNE_KONTA.replace(' ', ' i ') + '.' : 'Bruto bilanca još nije učitana.'))]));
+        : [h('tr', {}, h('td', { colspan: 3, style: 'color:var(--muted)' }, BB ? 'U bruto bilanci nema iznosa na kontima ' + kazneKonta().replace(' ', ' i ') + '.' : 'Bruto bilanca još nije učitana.'))]));
     all.replaceChildren(rows.length ? simpleTable([['Vrsta troška'], ['Konto'], ['Naziv konta'], ['Iznos', 'n'], ['Ide u']], rows.map(r => h('tr', {}, h('td', {}, r[0]), h('td', {}, r[1]), h('td', {}, r[2]), h('td', { class: 'v', style: 'text-align:right;padding-right:14px' }, fmt(r[3])), h('td', {}, r[4]))))
       : h('p', { class: 'lead' }, BB ? 'Iz bruto bilance nije povučen nijedan nepriznati trošak.' : 'Bruto bilanca još nije učitana.'));
   });
-  return [h('h2', {}, 'Kazne'), h('p', { class: 'lead' }, 'Konta ' + KAZNE_KONTA.replace(' ', ' i ') + ' iz bruto bilance. Zbroj se kod prijenosa bilance upisuje u r.br. 11. (troškovi kazni za prekršaje i prijestupe).'), kz,
+  return [h('h2', {}, 'Kazne'), h('p', { class: 'lead' }, 'Konta ' + kazneKonta().replace(' ', ' i ') + ' iz bruto bilance. Zbroj se kod prijenosa bilance upisuje u r.br. 11. (troškovi kazni za prekršaje i prijestupe).'), kz,
     h('details', { class: 'sheet kdet' }, h('summary', {}, 'Što je povučeno iz bruto bilance u PD'), h('div', { style: 'padding:0 14px 10px' }, all))];
 }
 function pdFromBB() {
@@ -2637,13 +2679,13 @@ function pdFromBB() {
     if (v) { E.setInput(key, v); E.setInput('_auto:' + key, v); out.push([label, v]); }
     else if (prevAuto !== undefined && prevAuto !== '' && Math.abs(Number(prevAuto) - Number(E.inputs[key] || 0)) < 0.005) { E.setInput(key, ''); E.setInput('_auto:' + key, ''); }
   };
-  for (const r of M.pdHelper) {
+  for (const r of pdHelperRows()) {
     if (r.r === 8 || r.r === 10) continue;
     const ls = BB.leaves.filter(l => !seen.has(l.k) && kontaMatch(r.konta, l.k));
     ls.forEach(l => seen.add(l.k));
     put('PD!V' + r.r, ls.reduce((s, l) => s + sal(l), 0), r.naziv);
   }
-  put('PD!Q16', BB.leaves.filter(l => kontaMatch(KAZNE_KONTA, l.k)).reduce((s, l) => s + sal(l), 0), 'Kazne (r.br. 11.)');
+  put('PD!Q16', BB.leaves.filter(l => kontaMatch(kazneKonta(), l.k)).reduce((s, l) => s + sal(l), 0), 'Kazne (r.br. 11.)');
   return out;
 }
 
