@@ -1153,7 +1153,8 @@ function prevPdBox() {
 let _u47busy = false;
 function autoU47() {
   if (_u47busy || E.inputs['_u47manual']) return;
-  let tot = Number(E.num('PD!Q98')) || 0; for (let r = 89; r <= 94; r++) tot += Number(E.num('PD!Q' + r)) || 0;
+  // tablica je kumulativna: svaki redak preuzima ostatak prethodnog, pa je ukupni preneseni gubitak u zadnjem retku prošle godine
+  let tot = Number(E.num('PD!Q98')) || 0;
   const v = Math.round(tot * 100) / 100, cur = Number(E.inputs['PD!U47'] || 0);
   if (Math.abs(v - cur) > 0.004) { _u47busy = true; E.setInput('PD!U47', v || ''); saveState(); setTimeout(() => { recalc(); for (const x of numInputs) x.show(); _u47busy = false; }, 0); }
 }
@@ -1655,6 +1656,7 @@ function buildImport() {
   const body = h('div');
   const rules = h('div', { style: 'margin-top:22px' });
   let autoXfer = null;
+  window.__renderImport = () => render();
   async function handle(f) {
     if (!f) return; if (!(await requireLicence())) return; 
     msg.textContent = 'Čitam ' + f.name + '…';
@@ -1781,6 +1783,18 @@ async function importPrevGfi(file) {
   const wb = XLSX.read(new Uint8Array(await file.arrayBuffer()), { type: 'array', cellDates: true });
   const report = { set: 0, missing: [], ref: 0, year: null };
   const rs = wb.Sheets['RefStr'];
+  { // novi klijent (drugi OIB): obriši podatke prethodnog klijenta, osim šifri Porezne
+    const nO = rs && rs['C27'] ? String(rs['C27'].v).trim() : '', oO = String(E.inputs['RefStr!C27'] || '').trim();
+    if (nO && oO && nO !== oO) {
+      const keep = {}; for (const k of ['RefStr!PU', 'RefStr!ISP']) if (E.inputs[k]) keep[k] = E.inputs[k];
+      for (const k of Object.keys(E.inputs)) E.setInput(k, '');
+      for (const [k, v] of Object.entries(DEFAULTS)) E.setInput(k, v);
+      for (const [k, v] of Object.entries(keep)) E.setInput(k, v);
+      BB = null; try { localStorage.removeItem(BB_STORE); } catch (e) {}
+      report.newClient = oO;
+      if (typeof window.__renderImport === 'function') window.__renderImport();
+    }
+  }
   if (rs) {
     const val = (a) => { const c = rs[a]; return c && c.v !== undefined && c.v !== '' ? c.v : null; };
     const STR = ['C7', 'N19', 'C21', 'I21', 'L21', 'C23', 'C27', 'H27', 'M27', 'C29', 'F31', 'C33', 'C35', 'L35', 'C37', 'C39', 'C42', 'C44', 'C46', 'M46', 'C50', 'C52', 'B64', 'B66', 'C68', 'C70', 'C72', 'A75'];
@@ -1845,6 +1859,7 @@ function buildPrevImport() {
       lines.push(ok(`Učitana prošla godina: ${r.set} pozicija u Bilanci, RDG-u i Dodatnim podacima`));
       if (r.missing.length) lines.push(h('p', { class: 'pill bad' }, 'Nisam našao: ' + r.missing.join(', ')));
       if (E.inputs['RefStr!C42']) lines.push(ok('Stopa članarine TZ određena prema djelatnosti i sjedištu'));
+      if (r.newClient) lines.unshift(ok('Novi klijent: obrisani su podaci prethodnog klijenta (OIB ' + r.newClient + ')'));
       if (r.loss) lines.push(ok('Preneseni porezni gubici po godinama učitani iz lista PD'));
       if (r.lossErr) lines.push(h('p', { class: 'pill bad' }, 'Gubici iz lista PD: ' + r.lossErr));
       out.replaceChildren(...lines);
