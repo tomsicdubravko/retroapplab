@@ -56,6 +56,8 @@ h1{font-size:24px;margin:0 0 4px}
 .news time{color:var(--muted);font-size:13px}
 .news strong{display:block}
 .news .empty{display:block;color:var(--muted)}
+.news ul.news-l{margin:6px 0 0;padding-left:18px;display:block}
+.news ul.news-l li{display:list-item;padding:1px 0;border:0;grid-template-columns:none}
 .lic{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:14px}
 .lic table{width:100%;border-collapse:collapse}
 .lic td{padding:7px 0;border-bottom:1px solid var(--line)}.lic tr:last-child td{border-bottom:0}
@@ -155,6 +157,7 @@ input,select{font:inherit;font-size:15px;padding:9px 10px;border:1px solid var(-
      <button type="button" data-filter="all" aria-pressed="true">Sve</button>
      <button type="button" data-filter="doh" aria-pressed="false">DOH</button>
      <button type="button" data-filter="zavrsni" aria-pressed="false">Završni račun</button>
+     <button type="button" data-filter="npf" aria-pressed="false">Neprofitne</button>
     </div>
     <ul class="news" id="news-list"></ul>
    </div>
@@ -265,7 +268,7 @@ function renderNews(f) {
   for (const n of list) {
     const s = h('strong', {}, h('span', { class: 'tag' }, (PRODUCTS[n.p] || {}).name || n.p), n.t);
     if (lastSeen && n.d > lastSeen) s.append(h('span', { class: 'fresh' }, 'novo'));
-    ul.append(h('li', {}, h('time', { datetime: n.d }, fmtDate(n.d)), h('div', {}, s, n.x)));
+    ul.append(h('li', {}, h('time', { datetime: n.d }, fmtDate(n.d)), h('div', {}, s, n.x, Array.isArray(n.l) && n.l.length ? h('ul', { class: 'news-l' }, n.l.map(t => h('li', {}, t))) : null)));
   }
 }
 function renderInfo() {
@@ -406,6 +409,7 @@ async function loadAdmin() {
   const { data, error } = await sb.rpc('admin_list');
   if (error) { $('admin-msg').textContent = 'Greška: ' + error.message; return; }
   $('admin-msg').textContent = '';
+  if (location.hash === '#admin' && !loadAdmin.scrolled) { loadAdmin.scrolled = true; setTimeout(() => $('admin').scrollIntoView({ behavior: 'smooth' }), 100); }
   const rows = (data || []).slice().sort((a, b) => String(a.email).localeCompare(String(b.email)) || String(a.product || '').localeCompare(String(b.product || '')));
   tb.replaceChildren(...rows.map(u => {
     const prodSel = h('select', {}, ...LIC_PRODUCTS.map(k => [k, PRODUCTS[k]]).map(([k, P]) => h('option', { value: k, selected: k === u.product }, P.name)));

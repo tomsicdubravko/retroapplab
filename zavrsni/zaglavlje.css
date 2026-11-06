@@ -1,0 +1,83 @@
+/* Zajedničko zaglavlje i podnožje za Obračune: Završni račun (gfi/), DOH (doh/) i Neprofitne (neprofitne.html).
+   Oznake u HTML-u (dodaju ih skripte u alati/):
+   - DOH: data-zg="traka" (tamna traka), data-zg="gumbi" (bijela traka s gumbima), data-zg="kartice"
+   - Završni i Neprofitne: data-zg="blok" (cijelo zaglavlje), unutar njega data-zg-gumbi na retku s gumbima
+   Visine i boju pozadine računa zaglavlje.js (--zg-h1, --zg-h2, --zg-bg, --zg-crta). */
+
+/* --- tamna traka (uzor: zaglavlje DOH-a) --- */
+.obr-traka{background:#182c46;color:#fff;font:14px Arial,Helvetica,sans-serif;padding:28px max(20px,4vw);margin:0;border:0;text-align:left}
+.obr-traka .obr-r1{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.obr-traka .obr-naslov{margin:0 0 10px;font:700 28px/1.2 Arial,Helvetica,sans-serif;letter-spacing:0;color:#fff;text-transform:none}
+.obr-traka .obr-izbornik{flex:none;display:inline-flex;align-items:center;height:38px;padding:0 14px;border:1px solid #fff;border-radius:6px;color:#fff;background:transparent;text-decoration:none;font:14px Arial,Helvetica,sans-serif;white-space:nowrap}
+.obr-traka .obr-izbornik:hover{background:rgba(255,255,255,.12)}
+.obr-traka .obr-izbornik:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.obr-traka .obr-r2{margin:0;line-height:1.6;color:#dce5f0;font-size:14px;font-weight:400;font-style:normal}
+.obr-traka .obr-r2 > *{color:inherit;font:inherit;margin:0}
+.obr-traka .obr-r2 .empty,.obr-traka .obr-r2.empty{font-style:italic}
+.obr-traka .obr-r2 .empty ~ *{display:none}
+.obr-traka .obr-r2 .obr-razd::before{content:" · "}
+.obr-traka .obr-r3,.obr-traka .lic{margin:10px 0 0;font-size:13px;line-height:1.5;color:#dce5f0;white-space:normal;overflow:visible}
+.obr-traka .obr-r3 .user,.obr-traka .lic .user{color:#dce5f0;font-weight:400}
+.obr-traka .obr-r3.warn,.obr-traka .lic.warn,.obr-traka .obr-r3 .warn{color:#ffd27a;font-weight:700}
+.obr-traka .obr-r3 a,.obr-traka .obr-r3 button,.obr-traka .lic a,.obr-traka .lic button{color:#fff;background:none;border:0;padding:0;margin:0;font:inherit;font-size:13px;font-weight:400;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.obr-traka .obr-r3 a:focus-visible,.obr-traka .obr-r3 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media (max-width:600px){.obr-traka{padding:20px}.obr-traka .obr-naslov{font-size:23px}}
+
+/* --- bijela traka s gumbima: isti izgled i visina u sve tri aplikacije (uzor: gumbi DOH-a) --- */
+html .obr-gumbi{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0;padding:16px max(20px,4vw);background:#fff;border-bottom:1px solid #dce2e9;max-width:none}
+html .obr-gumbi button,html .obr-gumbi .btn,html .obr-gumbi .btn:not(.cta),html .obr-gumbi a.btn{font:14px/1.2 Arial,Helvetica,sans-serif;height:38px;margin:0;padding:0 13px;border:1px solid #c2ccda;border-radius:6px;background:#fff;color:#213b5a;display:inline-flex;align-items:center;gap:7px;box-shadow:none;letter-spacing:0;font-weight:400;text-decoration:none;cursor:pointer}
+html .obr-gumbi button:hover,html .obr-gumbi .btn:hover,html .obr-gumbi .btn:not(.cta):hover{background:#eaf0f7;color:#213b5a;border-color:#c2ccda}
+html .obr-gumbi .btn.cta{background:#213b5a;border-color:#213b5a;color:#fff;font-weight:700}
+html .obr-gumbi .btn.cta:hover{background:#2c4b71;color:#fff}
+html .obr-gumbi input:not([type=file]){font:14px Arial,Helvetica,sans-serif;height:38px;padding:0 10px;border:1px solid #aab7c6;border-radius:6px;box-sizing:border-box}
+html .obr-gumbi label{font:14px Arial,Helvetica,sans-serif;color:#1c2635}
+/* Završni i Neprofitne: zaglavlje se slaže kao u DOH-u (tamna traka, bijela traka, kartice) */
+html header[data-zg="blok"]{padding-top:0;border-bottom:0}
+html header[data-zg="blok"],html header[data-zg="blok"] > .bar{display:contents}
+html header[data-zg="blok"] [data-zg-traka]{position:sticky;top:0;z-index:32}
+html header[data-zg="blok"] [data-zg-gumbi]{position:sticky;top:var(--zg-h1,0px);z-index:31}
+html header[data-zg="blok"] > nav{position:sticky;top:calc(var(--zg-h1,0px) + var(--zg-h2,0px));z-index:30;background:var(--zg-bg,#fff);border-bottom:1px solid var(--zg-crta,#dce2e9)}
+/* DOH: kartice i na računalu u jednom redu */
+html [data-zg="kartice"]{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+html [data-zg="kartice"]>*{flex:none}
+@media print{.obr-traka{background:none;color:#000;padding:0 0 8px}.obr-traka .obr-naslov{color:#000;font-size:18px}.obr-traka .obr-r2{color:#000}.obr-traka .obr-izbornik,.obr-traka .obr-r3,.obr-gumbi{display:none!important}}
+
+/* --- fiksno zaglavlje --- */
+html [data-zg="traka"]{position:sticky;top:0;z-index:32}
+html [data-zg="gumbi"]{position:sticky;top:var(--zg-h1,0px);z-index:31}
+html [data-zg="kartice"]{position:sticky;top:calc(var(--zg-h1,0px) + var(--zg-h2,0px));z-index:30;background:#f3f5f8;border-bottom:1px solid #dce2e9}
+
+/* mobitel (uže od 700 px): tamna traka i naslovni dio odlaze sa skrolanjem, gore ostaju samo gumbi i kartice,
+   svaki u jednom redu koji se po potrebi pomiče vodoravno */
+@media (max-width:699.98px){
+  html [data-zg="traka"]{position:static}
+  html [data-zg="gumbi"]{top:0;padding-top:8px;padding-bottom:8px}
+  html [data-zg="kartice"]{top:var(--zg-h2,0px);padding-top:8px;padding-bottom:8px}
+  html [data-zg="gumbi"],html [data-zg="kartice"],html header[data-zg="blok"] [data-zg-gumbi]{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  html [data-zg="gumbi"]>*,html [data-zg="kartice"]>*,html header[data-zg="blok"] [data-zg-gumbi]>*{flex:none}
+  /* Završni i Neprofitne: tamna traka odlazi, gumbi su na vrhu, kartice ispod njih */
+  html header[data-zg="blok"] [data-zg-traka]{position:static}
+  html header[data-zg="blok"] [data-zg-gumbi]{top:0;margin:0;padding:8px 16px}
+  html header[data-zg="blok"] > nav{top:var(--zg-h2,0px)}
+}
+
+/* --- zajedničko podnožje --- */
+.obr-podnozje{background:#182c46;color:#dce5f0;font:13px/1.5 Arial,Helvetica,sans-serif;margin-top:32px;padding:20px max(20px,4vw) calc(20px + env(safe-area-inset-bottom,0px))}
+.obr-podnozje .obr-pod-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;gap:12px 28px;align-items:center}
+.obr-podnozje strong{display:block;color:#fff;font-size:14px}
+.obr-podnozje small{display:block;font-size:11.5px;color:#aebdd0;margin-top:2px}
+.obr-podnozje .obr-pod-s{text-align:center;white-space:nowrap}
+.obr-podnozje .obr-pod-s a{color:#fff;text-decoration:none}
+.obr-podnozje .obr-pod-s a:hover{text-decoration:underline}
+.obr-podnozje .obr-pod-s a:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:2px}
+.obr-podnozje .obr-pod-d{text-align:right}
+@media (max-width:699.98px){
+  .obr-podnozje .obr-pod-in{grid-template-columns:1fr;text-align:center}
+  .obr-podnozje .obr-pod-s,.obr-podnozje .obr-pod-d{text-align:center;white-space:normal}
+}
+
+/* ispis obrazaca, odluka i bilješki: bez podnožja i bez fiksnog zaglavlja */
+@media print{
+  .obr-podnozje{display:none!important}
+  [data-zg],[data-zg-traka],[data-zg-gumbi],header[data-zg] > nav{position:static!important}
+}

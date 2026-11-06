@@ -1,14 +1,66 @@
 {
  "novosti": [
-  {"p": "doh", "d": "2026-11-05", "t": "Zbrojni pregled IP1/IP2 s ePorezne", "x": "Plaće i mirovine za sve isplatitelje iz jednog PDF-a. Mirovina se sama prepoznaje i ide u 4.1.5."},
-  {"p": "doh", "d": "2026-11-05", "t": "Učitavanje IP obrazaca", "x": "Više IP-ova odjednom, s provjerom zbrojeva po mjesecima, OIB-a isplatitelja i identifikatora. Ponovno učitan IP ažurira isti redak."},
-  {"p": "doh", "d": "2026-11-05", "t": "Nova Početna stranica", "x": "Upute, redoslijed rada, stanje obrasca i sva učitavanja iz PDF-a na jednom mjestu."},
-  {"p": "zavrsni", "d": "2026-11-03", "t": "Izvoz u FINA GFI-POD obrazac", "x": "Aplikacija popunjava originalni FINA-in obrazac; sve FINA-ine formule i kontrole ostaju netaknute."},
-  {"p": "zavrsni", "d": "2026-11-03", "t": "FINA kontrole", "x": "Kontrole s FINA-inog lista, s istim brojevima i opisima, javljaju pogreške prije predaje."}
+  {
+   "p": "npf",
+   "d": "2026-11-06",
+   "t": "Neprofitne organizacije, studeni 2026.",
+   "x": "Novi modul uz licencu za Završni račun: godišnji financijski izvještaji neprofitnih organizacija koje vode dvojno knjigovodstvo.",
+   "l": [
+    "Učitavanje prošlogodišnjeg FINA obrasca: zaglavlje i stupac prethodne godine popune se sami.",
+    "Učitavanje bruto bilance iz PSPnet-a (PDF): konta se raspoređuju po računskom planu za neprofitne, Bilanca i PR-RAS-NPF slažu se sami.",
+    "FINA kontrole prije predaje.",
+    "Odluka o usvajanju izvještaja, odluka o višku ili manjku prihoda i bilješke, s izvozom u Word i PDF.",
+    "Ispis Bilance i PR-RAS-a po obrascu.",
+    "Izvoz u originalni FINA obrazac za predaju.",
+    "Spremanje klijenata u mapu na računalu (npr. Radna površina / Neprofitne 2026)."
+   ]
+  },
+  {
+   "p": "doh",
+   "d": "2026-11-05",
+   "t": "Zbrojni pregled IP1/IP2 s ePorezne",
+   "x": "Plaće i mirovine za sve isplatitelje iz jednog PDF-a. Mirovina se sama prepoznaje i ide u 4.1.5."
+  },
+  {
+   "p": "doh",
+   "d": "2026-11-05",
+   "t": "Učitavanje IP obrazaca",
+   "x": "Više IP-ova odjednom, s provjerom zbrojeva po mjesecima, OIB-a isplatitelja i identifikatora. Ponovno učitan IP ažurira isti redak."
+  },
+  {
+   "p": "doh",
+   "d": "2026-11-05",
+   "t": "Nova Početna stranica",
+   "x": "Upute, redoslijed rada, stanje obrasca i sva učitavanja iz PDF-a na jednom mjestu."
+  },
+  {
+   "p": "zavrsni",
+   "d": "2026-11-03",
+   "t": "Izvoz u FINA GFI-POD obrazac",
+   "x": "Aplikacija popunjava originalni FINA-in obrazac; sve FINA-ine formule i kontrole ostaju netaknute."
+  },
+  {
+   "p": "zavrsni",
+   "d": "2026-11-03",
+   "t": "FINA kontrole",
+   "x": "Kontrole s FINA-inog lista, s istim brojevima i opisima, javljaju pogreške prije predaje."
+  }
  ],
  "obavijesti": [
-  {"d": "2026-11-05", "t": "DOH 2026 je dostupan", "x": "Novi program uz isti login. Licenca za DOH je zasebna od završnog računa; bez nje DOH radi kao demo s ručnim unosom."},
-  {"d": "2026-11-05", "t": "Rok za DOH i TZ1", "x": "Za 2026. godinu prijava se predaje do 1. 3. 2027., jer 28. 2. pada u nedjelju."},
-  {"d": "2026-11-03", "t": "Završni račun: odluke i bilješke u pripremi", "x": "Odluke o utvrđivanju GFI-ja i raspodjeli dobiti te bilješke, s izvozom u Word i PDF."}
+  {
+   "d": "2026-11-05",
+   "t": "DOH 2026 je dostupan",
+   "x": "Novi program uz isti login. Licenca za DOH je zasebna od završnog računa; bez nje DOH radi kao demo s ručnim unosom."
+  },
+  {
+   "d": "2026-11-05",
+   "t": "Rok za DOH i TZ1",
+   "x": "Za 2026. godinu prijava se predaje do 1. 3. 2027., jer 28. 2. pada u nedjelju."
+  },
+  {
+   "d": "2026-11-03",
+   "t": "Završni račun: odluke i bilješke u pripremi",
+   "x": "Odluke o utvrđivanju GFI-ja i raspodjeli dobiti te bilješke, s izvozom u Word i PDF."
+  }
  ]
 }
