@@ -8,6 +8,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="zaglavlje.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -138,11 +139,10 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
 </style>
 </head>
 <body>
-<header class="top">
+<header class="top" data-zg="blok">
   <div class="bar">
-    <div class="brand"><h1>Neprofitne organizacije</h1><p id="who">Godišnji financijski izvještaji: Bilanca i PR-RAS-NPF</p><p class="lic" id="hLic"></p></div>
-    <div class="acts">
-      <a class="btn" href="gfi/" title="Završni račun za poduzetnike">← Završni račun (poduzetnici)</a>
+    <div class="obr-traka" data-zg-traka><div class="obr-r1"><h1 class="obr-naslov" id="npfNaslov">Neprofitne organizacije – Bilanca i PR-RAS-NPF</h1><a class="obr-izbornik" href="/zavrsni/">← Izbornik</a></div><p class="obr-r2" id="who">Obveznik još nije upisan</p><p class="lic obr-r3" id="hLic"></p></div>
+    <div class="acts obr-gumbi" data-zg-gumbi>
       <button class="btn" id="saveJson">Spremi u datoteku</button>
       <button class="btn" id="loadBtn">Učitaj</button>
       <input type="file" id="loadJson" accept=".json,application/json" hidden>
@@ -671,7 +671,8 @@ function renderTabs() {
     nav.append(b);
   }
   const R = S.ref;
-  document.getElementById('who').textContent = (R.naziv ? R.naziv + ', ' : '') + 'godina ' + year() + (R.oib ? ', OIB ' + R.oib : '');
+  document.getElementById('npfNaslov').textContent = 'Neprofitne organizacije ' + year() + ' – Bilanca i PR-RAS-NPF';
+  { const w = document.getElementById('who'), kl = [R.naziv, R.oib ? 'OIB ' + R.oib : ''].filter(Boolean); w.textContent = kl.length ? kl.join(' · ') : 'Obveznik još nije upisan'; w.classList.toggle('empty', !kl.length); }
 }
 function render() {
   V = evaluate();
@@ -1013,8 +1014,11 @@ async function checkLicence() {
     return data || { ok: false, reason: 'offline' };
   } catch (e) { return { ok: false, reason: 'offline' }; }
 }
+let IS_ADMIN = false;
+async function checkAdmin() { try { const { data } = await sbClient.rpc('is_admin'); IS_ADMIN = data === true; } catch (e) { IS_ADMIN = false; } renderLicence(); }
 function applyLicence(r) {
   LIC.ok = !!r.ok; LIC.checkedAt = Date.now();
+  if (r.ok && !applyLicence.adminChecked) { applyLicence.adminChecked = true; checkAdmin(); }
   if (r.ok) { LIC.until = r.valid_until; LIC.days = r.days_left; LIC.email = r.email || LIC.email; LIC.demo = false; }
   renderLicence();
 }
@@ -1027,7 +1031,7 @@ function renderLicence() {
     const loc = String(LIC.email || '').split('@')[0];
     if (loc) el.append(h('span', { class: 'user' }, 'Korisnik: ' + loc.slice(0, Math.min(6, Math.max(3, loc.length - 2))) + '*******'), ' · ');
     el.append(LIC.days <= 30 ? `Licenca istječe ${fd(LIC.until)} (za ${LIC.days} dana) – produžite na retroapplab.com` : `Licenca vrijedi do ${fd(LIC.until)}`);
-    el.append(' · ', h('a', { class: 'src', href: './' }, 'Izbornik'));
+    if (IS_ADMIN) el.append(' · ', h('a', { class: 'src', href: '/zavrsni/#admin' }, 'Administracija'));
     el.append(' · ', h('button', { class: 'src', type: 'button', onclick: () => showGate('pwd') }, 'Promijeni lozinku'), ' · ', h('button', { class: 'src', type: 'button', onclick: logout }, 'Odjava'));
   } else {
     el.className = 'lic demo';
@@ -1110,7 +1114,7 @@ function showGate(kind, msg) {
       h('button', { class: 'src', type: 'button', style: 'margin-top:10px', onclick: () => { LIC.demo = true; renderLicence(); hideGate(); } }, 'Isprobaj demo (samo ručni unos)'),
       installBtn(),
       h('p', { class: 'note', style: 'border:none;padding:8px 0 0;text-align:center' }, 'Licenca vrijedi za jedno računalo. Podaci iz bilanci ostaju na Vašem računalu.'),
-      h('a', { href: 'gfi/', style: 'align-self:center;font-size:12px;color:var(--ink2)' }, 'Završni račun (poduzetnici)'));
+      h('a', { href: '/zavrsni/', style: 'align-self:center;font-size:12px;color:var(--ink2)' }, '← Izbornik'));
     setTimeout(() => (em.value ? pw : em).focus(), 50);
   }
   g.replaceChildren(card);
@@ -1154,5 +1158,6 @@ document.getElementById('loadJson').onchange = (e) => { const f = e.target.files
 document.getElementById('newClient').onclick = () => { if (confirm('Obrisati podatke trenutnog klijenta? Prije toga ga možeš spremiti u datoteku.')) { const map = S.map; S = blank(); S.map = map; save(); tab = 'ref'; render(); } };
 render();
 </script>
+<script src="zaglavlje.js" data-app="Neprofitne" data-verzija="2026-11-06"></script>
 </body>
 </html>

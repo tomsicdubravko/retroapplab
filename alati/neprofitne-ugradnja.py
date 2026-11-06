@@ -2,10 +2,12 @@
 # Upotreba: python3 alati/neprofitne-ugradnja.py <nova neprofitne.html> zavrsni/neprofitne.html
 # Logika modula ostaje ista. Dodaje se: manifest i ikone PWA-a, prijava i licenca kao u zavrsni/gfi/index.html
 # (isti Supabase projekt, ista sesija, ista oznaka računala, licenca 'zavrsni'), traka licence s upozorenjem
-# o isteku, gumb "Završni račun (poduzetnici)" i provjera licence prije istih radnji kao u glavnoj aplikaciji
+# o isteku, ujednačeno zaglavlje (tamna traka s gumbom „← Izbornik”, klijent, traka licence) i provjera licence prije istih radnji kao u glavnoj aplikaciji
 # (uvoz datoteka, spremanje i učitavanje klijenta, izvoz u FINA obrazac, Word i PDF odluka/bilješki).
 import sys
 src, out = sys.argv[1:3]
+import datetime
+VER = sys.argv[3] if len(sys.argv) > 3 else datetime.date.today().isoformat()  # verzija u podnožju
 s = open(src, encoding='utf-8').read()
 
 def rep(a, b):
@@ -17,6 +19,7 @@ HEAD = '''<meta name="theme-color" content="#1B4B8D">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="zaglavlje.css">
 '''
 CSS = '''
 /* Prijava i licenca (kao u Završnom računu) */
@@ -75,8 +78,11 @@ async function checkLicence() {
     return data || { ok: false, reason: 'offline' };
   } catch (e) { return { ok: false, reason: 'offline' }; }
 }
+let IS_ADMIN = false;
+async function checkAdmin() { try { const { data } = await sbClient.rpc('is_admin'); IS_ADMIN = data === true; } catch (e) { IS_ADMIN = false; } renderLicence(); }
 function applyLicence(r) {
   LIC.ok = !!r.ok; LIC.checkedAt = Date.now();
+  if (r.ok && !applyLicence.adminChecked) { applyLicence.adminChecked = true; checkAdmin(); }
   if (r.ok) { LIC.until = r.valid_until; LIC.days = r.days_left; LIC.email = r.email || LIC.email; LIC.demo = false; }
   renderLicence();
 }
@@ -89,7 +95,7 @@ function renderLicence() {
     const loc = String(LIC.email || '').split('@')[0];
     if (loc) el.append(h('span', { class: 'user' }, 'Korisnik: ' + loc.slice(0, Math.min(6, Math.max(3, loc.length - 2))) + '*******'), ' · ');
     el.append(LIC.days <= 30 ? `Licenca istječe ${fd(LIC.until)} (za ${LIC.days} dana) – produžite na retroapplab.com` : `Licenca vrijedi do ${fd(LIC.until)}`);
-    el.append(' · ', h('a', { class: 'src', href: './' }, 'Izbornik'));
+    if (IS_ADMIN) el.append(' · ', h('a', { class: 'src', href: '/zavrsni/#admin' }, 'Administracija'));
     el.append(' · ', h('button', { class: 'src', type: 'button', onclick: () => showGate('pwd') }, 'Promijeni lozinku'), ' · ', h('button', { class: 'src', type: 'button', onclick: logout }, 'Odjava'));
   } else {
     el.className = 'lic demo';
@@ -172,7 +178,7 @@ function showGate(kind, msg) {
       h('button', { class: 'src', type: 'button', style: 'margin-top:10px', onclick: () => { LIC.demo = true; renderLicence(); hideGate(); } }, 'Isprobaj demo (samo ručni unos)'),
       installBtn(),
       h('p', { class: 'note', style: 'border:none;padding:8px 0 0;text-align:center' }, 'Licenca vrijedi za jedno računalo. Podaci iz bilanci ostaju na Vašem računalu.'),
-      h('a', { href: 'gfi/', style: 'align-self:center;font-size:12px;color:var(--ink2)' }, 'Završni račun (poduzetnici)'));
+      h('a', { href: '/zavrsni/', style: 'align-self:center;font-size:12px;color:var(--ink2)' }, '← Izbornik'));
     setTimeout(() => (em.value ? pw : em).focus(), 50);
   }
   g.replaceChildren(card);
@@ -223,14 +229,21 @@ rep('<title>Neprofitne organizacije – godišnji financijski izvještaji</title
 # CSS na kraj prvog <style>
 i = s.index('</style>')
 s = s[:i] + CSS + s[i:]
-rep('<p id="who">Godišnji financijski izvještaji: Bilanca i PR-RAS-NPF</p></div>',
-    '<p id="who">Godišnji financijski izvještaji: Bilanca i PR-RAS-NPF</p><p class="lic" id="hLic"></p></div>')
-rep('    <div class="acts">\n      <button class="btn" id="saveJson">',
-    '    <div class="acts">\n      <a class="btn" href="gfi/" title="Završni račun za poduzetnike">← Završni račun (poduzetnici)</a>\n      <button class="btn" id="saveJson">')
+# ujednačena tamna traka (izgled iz DOH-a): naslov s godinom i gumb „← Izbornik”, klijent (naziv · OIB), traka licence
+rep('<div class="brand"><h1>Neprofitne organizacije</h1><p id="who">Godišnji financijski izvještaji: Bilanca i PR-RAS-NPF</p></div>',
+    '<div class="obr-traka" data-zg-traka><div class="obr-r1"><h1 class="obr-naslov" id="npfNaslov">Neprofitne organizacije – Bilanca i PR-RAS-NPF</h1><a class="obr-izbornik" href="/zavrsni/">← Izbornik</a></div><p class="obr-r2" id="who">Obveznik još nije upisan</p><p class="lic obr-r3" id="hLic"></p></div>')
+rep("  document.getElementById('who').textContent = (R.naziv ? R.naziv + ', ' : '') + 'godina ' + year() + (R.oib ? ', OIB ' + R.oib : '');",
+    "  document.getElementById('npfNaslov').textContent = 'Neprofitne organizacije ' + year() + ' – Bilanca i PR-RAS-NPF';\n  { const w = document.getElementById('who'), kl = [R.naziv, R.oib ? 'OIB ' + R.oib : ''].filter(Boolean); w.textContent = kl.length ? kl.join(' · ') : 'Obveznik još nije upisan'; w.classList.toggle('empty', !kl.length); }")
+# bez gumba za prijelaz u Završni: prijelaz ide preko izbornika
 rep("document.getElementById('saveJson').onclick = saveClient;",
     JS.strip('\n') + "\ndocument.getElementById('saveJson').onclick = saveClient;")
 # Supabase knjižnica (ista kao u glavnoj aplikaciji) prije skripte modula
 last = s.rindex('<script>')
 s = s[:last] + '<script src="gfi/vendor/supabase.js"></script>\n' + s[last:]
+# zajedničko zaglavlje (fiksno; na mobitelu naslov odlazi, ostaju gumbi i kartice) i podnožje
+rep('<header class="top">', '<header class="top" data-zg="blok">')
+rep('<div class="acts">', '<div class="acts obr-gumbi" data-zg-gumbi>')
+i = s.rindex('</body>')
+s = s[:i] + '<script src="zaglavlje.js" data-app="Neprofitne" data-verzija="' + VER + '"></script>\n' + s[i:]
 open(out, 'w', encoding='utf-8').write(s)
 print('neprofitne ok', len(s))
