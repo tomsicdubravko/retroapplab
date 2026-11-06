@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Neprofitne organizacije – godišnji financijski izvještaji</title>
+<meta name="theme-color" content="#1B4B8D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d2a3f; --ink2:#4a5770; --paper:#fbfbf8; --sheet:#ffffff; --rule:#d8dce4; --soft:#eef1f5;
+  --auto:#0e6b63; --autobg:#e7f4f2; --man:#a8540a; --manbg:#fdf1e3; --bad:#b42318; --badbg:#fdecea; --ok:#2e7d32; --okbg:#e8f4e9;
+  --sum:#f2f4f7; --accent:#1f4e8c;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e6eaf1; --ink2:#a7b1c2; --paper:#13171e; --sheet:#1a2029; --rule:#2e3644; --soft:#222a35;
+    --auto:#5cc8bb; --autobg:#14302d; --man:#f0a35a; --manbg:#3a2814; --bad:#ff8a80; --badbg:#3b1b1a; --ok:#81c784; --okbg:#1a3320;
+    --sum:#202733; --accent:#8fb6ee; color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select,textarea{font:inherit;color:inherit}
+header.top{position:sticky;top:0;z-index:20;background:var(--sheet);border-bottom:1px solid var(--rule);padding-top:env(safe-area-inset-top,0px)}
+.bar{max-width:1180px;margin:0 auto;padding:12px 20px 0;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.brand{flex:1 1 320px;min-width:0}
+.brand h1{font:500 21px/1.2 "IBM Plex Serif",Georgia,serif;margin:0}
+.brand p{margin:2px 0 0;color:var(--ink2);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acts{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:4px}
+nav.tabs{max-width:1180px;margin:0 auto;padding:10px 20px 0;display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:8px 12px 9px;cursor:pointer;color:var(--ink2);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+nav.tabs .badge{display:inline-block;min-width:18px;padding:0 5px;margin-left:6px;border-radius:9px;font-size:12px;line-height:18px;text-align:center;background:var(--badbg);color:var(--bad);font-weight:600}
+nav.tabs .badge.ok{background:var(--okbg);color:var(--ok)}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+h2{font:500 19px/1.3 "IBM Plex Serif",Georgia,serif;margin:0 0 6px}
+h3{font-size:15px;margin:22px 0 8px}
+.lead{color:var(--ink2);margin:0 0 18px;max-width:72ch}
+.btn{border:1px solid var(--rule);background:var(--sheet);padding:7px 13px;border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--ink2)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.pri{color:#0f1622}}
+.btn:focus-visible,input:focus-visible,select:focus-visible,nav.tabs button:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px 20px}
+.fld label{display:block;font-size:13px;color:var(--ink2);margin-bottom:3px}
+.fld input,.fld select{width:100%;padding:7px 9px;border:1px solid var(--rule);border-radius:6px;background:var(--sheet)}
+.fld .hint{font-size:12.5px;color:var(--ink2);margin-top:3px;min-height:1em}
+.fld.wide{grid-column:1/-1}
+.panel{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:18px 20px;margin-bottom:18px}
+.drop{display:block;border:1.5px dashed var(--rule);border-radius:8px;padding:18px;text-align:center;cursor:pointer;background:var(--soft)}
+.drop.over{border-color:var(--accent)}
+.drop b{display:block}
+.drop span{font-size:13.5px;color:var(--ink2)}
+.msg{margin:10px 0 0;font-size:14px}
+.msg.err{color:var(--bad)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.tools{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:0 0 12px;font-size:14px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px;margin-right:14px}
+.sw{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid var(--rule)}
+.tablewrap{overflow-x:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:8px}
+table.f{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+table.f th{position:sticky;top:0;background:var(--soft);text-align:left;font-weight:600;font-size:12.5px;color:var(--ink2);padding:8px 8px;border-bottom:1px solid var(--rule)}
+table.f td{padding:3px 8px;border-bottom:1px solid var(--rule);vertical-align:middle}
+table.f td.kt{width:62px;color:var(--ink2);font-variant-numeric:tabular-nums}
+table.f td.aop{width:46px;color:var(--ink2);text-align:center;font-variant-numeric:tabular-nums}
+table.f td.num{width:160px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.f td.ix{width:64px;text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums}
+table.f th.r{text-align:right}
+table.f tr.sum td{background:var(--sum);font-weight:600}
+table.f tr.sec td{background:var(--soft);font-weight:600;letter-spacing:.02em;padding:8px}
+table.f tr.lvl1 td.op{font-weight:600}
+table.f.hide0 tr.z{display:none}
+.num-in{width:128px;text-align:right;padding:3px 6px;border:1px solid transparent;border-radius:4px;background:transparent;font-variant-numeric:tabular-nums}
+.num-in:hover{border-color:var(--rule)}
+.num-in.auto{background:var(--autobg);color:var(--auto)}
+.num-in.man{background:var(--manbg);color:var(--man);font-weight:600}
+.num-in.bad{outline:2px solid var(--bad)}
+.rst{border:0;background:none;color:var(--man);cursor:pointer;padding:0 0 0 3px;font-size:14px}
+.chk{list-style:none;padding:0;margin:0}
+.chk li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.chk .st{flex:0 0 96px;font-weight:600;font-size:13.5px}
+.chk .st.ok{color:var(--ok)} .chk .st.err{color:var(--bad)} .chk .st.warn{color:var(--man)}
+.chk .d{flex:1}
+.chk .d small{display:block;color:var(--ink2)}
+table.um{border-collapse:collapse;width:100%;font-size:14px}
+table.um td{padding:5px 6px;border-bottom:1px solid var(--rule)}
+table.um td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.um select{max-width:340px;padding:4px;border:1px solid var(--rule);border-radius:5px;background:var(--sheet)}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;font-size:14px}
+.kv dt{color:var(--ink2)} .kv dd{margin:0;font-variant-numeric:tabular-nums}
+.doc{background:#fff;color:#1a1a1a;border:1px solid var(--rule);border-radius:4px;padding:48px 56px;max-width:820px;margin:0 auto;font:15px/1.55 "IBM Plex Serif",Georgia,serif;min-height:400px}
+.doc h1{font-size:18px;text-align:center;margin:18px 0 2px}
+.doc h2{font-size:15px;text-align:center;margin:0 0 18px;font-weight:500}
+.doc h4{text-align:center;margin:16px 0 6px;font-size:15px}
+.doc table{border-collapse:collapse;width:100%;font-size:13.5px;margin:6px 0 12px}
+.doc th,.doc td{border:1px solid #bbb;padding:3px 6px}
+.doc td.n,.doc th.n{text-align:right;white-space:nowrap}
+.doctabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.doctabs .btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:600}
+.note{font-size:13.5px;color:var(--ink2);border-left:3px solid var(--rule);padding:2px 0 2px 12px;margin:12px 0}
+.sumline{display:flex;gap:24px;flex-wrap:wrap;margin:6px 0 16px;font-size:14px}
+.sumline b{font-variant-numeric:tabular-nums}
+.ok{color:var(--ok)} .err{color:var(--bad)}
+@media print{header.top,nav.tabs,.noprint{display:none!important} main{padding:0} .doc{border:0;padding:0}}
+@media (prefers-reduced-motion:no-preference){.flash{animation:fl 1.2s ease-out}@keyframes fl{from{background:var(--autobg)}to{background:transparent}}}
+
+/* Prijava i licenca (kao u Završnom računu) */
+.lic{margin:4px 0 0;font-size:12px;color:var(--ink2)}
+.brand p.lic{white-space:normal;overflow:visible}
+.lic.warn{color:var(--man);font-weight:600}
+.lic .user{color:var(--ink2)}
+.src{display:inline-block;margin-left:6px;font-size:12px;font-weight:500;color:var(--accent);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+a.btn{text-decoration:none;color:inherit;display:inline-block}
+#gate{position:fixed;inset:0;z-index:100;background:rgba(17,22,28,.55);display:grid;place-items:center;padding:16px;backdrop-filter:blur(3px);overflow-y:auto}
+#gate[hidden]{display:none}
+.gatecard{background:var(--sheet);border-radius:14px;padding:26px 28px;width:min(400px,100%);display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.gatecard img{align-self:center;border-radius:14px}
+.gatecard h2{text-align:center;font-size:20px;margin:0}
+.gatecard .lead{text-align:center;margin:0}
+.gatecard label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2)}
+.gatecard input{border:1px solid var(--rule);background:var(--soft);color:var(--ink);border-radius:6px;padding:9px 10px;font-size:15px}
+.gatecard input:focus{outline:none;border-color:var(--accent);background:var(--sheet)}
+.gatecard .btn.primary{padding:10px;font-size:15px;background:var(--accent);border-color:var(--accent);color:#fff}
+.gatecard .src{align-self:center}
+.gatecard .note{font-size:12.5px;color:var(--ink2)}
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:500}
+.pill.bad{background:var(--badbg);color:var(--bad)}
+.okline{margin:4px 0;color:var(--ok);font-weight:600}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gatecard .btn.primary{color:#0f1622}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <div class="brand"><h1>Neprofitne organizacije</h1><p id="who">Godišnji financijski izvještaji: Bilanca i PR-RAS-NPF</p><p class="lic" id="hLic"></p></div>
+    <div class="acts">
+      <a class="btn" href="gfi/" title="Završni račun za poduzetnike">← Završni račun (poduzetnici)</a>
+      <button class="btn" id="saveJson">Spremi u datoteku</button>
+      <button class="btn" id="loadBtn">Učitaj</button>
+      <input type="file" id="loadJson" accept=".json,application/json" hidden>
+      <button class="btn" id="newClient">Novi klijent</button>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+</header>
+<main id="main"></main>
+
+<script>const STRUCT = {"BIL": [{"r": 18, "h": "IMOVINA"}, {"r": 19, "aop": 1, "k": "", "o": "IMOVINA (AOP 002+074)", "f": "R(v(20)+v(92))"}, {"r": 20, "aop": 2, "k": "0", "o": "Nefinancijska imovina (AOP 003+018+047+051+055+064)", "f": "R(v(21)+v(36)+v(65)+v(69)+v(73)+v(82))"}, {"r": 21, "aop": 3, "k": "01", "o": "Neproizvedena dugotrajna imovina (AOP 004+008-017)", "f": "R(v(22)+v(26)-v(35))"}, {"r": 22, "aop": 4, "k": "011", "o": "Materijalna imovina – prirodna bogatstva (AOP 005 do 007)", "f": "R(S(23,25))"}, {"r": 23, "aop": 5, "k": "0111", "o": "Zemljište"}, {"r": 24, "aop": 6, "k": "0112", "o": "Rudna bogatstva"}, {"r": 25, "aop": 7, "k": "0113", "o": "Ostala prirodna materijalna imovina"}, {"r": 26, "aop": 8, "k": "012", "o": "Nematerijalna imovina (AOP 009 do 016)", "f": "R(S(27,34))"}, {"r": 27, "aop": 9, "k": "0121", "o": "Patenti"}, {"r": 28, "aop": 10, "k": "0122", "o": "Koncesije"}, {"r": 29, "aop": 11, "k": "0123", "o": "Licence"}, {"r": 30, "aop": 12, "k": "0124", "o": "Ostala prava"}, {"r": 31, "aop": 13, "k": "0125", "o": "Goodwill"}, {"r": 32, "aop": 14, "k": "0126", "o": "Osnivački izdaci"}, {"r": 33, "aop": 15, "k": "0127", "o": "Izdaci za razvoj"}, {"r": 34, "aop": 16, "k": "0128", "o": "Ostala nematerijalna imovina"}, {"r": 35, "aop": 17, "k": "019", "o": "Ispravak vrijednosti neproizvedene dugotrajne imovine"}, {"r": 36, "aop": 18, "k": "02", "o": "Proizvedena dugotrajna imovina (AOP 019+023+031+034+039+042-046)", "f": "R(v(37)+v(41)+v(49)+v(52)+v(57)+v(60)-v(64))"}, {"r": 37, "aop": 19, "k": "021", "o": "Građevinski objekti (AOP 020 do 022)", "f": "R(S(38,40))"}, {"r": 38, "aop": 20, "k": "0211", "o": "Stambeni objekti"}, {"r": 39, "aop": 21, "k": "0212", "o": "Poslovni objekti"}, {"r": 40, "aop": 22, "k": "0213", "o": "Ostali građevinski objekti"}, {"r": 41, "aop": 23, "k": "022", "o": "Postrojenja i oprema (AOP 024 do 030)", "f": "R(S(42,48))"}, {"r": 42, "aop": 24, "k": "0221", "o": "Uredska oprema i namještaj"}, {"r": 43, "aop": 25, "k": "0222", "o": "Komunikacijska oprema"}, {"r": 44, "aop": 26, "k": "0223", "o": "Oprema za održavanje i zaštitu"}, {"r": 45, "aop": 27, "k": "0224", "o": "Medicinska i laboratorijska oprema"}, {"r": 46, "aop": 28, "k": "0225", "o": "Instrumenti, uređaji i strojevi"}, {"r": 47, "aop": 29, "k": "0226", "o": "Sportska i glazbena oprema"}, {"r": 48, "aop": 30, "k": "0227", "o": "Uređaji, strojevi i oprema za ostale namjene"}, {"r": 49, "aop": 31, "k": "023", "o": "Prijevozna sredstva (AOP 032+033)", "f": "R(S(50,51))"}, {"r": 50, "aop": 32, "k": "0231", "o": "Prijevozna sredstva u cestovnom prometu"}, {"r": 51, "aop": 33, "k": "0232", "o": "Ostala prijevozna sredstva"}, {"r": 52, "aop": 34, "k": "024", "o": "Knjige, umjetnička djela i ostale izložbene vrijednosti (AOP 035 do 038)", "f": "R(S(53,56))"}, {"r": 53, "aop": 35, "k": "0241", "o": "Knjige u knjižnicama"}, {"r": 54, "aop": 36, "k": "0242", "o": "Umjetnička djela (izložena u galerijama, muzejima i slično)"}, {"r": 55, "aop": 37, "k": "0243", "o": "Muzejski izlošci i predmeti prirodnih rijetkosti"}, {"r": 56, "aop": 38, "k": "0244", "o": "Ostale nespomenute izložbene vrijednosti"}, {"r": 57, "aop": 39, "k": "025", "o": "Višegodišnji nasadi i osnovno stado (AOP 040+041)", "f": "R(S(58,59))"}, {"r": 58, "aop": 40, "k": "0251", "o": "Višegodišnji nasadi"}, {"r": 59, "aop": 41, "k": "0252", "o": "Osnovno stado"}, {"r": 60, "aop": 42, "k": "026", "o": "Nematerijalna proizvedena imovina (AOP 043 do 045)", "f": "R(S(61,63))"}, {"r": 61, "aop": 43, "k": "0261", "o": "Ulaganja u računalne programe"}, {"r": 62, "aop": 44, "k": "0262", "o": "Umjetnička, literarna i znanstvena djela"}, {"r": 63, "aop": 45, "k": "0263", "o": "Ostala nematerijalna proizvedena imovina"}, {"r": 64, "aop": 46, "k": "029", "o": "Ispravak vrijednosti proizvedene dugotrajne imovine"}, {"r": 65, "aop": 47, "k": "03", "o": "Plemeniti metali i ostale pohranjene vrijednosti (AOP 048)", "f": "R(v(66))"}, {"r": 66, "aop": 48, "k": "031", "o": "Plemeniti metali i ostale pohranjene vrijednosti (AOP 049+050)", "f": "R(S(67,68))"}, {"r": 67, "aop": 49, "k": "0311", "o": "Plemeniti metali i drago kamenje"}, {"r": 68, "aop": 50, "k": "0312", "o": "Pohranjene knjige, umjetnička djela i slične vrijednosti"}, {"r": 69, "aop": 51, "k": "04", "o": "Sitni inventar (AOP 052+053-054)", "f": "R(v(70)+v(71)-v(72))"}, {"r": 70, "aop": 52, "k": "041", "o": "Zalihe sitnog inventara"}, {"r": 71, "aop": 53, "k": "042", "o": "Sitni inventar u uporabi"}, {"r": 72, "aop": 54, "k": "049", "o": "Ispravak vrijednosti sitnog inventara"}, {"r": 73, "aop": 55, "k": "05", "o": "Nefinancijska imovina u pripremi (AOP 056 do 059+062+063)", "f": "R(S(74,77)+S(80,81))"}, {"r": 74, "aop": 56, "k": "051", "o": "Građevinski objekti u pripremi"}, {"r": 75, "aop": 57, "k": "052", "o": "Postrojenja i oprema u pripremi"}, {"r": 76, "aop": 58, "k": "053", "o": "Prijevozna sredstva u pripremi"}, {"r": 77, "aop": 59, "k": "054", "o": "Višegodišnji nasadi i osnovno stado u pripremi (AOP 060+061)", "f": "R(S(78,79))"}, {"r": 78, "aop": 60, "k": "0541", "o": "Višegodišnji nasadi u pripremi"}, {"r": 79, "aop": 61, "k": "0542", "o": "Osnovno stado u pripremi"}, {"r": 80, "aop": 62, "k": "055", "o": "Ostala nematerijalna proizvedena imovina u pripremi"}, {"r": 81, "aop": 63, "k": "056", "o": "Ostala nefinancijska imovina u pripremi"}, {"r": 82, "aop": 64, "k": "06", "o": "Proizvedena kratkotrajna imovina (AOP 065+070+073)", "f": "R(v(83)+v(88)+v(91))"}, {"r": 83, "aop": 65, "k": "061", "o": "Zalihe za obavljanje djelatnosti (AOP 066 do 069)", "f": "R(S(84,87))"}, {"r": 84, "aop": 66, "k": "0611", "o": "Zalihe za preraspodjelu drugima"}, {"r": 85, "aop": 67, "k": "0612", "o": "Zalihe materijala za redovne potrebe"}, {"r": 86, "aop": 68, "k": "0613", "o": "Zalihe rezervnih dijelova"}, {"r": 87, "aop": 69, "k": "0614", "o": "Zalihe materijala za posebne potrebe"}, {"r": 88, "aop": 70, "k": "062", "o": "Proizvodnja i proizvodi (AOP 071+072)", "f": "R(S(89,90))"}, {"r": 89, "aop": 71, "k": "0621", "o": "Proizvodnja u tijeku"}, {"r": 90, "aop": 72, "k": "0622", "o": "Gotovi proizvodi"}, {"r": 91, "aop": 73, "k": "063", "o": "Roba za daljnju prodaju"}, {"r": 92, "aop": 74, "k": "1", "o": "Financijska imovina (AOP 075+083+100+105+125+133+142)", "f": "R(v(93)+v(101)+v(118)+v(123)+v(143)+v(151)+v(160))"}, {"r": 93, "aop": 75, "k": "11", "o": "Novac u banci i blagajni (AOP 076+080+081+082)", "f": "R(v(94)+v(98)+v(99)+v(100))"}, {"r": 94, "aop": 76, "k": "111", "o": "Novac u banci (AOP 077 do 079)", "f": "R(S(95,97))"}, {"r": 95, "aop": 77, "k": "1111", "o": "Novac na računu kod tuzemnih poslovnih banaka"}, {"r": 96, "aop": 78, "k": "1112", "o": "Novac na računu kod inozemnih poslovnih banaka"}, {"r": 97, "aop": 79, "k": "1113", "o": "Prijelazni račun"}, {"r": 98, "aop": 80, "k": "112", "o": "Izdvojena novčana sredstva"}, {"r": 99, "aop": 81, "k": "113", "o": "Novac u blagajni"}, {"r": 100, "aop": 82, "k": "114", "o": "Vrijednosnice u blagajni"}, {"r": 101, "aop": 83, "k": "12", "o": "Depoziti, jamčevni polozi i potraživanja od radnika te za više plaćene poreze i ostalo (AOP 084+087+088+089+095)", "f": "R(v(102)+v(105)+v(106)+v(107)+v(113))"}, {"r": 102, "aop": 84, "k": "121", "o": "Depoziti u bankama i ostalim financijskim institucijama (AOP 085+086)", "f": "R(S(103,104))"}, {"r": 103, "aop": 85, "k": "1211", "o": "Depoziti u tuzemnim bankama i ostalim financijskim institucijama"}, {"r": 104, "aop": 86, "k": "1212", "o": "Depoziti u inozemnim bankama i ostalim financijskim institucijama"}, {"r": 105, "aop": 87, "k": "122", "o": "Jamčevni polozi"}, {"r": 106, "aop": 88, "k": "123", "o": "Potraživanja od radnika"}, {"r": 107, "aop": 89, "k": "124", "o": "Potraživanja za više plaćene poreze i doprinose (AOP 090 do 094)", "f": "R(S(108,112))"}, {"r": 108, "aop": 90, "k": "1241", "o": "Potraživanje za više plaćene poreze"}, {"r": 109, "aop": 91, "k": "1242", "o": "Potraživanja za porez na dodanu vrijednost kod obveznika"}, {"r": 110, "aop": 92, "k": "1243", "o": "Potraživanja za više plaćene carine i carinske pristojbe"}, {"r": 111, "aop": 93, "k": "1244", "o": "Potraživanja za više plaćene ostale poreze"}, {"r": 112, "aop": 94, "k": "1245", "o": "Potraživanja za više plaćene doprinose"}, {"r": 113, "aop": 95, "k": "129", "o": "Ostala potraživanja (AOP 096 do 099)", "f": "R(S(114,117))"}, {"r": 114, "aop": 96, "k": "1291", "o": "Potraživanja za naknade koje se refundiraju"}, {"r": 115, "aop": 97, "k": "1292", "o": "Potraživanja za naknade štete"}, {"r": 116, "aop": 98, "k": "1293", "o": "Potraživanja za predujmove"}, {"r": 117, "aop": 99, "k": "1294", "o": "Ostala nespomenuta potraživanja"}, {"r": 118, "aop": 100, "k": "13", "o": "Zajmovi (AOP 101+102+103-104)", "f": "R(S(119,121)-v(122))"}, {"r": 119, "aop": 101, "k": "131", "o": "Zajmovi građanima i kućanstvima"}, {"r": 120, "aop": 102, "k": "132", "o": "Zajmovi pravnim osobama koji obavljaju poduzetničku djelatnost"}, {"r": 121, "aop": 103, "k": "133", "o": "Zajmovi ostalim subjektima"}, {"r": 122, "aop": 104, "k": "139", "o": "Ispravak vrijednosti danih zajmova"}, {"r": 123, "aop": 105, "k": "14", "o": "Vrijednosni papiri (AOP 106+109+112+115+118+121-124)", "f": "R(v(124)+v(127)+v(130)+v(133)+v(136)+v(139)-v(142))"}, {"r": 124, "aop": 106, "k": "141", "o": "Čekovi (AOP 107+108)", "f": "R(S(125,126))"}, {"r": 125, "aop": 107, "k": "1411", "o": "Čekovi-tuzemni"}, {"r": 126, "aop": 108, "k": "1412", "o": "Čekovi-inozemni"}, {"r": 127, "aop": 109, "k": "142", "o": "Komercijalni i blagajnički zapisi (AOP 110+111)", "f": "R(S(128,129))"}, {"r": 128, "aop": 110, "k": "1421", "o": "Komercijalni i blagajnički zapisi – tuzemni"}, {"r": 129, "aop": 111, "k": "1422", "o": "Komercijalni i blagajnički zapisi – inozemni"}, {"r": 130, "aop": 112, "k": "143", "o": "Mjenice (AOP 113+114)", "f": "R(S(131,132))"}, {"r": 131, "aop": 113, "k": "1431", "o": "Mjenice – tuzemne"}, {"r": 132, "aop": 114, "k": "1432", "o": "Mjenice – inozemne"}, {"r": 133, "aop": 115, "k": "144", "o": "Obveznice (AOP 116+117)", "f": "R(S(134,135))"}, {"r": 134, "aop": 116, "k": "1441", "o": "Obveznice – tuzemne"}, {"r": 135, "aop": 117, "k": "1442", "o": "Obveznice – inozemne"}, {"r": 136, "aop": 118, "k": "145", "o": "Opcije i drugi financijski derivati (AOP 119+120)", "f": "R(S(137,138))"}, {"r": 137, "aop": 119, "k": "1451", "o": "Opcije i drugi financijski derivati – tuzemni"}, {"r": 138, "aop": 120, "k": "1452", "o": "Opcije i drugi financijski derivati – inozemni"}, {"r": 139, "aop": 121, "k": "146", "o": "Ostali vrijednosni papiri (AOP 122+123)", "f": "R(S(140,141))"}, {"r": 140, "aop": 122, "k": "1461", "o": "Ostali tuzemni vrijednosni papiri"}, {"r": 141, "aop": 123, "k": "1462", "o": "Ostali inozemni vrijednosni papiri"}, {"r": 142, "aop": 124, "k": "149", "o": "Ispravak vrijednosti vrijednosnih papira"}, {"r": 143, "aop": 125, "k": "15", "o": "Dionice i udjeli u glavnici (AOP 126+129-132)", "f": "R(v(144)+v(147)-v(150))"}, {"r": 144, "aop": 126, "k": "151", "o": "Dionice i udjeli u glavnici banaka i ostalih financijskih institucija (AOP 127+128)", "f": "R(S(145,146))"}, {"r": 145, "aop": 127, "k": "1511", "o": "Dionice i udjeli u glavnici tuzemnih banaka i ostalih financijskih institucija"}, {"r": 146, "aop": 128, "k": "1512", "o": "Dionice i udjeli u glavnici inozemnih banaka i ostalih financijskih institucija"}, {"r": 147, "aop": 129, "k": "152", "o": "Dionice i udjeli u glavnici trgovačkih društava (AOP 130+131)", "f": "R(S(148,149))"}, {"r": 148, "aop": 130, "k": "1521", "o": "Dionice i udjeli u glavnici tuzemnih trgovačkih društava"}, {"r": 149, "aop": 131, "k": "1522", "o": "Dionice i udjeli u glavnici inozemnih trgovačkih društava"}, {"r": 150, "aop": 132, "k": "159", "o": "Ispravak vrijednosti dionica i udjela u glavnici"}, {"r": 151, "aop": 133, "k": "16", "o": "Potraživanja za prihode (AOP 134 do 137+140-141)", "f": "R(S(152,155)+v(158)-v(159))"}, {"r": 152, "aop": 134, "k": "161", "o": "Potraživanja od kupaca"}, {"r": 153, "aop": 135, "k": "162", "o": "Potraživanja za članarine i članske doprinose"}, {"r": 154, "aop": 136, "k": "163", "o": "Potraživanja za prihode po posebnim propisima"}, {"r": 155, "aop": 137, "k": "164", "o": "Potraživanja za prihode od imovine (AOP 138+139)", "f": "R(S(156,157))"}, {"r": 156, "aop": 138, "k": "1641", "o": "Potraživanja za prihode od financijske imovine"}, {"r": 157, "aop": 139, "k": "1642", "o": "Potraživanja za prihode od nefinancijske imovine"}, {"r": 158, "aop": 140, "k": "165", "o": "Ostala nespomenuta potraživanja"}, {"r": 159, "aop": 141, "k": "169", "o": "Ispravak vrijednosti potraživanja"}, {"r": 160, "aop": 142, "k": "19", "o": "Rashodi budućih razdoblja i nedospjela naplata prihoda (AOP 143+144)", "f": "R(S(161,162))"}, {"r": 161, "aop": 143, "k": "191", "o": "Rashodi budućih razdoblja"}, {"r": 162, "aop": 144, "k": "192", "o": "Nedospjela naplata prihoda"}, {"r": 163, "h": "OBVEZE I VLASTITI IZVORI"}, {"r": 164, "aop": 145, "k": "", "o": "OBVEZE I VLASTITI IZVORI (AOP 146+195)", "f": "R(v(165)+v(214))"}, {"r": 165, "aop": 146, "k": "2", "o": "Obveze (AOP 147+174+182+190)", "f": "R(v(166)+v(193)+v(201)+v(209))"}, {"r": 166, "aop": 147, "k": "24", "o": "Obveze za rashode (AOP 148+156+164+168+169+170)", "f": "R(v(167)+v(175)+v(183)+v(187)+v(188)+v(189))"}, {"r": 167, "aop": 148, "k": "241", "o": "Obveze za radnike (AOP 149 do 155)", "f": "R(S(168,174))"}, {"r": 168, "aop": 149, "k": "2411", "o": "Obveze za plaće – neto"}, {"r": 169, "aop": 150, "k": "2412", "o": "Obveze za naknade plaća – neto"}, {"r": 170, "aop": 151, "k": "2413", "o": "Obveze za plaće u naravi – neto"}, {"r": 171, "aop": 152, "k": "2414", "o": "Obveze za porez i prirez na dohodak iz plaća"}, {"r": 172, "aop": 153, "k": "2415", "o": "Obveze za doprinose iz plaća"}, {"r": 173, "aop": 154, "k": "2416", "o": "Obveze za doprinose na plaće"}, {"r": 174, "aop": 155, "k": "2417", "o": "Ostale obveze za radnike"}, {"r": 175, "aop": 156, "k": "242", "o": "Obveze za materijalne rashode (AOP 157 do 163 )", "f": "R(S(176,182))"}, {"r": 176, "aop": 157, "k": "2421", "o": "Naknade troškova radnicima"}, {"r": 177, "aop": 158, "k": "2422", "o": "Naknade članovima u predstavničkim i izvršnim tijelima, povjerenstavima i slično"}, {"r": 178, "aop": 159, "k": "2423", "o": "Naknade volonterima"}, {"r": 179, "aop": 160, "k": "2424", "o": "Naknade ostalim osobama izvan radnog odnosa"}, {"r": 180, "aop": 161, "k": "2425", "o": "Obveze prema dobavljačima u zemlji"}, {"r": 181, "aop": 162, "k": "2426", "o": "Obveze prema dobavljačima u inozemstvu"}, {"r": 182, "aop": 163, "k": "2429", "o": "Ostale obveze za financiranje rashoda poslovanja"}, {"r": 183, "aop": 164, "k": "244", "o": "Obveze za financijske rashode (AOP 165 do 167)", "f": "R(S(184,186))"}, {"r": 184, "aop": 165, "k": "2441", "o": "Obveze za kamate za izdane vrijednosne papire"}, {"r": 185, "aop": 166, "k": "2442", "o": "Obveze za kamate za primljene kredite i zajmove"}, {"r": 186, "aop": 167, "k": "2443", "o": "Obveze za ostale financijske rashode"}, {"r": 187, "aop": 168, "k": "245", "o": "Obveze za prikupljena sredstva pomoći"}, {"r": 188, "aop": 169, "k": "246", "o": "Obveze za kazne, penale i naknade šteta"}, {"r": 189, "aop": 170, "k": "249", "o": "Ostale obveze (AOP 171 do 173)", "f": "R(S(190,192))"}, {"r": 190, "aop": 171, "k": "2491", "o": "Obveze za poreze"}, {"r": 191, "aop": 172, "k": "2492", "o": "Obveze za porez na dodanu vrijednost"}, {"r": 192, "aop": 173, "k": "2493", "o": "Obveze za predujmove, depozite, primljene jamčevine i ostale nespomenute obveze"}, {"r": 193, "aop": 174, "k": "25", "o": "Obveze za vrijednosne papire (AOP 175+178-181)", "f": "R(v(194)+v(197)-v(200))"}, {"r": 194, "aop": 175, "k": "251", "o": "Obveze za čekove (AOP 176+177)", "f": "R(S(195,196))"}, {"r": 195, "aop": 176, "k": "2511", "o": "Obveze za čekove – tuzemne"}, {"r": 196, "aop": 177, "k": "2512", "o": "Obveze za čekove – inozemne"}, {"r": 197, "aop": 178, "k": "252", "o": "Obveze za mjenice (AOP 179+180)", "f": "R(S(198,199))"}, {"r": 198, "aop": 179, "k": "2521", "o": "Obveze za mjenice – tuzemne"}, {"r": 199, "aop": 180, "k": "2522", "o": "Obveze za mjenice – inozemne"}, {"r": 200, "aop": 181, "k": "259", "o": "Ispravak vrijednosti obveza za vrijednosne papire"}, {"r": 201, "aop": 182, "k": "26", "o": "Obveze za kredite i zajmove (AOP 183+186-189)", "f": "R(v(202)+v(205)-v(208))"}, {"r": 202, "aop": 183, "k": "261", "o": "Obveze za kredite banaka i ostalih kreditora (AOP 184+185)", "f": "R(S(203,204))"}, {"r": 203, "aop": 184, "k": "2611", "o": "Obveze za kredite u zemlji"}, {"r": 204, "aop": 185, "k": "2612", "o": "Obveze za kredite iz inozemstva"}, {"r": 205, "aop": 186, "k": "262", "o": "Obveze za robne i ostale zajmove (AOP 187+188)", "f": "R(S(206,207))"}, {"r": 206, "aop": 187, "k": "2621", "o": "Obveze za zajmove u zemlji"}, {"r": 207, "aop": 188, "k": "2622", "o": "Obveze za zajmove iz inozemstva"}, {"r": 208, "aop": 189, "k": "269", "o": "Ispravak vrijednosti obveza za kredite i zajmove"}, {"r": 209, "aop": 190, "k": "29", "o": "Odgođeno plaćanje rashoda i prihodi budućih razdoblja (AOP 191+192)", "f": "R(S(210,211))"}, {"r": 210, "aop": 191, "k": "291", "o": "Odgođeno plaćanje rashoda"}, {"r": 211, "aop": 192, "k": "292", "o": "Naplaćeni prihodi budućih razdoblja (AOP 193+194)", "f": "R(S(212,213))"}, {"r": 212, "aop": 193, "k": "2921", "o": "Unaprijed plaćeni prihodi"}, {"r": 213, "aop": 194, "k": "2922", "o": "Odgođeno priznavanje prihoda"}, {"r": 214, "aop": 195, "k": "5", "o": "Vlastiti izvori (AOP 196+199-200)", "f": "R(v(215)+v(218)-v(219))"}, {"r": 215, "aop": 196, "k": "51", "o": "Vlastiti izvori (AOP 197+198)", "f": "R(S(216,217))"}, {"r": 216, "aop": 197, "k": "511", "o": "Vlastiti izvori"}, {"r": 217, "aop": 198, "k": "512", "o": "Revalorizacijska rezerva"}, {"r": 218, "aop": 199, "k": "5221", "o": "Višak prihoda"}, {"r": 219, "aop": 200, "k": "5222", "o": "Manjak prihoda"}, {"r": 220, "h": "IZVANBILANČNI ZAPISI"}, {"r": 221, "aop": 201, "k": "61", "o": "Izvanbilančni zapisi – aktiva"}, {"r": 222, "aop": 202, "k": "62", "o": "Izvanbilančni zapisi – pasiva"}], "PRRAS": [{"r": 18, "h": "PRIHODI"}, {"r": 19, "aop": 1, "k": "3", "o": "PRIHODI (AOP 002+005+008+011+024+040+049)", "f": "R(v(20)+v(23)+v(26)+v(29)+v(42)+v(58)+v(67))"}, {"r": 20, "aop": 2, "k": "31", "o": "Prihodi od prodaje roba i pružanja usluga (AOP 003+004)", "f": "R(v(21)+v(22))"}, {"r": 21, "aop": 3, "k": "3111", "o": "Prihodi od prodaje roba"}, {"r": 22, "aop": 4, "k": "3112", "o": "Prihodi od pružanja usluga"}, {"r": 23, "aop": 5, "k": "32", "o": "Prihodi od članarina i članskih doprinosa (AOP 006+007)", "f": "R(v(24)+v(25))"}, {"r": 24, "aop": 6, "k": "3211", "o": "Članarine"}, {"r": 25, "aop": 7, "k": "3212", "o": "Članski doprinosi"}, {"r": 26, "aop": 8, "k": "33", "o": "Prihodi po posebnim propisima (AOP 009+010)", "f": "R(v(27)+v(28))"}, {"r": 27, "aop": 9, "k": "3311", "o": "Prihodi po posebnim propisima iz proračuna"}, {"r": 28, "aop": 10, "k": "3312", "o": "Prihodi po posebnim propisima iz ostalih izvora"}, {"r": 29, "aop": 11, "k": "34", "o": "Prihodi od imovine (AOP 012+021)", "f": "R(v(30)+v(39))"}, {"r": 30, "aop": 12, "k": "341", "o": "Prihodi od financijske imovine (AOP 013 do 020)", "f": "R(S(31,38))"}, {"r": 31, "aop": 13, "k": "3411", "o": "Prihodi od kamata za dane zajmove"}, {"r": 32, "aop": 14, "k": "3412", "o": "Prihodi od kamata po vrijednosnim papirima"}, {"r": 33, "aop": 15, "k": "3413", "o": "Kamate na oročena sredstva i depozite po viđenju"}, {"r": 34, "aop": 16, "k": "3414", "o": "Prihodi od zateznih kamata"}, {"r": 35, "aop": 17, "k": "3415", "o": "Prihodi od pozitivnih tečajnih razlika"}, {"r": 36, "aop": 18, "k": "3416", "o": "Prihodi od dividendi"}, {"r": 37, "aop": 19, "k": "3417", "o": "Prihodi od dobiti trgovačkih društava, banaka i ostalih financijskih institucija po posebnim propisima"}, {"r": 38, "aop": 20, "k": "3418", "o": "Ostali prihodi od financijske imovine"}, {"r": 39, "aop": 21, "k": "342", "o": "Prihodi od nefinancijske imovine (AOP 022+023)", "f": "R(v(40)+v(41))"}, {"r": 40, "aop": 22, "k": "3421", "o": "Prihodi od zakupa i iznajmljivanja imovine"}, {"r": 41, "aop": 23, "k": "3422", "o": "Ostali prihodi od nefinancijske imovine"}, {"r": 42, "aop": 24, "k": "35", "o": "Prihodi od donacija (AOP 025+030+033+036+037)", "f": "R(v(43)+v(48)+v(51)+v(54)+v(55))"}, {"r": 43, "aop": 25, "k": "351", "o": "Prihodi od donacija iz proračuna (AOP 026 do 029)", "f": "R(S(44,47))"}, {"r": 44, "aop": 26, "k": "3511", "o": "Prihodi od donacija iz državnog proračuna"}, {"r": 45, "aop": 27, "k": "3512", "o": "Prihodi od donacija iz proračuna jedinica lokalne i područne (regionalne) samouprave"}, {"r": 46, "aop": 28, "k": "3513", "o": "Prihodi od donacija iz državnog proračuna za EU projekte"}, {"r": 47, "aop": 29, "k": "3514", "o": "Prihodi od donacija iz proračuna jedinica lokalne i područne (regionalne) samouprave za EU projekte"}, {"r": 48, "aop": 30, "k": "352", "o": "Prihodi od inozemnih vlada i međunarodnih organizacija (AOP 031+032)", "f": "R(v(49)+v(50))"}, {"r": 49, "aop": 31, "k": "3521", "o": "Prihodi od inozemnih vlada i međunarodnih organizacija"}, {"r": 50, "aop": 32, "k": "3522", "o": "Prihodi od institucija i tijela EU"}, {"r": 51, "aop": 33, "k": "353", "o": "Prihodi od trgovačkih društava i ostalih pravnih osoba (AOP 034+035)", "f": "R(v(52)+v(53))"}, {"r": 52, "aop": 34, "k": "3531", "o": "Prihodi od trgovačkih društava i ostalih pravnih osoba"}, {"r": 53, "aop": 35, "k": "3532", "o": "Prihodi od trgovačkih društava i ostalih pravnih osoba za EU projekte"}, {"r": 54, "aop": 36, "k": "354", "o": "Prihodi od građana i kućanstava"}, {"r": 55, "aop": 37, "k": "355", "o": "Ostali prihodi od donacija (AOP 038+039)", "f": "R(v(56)+v(57))"}, {"r": 56, "aop": 38, "k": "3551", "o": "Ostali prihodi od donacija"}, {"r": 57, "aop": 39, "k": "3552", "o": "Ostali prihodi od donacija za EU projekte"}, {"r": 58, "aop": 40, "k": "36", "o": "Ostali prihodi (AOP 041+044+045)", "f": "R(v(59)+v(62)+v(63))"}, {"r": 59, "aop": 41, "k": "361", "o": "Prihodi od naknade štete i refundacija (AOP 042+043)", "f": "R(v(60)+v(61))"}, {"r": 60, "aop": 42, "k": "3611", "o": "Prihodi od naknade šteta"}, {"r": 61, "aop": 43, "k": "3612", "o": "Prihod od refundacija"}, {"r": 62, "aop": 44, "k": "362", "o": "Prihodi od prodaje dugotrajne imovine"}, {"r": 63, "aop": 45, "k": "363", "o": "Ostali nespomenuti prihodi (AOP 046 do 048)", "f": "R(S(64,66))"}, {"r": 64, "aop": 46, "k": "3631", "o": "Otpis obveza"}, {"r": 65, "aop": 47, "k": "3632", "o": "Naplaćena otpisana potraživanja"}, {"r": 66, "aop": 48, "k": "3633", "o": "Ostali nespomenuti prihodi"}, {"r": 67, "aop": 49, "k": "37", "o": "Prihodi od povezanih neprofitnih organizacija (AOP 050 do 053)", "f": "R(S(68,71))"}, {"r": 68, "aop": 50, "k": "3711", "o": "Tekući prihodi od povezanih neprofitnih organizacija"}, {"r": 69, "aop": 51, "k": "3712", "o": "Kapitalni prihodi od povezanih neprofitnih organizacija"}, {"r": 70, "aop": 52, "k": "3713", "o": "Tekući prihodi od povezanih neprofitnih organizacija za EU projekte"}, {"r": 71, "aop": 53, "k": "3714", "o": "Kapitalni prihodi od povezanih neprofitnih organizacija za EU projekte"}, {"r": 72, "h": "RASHODI"}, {"r": 73, "aop": 54, "k": "4", "o": "RASHODI (AOP 055+067+108+109+120+128+139)", "f": "R(v(74)+v(86)+v(127)+v(128)+v(139)+v(147)+v(158))"}, {"r": 74, "aop": 55, "k": "41", "o": "Rashodi za radnike (AOP 056+061+062)", "f": "R(v(75)+v(80)+v(81))"}, {"r": 75, "aop": 56, "k": "411", "o": "Plaće (AOP 057 do 060)", "f": "R(S(76,79))"}, {"r": 76, "aop": 57, "k": "4111", "o": "Plaće za redovan rad"}, {"r": 77, "aop": 58, "k": "4112", "o": "Plaće u naravi"}, {"r": 78, "aop": 59, "k": "4113", "o": "Plaće za prekovremeni rad"}, {"r": 79, "aop": 60, "k": "4114", "o": "Plaće za posebne uvjete rada"}, {"r": 80, "aop": 61, "k": "412", "o": "Ostali rashodi za radnike"}, {"r": 81, "aop": 62, "k": "413", "o": "Doprinosi na plaće (AOP 063 do 066)", "f": "R(S(82,85))"}, {"r": 82, "aop": 63, "k": "4131", "o": "Doprinosi za zdravstveno osiguranje"}, {"r": 83, "aop": 64, "k": "4132", "o": "Doprinosi za zapošljavanje"}, {"r": 84, "aop": 65, "k": "4133", "o": "Doprinosi za mirovinsko osiguranje koje plaća poslodavac"}, {"r": 85, "aop": 66, "k": "4134", "o": "Posebni doprinos za poticanje zapošljavanja osoba s invaliditetom"}, {"r": 86, "aop": 67, "k": "42", "o": "Materijalni rashodi (AOP 068+072+077+082+087+097+102)", "f": "R(v(87)+v(91)+v(96)+v(101)+v(106)+v(116)+v(121))"}, {"r": 87, "aop": 68, "k": "421", "o": "Naknade troškova radnicima (AOP 069 do 071)", "f": "R(S(88,90))"}, {"r": 88, "aop": 69, "k": "4211", "o": "Službena putovanja"}, {"r": 89, "aop": 70, "k": "4212", "o": "Naknade za prijevoz, za rad na terenu i odvojeni život"}, {"r": 90, "aop": 71, "k": "4213", "o": "Stručno usavršavanje radnika"}, {"r": 91, "aop": 72, "k": "422", "o": "Naknade članovima u predstavničkim i izvršnim tijelima, povjerenstvima i slično (AOP 073 do 076)", "f": "R(S(92,95))"}, {"r": 92, "aop": 73, "k": "4221", "o": "Naknade za obavljanje aktivnosti"}, {"r": 93, "aop": 74, "k": "4222", "o": "Naknade troškova službenih putovanja"}, {"r": 94, "aop": 75, "k": "4223", "o": "Naknade ostalih troškova"}, {"r": 95, "aop": 76, "k": "4224", "o": "Ostale naknade"}, {"r": 96, "aop": 77, "k": "423", "o": "Naknade volonterima (AOP 078 do 081)", "f": "R(S(97,100))"}, {"r": 97, "aop": 78, "k": "4231", "o": "Naknade za obavljanje djelatnosti"}, {"r": 98, "aop": 79, "k": "4232", "o": "Naknade troškova službenih putovanja"}, {"r": 99, "aop": 80, "k": "4233", "o": "Naknade ostalih troškova"}, {"r": 100, "aop": 81, "k": "4234", "o": "Ostale naknade"}, {"r": 101, "aop": 82, "k": "424", "o": "Naknade ostalim osobama izvan radnog odnosa (AOP 083 do 086)", "f": "R(S(102,105))"}, {"r": 102, "aop": 83, "k": "4241", "o": "Naknade za obavljanje aktivnosti"}, {"r": 103, "aop": 84, "k": "4242", "o": "Naknade troškova službenih putovanja"}, {"r": 104, "aop": 85, "k": "4243", "o": "Naknade ostalih troškova"}, {"r": 105, "aop": 86, "k": "4244", "o": "Ostale naknade"}, {"r": 106, "aop": 87, "k": "425", "o": "Rashodi za usluge (AOP 088 do 096)", "f": "R(S(107,115))"}, {"r": 107, "aop": 88, "k": "4251", "o": "Usluge telefona, pošte i prijevoza"}, {"r": 108, "aop": 89, "k": "4252", "o": "Usluge tekućeg i investicijskog održavanja"}, {"r": 109, "aop": 90, "k": "4253", "o": "Usluge promidžbe i informiranja"}, {"r": 110, "aop": 91, "k": "4254", "o": "Komunalne usluge"}, {"r": 111, "aop": 92, "k": "4255", "o": "Zakupnine i najamnine"}, {"r": 112, "aop": 93, "k": "4256", "o": "Zdravstvene i veterinarske usluge"}, {"r": 113, "aop": 94, "k": "4257", "o": "Intelektualne i osobne usluge"}, {"r": 114, "aop": 95, "k": "4258", "o": "Računalne usluge"}, {"r": 115, "aop": 96, "k": "4259", "o": "Ostale usluge"}, {"r": 116, "aop": 97, "k": "426", "o": "Rashodi za materijal i energiju (AOP 098 do 101)", "f": "R(S(117,120))"}, {"r": 117, "aop": 98, "k": "4261", "o": "Uredski materijal i ostali materijalni rashodi"}, {"r": 118, "aop": 99, "k": "4262", "o": "Materijal i sirovine"}, {"r": 119, "aop": 100, "k": "4263", "o": "Energija"}, {"r": 120, "aop": 101, "k": "4264", "o": "Sitan inventar i auto gume"}, {"r": 121, "aop": 102, "k": "429", "o": "Ostali nespomenuti materijalni rashodi (AOP 103 do 107)", "f": "R(S(122,126))"}, {"r": 122, "aop": 103, "k": "4291", "o": "Premije osiguranja"}, {"r": 123, "aop": 104, "k": "4292", "o": "Reprezentacija"}, {"r": 124, "aop": 105, "k": "4293", "o": "Članarine"}, {"r": 125, "aop": 106, "k": "4294", "o": "Kotizacije"}, {"r": 126, "aop": 107, "k": "4295", "o": "Ostali nespomenuti materijalni rashodi"}, {"r": 127, "aop": 108, "k": "43", "o": "Rashodi amortizacije"}, {"r": 128, "aop": 109, "k": "44", "o": "Financijski rashodi (AOP 110+111+115)", "f": "R(v(129)+v(130)+v(134))"}, {"r": 129, "aop": 110, "k": "441", "o": "Kamate za izdane vrijednosne papire"}, {"r": 130, "aop": 111, "k": "442", "o": "Kamate za primljene kredite i zajmove (AOP 112 do 114)", "f": "R(S(131,133))"}, {"r": 131, "aop": 112, "k": "4421", "o": "Kamate za primljene kredite banaka i ostalih kreditora"}, {"r": 132, "aop": 113, "k": "4422", "o": "Kamate za primljene robne i ostale zajmove"}, {"r": 133, "aop": 114, "k": "4423", "o": "Kamate za odobrene, a nerealizirane kredite i zajmove"}, {"r": 134, "aop": 115, "k": "443", "o": "Ostali financijski rashodi (AOP 116 do 119)", "f": "R(S(135,138))"}, {"r": 135, "aop": 116, "k": "4431", "o": "Bankarske usluge i usluge platnog prometa"}, {"r": 136, "aop": 117, "k": "4432", "o": "Negativne tečajne razlike i valutna klauzula"}, {"r": 137, "aop": 118, "k": "4433", "o": "Zatezne kamate"}, {"r": 138, "aop": 119, "k": "4434", "o": "Ostali nespomenuti financijski rashodi"}, {"r": 139, "aop": 120, "k": "45", "o": "Donacije (AOP 121+125)", "f": "R(v(140)+v(144))"}, {"r": 140, "aop": 121, "k": "451", "o": "Tekuće donacije (AOP 122 do124)", "f": "R(S(141,143))"}, {"r": 141, "aop": 122, "k": "4511", "o": "Tekuće donacije"}, {"r": 142, "aop": 123, "k": "4512", "o": "Stipendije"}, {"r": 143, "aop": 124, "k": "4513", "o": "Tekuće donacije iz EU sredstava"}, {"r": 144, "aop": 125, "k": "452", "o": "Kapitalne donacije (AOP 126+127)", "f": "R(v(145)+v(146))"}, {"r": 145, "aop": 126, "k": "4521", "o": "Kapitalne donacije"}, {"r": 146, "aop": 127, "k": "4522", "o": "Kapitalne donacije iz EU sredstava"}, {"r": 147, "aop": 128, "k": "46", "o": "Ostali rashodi (AOP 129+134)", "f": "R(v(148)+v(153))"}, {"r": 148, "aop": 129, "k": "461", "o": "Kazne, penali i naknade štete (AOP 130 do 133)", "f": "R(S(149,152))"}, {"r": 149, "aop": 130, "k": "4611", "o": "Naknade šteta pravnim i fizičkim osobama"}, {"r": 150, "aop": 131, "k": "4612", "o": "Penali, ležarine i drugo"}, {"r": 151, "aop": 132, "k": "4613", "o": "Naknade šteta radnicima"}, {"r": 152, "aop": 133, "k": "4614", "o": "Ugovorene kazne i ostale naknade šteta"}, {"r": 153, "aop": 134, "k": "462", "o": "Ostali nespomenuti rashodi (AOP 135 do 138)", "f": "R(S(154,157))"}, {"r": 154, "aop": 135, "k": "4621", "o": "Neotpisana vrijednost i drugi rashodi otuđene i rashodovane dugotrajne imovine"}, {"r": 155, "aop": 136, "k": "4622", "o": "Otpisana potraživanja"}, {"r": 156, "aop": 137, "k": "4623", "o": "Rashodi za ostala porezna davanja"}, {"r": 157, "aop": 138, "k": "4624", "o": "Ostali nespomenuti rashodi"}, {"r": 158, "aop": 139, "k": "47", "o": "Rashodi vezani uz financiranje povezanih neprofitnih organizacija (AOP 140 do 143)", "f": "R(S(159,162))"}, {"r": 159, "aop": 140, "k": "4711", "o": "Tekući rashodi vezani uz financiranje povezanih neprofitnih organizacija"}, {"r": 160, "aop": 141, "k": "4712", "o": "Kapitalni rashodi vezani uz financiranje povezanih neprofitnih organizacija"}, {"r": 161, "aop": 142, "k": "4713", "o": "Tekući rashodi vezani uz financiranje povezanih neprofitnih organizacija za EU projekte"}, {"r": 162, "aop": 143, "k": "4714", "o": "Kapitalni rashodi vezani uz financiranje povezanih neprofitnih organizacija za EU projekte"}, {"r": 163, "aop": 144, "k": "", "o": "Stanje zaliha proizvodnje i gotovih proizvoda na početku razdoblja"}, {"r": 164, "aop": 145, "k": "", "o": "Stanje zaliha proizvodnje i gotovih proizvoda na kraju razdoblja"}, {"r": 165, "aop": 146, "k": "", "o": "Povećanje zaliha proizvodnje i gotovih proizvoda (AOP 145-144)", "f": "R(IF(v(164)>=v(163),v(164)-v(163),0))"}, {"r": 166, "aop": 147, "k": "", "o": "Smanjenje zaliha proizvodnje i gotovih proizvoda (AOP 144-145)", "f": "R(IF(v(163)>=v(164),v(163)-v(164),0))"}, {"r": 167, "aop": 148, "k": "", "o": "UKUPNI RASHODI (AOP 054-146 ili 054+147)", "f": "R(v(73)-v(165)+v(166))"}, {"r": 168, "aop": 149, "k": "", "o": "VIŠAK PRIHODA (AOP 001-148)", "f": "R(IF(v(19)>=v(167),v(19)-v(167),0))"}, {"r": 169, "aop": 150, "k": "", "o": "MANJAK PRIHODA (AOP 148-001)", "f": "R(IF(v(167)>=v(19),v(167)-v(19),0))"}, {"r": 170, "aop": 151, "k": "5221", "o": "Višak prihoda – preneseni"}, {"r": 171, "aop": 152, "k": "5222", "o": "Manjak prihoda – preneseni"}, {"r": 172, "aop": 153, "k": "", "o": "Obveze poreza na dobit po obračunu"}, {"r": 173, "aop": 154, "k": "", "o": "Višak prihoda raspoloživ u sljedećem razdoblju (AOP 149+151-150-152-153)", "f": "R(IF(v(168)+v(170)-v(169)-v(171)-v(172)>=0,v(168)+v(170)-v(169)-v(171)-v(172),0))"}, {"r": 174, "aop": 155, "k": "", "o": "Manjak prihoda za pokriće u sljedećem razdoblju (AOP 150+152-149-151+153)", "f": "R(IF(v(169)+v(171)-v(168)-v(170)+v(172)>=0,v(169)+v(171)-v(168)-v(170)+v(172),0))"}, {"r": 175, "h": "DODATNI PODACI"}, {"r": 176, "aop": 156, "k": "11", "o": "Stanje novčanih sredstava na početku godine"}, {"r": 177, "aop": 157, "k": "11-dugovno", "o": "Ukupni priljevi na novčane račune i blagajne"}, {"r": 178, "aop": 158, "k": "11-potražno", "o": "Ukupni odljevi s novčanih računa i blagajni"}, {"r": 179, "aop": 159, "k": "11", "o": "Stanje novčanih sredstava na kraju razdoblja (AOP 156+157-158)", "f": "v(176)+v(177)-v(178)"}, {"r": 180, "aop": 160, "k": "", "o": "Prosječan broj radnika na osnovi stanja krajem izvještajnog razdoblja (cijeli broj)"}, {"r": 181, "aop": 161, "k": "", "o": "Prosječan broj radnika na osnovi sati rada (cijeli broj)"}, {"r": 182, "aop": 162, "k": "", "o": "Broj volontera"}, {"r": 183, "aop": 163, "k": "", "o": "Broj sati volontiranja"}, {"r": 184, "h": "VRIJEDNOST OSTVARENIH INVESTICIJA U NOVU DUGOTRAJNU IMOVINU"}, {"r": 186, "aop": 164, "k": "051", "o": "Građevinski objekti u pripremi"}, {"r": 187, "aop": 165, "k": "052", "o": "Postrojenja i oprema u pripremi"}, {"r": 188, "aop": 166, "k": "053", "o": "Prijevozna sredstva u pripremi"}, {"r": 189, "aop": 167, "k": "054", "o": "Višegodišnji nasadi i osnovno stado u pripremi"}, {"r": 190, "aop": 168, "k": "055", "o": "Ostala nematerijalna proizvedena imovina u pripremi"}, {"r": 191, "aop": 169, "k": "056", "o": "Ostala nefinancijska imovina u pripremi"}, {"r": 193, "aop": 170, "k": "", "o": "Stanje zaliha"}, {"r": 194, "aop": 171, "k": "", "o": "Kontrolni zbroj (AOP 160 do 170)", "f": "R(SUM(v(180):v(183),v(186):v(191),v(193)))"}], "opcine": [[1, "ANDRIJAŠEVCI", 16], [2, "ANTUNOVAC", 14], [3, "BABINA GREDA", 16], [4, "BAKAR", 8], [5, "BALE", 18], [6, "BARBAN", 18], [7, "BARILOVIĆI", 4], [8, "BAŠKA", 8], [9, "BAŠKA VODA", 17], [10, "BEBRINA", 12], [11, "BEDEKOVČINA", 2], [12, "BEDNJA", 5], [13, "BELI MANASTIR", 14], [15, "BELICA", 20], [16, "BELIŠĆE", 14], [17, "BENKOVAC", 13], [18, "BEREK", 7], [19, "BERETINEC", 5], [20, "BIBINJE", 13], [21, "BILJE", 14], [22, "BIOGRAD NA MORU", 13], [23, "BIZOVAC", 14], [24, "BJELOVAR", 7], [25, "BLATO", 19], [26, "BOGDANOVCI", 16], [27, "BOL", 17], [29, "BOROVO", 16], [30, "BOSILJEVO", 4], [32, "BOŠNJACI", 16], [33, "BRCKOVLJANI", 1], [34, "BRDOVEC", 1], [35, "BRESTOVAC", 11], [36, "BREZNICA", 5], [37, "BRINJE", 9], [38, "BROD MORAVICE", 8], [39, "BRODSKI STUPNIK", 12], [40, "BRTONIGLA", 18], [41, "BUDINŠČINA", 2], [42, "BUJE", 18], [43, "BUZET", 18], [44, "CERNA", 16], [46, "CERNIK", 12], [47, "CEROVLJE", 18], [48, "CESTICA", 5], [49, "CETINGRAD", 4], [50, "CISTA PROVO", 17], [51, "CIVLJANE", 15], [52, "CRES", 8], [53, "CRIKVENICA", 8], [54, "CRNAC", 10], [55, "ČABAR", 8], [56, "ČAČINCI", 10], [57, "ČAĐAVICA", 10], [58, "ČAGLIN", 11], [60, "ČAKOVEC", 20], [61, "ČAVLE", 8], [63, "ČAZMA", 7], [64, "ČEMINAC", 14], [65, "ČEPIN", 14], [66, "DARDA", 14], [67, "DARUVAR", 7], [68, "DAVOR", 12], [69, "DELNICE", 8], [70, "DESINIĆ", 2], [71, "DEŽANOVAC", 7], [72, "DICMO", 17], [74, "DOBRINJ", 8], [75, "DOMAŠINEC", 20], [77, "BRELA", 17], [78, "DONJA DUBRAVA", 20], [79, "DONJA STUBICA", 2], [80, "DONJA VOĆA", 5], [81, "DONJI ANDRIJEVCI", 12], [82, "DONJI KRALJEVEC", 20], [83, "DONJI KUKURUZARI", 3], [84, "DONJI LAPAC", 9], [85, "DONJI MARTIJANEC", 5], [86, "DONJI MIHOLJAC", 14], [87, "MUĆ", 17], [88, "PROLOŽAC", 17], [89, "DONJI VIDOVEC", 20], [90, "DRAGANIĆ", 4], [91, "DRAŽ", 14], [92, "DRENOVCI", 16], [94, "DRENJE", 14], [95, "DRNIŠ", 15], [96, "DRNJE", 6], [97, "DUBRAVA", 1], [98, "DUBROVNIK", 19], [99, "DUGA RESA", 4], [100, "DUGI RAT", 17], [101, "DUGO SELO", 1], [102, "DVOR", 3], [103, "ĐAKOVO", 14], [104, "ĐELEKOVEC", 6], [105, "ĐULOVAC", 7], [106, "ĐURĐENOVAC", 14], [107, "ĐURĐEVAC", 6], [108, "ĐURMANEC", 2], [110, "ERDUT", 14], [111, "ERNESTINOVO", 14], [113, "ERVENIK", 15], [114, "FARKAŠEVAC", 1], [115, "FERDINANDOVAC", 6], [116, "FERIČANCI", 14], [117, "FUŽINE", 8], [118, "GARČIN", 12], [119, "GAREŠNICA", 7], [120, "GENERALSKI STOL", 4], [121, "GLINA", 3], [122, "GOLA", 6], [123, "GORIČAN", 20], [124, "GORJANI", 14], [125, "GORNJA STUBICA", 2], [127, "GORNJI BOGIĆEVCI", 12], [129, "GORNJI KNEGINEC", 5], [130, "GOSPIĆ", 9], [131, "GRAČAC", 13], [132, "GRAČIŠĆE", 18], [133, "GRAD ZAGREB", 21], [134, "GRADAC", 17], [135, "GRADEC", 1], [136, "GRADINA", 10], [137, "GRADIŠTE", 16], [138, "GROŽNJAN", 18], [139, "GRUBIŠNO POLJE", 7], [140, "GUNDINCI", 12], [141, "GUNJA", 16], [144, "HERCEGOVAC", 7], [145, "HLEBINE", 6], [146, "HRAŠĆINA", 2], [148, "HRVACE", 17], [149, "HRVATSKA DUBICA", 3], [150, "HRVATSKA KOSTAJNICA", 3], [151, "BREZNIČKI HUM", 5], [152, "HUM NA SUTLI", 2], [153, "HVAR", 17], [154, "ILOK", 16], [155, "IMOTSKI", 17], [156, "IVANEC", 5], [158, "IVANIĆ-GRAD", 1], [159, "IVANKOVO", 16], [161, "IVANSKA", 7], [163, "JAKOVLJE", 1], [164, "JAKŠIĆ", 11], [165, "JALŽABET", 5], [166, "JARMINA", 16], [167, "JASENICE", 13], [168, "JASENOVAC", 3], [169, "JASTREBARSKO", 1], [170, "JELENJE", 8], [169, "JASTREBARSKO", 1], [170, "JELENJE", 8], [171, "JELSA", 17], [172, "JOSIPDOL", 4], [173, "KALI", 13], [175, "KANFANAR", 18], [176, "KAPELA", 7], [177, "KAPTOL", 11], [178, "KARLOBAG", 9], [179, "KARLOVAC", 4], [180, "KASTAV", 8], [181, "KAŠTELA", 17], [183, "KIJEVO", 15], [184, "KISTANJE", 15], [185, "KLAKAR", 12], [186, "KLANA", 8], [187, "KLANJEC", 2], [189, "KLENOVNIK", 5], [190, "KLINČA SELA", 1], [192, "KLIS", 17], [193, "KLOŠTAR IVANIĆ", 1], [194, "KLOŠTAR PODRAVSKI", 6], [195, "KNEŽEVI VINOGRADI", 14], [196, "KNIN", 15], [197, "KOMIŽA", 17], [198, "KONAVLE", 19], [199, "KONČANICA", 7], [200, "KONJŠČINA", 2], [201, "KOPRIVNICA", 6], [202, "KOPRIVNIČKI BREGI", 6], [203, "KOPRIVNIČKI IVANEC", 6], [204, "KORČULA", 19], [205, "KOŠKA", 14], [206, "KOTORIBA", 20], [208, "KRALJEVEC NA SUTLI", 2], [209, "KRALJEVICA", 8], [211, "KRAPINA", 2], [212, "KRAPINSKE TOPLICE", 2], [213, "KRIŽ", 1], [214, "KRIŽEVCI", 6], [215, "KRK", 8], [216, "KRNJAK", 4], [217, "KRŠAN", 18], [219, "KULA NORINSKA", 19], [220, "KUTINA", 3], [221, "KUTJEVO", 11], [222, "LABIN", 18], [223, "LANIŠĆE", 18], [225, "LASINJA", 4], [226, "LASTOVO", 19], [227, "LEGRAD", 6], [228, "LEKENIK", 3], [229, "LEPOGLAVA", 5], [230, "LEVANJSKA VAROŠ", 14], [231, "LIPIK", 11], [232, "LIPOVLJANI", 3], [234, "LIŠANE OSTROVIČKE", 13], [235, "LIŽNJAN", 18], [236, "LOBOR", 2], [237, "LOKVE", 8], [239, "LOVAS", 16], [240, "LOVINAC", 9], [242, "LOVRAN", 8], [243, "LOVREĆ", 17], [244, "LUDBREG", 5], [245, "LUKAČ", 10], [246, "LUPOGLAV", 18], [247, "LJUBEŠĆICA", 5], [248, "MAČE", 2], [249, "MAKARSKA", 17], [250, "MALA SUBOTICA", 20], [251, "MALI BUKOVEC", 5], [252, "MALI LOŠINJ", 8], [253, "MALINSKA-DUBAŠNICA", 8], [254, "MARČANA", 18], [256, "MARIJA BISTRICA", 2], [257, "MARIJANCI", 14], [258, "MARINA", 17], [259, "MARTINSKA VES", 3], [260, "MARUŠEVEC", 5], [261, "MATULJI", 8], [263, "MEDULIN", 18], [264, "METKOVIĆ", 19], [265, "MIHOVLJAN", 2], [266, "MIKLEUŠ", 10], [267, "MILNA", 17], [268, "MLJET", 19], [270, "MOLVE", 6], [271, "PODRAVSKA MOSLAVINA", 14], [273, "MOŠĆENIČKA DRAGA", 8], [274, "MOTOVUN", 18], [275, "MRKOPALJ", 8], [276, "MURSKO SREDIŠĆE", 20], [278, "NAŠICE", 14], [279, "NEDELIŠĆE", 20], [280, "NEREŽIŠĆA", 17], [281, "NETRETIĆ", 4], [282, "NIN", 13], [283, "NOVA BUKOVICA", 10], [284, "NOVA GRADIŠKA", 12], [285, "NOVA KAPELA", 12], [287, "NOVA RAČA", 7], [288, "NOVALJA", 9], [289, "NOVI MAROF", 5], [290, "NOVI VINODOLSKI", 8], [291, "NOVIGRAD", 18], [292, "NOVIGRAD PODRAVSKI", 6], [293, "NOVSKA", 3], [294, "NUŠTAR", 16], [295, "NIJEMCI", 16], [296, "OBROVAC", 13], [297, "OGULIN", 4], [298, "PROMINA", 15], [299, "OKUČANI", 12], [300, "OMIŠ", 17], [301, "OMIŠALJ", 8], [302, "OPATIJA", 8], [303, "OPRISAVCI", 12], [304, "OPRTALJ", 18], [306, "OPUZEN", 19], [307, "ORAHOVICA", 10], [308, "OREBIĆ", 19], [309, "ORIOVAC", 12], [310, "BISKUPIJA", 15], [311, "OROSLAVJE", 2], [312, "OSIJEK", 14], [313, "OTOČAC", 9], [314, "OTOK", 17], [315, "OZALJ", 4], [316, "PAG", 13], [317, "PAKOŠTANE", 13], [318, "PAKRAC", 11], [320, "PAŠMAN", 13], [321, "PAZIN", 18], [323, "PERUŠIĆ", 9], [324, "PETERANEC", 6], [325, "PETLOVAC", 14], [326, "PETRIJANEC", 5], [327, "PETRIJEVCI", 14], [328, "PETRINJA", 3], [329, "PETROVSKO", 2], [330, "PIĆAN", 18], [331, "PISAROVINA", 1], [332, "PITOMAČA", 10], [333, "PLAŠKI", 4], [334, "PLETERNICA", 11], [335, "PLOČE", 19], [337, "PODBABLJE", 17], [338, "PODCRKAVLJE", 12], [339, "PODGORA", 17], [340, "PODGORAČ", 14], [341, "PODSTRANA", 17], [342, "PODTUREN", 20], [343, "POJEZERJE", 19], [344, "POLAČA", 13], [345, "POLIČNIK", 13], [346, "POPOVAC", 14], [347, "POPOVAČA", 3], [348, "POREČ", 18], [349, "POSEDARJE", 13], [350, "POSTIRA", 17], [351, "POŽEGA", 11], [352, "PREGRADA", 2], [354, "PREKO", 13], [355, "PRELOG", 20], [356, "PRESEKA", 1], [357, "PRIMOŠTEN", 15], [358, "PUČIŠĆA", 17], [359, "PULA", 18], [360, "PUNAT", 8], [361, "PUNITOVCI", 14], [362, "PUŠĆA", 1], [363, "RAB", 8], [364, "RADOBOJ", 2], [365, "RAKOVICA", 4], [366, "RASINJA", 6], [368, "RAŠA", 18], [369, "RAVNA GORA", 8], [371, "RAŽANAC", 13], [372, "REŠETARI", 12], [373, "RIJEKA", 8], [374, "ROVINJ", 18], [375, "ROVIŠĆE", 7], [376, "RUGVICA", 1], [377, "RUŽIĆ", 15], [378, "SABORSKO", 4], [379, "SALI", 13], [380, "SAMOBOR", 1], [381, "SATNICA ĐAKOVAČKA", 14], [382, "SEGET", 17], [383, "SELCA", 17], [385, "SELNICA", 20], [386, "SEMELJCI", 14], [387, "SENJ", 9], [388, "SIBINJ", 12], [389, "SINJ", 17], [390, "SIRAČ", 7], [391, "SISAK", 3], [393, "SKRAD", 8], [394, "SKRADIN", 15], [395, "SLATINA", 10], [396, "SLAVONSKI BROD", 12], [397, "SLAVONSKI ŠAMAC", 12], [399, "SLIVNO", 19], [400, "SLUNJ", 4], [402, "SMOKVICA", 19], [405, "SOKOLOVAC", 6], [406, "SOLIN", 17], [407, "SOPJE", 10], [409, "SPLIT", 17], [410, "SRAČINEC", 5], [411, "STANKOVCI", 13], [412, "STARA GRADIŠKA", 12], [413, "STARI GRAD", 17], [414, "STARI JANKOVCI", 16], [415, "STARI MIKANOVCI", 16], [416, "STARIGRAD", 13], [418, "STARO PETROVO SELO", 12], [419, "STON", 19], [421, "STRIZIVOJNA", 14], [422, "STUBIČKE TOPLICE", 2], [423, "SUĆURAJ", 17], [424, "SUHOPOLJE", 10], [425, "SUKOŠAN", 13], [426, "SUNJA", 3], [427, "SUPETAR", 17], [428, "SVETI FILIP I JAKOV", 13], [429, "SVETI IVAN ZELINA", 1], [430, "SVETI KRIŽ ZAČRETJE", 2], [431, "SVETI LOVREČ", 18], [432, "SVETA NEDELJA", 18], [433, "SVETI PETAR U ŠUMI", 18], [435, "SVETVINČENAT", 18], [436, "SVETA NEDJELJA", 1], [437, "SVETI ĐURĐ", 5], [438, "SVETI ILIJA", 5], [439, "SVETI IVAN ŽABNO", 6], [440, "SVETI JURAJ NA BREGU", 20], [441, "SVETI MARTIN NA MURI", 20], [442, "SVETI PETAR OREHOVEC", 6], [443, "ŠESTANOVAC", 17], [444, "ŠIBENIK", 15], [445, "ŠKABRNJE", 13], [447, "ŠOLTA", 17], [449, "ŠPIŠIĆ BUKOVICA", 10], [450, "ŠTEFANJE", 7], [452, "ŠTRIGOVA", 20], [453, "TINJAN", 18], [454, "TISNO", 15], [455, "PLITVIČKA JEZERA", 9], [456, "TOMPOJEVCI", 16], [457, "TOPUSKO", 3], [458, "TORDINCI", 16], [459, "TOVARNIK", 16], [460, "TRILJ", 17], [461, "TRNAVA", 14], [462, "TRNOVEC BARTOLOVEČKI", 5], [463, "TROGIR", 17], [464, "TRPINJA", 16], [466, "TUHELJ", 2], [467, "UDBINA", 9], [468, "UMAG", 18], [469, "UNEŠIĆ", 15], [471, "VALPOVO", 14], [472, "VARAŽDIN", 5], [473, "VARAŽDINSKE TOPLICE", 5], [474, "VELA LUKA", 19], [475, "VELIKA", 11], [476, "VELIKA KOPANICA", 12], [477, "VELIKA LUDINA", 3], [478, "VELIKA PISANICA", 7], [480, "VELIKI GRĐEVAC", 7], [481, "VELIKO TRGOVIŠĆE", 2], [483, "VELIKO TROJSTVO", 7], [484, "VIDOVEC", 5], [485, "VILJEVO", 14], [486, "VINICA", 5], [487, "VINKOVCI", 16], [488, "VINODOLSKA OPĆINA", 8], [489, "VIR", 13], [490, "VIRJE", 6], [491, "VIROVITICA", 10], [492, "VIS", 17], [493, "VISOKO", 5], [494, "VIŠKOVCI", 14], [495, "VIŠKOVO", 8], [497, "VIŠNJAN", 18], [498, "VIŽINADA", 18], [499, "VOĆIN", 10], [500, "VODICE", 15], [502, "VODNJAN", 18], [503, "VOJNIĆ", 4], [504, "VRATIŠINEC", 20], [505, "VRBANJA", 16], [506, "VRBJE", 12], [507, "VRBNIK", 8], [508, "VRBOVEC", 1], [509, "VRBOVSKO", 8], [510, "GVOZD", 3], [511, "VRGORAC", 17], [512, "VRHOVINE", 9], [513, "VRLIKA", 17], [514, "VRPOLJE", 12], [516, "VRSAR", 18], [517, "VUKA", 14], [518, "VUKOVAR", 16], [519, "ZABOK", 2], [520, "ZADAR", 13], [521, "ZAGORSKA SELA", 2], [522, "ZAGVOZD", 17], [523, "ZAŽABLJE", 19], [524, "ZDENCI", 10], [525, "ZEMUNIK DONJI", 13], [526, "ZLATAR", 2], [527, "ZLATAR-BISTRICA", 2], [528, "ZMIJAVCI", 17], [530, "ŽAKANJE", 4], [531, "ŽMINJ", 18], [533, "KRAŠIĆ", 1], [534, "ŽUPANJA", 16], [535, "OTOK (VINKOVCI)", 16], [536, "RAKOVEC", 1], [537, "NOVIGRAD", 13], [538, "KOSTRENA", 8], [539, "MARIJA GORICA", 1], [540, "ŽUMBERAK", 1], [541, "VELIKA GORICA", 1], [542, "ORLE", 1], [543, "ZAPREŠIĆ", 1], [544, "POKUPSKO", 1], [545, "KRAVARSKO", 1], [547, "BISTRA", 1], [548, "LUKA", 1], [549, "DUBRAVICA", 1], [550, "BEDENICA", 1], [551, "STUPNIK", 1], [552, "JESENJE", 2], [553, "KUMROVEC", 2], [554, "NOVI GOLUBOVEC", 2], [555, "MAJUR", 3], [556, "RIBNIK", 4], [557, "TOUNJ", 4], [558, "VELIKI BUKOVEC", 5], [559, "KALINOVAC", 6], [560, "KALNIK", 6], [561, "NOVO VIRJE", 6], [562, "SEVERIN", 7], [564, "ŠANDROVAC", 7], [565, "VELIKA TRNOVITICA", 7], [566, "ZRINSKI TOPOLOVAC", 7], [567, "BUKOVLJE", 12], [568, "DRAGALIĆ", 12], [569, "GORNJA VRBA", 12], [570, "SIKIREVCI", 12], [571, "GALOVAC", 13], [572, "KUKLJICA", 13], [573, "POVLJANA", 13], [574, "PRIVLAKA", 13], [575, "TKON", 13], [576, "DONJA MOTIČINA", 14], [578, "MAGADENOVAC", 14], [579, "VLADISLAVCI", 14], [581, "PIROVAC", 15], [582, "ROGOZNICA", 15], [583, "PRIVLAKA", 16], [584, "VOĐINCI", 16], [585, "DUGOPOLJE", 17], [586, "LEĆEVICA", 17], [587, "LOKVIČIĆI", 17], [588, "OKRUG", 17], [589, "PRGOMET", 17], [590, "PRIMORSKI DOLAC", 17], [591, "RUNOVIĆI", 17], [592, "SUTIVAN", 17], [593, "TUČEPI", 17], [595, "ZADVARJE", 17], [596, "KAROJBA", 18], [597, "KAŠTELIR - LABINCI", 18], [598, "DUBROVAČKO PRIMORJE", 19], [599, "JANJINA", 19], [600, "LUMBARDA", 19], [601, "TRPANJ", 19], [602, "ŽUPA DUBROVAČKA", 19], [603, "DEKANOVEC", 20], [604, "GORNJI MIHALJEVEC", 20], [605, "OREHOVICA", 20], [606, "STRAHONINEC", 20], [607, "SVETA MARIJA", 20], [608, "ŠENKOVEC", 20], [609, "JAGODNJAK", 14], [610, "MARKUŠICA", 16], [612, "NEGOSLAVCI", 16], [614, "ŠODOLOVCI", 14], [616, "PODRAVSKE SESVETE", 6], [617, "MURTER", 15], [618, "GORNJA REKA", 6], [619, "FAŽANA", 18], [620, "PRIBISLAVEC", 20], [621, "BILICE", 15], [622, "KOLAN", 13], [623, "KAMANJE", 4], [624, "LOPAR", 8], [625, "VRSI", 13], [626, "TRIBUNJ", 15], [628, "ŠTITAR", 16], [629, "FUNTANA", 18], [631, "TAR-VABRIGA", 18], [710, "ZAGREB (ZAGREBAČKA ŽUPANIJA)", 1]], "zup": {"1": "ZAGREBAČKA", "2": "KRAPINSKO-ZAGORSKA", "3": "SISAČKO-MOSLAVAČKA", "4": "KARLOVAČKA", "5": "VARAŽDINSKA", "6": "KOPRIVNIČKO-KRIŽEVAČKA", "7": "BJELOVARSKO-BILOGORSKA", "8": "PRIMORSKO-GORANSKA", "9": "LIČKO-SENJSKA", "10": "VIROVITIČKO-PODRAVSKA", "11": "POŽEŠKO-SLAVONSKA", "12": "BRODSKO-POSAVSKA", "13": "ZADARSKA", "14": "OSIJEČKO-BARANJSKA", "15": "ŠIBENSKO-KNINSKA", "16": "VUKOVARSKO-SRIJEMSKA", "17": "SPLITSKO-DALMATINSKA", "18": "ISTARSKA", "19": "DUBROVAČKO-NERETVANSKA", "20": "MEĐIMURSKA", "21": "GRAD ZAGREB"}, "djel": [["00000", "Subjekti bez djelatnosti"], ["01110", "Uzgoj žitarica, osim riže, uzgoj mahunarki i uljanog sjemenja"], ["01120", "Uzgoj riže"], ["01130", "Uzgoj povrća, dinja i lubenica, korjenastog i gomoljastog povrća"], ["01140", "Uzgoj šećerne trske"], ["01150", "Uzgoj duhana"], ["01160", "Uzgoj predivog bilja"], ["01190", "Uzgoj ostalih jednogodišnjih usjeva"], ["01210", "Uzgoj grožđa"], ["01220", "Uzgoj tropskog i suptropskog voća"], ["01230", "Uzgoj agruma"], ["01240", "Uzgoj jezgričavog i koštuničavog voća"], ["01250", "Uzgoj bobičastog, orašastog i ostalog voća"], ["01260", "Uzgoj uljanih plodova"], ["01270", "Uzgoj usjeva za pripremanje napitaka"], ["01280", "Uzgoj začinskog, aromatskog, ljekovitog bilja i bilja za uporabu u farmaciji"], ["01290", "Uzgoj ostalih višegodišnjih usjeva"], ["01300", "Uzgoj sadnog materijala i ukrasnog bilja"], ["01410", "Uzgoj mliječnih goveda"], ["01420", "Uzgoj ostalih goveda i bivola"], ["01430", "Uzgoj konja i drugih kopitara"], ["01440", "Uzgoj deva i ljama"], ["01451", "Uzgoj mliječnih ovaca i koza"], ["01459", "Uzgoj ostalih ovaca i koza"], ["01460", "Uzgoj svinja"], ["01471", "Uzgoj nesilica"], ["01472", "Uzgoj brojlera"], ["01479", "Uzgoj ostale peradi"], ["01481", "Uzgoj pčela"], ["01489", "Uzgoj ostalih životinja, d. n."], ["01500", "Mješovita poljoprivreda"], ["01610", "Pomoćne djelatnosti za uzgoj usjeva"], ["01620", "Pomoćne djelatnosti za uzgoj životinja"], ["01630", "Djelatnosti koje se obavljaju nakon žetve usjeva i dorada sjemena za sjemenski materijal"], ["01700", "Lov, stupičarenje i uslužne djelatnosti povezane s njima"], ["02100", "Uzgoj šuma i ostale djelatnosti u šumarstvu povezane s njime"], ["02200", "Sječa drva"], ["02300", "Skupljanje samoniklih plodova i proizvoda, osim drva"], ["02400", "Pomoćne usluge u šumarstvu"], ["03110", "Morski ribolov"], ["03120", "Slatkovodni ribolov"], ["03210", "Morska akvakultura"], ["03220", "Slatkovodna akvakultura"], ["03300", "Pomoćne djelatnosti u ribolovu i akvakulturi"], ["05100", "Vađenje kamenog ugljena"], ["05200", "Vađenje lignita"], ["06100", "Vađenje sirove nafte"], ["06200", "Vađenje prirodnog plina"], ["07100", "Vađenje željeznih ruda"], ["07210", "Vađenje uranovih i torijevih ruda"], ["07290", "Vađenje ostalih ruda obojenih metala"], ["08110", "Vađenje ukrasnoga kamena, vapnenca, gipsa, škriljevca i drugoga kamena"], ["08120", "Djelatnosti šljunčara i pješčara te vađenje gline i kaolina"], ["08910", "Vađenje minerala za kemikalije i gnojiva"], ["08920", "Vađenje treseta"], ["08930", "Vađenje soli"], ["08990", "Ostalo rudarstvo i vađenje, d. n."], ["09100", "Pomoćne djelatnosti za vađenje nafte i prirodnog plina"], ["09900", "Pomoćne djelatnosti za ostalo rudarstvo i vađenje"], ["10110", "Prerada i konzerviranje mesa, osim mesa peradi"], ["10120", "Prerada i konzerviranje mesa peradi"], ["10130", "Proizvodnja proizvoda od mesa i mesa peradi"], ["10200", "Prerada i konzerviranje riba, rakova i mekušaca"], ["10310", "Prerada i konzerviranje krumpira"], ["10320", "Proizvodnja sokova od voća i povrća"], ["10390", "Ostala prerada i konzerviranje voća i povrća"], ["10410", "Proizvodnja ulja i masti"], ["10420", "Proizvodnja margarina i sličnih jestivih masti"], ["10510", "Proizvodnja mliječnih proizvoda"], ["10520", "Proizvodnja sladoleda i ostalih jestivih ledenih proizvoda"], ["10610", "Proizvodnja mlinskih proizvoda"], ["10620", "Proizvodnja škroba i škrobnih proizvoda"], ["10710", "Proizvodnja kruha, proizvodnja svježih peciva i sličnih proizvoda te kolača"], ["10720", "Proizvodnja dvopeka, keksa, trajnih peciva i kolača"], ["10730", "Proizvodnja tjestenine"], ["10810", "Proizvodnja šećera"], ["10820", "Proizvodnja kakao, čokoladnih proizvoda i proizvoda od šećera"], ["10830", "Prerada čaja i kave"], ["10840", "Proizvodnja začina i drugih dodataka hrani"], ["10850", "Proizvodnja gotove hrane i jela"], ["10860", "Proizvodnja homogeniziranih prehrambenih pripravaka i dijetetske hrane"], ["10890", "Proizvodnja ostalih prehrambenih proizvoda, d. n."], ["10910", "Proizvodnja pripremljene stočne hrane"], ["10920", "Proizvodnja pripremljene hrane za kućne ljubimce"], ["11010", "Destiliranje, pročišćavanje i miješanje alkoholnih pića"], ["11020", "Proizvodnja vina od grožđa"], ["11030", "Proizvodnja jabukovače i ostalih fermentiranih voćnih pića"], ["11040", "Proizvodnja ostalih nedestiliranih fermentiranih pića"], ["11050", "Proizvodnja piva"], ["11060", "Proizvodnja slada"], ["11070", "Proizvodnja osvježavajućih napitaka i flaširane vode"], ["12001", "Obrada duhanskih listova"], ["12002", "Proizvodnja ostalih duhanskih proizvoda"], ["13100", "Priprema i predenje tekstilnih vlakana"], ["13200", "Tkanje tekstila"], ["13300", "Dovršavanje tekstila"], ["13910", "Proizvodnja pletenih i kukičanih tkanina"], ["13920", "Proizvodnja tekstilnih proizvoda za kućanstvo i gotovih proizvoda za pokućstvo"], ["13930", "Proizvodnja tepiha i sagova"], ["13940", "Proizvodnja užadi, konopaca, upletenoga konca i mreža"], ["13950", "Proizvodnja netkanog tekstila i netkanih proizvoda"], ["13960", "Proizvodnja ostalog tehničkog i industrijskog tekstila"], ["13990", "Proizvodnja ostalog tekstila, d. n."], ["14100", "Proizvodnja pletene i kukičane odjeće"], ["14210", "Proizvodnja vanjske odjeće"], ["14220", "Proizvodnja rublja"], ["14230", "Proizvodnja radne odjeće"], ["14240", "Proizvodnja kožne odjeće i proizvoda od krzna"], ["14290", "Proizvodnja ostale odjeće i pribora za odjeću, d. n."], ["15110", "Štavljenje, obrada, bojenje kože i krzna"], ["15120", "Proizvodnja putnih i ručnih torbi, sedlarskih i remenarskih proizvoda od bilo kojeg materijala"], ["15200", "Proizvodnja obuće"], ["16110", "Piljenje i blanjanje drva"], ["16120", "Obrada i dorada drva"], ["16210", "Proizvodnja furnira i ostalih ploča od drva"], ["16220", "Proizvodnja sastavljenog parketa"], ["16230", "Proizvodnja ostale građevne stolarije i elemenata"], ["16240", "Proizvodnja ambalaže od drva"], ["16250", "Proizvodnja vrata i prozora od drva"], ["16260", "Proizvodnja krutih goriva iz biljne biomase"], ["16270", "Dorada proizvoda od drva"], ["16280", "Proizvodnja ostalih proizvoda od drva i pluta, slame i pletarskih materijala"], ["17110", "Proizvodnja celuloze"], ["17120", "Proizvodnja papira i kartona"], ["17210", "Proizvodnja valovitog papira, kartona i ambalaže od papira i kartona"], ["17220", "Proizvodnja robe za kućanstvo i higijenu te toaletnih potrepština od papira"], ["17230", "Proizvodnja uredskog materijala od papira"], ["17240", "Proizvodnja zidnih tapeta"], ["17250", "Proizvodnja ostalih proizvoda od papira i kartona"], ["18110", "Tiskanje novina"], ["18120", "Ostalo tiskanje"], ["18130", "Usluge pripreme za tisak i objavljivanje"], ["18140", "Knjigoveške i srodne usluge"], ["18200", "Umnožavanje snimljenih zapisa"], ["19100", "Proizvodnja proizvoda koksnih peći"], ["19200", "Proizvodnja rafiniranih naftnih proizvoda i proizvoda od fosilnih goriva"], ["20110", "Proizvodnja industrijskih plinova"], ["20120", "Proizvodnja bojila i pigmenata"], ["20130", "Proizvodnja ostalih anorganskih osnovnih kemikalija"], ["20140", "Proizvodnja ostalih organskih osnovnih kemikalija"], ["20150", "Proizvodnja gnojiva i dušičnih spojeva"], ["20160", "Proizvodnja plastike u primarnim oblicima"], ["20170", "Proizvodnja sintetičkoga kaučuka u primarnim oblicima"], ["20200", "Proizvodnja pesticida, dezinficijensa i drugih agrokemijskih proizvoda"], ["20300", "Proizvodnja boja, lakova i sličnih premaza, grafičkih boja i kitova"], ["20410", "Proizvodnja sapuna i deterdženata, sredstava za čišćenje i poliranje"], ["20420", "Proizvodnja parfema i toaletno-kozmetičkih preparata"], ["20510", "Proizvodnja tekućih biogoriva"], ["20591", "Proizvodnja eksploziva"], ["20592", "Proizvodnja ljepila"], ["20593", "Proizvodnja eteričnih ulja"], ["20599", "Proizvodnja ostalih kemijskih proizvoda"], ["20600", "Proizvodnja umjetnih vlakana"], ["21100", "Proizvodnja osnovnih farmaceutskih proizvoda"], ["21200", "Proizvodnja farmaceutskih pripravaka"], ["22110", "Proizvodnja, protektiranje i obnova vanjskih i unutrašnjih guma za vozila te proizvodnja zračnica"], ["22120", "Proizvodnja ostalih proizvoda od gume"], ["22210", "Proizvodnja ploča, listova, cijevi i profila od plastike"], ["22220", "Proizvodnja ambalaže od plastike"], ["22230", "Proizvodnja vrata i prozora od plastike"], ["22240", "Proizvodnja proizvoda od plastike za građevinarstvo"], ["22250", "Obrada i dovršavanje proizvoda od plastike"], ["22260", "Proizvodnja ostalih proizvoda od plastike"], ["23110", "Proizvodnja ravnog stakla"], ["23120", "Oblikovanje i obrada ravnog stakla"], ["23130", "Proizvodnja šupljeg stakla"], ["23140", "Proizvodnja staklenih vlakana"], ["23150", "Proizvodnja i obrada ostalog stakla uključujući tehničku robu od stakla"], ["23200", "Proizvodnja vatrostalnih proizvoda"], ["23310", "Proizvodnja keramičkih pločica i ploča"], ["23320", "Proizvodnja opeke, crijepa i ostalih proizvoda od pečene gline za građevinarstvo"], ["23410", "Proizvodnja keramičkih proizvoda za kućanstvo i ukrasnih predmeta"], ["23420", "Proizvodnja sanitarne keramike"], ["23430", "Proizvodnja keramičkih izolatora i izolacijskog pribora"], ["23440", "Proizvodnja ostalih tehničkih proizvoda od keramike"], ["23450", "Proizvodnja ostalih proizvoda od keramike"], ["23510", "Proizvodnja cementa"], ["23520", "Proizvodnja vapna i gipsa"], ["23610", "Proizvodnja proizvoda od betona za građevinarstvo"], ["23620", "Proizvodnja proizvoda od gipsa za građevinarstvo"], ["23630", "Proizvodnja gotove betonske smjese"], ["23640", "Proizvodnja žbuke"], ["23650", "Proizvodnja fibrocementa"], ["23660", "Proizvodnja ostalih proizvoda od betona, cementa i gipsa"], ["23700", "Rezanje, oblikovanje i obrada kamena"], ["23910", "Proizvodnja brusnih proizvoda"], ["23990", "Proizvodnja ostalih nemetalnih mineralnih proizvoda, d. n."], ["24100", "Proizvodnja sirovog željeza, čelika i ferolegura"], ["24200", "Proizvodnja čeličnih cijevi, šupljih profila i pripadajućeg pribora"], ["24310", "Hladno vučenje šipki"], ["24320", "Hladno valjanje uskih vrpci"], ["24330", "Hladno oblikovanje i profiliranje"], ["24340", "Hladno vučenje žica"], ["24410", "Proizvodnja plemenitih metala"], ["24420", "Proizvodnja aluminija"], ["24430", "Proizvodnja olova, cinka i kositra"], ["24440", "Proizvodnja bakra"], ["24450", "Proizvodnja ostalih obojenih metala"], ["24460", "Obrada nuklearnoga goriva"], ["24510", "Lijevanje željeza"], ["24520", "Lijevanje čelika"], ["24530", "Lijevanje lakih metala"], ["24540", "Lijevanje ostalih obojenih metala"], ["25110", "Proizvodnja metalnih konstrukcija i njihovih dijelova"], ["25120", "Proizvodnja vrata i prozora od metala"], ["25210", "Proizvodnja radijatora, parnih kotlova i kotlova za centralno grijanje"], ["25220", "Proizvodnja ostalih cisterni, rezervoara i sličnih posuda od metala"], ["25300", "Proizvodnja oružja i streljiva"], ["25400", "Kovanje i oblikovanje metala i metalurgija praha"], ["25510", "Prevlačenje metala"], ["25520", "Toplinska obrada metala"], ["25530", "Strojna obrada metala"], ["25610", "Proizvodnja pribora za jelo i sječiva"], ["25620", "Proizvodnja brava i okova"], ["25630", "Proizvodnja alata"], ["25910", "Proizvodnja čeličnih bačvi i sličnih posuda"], ["25920", "Proizvodnja ambalaže od lakih metala"], ["25930", "Proizvodnja proizvoda od žice, lanaca i opruga"], ["25940", "Proizvodnja zakovica i vijčane robe"], ["25990", "Proizvodnja ostalih gotovih proizvoda od metala, d. n."], ["26110", "Proizvodnja elektroničkih komponenata"], ["26120", "Proizvodnja punih elektroničkih ploča"], ["26200", "Proizvodnja računala i periferne opreme"], ["26300", "Proizvodnja komunikacijske opreme"], ["26400", "Proizvodnja elektroničkih uređaja za široku potrošnju"], ["26510", "Proizvodnja instrumenata i aparata za mjerenje, ispitivanje i navigaciju"], ["26520", "Proizvodnja satova"], ["26600", "Proizvodnja opreme za zračenje, elektromedicinske i elektroterapeutske opreme"], ["26700", "Proizvodnja optičkih instrumenata, magnetskih i optičkih medija te fotografske opreme"], ["27110", "Proizvodnja elektromotora, generatora i transformatora"], ["27120", "Proizvodnja uređaja za distribuciju i kontrolu električne energije"], ["27200", "Proizvodnja baterija i akumulatora"], ["27310", "Proizvodnja kablova od optičkih vlakana"], ["27320", "Proizvodnja ostalih elektroničkih i električnih žica i kablova"], ["27330", "Proizvodnja elektroinstalacijskog materijala"], ["27400", "Proizvodnja rasvjetne opreme"], ["27510", "Proizvodnja električnih aparata za kućanstvo"], ["27520", "Proizvodnja neelektričnih aparata za kućanstvo"], ["27900", "Proizvodnja ostale električne opreme"], ["28110", "Proizvodnja motora i turbina, osim motora za zrakoplove i motorna vozila"], ["28120", "Proizvodnja hidrauličnih pogonskih uređaja"], ["28130", "Proizvodnja ostalih crpki i kompresora"], ["28140", "Proizvodnja ostalih slavina i ventila"], ["28150", "Proizvodnja ležajeva, prijenosnika te prijenosnih i pogonskih elemenata"], ["28210", "Proizvodnja peći, kamina i trajne opreme za grijanje kućanstva"], ["28220", "Proizvodnja uređaja za dizanje i prenošenje"], ["28230", "Proizvodnja uredskih strojeva i opreme, osim proizvodnje računala i periferne opreme"], ["28240", "Proizvodnja mehaniziranog ručnog alata"], ["28250", "Proizvodnja rashladne i ventilacijske opreme, osim za kućanstva"], ["28290", "Proizvodnja ostalih strojeva za opće namjene, d. n."], ["28300", "Proizvodnja strojeva za poljoprivredu i šumarstvo"], ["28410", "Proizvodnja strojeva za oblikovanje metala i alatnih strojeva za obradu metala"], ["28420", "Proizvodnja ostalih alatnih strojeva"], ["28910", "Proizvodnja strojeva za metalurgiju"], ["28920", "Proizvodnja strojeva za rudnike, kamenolome i građevinarstvo"], ["28930", "Proizvodnja strojeva za industriju hrane, pića i duhana"], ["28940", "Proizvodnja strojeva za industriju tekstila, odjeće i kože"], ["28950", "Proizvodnja strojeva za industriju papira i kartona"], ["28960", "Proizvodnja strojeva za plastiku i gumu"], ["28970", "Proizvodnja strojeva za aditivnu proizvodnju"], ["28990", "Proizvodnja ostalih strojeva za posebne namjene, d. n."], ["29100", "Proizvodnja motornih vozila"], ["29200", "Proizvodnja karoserija za motorna vozila, proizvodnja prikolica i poluprikolica"], ["29310", "Proizvodnja električne i elektroničke opreme za motorna vozila"], ["29320", "Proizvodnja ostalih dijelova i pribora za motorna vozila"], ["30110", "Gradnja civilnih brodova i plutajućih objekata"], ["30120", "Gradnja čamaca za razonodu i sportskih čamaca"], ["30130", "Gradnja vojnih brodova i plovila"], ["30200", "Proizvodnja željezničkih lokomotiva i tračničkih vozila"], ["30310", "Proizvodnja civilnih zrakoplova i svemirskih letjelica te srodnih strojeva i opreme"], ["30320", "Proizvodnja vojnih zrakoplova i svemirskih letjelica te srodnih strojeva i opreme"], ["30400", "Proizvodnja vojnih borbenih vozila"], ["30910", "Proizvodnja motocikala"], ["30920", "Proizvodnja bicikala i invalidskih kolica"], ["30990", "Proizvodnja ostalih prijevoznih sredstava, d. n."], ["31001", "Proizvodnja namještaja za poslovne i prodajne prostore"], ["31002", "Proizvodnja kuhinjskog namještaja"], ["31003", "Proizvodnja madraca"], ["31009", "Proizvodnja ostalog namještaja"], ["32110", "Proizvodnja kovanog novca"], ["32120", "Proizvodnja nakita i srodnih proizvoda"], ["32130", "Proizvodnja imitacije nakita (bižuterije) i srodnih proizvoda"], ["32200", "Proizvodnja glazbenih instrumenata"], ["32300", "Proizvodnja sportske opreme"], ["32400", "Proizvodnja igara i igračaka"], ["32500", "Proizvodnja medicinskih i stomatoloških instrumenata i pribora"], ["32910", "Proizvodnja metli i četki"], ["32990", "Ostala prerađivačka industrija, d. n."], ["33110", "Popravak i održavanje proizvoda od metala"], ["33120", "Popravak i održavanje strojeva"], ["33130", "Popravak i održavanje elektroničke i optičke opreme"], ["33140", "Popravak i održavanje električne opreme"], ["33150", "Popravak i održavanje civilnih brodova i čamaca"], ["33160", "Popravak i održavanje civilnih zrakoplova i svemirskih letjelica"], ["33170", "Popravak i održavanje ostalih civilnih prijevoznih sredstava"], ["33180", "Popravak i održavanje vojnih borbenih vozila, brodova, čamaca, zrakoplova i svemirskih letjelica"], ["33190", "Popravak i održavanje ostale opreme"], ["33200", "Instalacija industrijskih strojeva i opreme"], ["35110", "Proizvodnja električne energije iz neobnovljivih izvora"], ["35120", "Proizvodnja električne energije iz obnovljivih izvora"], ["35130", "Prijenos električne energije"], ["35140", "Distribucija električne energije"], ["35150", "Trgovina električnom energijom"], ["35160", "Skladištenje električne energije"], ["35210", "Proizvodnja plina"], ["35221", "Djelatnosti distribucije plina distribucijskom mrežom"], ["35222", "Djelatnosti opskrbe plinom putem distribucijske mreže"], ["35229", "Djelatnosti distribucije ostalih plinovitih goriva distribucijskom mrežom"], ["35230", "Trgovina plinom distribucijskom mrežom"], ["35240", "Skladištenje plina kao dio usluge opskrbe putem mreže"], ["35300", "Opskrba parom i klimatizacija"], ["35400", "Djelatnosti brokera i agenata za električnu energiju i plin"], ["36000", "Zahvaćanje, pročišćavanje i opskrba vodom"], ["37000", "Obrada otpadnih voda"], ["38110", "Sakupljanje neopasnog otpada"], ["38120", "Sakupljanje opasnog otpada"], ["38210", "Oporaba materijala"], ["38220", "Oporaba energije"], ["38230", "Ostala oporaba otpada"], ["38310", "Spaljivanje otpada bez dobivanja energije"], ["38320", "Odlaganje ili trajno skladištenje otpada"], ["38330", "Ostalo zbrinjavanje otpada"], ["39000", "Djelatnosti sanacije okoliša i ostale djelatnosti gospodarenja otpadom"], ["41000", "Građenje stambenih i nestambenih zgrada"], ["42110", "Građenje cesta i autocesta"], ["42120", "Građenje željezničkih pruga i podzemnih željeznica"], ["42130", "Građenje mostova i tunela"], ["42210", "Građenje cjevovoda za tekućine i plinove"], ["42220", "Građenje elektroenergetskih i telekomunikacijskih vodova"], ["42910", "Građenje vodnih građevina"], ["42990", "Građenje ostalih građevina niskogradnje, d. n."], ["43110", "Uklanjanje građevina"], ["43120", "Pripremni radovi na gradilištu"], ["43130", "Pokusno bušenje i sondiranje terena za gradnju"], ["43210", "Elektroinstalacijski radovi"], ["43220", "Uvođenje instalacija vodovoda, kanalizacije i plina te instalacija za grijanje i klimatizaciju"], ["43230", "Radovi na postavljanju izolacije"], ["43240", "Ostali građevinski instalacijski radovi"], ["43310", "Fasadni i štukaturski radovi"], ["43320", "Ugradnja stolarije"], ["43330", "Postavljanje podnih i zidnih obloga"], ["43340", "Soboslikarski i staklarski radovi"], ["43350", "Ostali završni građevinski radovi"], ["43410", "Radovi na krovištu"], ["43420", "Ostali specijalizirani građevinski radovi u gradnji zgrada"], ["43500", "Specijalizirani građevinski radovi u niskogradnji"], ["43600", "Usluge posredovanja u pružanju specijaliziranih građevinskih usluga"], ["43910", "Zidarski radovi"], ["43990", "Ostale specijalizirane građevinske djelatnosti, d. n."], ["46110", "Posredovanje u trgovini na veliko poljoprivrednim sirovinama, živim životinjama, tekstilnim sirovinama i poluproizvodima"], ["46120", "Posredovanje u trgovini na veliko gorivima, rudama, metalima i industrijskim kemikalijama"], ["46130", "Posredovanje u trgovini na veliko drvom i građevinskim materijalom"], ["46140", "Posredovanje u trgovini na veliko strojevima, industrijskom opremom, brodovima i zrakoplovima"], ["46150", "Posredovanje u trgovini na veliko namještajem, proizvodima za kućanstvo i željeznom robom"], ["46160", "Posredovanje u trgovini na veliko tekstilom, odjećom, krznom, obućom i kožnim proizvodima"], ["46170", "Posredovanje u trgovini na veliko hranom, pićima i duhanom"], ["46180", "Posredovanje u trgovini na veliko ostalim određenim proizvodima"], ["46190", "Posredovanje u nespecijaliziranoj trgovini na veliko"], ["46210", "Trgovina na veliko žitaricama, sirovim duhanom, sjemenjem i stočnom hranom"], ["46220", "Trgovina na veliko cvijećem i sadnicama"], ["46230", "Trgovina na veliko živim životinjama"], ["46240", "Trgovina na veliko sirovim i štavljenim kožama"], ["46310", "Trgovina na veliko voćem i povrćem"], ["46320", "Trgovina na veliko mesom, mesnim proizvodima, ribom i ribljim proizvodima"], ["46330", "Trgovina na veliko mlijekom, mliječnim proizvodima, jajima, jestivim uljima i mastima"], ["46340", "Trgovina na veliko pićima"], ["46350", "Trgovina na veliko duhanskim proizvodima"], ["46360", "Trgovina na veliko šećerom, čokoladom i proizvodima od šećera"], ["46370", "Trgovina na veliko kavom, čajem, kakaom i začinima"], ["46380", "Trgovina na veliko ostalom hranom"], ["46390", "Nespecijalizirana trgovina na veliko hranom, pićima i duhanskim proizvodima"], ["46410", "Trgovina na veliko tekstilom"], ["46420", "Trgovina na veliko odjećom i obućom"], ["46430", "Trgovina na veliko električnim aparatima za kućanstvo"], ["46440", "Trgovina na veliko porculanom, staklom i sredstvima za čišćenje"], ["46450", "Trgovina na veliko parfemima i kozmetikom"], ["46460", "Trgovina na veliko farmaceutskim i medicinskim proizvodima"], ["46470", "Trgovina na veliko namještajem za kućanstva, urede i trgovine, sagovima i opremom za rasvjetu"], ["46480", "Trgovina na veliko satovima i nakitom"], ["46490", "Trgovina na veliko ostalim proizvodima za kućanstvo"], ["46500", "Trgovina na veliko informacijsko-komunikacijskom opremom"], ["46610", "Trgovina na veliko poljoprivrednim strojevima, opremom i priborom"], ["46620", "Trgovina na veliko alatnim strojevima"], ["46630", "Trgovina na veliko strojevima za rudarstvo i građevinarstvo"], ["46640", "Trgovina na veliko ostalim strojevima i opremom"], ["46710", "Trgovina na veliko motornim vozilima"], ["46720", "Trgovina na veliko dijelovima i priborom za motorna vozila"], ["46730", "Trgovina na veliko motociklima te dijelovima i priborom za motocikle"], ["46810", "Trgovina na veliko krutim, tekućim i plinovitim gorivima i srodnim proizvodima"], ["46820", "Trgovina na veliko metalima i metalnim rudama"], ["46830", "Trgovina na veliko drvom, građevinskim materijalom i sanitarnom opremom"], ["46840", "Trgovina na veliko željeznom robom, instalacijskim materijalom i opremom za vodovod i grijanje"], ["46850", "Trgovina na veliko kemijskim proizvodima"], ["46860", "Trgovina na veliko ostalim poluproizvodima"], ["46870", "Trgovina na veliko ostacima i otpacima"], ["46890", "Ostala specijalizirana trgovina na veliko, d. n."], ["46900", "Nespecijalizirana trgovina na veliko"], ["47110", "Nespecijalizirana trgovina na malo pretežno hranom, pićima i duhanskim proizvodima"], ["47120", "Ostala nespecijalizirana trgovina na malo"], ["47210", "Trgovina na malo voćem i povrćem"], ["47220", "Trgovina na malo mesom i mesnim proizvodima"], ["47230", "Trgovina na malo ribama, rakovima i mekušcima"], ["47240", "Trgovina na malo kruhom, kolačima i slatkim proizvodima"], ["47250", "Trgovina na malo pićima"], ["47260", "Trgovina na malo duhanskim proizvodima"], ["47270", "Trgovina na malo ostalim prehrambenim proizvodima"], ["47300", "Trgovina na malo motornim gorivima i mazivima"], ["47400", "Trgovina na malo informacijsko-komunikacijskom opremom"], ["47510", "Trgovina na malo tekstilom"], ["47520", "Trgovina na malo željeznom robom, građevinskim materijalom, bojama i staklom"], ["47530", "Trgovina na malo sagovima, prostirkama za pod, zidnim i podnim oblogama"], ["47540", "Trgovina na malo električnim aparatima za kućanstvo"], ["47550", "Trgovina na malo namještajem, opremom za rasvjetu, stolnim posuđem i ostalim proizvodima za kućanstvo"], ["47610", "Trgovina na malo knjigama"], ["47620", "Trgovina na malo novinama i ostalim periodičnim publikacijama te papirnatom robom i pisaćim priborom"], ["47630", "Trgovina na malo sportskom opremom"], ["47640", "Trgovina na malo igrama i igračkama"], ["47690", "Trgovina na malo proizvodima za kulturu i rekreaciju, d. n."], ["47710", "Trgovina na malo odjećom"], ["47720", "Trgovina na malo obućom i proizvodima od kože"], ["47730", "Trgovina na malo farmaceutskim proizvodima"], ["47741", "Trgovina na malo naočalama"], ["47749", "Ostala trgovina na malo medicinskim i ortopedskim proizvodima"], ["47750", "Trgovina na malo kozmetičkim i toaletnim proizvodima"], ["47761", "Trgovina na malo cvijećem"], ["47762", "Trgovina na malo sadnicama i gnojivom"], ["47763", "Trgovina na malo kućnim ljubimcima i hranom za kućne ljubimce"], ["47770", "Trgovina na malo satovima i nakitom"], ["47780", "Trgovina na malo ostalom novom robom"], ["47790", "Trgovina na malo rabljenom robom"], ["47810", "Trgovina na malo motornim vozilima"], ["47820", "Trgovina na malo dijelovima i priborom za motorna vozila"], ["47830", "Trgovina na malo motociklima, njihovim dijelovima i priborom"], ["47910", "Uslužne djelatnosti posredovanja u nespecijaliziranoj trgovini na malo"], ["47920", "Uslužne djelatnosti posredovanja u specijaliziranoj trgovini na malo"], ["49110", "Prijevoz putnika nacionalnom i međunarodnom željeznicom"], ["49120", "Ostali željeznički prijevoz putnika"], ["49200", "Željeznički prijevoz robe"], ["49310", "Linijski cestovni prijevoz putnika"], ["49320", "Povremeni cestovni prijevoz putnika"], ["49330", "Uslužne djelatnosti prijevoza putnika vozilom s vozačem na zahtjev"], ["49340", "Prijevoz putnika žičarom i vučnicom"], ["49390", "Ostali kopneni prijevoz putnika, d. n."], ["49410", "Cestovni prijevoz robe"], ["49420", "Usluge preseljenja"], ["49500", "Cjevovodni transport"], ["50101", "Prijevoz putnika na plovilima za kružna putovanja i izlete"], ["50109", "Ostali pomorski i obalni prijevoz putnika"], ["50200", "Pomorski i obalni prijevoz robe"], ["50300", "Prijevoz putnika unutarnjim vodnim putovima"], ["50400", "Prijevoz robe unutarnjim vodnim putovima"], ["51100", "Zračni prijevoz putnika"], ["51210", "Zračni prijevoz robe"], ["51220", "Svemirski prijevoz"], ["52100", "Skladištenje robe"], ["52210", "Uslužne djelatnosti u vezi s kopnenim prijevozom"], ["52220", "Uslužne djelatnosti u vezi s vodnim prijevozom"], ["52230", "Uslužne djelatnosti u vezi sa zračnim prijevozom"], ["52240", "Prekrcaj tereta"], ["52250", "Uslužne djelatnosti u logistici"], ["52260", "Ostale prateće djelatnosti u prijevozu"], ["52310", "Uslužne djelatnosti posredovanja u prijevozu robe"], ["52320", "Uslužne djelatnosti posredovanja u prijevozu putnika"], ["53100", "Djelatnosti pružanja univerzalnih poštanskih usluga"], ["53200", "Djelatnosti pružanja ostalih poštanskih i kurirskih usluga"], ["53300", "Uslužne djelatnosti posredovanja u pružanju poštanskih i kurirskih usluga"], ["55100", "Hoteli i sličan smještaj"], ["55200", "Odmarališta i slični objekti za kraći odmor"], ["55300", "Kampovi i prostori za kampiranje"], ["55400", "Uslužne djelatnosti posredovanja u pružanju smještaja"], ["55900", "Ostali smještaj"], ["56110", "Djelatnosti restorana"], ["56120", "Pokretne djelatnosti usluživanja hrane"], ["56210", "Djelatnosti keteringa za razna događanja"], ["56220", "Usluge keteringa na osnovi ugovora i ostale djelatnosti pripreme i usluživanja hrane"], ["56300", "Djelatnosti pripreme i usluživanja pića"], ["56400", "Uslužne djelatnosti posredovanja u pripremi i usluživanju hrane i pića"], ["58111", "Izdavanje udžbenika"], ["58119", "Izdavanje ostalih knjiga"], ["58120", "Izdavanje novina"], ["58130", "Izdavanje časopisa i periodičnih publikacija"], ["58190", "Ostale izdavačke djelatnosti, osim izdavanja softvera"], ["58210", "Izdavanje videoigara"], ["58290", "Ostalo izdavanje softvera"], ["59110", "Proizvodnja filmova, videofilmova i televizijskog programa"], ["59120", "Djelatnosti koje slijede nakon proizvodnje filmova i videofilmova i televizijskog programa"], ["59130", "Distribucija filmova, videofilmova i televizijskog programa"], ["59140", "Djelatnosti prikazivanja filmova"], ["59200", "Djelatnosti snimanja zvučnih zapisa i izdavanja glazbenih zapisa"], ["60100", "Emitiranje radijskog programa i distribucija audio sadržaja"], ["60200", "Emitiranje televizijskog programa i video distribucija"], ["60310", "Djelatnosti novinskih agencija"], ["60390", "Ostale djelatnosti distribucije sadržaja"], ["61100", "Žičane, bežične i satelitske telekomunikacijske djelatnosti"], ["61200", "Djelatnosti preprodaje telekomunikacijskih usluga i usluge posredovanja u telekomunikacijskim djelatnostima"], ["61900", "Ostale telekomunikacijske djelatnosti"], ["62101", "Programiranje videoigara"], ["62109", "Ostalo računalno programiranje"], ["62200", "Računalno savjetovanje i djelatnosti upravljanja računalnom opremom"], ["62900", "Ostale uslužne djelatnosti u vezi s informacijskom tehnologijom i računalima"], ["63100", "Računalna infrastruktura, obrada podataka, usluge poslužitelja i povezane djelatnosti"], ["63910", "Djelatnosti internetskih portala"], ["63920", "Ostale informacijske uslužne djelatnosti"], ["64110", "Središnje bankarstvo"], ["64190", "Ostalo novčarsko posredovanje"], ["64210", "Djelatnosti holding društava"], ["64220", "Djelatnosti kanala financiranja"], ["64310", "Djelatnost novčanih i nenovčanih investicijskih fondova"], ["64320", "Djelatnosti uzajamnih fondova (trustova), imovinskih računa i računa o zastupanju"], ["64910", "Financijski leasing"], ["64920", "Ostalo kreditno posredovanje"], ["64990", "Ostale financijske uslužne djelatnosti, osim osiguranja i mirovinskih fondova, d. n."], ["65110", "Životno osiguranje"], ["65120", "Ostalo osiguranje, osim životnog"], ["65200", "Reosiguranje"], ["65300", "Mirovinski fondovi"], ["66110", "Upravljanje financijskim tržištima"], ["66120", "Djelatnosti posredovanja u poslovanju vrijednosnim papirima i robnim ugovorima"], ["66190", "Ostale pomoćne djelatnosti za financijske usluge, osim osiguranja i mirovinskih fondova"], ["66210", "Procjena rizika i štete"], ["66220", "Djelatnosti agenata i posrednika osiguranja"], ["66290", "Pomoćne djelatnosti u osiguranju i mirovinskim fondovima, d. n."], ["66300", "Djelatnosti upravljanja fondovima"], ["68110", "Kupnja i prodaja vlastitih nekretnina"], ["68120", "Organizacija izvedbe projekata za zgrade"], ["68200", "Iznajmljivanje i upravljanje vlastitim nekretninama ili nekretninama uzetim u zakup (leasing)"], ["68310", "Uslužne djelatnosti posredovanja u poslovanju nekretninama"], ["68320", "Ostale djelatnosti poslovanja nekretninama uz naplatu ili na osnovi ugovora"], ["69101", "Djelatnosti javnih bilježnika"], ["69102", "Djelatnosti odvjetnika"], ["69109", "Ostale pravne djelatnosti"], ["69201", "Računovodstvene i knjigovodstvene djelatnosti"], ["69202", "Revizijske djelatnosti"], ["69203", "Porezno savjetovanje"], ["70100", "Upravljačke djelatnosti"], ["70200", "Savjetovanje u vezi s poslovanjem i ostalim upravljanjem"], ["71111", "Arhitektonsko projektiranje"], ["71112", "Urbanističko i prostorno planiranje"], ["71121", "Geodetske i geoinformatičke djelatnosti"], ["71129", "Ostalo inženjerstvo i s njim povezano tehničko savjetovanje"], ["71200", "Tehničko ispitivanje i analiza"], ["72100", "Istraživanje i eksperimentalni razvoj u prirodnim, tehničkim i tehnološkim znanostima"], ["72200", "Istraživanje i eksperimentalni razvoj u društvenim i humanističkim znanostima"], ["73110", "Djelatnosti agencija za promidžbu"], ["73120", "Oglašavanje putem medija"], ["73200", "Istraživanje tržišta i ispitivanje javnog mnijenja"], ["73300", "Odnosi s javnošću i djelatnosti priopćavanja"], ["74110", "Djelatnosti industrijskog i modnog dizajna"], ["74120", "Djelatnosti grafičkog dizajna i vizualnih komunikacija"], ["74130", "Djelatnosti uređivanja interijera"], ["74140", "Ostale specijalizirane dizajnerske djelatnosti"], ["74200", "Fotografske djelatnosti"], ["74301", "Djelatnosti pismenog prevođenja"], ["74302", "Djelatnosti usmenog prevođenja"], ["74910", "Uslužne djelatnosti posredovanja i promidžbe u vezi s patentima"], ["74991", "Djelatnosti zaštite na radu"], ["74999", "Sve ostale razne stručne, znanstvene i tehničke djelatnosti, d. n."], ["75000", "Veterinarske djelatnosti"], ["77110", "Iznajmljivanje i davanje u zakup (leasing) automobila i motornih vozila lake kategorije"], ["77120", "Iznajmljivanje i davanje u zakup (leasing) kamiona"], ["77211", "Iznajmljivanje i davanje u zakup (leasing) plovila za razonodu"], ["77219", "Iznajmljivanje i davanje u zakup (leasing) ostale opreme za rekreaciju i sport"], ["77220", "Iznajmljivanje i davanje u zakup (leasing) ostalih predmeta za osobnu uporabu i kućanstvo"], ["77310", "Iznajmljivanje i davanje u zakup (leasing) poljoprivrednih strojeva i opreme"], ["77320", "Iznajmljivanje i davanje u zakup (leasing) strojeva i opreme za građevinarstvo i inženjerstvo"], ["77330", "Iznajmljivanje i davanje u zakup (leasing) uredskih strojeva i opreme te računala"], ["77340", "Iznajmljivanje i davanje u zakup (leasing) plovnih prijevoznih sredstava"], ["77350", "Iznajmljivanje i davanje u zakup (leasing) zračnih prijevoznih sredstava"], ["77390", "Iznajmljivanje i davanje u zakup (leasing) ostalih strojeva, opreme i materijalnih dobara, d. n."], ["77400", "Davanje u zakup (leasing) prava na uporabu intelektualnog vlasništva i sličnih proizvoda, osim radova koji su zaštićeni autorskim pravima"], ["77510", "Usluge posredovanja u iznajmljivanju i davanju u zakup (leasing) automobila, kampera i prikolica"], ["77520", "Usluge posredovanja u iznajmljivanju i davanju u zakup (leasing) ostalih materijalnih dobara i nefinancijske nematerijalne imovine"], ["78100", "Djelatnosti agencija za zapošljavanje"], ["78200", "Djelatnosti agencija za privremeno zapošljavanje i ostalo ustupanje ljudskih resursa"], ["79110", "Djelatnosti putničkih agencija"], ["79120", "Djelatnosti organizatora putovanja (turoperatora)"], ["79900", "Ostale rezervacijske usluge i djelatnosti povezane s njima"], ["80011", "Istražne djelatnosti"], ["80012", "Djelatnosti privatne zaštite"], ["80090", "Zaštitne djelatnosti, d. n."], ["81100", "Održavanje zgrada"], ["81210", "Osnovno čišćenje zgrada"], ["81220", "Ostale djelatnosti čišćenja zgrada i objekata"], ["81230", "Ostale djelatnosti čišćenja"], ["81300", "Uslužne djelatnosti uređenja i održavanja krajolika"], ["82100", "Uredske administrativne i pomoćne djelatnosti"], ["82200", "Djelatnosti pozivnih centara"], ["82300", "Organizacija sastanaka i poslovnih sajmova"], ["82400", "Uslužne djelatnosti posredovanja za poslovne pomoćne uslužne djelatnosti, d. n."], ["82910", "Djelatnosti agencija za prikupljanje i naplatu računa te kreditnih ureda"], ["82920", "Djelatnosti pakiranja"], ["82990", "Ostale poslovne pomoćne uslužne djelatnosti, d. n."], ["84110", "Opće djelatnosti javne uprave"], ["84120", "Reguliranje zdravstvenih, obrazovnih, kulturnih i drugih društvenih usluga"], ["84130", "Reguliranje i poboljšanje poslovanja u gospodarstvu"], ["84210", "Vanjski poslovi"], ["84220", "Poslovi obrane"], ["84230", "Sudske i pravosudne djelatnosti"], ["84240", "Poslovi javnog reda i sigurnosti"], ["84250", "Djelatnosti vatrogasne službe"], ["84300", "Djelatnosti obveznog socijalnog osiguranja"], ["85100", "Predškolsko obrazovanje"], ["85200", "Osnovnoškolsko obrazovanje"], ["85310", "Opće srednjoškolsko obrazovanje"], ["85320", "Srednjoškolsko strukovno obrazovanje"], ["85330", "Obrazovanje nakon srednjoškolskog koje nije visoko"], ["85400", "Visoko obrazovanje"], ["85510", "Obrazovanje i poučavanje u području sporta i rekreacije"], ["85520", "Obrazovanje i poučavanje u području kulture"], ["85530", "Djelatnosti vozačkih škola"], ["85590", "Ostalo obrazovanje i poučavanje, d. n."], ["85610", "Uslužne djelatnosti posredovanja za tečajeve i mentorstva"], ["85690", "Pomoćne djelatnosti u obrazovanju, d. n."], ["86100", "Djelatnosti bolnica"], ["86210", "Djelatnosti opće medicine"], ["86220", "Specijalistička medicinska djelatnost"], ["86230", "Djelatnost dentalne medicine"], ["86910", "Usluge dijagnostičkog snimanja i djelatnosti medicinskog laboratorija"], ["86920", "Prijevoz pacijenata vozilom hitne pomoći"], ["86930", "Djelatnosti psihologa i psihoterapeuta, osim doktora medicine"], ["86940", "Djelatnosti medicinskih sestara i primalja"], ["86950", "Djelatnosti fizioterapeuta"], ["86960", "Djelatnosti tradicionalne, komplementarne i alternativne medicine"], ["86970", "Uslužne djelatnosti posredovanja za medicinske, stomatološke i druge zdravstvene usluge"], ["86990", "Ostale djelatnosti zdravstvene zaštite, d. n."], ["87100", "Djelatnosti ustanova za njegu sa smještajem"], ["87200", "Djelatnosti socijalne skrbi sa smještajem za osobe koje boluju od nedijagnosticirane ili dijagnosticirane mentalne bolesti ili ovisnosti o opojnim sredstvima"], ["87300", "Djelatnosti socijalne skrbi sa smještajem za starije osobe i osobe s fizičkim invaliditetom"], ["87910", "Usluge posredovanja za djelatnosti socijalne skrbi sa smještajem"], ["87991", "Djelatnosti ustanova za skrb o braniteljsko-stradalničkoj populaciji iz Domovinskog rata s trajnim smještajem"], ["87992", "Djelatnosti ustanova za skrb o braniteljsko-stradalničkoj populaciji iz Domovinskog rata s privremenim smještajem i boravkom"], ["87999", "Ostale razne djelatnosti socijalne skrbi sa smještajem, d. n."], ["88100", "Djelatnosti socijalne skrbi bez smještaja za starije osobe ili osobe s invaliditetom"], ["88910", "Djelatnosti dnevne skrbi o djeci"], ["88990", "Ostale djelatnosti socijalne skrbi bez smještaja, d. n."], ["90111", "Književno stvaralaštvo"], ["90112", "Glazbeno stvaralaštvo"], ["90120", "Vizualne umjetnosti"], ["90130", "Ostalo umjetničko stvaralaštvo"], ["90200", "Izvedbene umjetnosti"], ["90310", "Rad umjetničkih objekata i lokaliteta"], ["90391", "Djelatnosti producenata i organizatora umjetničkih događaja"], ["90399", "Ostale pomoćne djelatnosti u umjetničkom stvaralaštvu i izvedbenim umjetnostima"], ["91110", "Djelatnosti knjižnica"], ["91120", "Djelatnosti arhiva"], ["91210", "Djelatnosti muzeja i zbirki"], ["91220", "Djelatnost povijesnih lokaliteta i spomenika kulture"], ["91300", "Konzervatorske, restauratorske i ostale pomoćne djelatnosti u području kulturne baštine"], ["91410", "Djelatnosti botaničkih i zooloških vrtova"], ["91420", "Djelatnosti prirodnih rezervata"], ["92000", "Djelatnosti kockanja i klađenja"], ["93110", "Rad sportskih objekata"], ["93120", "Djelatnosti sportskih klubova"], ["93130", "Djelatnosti fitness centara"], ["93190", "Sportske djelatnosti, d. n."], ["93210", "Djelatnosti zabavnih i tematskih parkova"], ["93291", "Djelatnosti marina"], ["93299", "Ostale zabavne i rekreacijske djelatnosti"], ["94110", "Djelatnosti poslovnih organizacija i organizacija poslodavaca"], ["94120", "Djelatnosti strukovnih članskih organizacija"], ["94200", "Djelatnosti sindikata"], ["94910", "Djelatnosti vjerskih organizacija"], ["94920", "Djelatnosti političkih organizacija"], ["94990", "Djelatnosti ostalih članskih organizacija, d. n."], ["95100", "Popravak i održavanje računala i komunikacijske opreme"], ["95210", "Popravak i održavanje elektroničkih uređaja za široku potrošnju"], ["95220", "Popravak i održavanje aparata za kućanstvo te opreme za kuću i vrt"], ["95230", "Popravak i održavanje obuće i proizvoda od kože"], ["95240", "Popravak i održavanje namještaja i pokućstva"], ["95250", "Popravak i održavanje satova i nakita"], ["95290", "Popravak i održavanje predmeta za osobnu uporabu i kućanstvo, d. n."], ["95310", "Popravak i održavanje motornih vozila"], ["95320", "Popravak i održavanje motocikala"], ["95400", "Uslužne djelatnosti posredovanja u popravku i održavanju računala, predmeta za osobnu uporabu i kućanstvo te motornih vozila i motocikala"], ["96100", "Pranje i čišćenje tekstilnih i krznenih proizvoda"], ["96210", "Frizerski saloni i brijačnice"], ["96220", "Saloni za uljepšavanje i ostali tretmani za ljepotu"], ["96230", "Dnevni spa tretmani, saune i parne kupelji"], ["96301", "Djelatnosti groblja i krematorija"], ["96302", "Pogrebničke djelatnosti"], ["96400", "Uslužne djelatnosti posredovanja u ostalim osobnim uslugama"], ["96910", "Pružanje osobnih uslužnih djelatnosti kućanstvima"], ["96991", "Usluge skrbi za kućne ljubimce"], ["96999", "Ostale osobne uslužne djelatnosti"], ["97000", "Djelatnosti kućanstava koja zapošljavaju poslugu"], ["98100", "Djelatnosti privatnih kućanstava koja proizvode različitu robu za vlastite potrebe"], ["98200", "Djelatnosti privatnih kućanstava koja obavljaju različite usluge za vlastite potrebe"], ["99000", "Djelatnosti izvanteritorijalnih organizacija i tijela"]]};</script>
+<script>// Upisuje vrijednosti ćelija u Excel 97-2003 (.xls, BIFF8) datoteku, a sve ostale zapise ostavlja netaknute.
+// edits: { imeLista: [{ r, c, v }] }  (r, c od nule; v broj ili tekst)
+function biffPatch(CFB, bytes, edits) {
+  const cfb = CFB.read(bytes, { type: 'array' });
+  const ent = CFB.find(cfb, 'Workbook') || CFB.find(cfb, 'Book');
+  if (!ent) throw new Error('Datoteka nije Excel 97-2003 (.xls) radna knjiga.');
+  const d = ent.content instanceof Uint8Array ? ent.content : Uint8Array.from(ent.content);
+  const dv = new DataView(d.buffer, d.byteOffset, d.byteLength);
+  const u16 = (o) => dv.getUint16(o, true), u32 = (o) => dv.getUint32(o, true);
+  const recs = [];
+  for (let p = 0; p + 4 <= d.length;) { const t = u16(p), l = u16(p + 2); recs.push({ p, t, l }); p += 4 + l; }
+  const sheets = [];
+  for (const r of recs) if (r.t === 0x85) {
+    const cch = d[r.p + 10], hi = d[r.p + 11] & 1; let name = '';
+    for (let i = 0; i < cch; i++) name += String.fromCharCode(hi ? u16(r.p + 12 + i * 2) : d[r.p + 12 + i]);
+    sheets.push({ name, pos: u32(r.p + 4), rec: r });
+  }
+  const byPos = new Map(recs.map((r, i) => [r.p, i]));
+  const repl = new Map();
+  const mk = (t, body) => { const o = new Uint8Array(4 + body.length); const v = new DataView(o.buffer); v.setUint16(0, t, true); v.setUint16(2, body.length, true); o.set(body, 4); return o; };
+  const numRec = (rw, col, xf, val) => { const b = new Uint8Array(14), v = new DataView(b.buffer); v.setUint16(0, rw, true); v.setUint16(2, col, true); v.setUint16(4, xf, true); v.setFloat64(6, val, true); return mk(0x203, b); };
+  const strRec = (rw, col, xf, s) => { s = String(s).slice(0, 255); const b = new Uint8Array(9 + s.length * 2), v = new DataView(b.buffer); v.setUint16(0, rw, true); v.setUint16(2, col, true); v.setUint16(4, xf, true); v.setUint16(6, s.length, true); b[8] = 1; for (let i = 0; i < s.length; i++) v.setUint16(9 + i * 2, s.charCodeAt(i), true); return mk(0x204, b); };
+  const valRec = (rw, col, xf, val) => (typeof val === 'number' ? numRec(rw, col, xf, val) : strRec(rw, col, xf, val));
+  const rkRec = (rw, col, xf, rk) => { const b = new Uint8Array(10), v = new DataView(b.buffer); v.setUint16(0, rw, true); v.setUint16(2, col, true); v.setUint16(4, xf, true); v.setUint32(6, rk, true); return mk(0x27e, b); };
+  const blankRec = (rw, col, xf) => { const b = new Uint8Array(6), v = new DataView(b.buffer); v.setUint16(0, rw, true); v.setUint16(2, col, true); v.setUint16(4, xf, true); return mk(0x201, b); };
+  const missing = [];
+  for (const sh of sheets) {
+    const list = edits[sh.name] || [];
+    const want = new Map(list.map((e) => [e.r + ',' + e.c, e]));
+    const done = new Set();
+    let i = byPos.get(sh.pos);
+    if (i === undefined) throw new Error('Ne mogu pronaći list ' + sh.name);
+    for (i++; i < recs.length && recs[i].t !== 0x0a; i++) {
+      const { p, t, l } = recs[i], b = p + 4;
+      if (t === 0xbd || t === 0xbe) {
+        const rw = u16(b), c1 = u16(b + 2), c2 = u16(b + l - 2), sz = t === 0xbd ? 6 : 2;
+        let hit = false; for (let c = c1; c <= c2; c++) if (want.has(rw + ',' + c)) hit = true;
+        if (!hit) continue;
+        const parts = [];
+        for (let c = c1; c <= c2; c++) {
+          const o = b + 4 + (c - c1) * sz, xf = u16(o), e = want.get(rw + ',' + c);
+          if (e) { parts.push(valRec(rw, c, xf, e.v)); done.add(rw + ',' + c); }
+          else parts.push(t === 0xbd ? rkRec(rw, c, xf, u32(o + 2)) : blankRec(rw, c, xf));
+        }
+        repl.set(i, parts);
+      } else if (t === 0x203 || t === 0x27e || t === 0x201 || t === 0xfd || t === 0x204) {
+        const rw = u16(b), c = u16(b + 2), e = want.get(rw + ',' + c);
+        if (e) { repl.set(i, [valRec(rw, c, u16(b + 4), e.v)]); done.add(rw + ',' + c); }
+      } else if (t === 0x06) {
+        // formule: označi za ponovni izračun pri otvaranju (fAlwaysCalc)
+        d[b + 14] |= 0x01;
+        const rw = u16(b), c = u16(b + 2);
+        if (want.has(rw + ',' + c)) throw new Error('Polje ' + sh.name + ' ' + rw + ',' + c + ' je formula, ne upisujem.');
+      }
+    }
+    for (const k of want.keys()) if (!done.has(k)) missing.push(sh.name + ' ' + k);
+  }
+  if (missing.length) throw new Error('U obrascu nema polja: ' + missing.slice(0, 5).join('; ') + (missing.length > 5 ? '…' : ''));
+  // novi tok s mapom pozicija
+  const chunks = [], starts = new Array(recs.length);
+  let np = 0;
+  recs.forEach((r, i) => {
+    starts[i] = np;
+    const rp = repl.get(i);
+    if (rp) for (const x of rp) { chunks.push(x); np += x.length; }
+    else { const x = d.slice(r.p, r.p + 4 + r.l); chunks.push(x); np += x.length; }
+  });
+  const out = new Uint8Array(np); let q = 0; for (const c of chunks) { out.set(c, q); q += c.length; }
+  const ov = new DataView(out.buffer);
+  const sortedP = recs.map((r) => r.p);
+  const mapPos = (x) => {
+    let lo = 0, hi = sortedP.length - 1;
+    while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (sortedP[mid] <= x) lo = mid; else hi = mid - 1; }
+    return starts[lo] + (x - sortedP[lo]);
+  };
+  recs.forEach((r, i) => {
+    if (repl.has(i)) return;
+    const nb = starts[i] + 4, b = r.p + 4;
+    if (r.t === 0x85) ov.setUint32(nb, mapPos(u32(b)), true);
+    else if (r.t === 0x20b) {
+      const ibXF = u32(b + 12); if (ibXF) ov.setUint32(nb + 12, mapPos(ibXF), true);
+      for (let o = 16; o + 4 <= r.l; o += 4) { const x = u32(b + o); if (x) ov.setUint32(nb + o, mapPos(x), true); }
+    } else if (r.t === 0xd7) {
+      const firstRow = r.p - u32(b);
+      ov.setUint32(nb, starts[i] - mapPos(firstRow), true);
+      let base = firstRow + 20;
+      for (let o = 4; o + 2 <= r.l; o += 2) {
+        const tgt = base + u16(b + o);
+        ov.setUint16(nb + o, mapPos(tgt) - mapPos(base), true);
+        base = tgt;
+      }
+    }
+  });
+  ent.content = out; ent.size = out.length;
+  return CFB.write(cfb, { type: 'array' });
+}
+if (typeof module !== 'undefined') module.exports = { biffPatch };
+</script>
+<script src="gfi/vendor/supabase.js"></script>
+<script>
+'use strict';
+// ---------- pomoćne ----------
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const k in attrs || {}) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+    else if (k === 'class') e.className = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k === 'value') e.value = v;
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) { if (c == null || c === false) continue; e.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return e;
+}
+const r2 = (x) => Math.round((x + (x >= 0 ? 1e-9 : -1e-9)) * 100) / 100;
+const NF = new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const IF0 = new Intl.NumberFormat('hr-HR', { maximumFractionDigits: 0 });
+const fmt = (x) => (x ? NF.format(x) : '');
+const fmt0 = (x) => NF.format(x || 0);
+const pad3 = (n) => String(n).padStart(3, '0');
+function parseNum(s) {
+  s = String(s).trim().replace(/\s/g, '');
+  if (!s) return 0;
+  if (/,/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^\-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  const n = Number(s);
+  return isFinite(n) ? n : NaN;
+}
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function download(name, blob) {
+  const a = h('a', { href: URL.createObjectURL(blob), download: name });
+  document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+const safeName = (s) => (s || 'klijent').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Ne mogu učitati ' + src + '. Provjeri internetsku vezu.')); document.head.append(s); }); }
+let xlsxReady = null, pdfReady = null;
+const loadXlsx = () => (xlsxReady ||= new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'gfi/vendor/xlsx.full.min.js'; s.onload = res; s.onerror = () => rej(new Error('Ne mogu učitati čitač Excela')); document.head.append(s); }).catch((e) => { xlsxReady = null; throw e; }));
+const loadPdf = () => (pdfReady ||= (() => { const base = 'gfi/vendor/'; const load = (src) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Ne mogu učitati čitač PDF-a (' + src + ')')); document.head.append(s); }); return load(base + 'pdf.min.js').then(() => load(base + 'pdf.worker.min.js')); })().catch((e) => { pdfReady = null; throw e; }));
+
+// ---------- struktura obrasca ----------
+const ROWS = { BIL: STRUCT.BIL, PRRAS: STRUCT.PRRAS };
+ROWS.PRRAS.find((r) => r.aop === 171).f = 'R(S(180,183)+S(186,191)+v(193))';
+const BYROW = { BIL: {}, PRRAS: {} }, BYAOP = { BIL: {}, PRRAS: {} };
+for (const s of ['BIL', 'PRRAS']) for (const r of ROWS[s]) if (r.aop) {
+  BYROW[s][r.r] = r; BYAOP[s][r.aop] = r; r.input = !r.f;
+  if (r.f) r.fn = new Function('v', 'S', 'R', 'IF', 'return ' + r.f);
+  r.lvl = /^\d+$/.test(r.k) ? r.k.length : 0;
+}
+const INT_AOP = new Set([160, 161, 162, 163]);
+const BIL_IN = ROWS.BIL.filter((r) => r.input && /^\d+$/.test(r.k) && !r.k.startsWith('52'));
+const PR_IN = ROWS.PRRAS.filter((r) => r.input && /^[34]\d*$/.test(r.k));
+const OPC = new Map(STRUCT.opcine.map((o) => [o[0], o]));
+const DJEL = new Map(STRUCT.djel.map((d) => [d[0], d[1]]));
+const isIspravak = (k) => k.length === 3 && k[2] === '9';
+function debitNormal(row) {
+  if (row.aop <= 144) return !isIspravak(row.k);
+  if (row.aop <= 200) return isIspravak(row.k) || row.k === '5222';
+  return row.aop === 201;
+}
+
+// ---------- stanje ----------
+const KEY = 'npf_state_v1';
+const blank = () => ({ ref: { dvojno: 'DA', godina: String(new Date().getFullYear() - (new Date().getMonth() < 9 ? 1 : 0)) }, bb: null, prior: null, man: {}, map: [], docs: { tijelo: 'Skupština', clanak: '', datumSj: '', mjesto: '' }, docHtml: {} });
+let S;
+try { S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY) || 'null') || {}); } catch (e) { S = blank(); }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+// ---------- bruto bilanca (PSPnet PDF) ----------
+async function pdfLines(file) {
+  await loadPdf();
+  const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise;
+  const out = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const tc = await (await pdf.getPage(p)).getTextContent();
+    const rows = [];
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      // stranica može biti zakrenuta (položeni ispis): retke slažemo po smjeru teksta
+      const [a, b] = it.transform, n = Math.hypot(a, b) || 1, dx = a / n, dy = b / n;
+      const px = it.transform[4], py = it.transform[5];
+      const x = px * dx + py * dy, y = -px * dy + py * dx;
+      let row = rows.find((r) => Math.abs(r.y - y) < 2.5);
+      if (!row) { row = { y, items: [] }; rows.push(row); }
+      row.items.push({ x, s: it.str });
+    }
+    rows.sort((a, b) => b.y - a.y);
+    for (const r of rows) out.push(r.items.sort((a, b) => a.x - b.x).map((i) => i.s).join(' '));
+  }
+  return out;
+}
+const NUM = /-?\d{1,3}(?:\.\d{3})*,\d{2}/g;
+const toN = (s) => parseFloat(s.replace(/\./g, '').replace(',', '.'));
+function parseBB(lines) {
+  let all = [], firm = '', od = '', doo = '';
+  for (const raw of lines) {
+    const ln = raw.replace(/\s+/g, ' ').trim();
+    let m;
+    if ((m = ln.match(/TVRTKA:\s*(.+?)(?:\s+DATUM ISPISA|$)/i))) firm = m[1].trim();
+    if ((m = ln.match(/RAZDOBLJ[AE]\s+OD\s*([\d.]+)\s*DO\s*([\d.]+)/i))) { od = m[1]; doo = m[2]; }
+    // samo konta (5-8 znamenki); kraće šifre su analitika (partneri) unutar konta
+    if ((m = ln.match(/^(\d{5,8})\s+(.*)$/))) {
+      const nums = (m[2].match(NUM) || []).map(toN);
+      if (nums.length < 6) continue;
+      all.push({ k: m[1], name: m[2].split(NUM)[0].trim(), v: nums.slice(0, 6) });
+    }
+  }
+  // samo najniža razina: konto koji nije početak nekog drugog konta
+  const leaves = all.filter((a) => !all.some((b) => b !== a && b.k.length > a.k.length && b.k.startsWith(a.k)));
+  return { firm, od, do: doo, leaves };
+}
+
+// ---------- mapiranje ----------
+function bestRow(list, k) { let best = null; for (const r of list) if (k.startsWith(r.k) && (!best || r.k.length > best.k.length)) best = r; return best; }
+function targetOf(k) {
+  let rule = null;
+  for (const m of S.map) if (k.startsWith(m.p) && (!rule || m.p.length > rule.p.length)) rule = m;
+  if (rule) {
+    if (rule.t === 'skip') return { kind: 'skip' };
+    const [s, a] = rule.t.split(':'); const row = BYAOP[s] && BYAOP[s][+a];
+    if (row) return { kind: s, row, rule: true };
+  }
+  if (k.startsWith('52')) return k.startsWith('5221') || k.startsWith('5222') ? { kind: 'R52' } : null;
+  const c = k[0];
+  if (c === '3' || c === '4') { const row = bestRow(PR_IN, k); return row ? { kind: 'PRRAS', row } : null; }
+  if ('01256'.includes(c)) { const row = bestRow(BIL_IN, k); return row ? { kind: 'BIL', row } : null; }
+  return null;
+}
+
+// ---------- automatski iznosi ----------
+let AUTO = {}, INFO = {};
+function computeAuto() {
+  const A = {}, add = (k, v) => { A[k] = r2((A[k] || 0) + v); };
+  const info = { unmapped: [], open: {}, prihodi: 0, rashodi: 0 };
+  if (S.bb) {
+    let n52 = 0, n52o = 0, c0 = 0, cd = 0, cp = 0, z0 = 0, z1 = 0;
+    for (const l of S.bb.leaves) {
+      const [d0, p0, dp, pp, d1, p1] = l.v;
+      const t = targetOf(l.k);
+      if (!t || t.kind === 'skip') { if (!t && (Math.abs(d1 - p1) > 0.004 || Math.abs(d0 - p0) > 0.004)) info.unmapped.push(l); }
+      else if (t.kind === 'BIL') {
+        const sg = debitNormal(t.row) ? 1 : -1;
+        add('BIL:' + t.row.aop + ':K', sg * (d1 - p1));
+        info.open[t.row.aop] = r2((info.open[t.row.aop] || 0) + sg * (d0 - p0));
+      } else if (t.kind === 'PRRAS') {
+        const sg = t.row.aop <= 53 ? -1 : 1;
+        add('PRRAS:' + t.row.aop + ':K', sg * (d1 - p1));
+        if (sg < 0) info.prihodi += p1 - d1; else info.rashodi += d1 - p1;
+      } else if (t.kind === 'R52') { n52 += p1 - d1; n52o += p0 - d0; }
+      if (l.k.startsWith('11')) { c0 += d0 - p0; cd += dp; cp += pp; }
+      if (l.k.startsWith('062')) { z0 += d0 - p0; z1 += d1 - p1; }
+      ['051', '052', '053', '054', '055', '056'].forEach((pre, i) => { if (l.k.startsWith(pre) && dp) add('PRRAS:' + (164 + i) + ':K', dp); });
+    }
+    n52 = r2(n52); n52o = r2(n52o);
+    if (n52 >= 0) A['PRRAS:151:K'] = n52; else A['PRRAS:152:K'] = -n52;
+    if (n52o >= 0) info.open[199] = n52o; else info.open[200] = -n52o;
+    A['PRRAS:156:K'] = r2(c0); A['PRRAS:157:K'] = r2(cd); A['PRRAS:158:K'] = r2(cp);
+    if (z0 || z1) { A['PRRAS:144:K'] = r2(z0); A['PRRAS:145:K'] = r2(z1); }
+    info.prihodi = r2(info.prihodi); info.rashodi = r2(info.rashodi);
+  }
+  if (S.prior) {
+    for (const r of ROWS.BIL) if (r.input && S.prior.BIL[r.aop] != null) A['BIL:' + r.aop + ':J'] = S.prior.BIL[r.aop];
+    for (const r of ROWS.PRRAS) if (r.input && S.prior.PRRAS[r.aop] != null) A['PRRAS:' + r.aop + ':J'] = S.prior.PRRAS[r.aop];
+  } else {
+    for (const a in info.open) A['BIL:' + a + ':J'] = info.open[a];
+  }
+  AUTO = A; INFO = info;
+}
+function evaluate() {
+  computeAuto();
+  const V = {};
+  const calc = (s) => {
+    V[s] = { J: {}, K: {} };
+    for (const C of ['J', 'K']) {
+      const memo = V[s][C];
+      const get = (row) => {
+        if (row in memo) return memo[row];
+        const r = BYROW[s][row];
+        if (!r) return (memo[row] = 0);
+        let val;
+        if (r.fn) val = r.fn(get, (a, b) => { let t = 0; for (let i = a; i <= b; i++) t += get(i); return t; }, r2, (c, a, b) => (c ? a : b));
+        else { const key = s + ':' + r.aop + ':' + C; val = key in S.man ? S.man[key] : AUTO[key] || 0; }
+        return (memo[row] = val);
+      };
+      for (const r of ROWS[s]) if (r.aop) get(r.r);
+    }
+  };
+  calc('BIL');
+  for (const C of ['J', 'K']) if (!(('PRRAS:170:' + C) in AUTO) && (S.bb || S.prior)) AUTO['PRRAS:170:' + C] = V.BIL[C][BYAOP.BIL[64].r] || 0;
+  calc('PRRAS');
+  AUTO['BIL:199:K'] = V.PRRAS.K[BYAOP.PRRAS[154].r];
+  AUTO['BIL:200:K'] = V.PRRAS.K[BYAOP.PRRAS[155].r];
+  calc('BIL');
+  V.get = (s, aop, C) => V[s][C][BYAOP[s][aop].r] || 0;
+  return V;
+}
+
+// ---------- kontrole ----------
+function checks(V) {
+  const R = S.ref, out = [];
+  const add = (lvl, title, detail) => out.push({ lvl, title, detail });
+  const g = V.get, diff = (a, b) => Math.abs(a - b) > 0.14;
+  const miss = [['naziv', 'naziv'], ['pbr', 'poštanski broj'], ['mjesto', 'mjesto'], ['adresa', 'adresa'], ['djel', 'šifra djelatnosti'], ['grad', 'šifra grada/općine'], ['rno', 'RNO broj'], ['oib', 'OIB'], ['mb', 'matični broj']].filter(([k]) => !String(R[k] || '').trim()).map((x) => x[1]);
+  add(miss.length ? 'err' : 'ok', 'Zaglavlje je popunjeno', miss.length ? 'Nedostaje: ' + miss.join(', ') + '.' : '');
+  const iban = String(R.iban || '').replace(/\s/g, '');
+  add(!iban ? 'warn' : /^HR\d{19}$/i.test(iban) ? 'ok' : 'err', 'IBAN je u obliku HR + 19 znamenki', !iban ? 'IBAN nije upisan.' : '');
+  if (R.oib) add(/^\d{11}$/.test(R.oib) ? 'ok' : 'err', 'OIB ima 11 znamenki', '');
+  if (R.grad && !OPC.has(+R.grad)) add('err', 'Šifra grada/općine postoji u šifarniku', 'Šifra ' + R.grad + ' nije u FINA-inom šifarniku.');
+  if (R.djel && !DJEL.has(R.djel)) add('err', 'Šifra djelatnosti postoji u šifarniku', 'Šifra ' + R.djel + ' nije u FINA-inom šifarniku (5 znamenki, npr. 94990).');
+  const fm = [['zastupnik', 'zakonski zastupnik'], ['kontakt', 'osoba za kontakt'], ['tel', 'telefon']].filter(([k]) => !String(R[k] || '').trim()).map((x) => x[1]);
+  add(fm.length ? 'err' : 'ok', 'Podnožje je popunjeno', fm.length ? 'Nedostaje: ' + fm.join(', ') + '.' : '');
+  for (const C of ['J', 'K']) {
+    const col = C === 'J' ? 'stupac 1. siječnja' : 'stupac 31. prosinca';
+    add(diff(g('BIL', 1, C), g('BIL', 145, C)) ? 'err' : 'ok', 'Bilanca: imovina = obveze i vlastiti izvori (' + col + ')', diff(g('BIL', 1, C), g('BIL', 145, C)) ? 'AOP 001 = ' + fmt0(g('BIL', 1, C)) + ', AOP 145 = ' + fmt0(g('BIL', 145, C)) + ', razlika ' + fmt0(r2(g('BIL', 1, C) - g('BIL', 145, C))) + '.' : '');
+  }
+  for (const C of ['J', 'K']) if (g('BIL', 199, C) * g('BIL', 200, C)) add('err', 'Bilanca: višak i manjak prihoda nisu oba upisani', 'AOP 199 i 200 u istom stupcu.');
+  for (const C of ['J', 'K']) if (g('PRRAS', 151, C) * g('PRRAS', 152, C)) add('err', 'PR-RAS: preneseni višak i manjak nisu oba upisani', 'AOP 151 i 152 u istom stupcu.');
+  const neg = [];
+  for (const s of ['BIL', 'PRRAS']) for (const r of ROWS[s]) if (r.aop && !(s === 'BIL' && r.aop === 195) && !(s === 'PRRAS' && r.aop === 171)) for (const C of ['J', 'K']) if (V[s][C][r.r] < -0.004) neg.push(s.replace('PRRAS', 'PR-RAS') + ' ' + pad3(r.aop));
+  add(neg.length ? 'err' : 'ok', 'Svi iznosi su pozitivni', neg.length ? 'Negativno: ' + [...new Set(neg)].slice(0, 8).join(', ') + (neg.length > 8 ? '…' : '') + '. Najčešće konto ima saldo na pogrešnoj strani ili je mapiran na krivi AOP.' : '');
+  for (const C of ['J', 'K']) {
+    const a = diff(g('PRRAS', 154, C), g('BIL', 199, C)) || diff(g('PRRAS', 155, C), g('BIL', 200, C));
+    if (C === 'J' && !g('PRRAS', 1, 'J') && !g('PRRAS', 54, 'J')) continue;
+    add(a ? 'err' : 'ok', 'PR-RAS AOP 154/155 = Bilanca AOP 199/200 (' + (C === 'J' ? 'prethodna godina' : 'tekuća godina') + ')', a ? 'PR-RAS: višak ' + fmt0(g('PRRAS', 154, C)) + ', manjak ' + fmt0(g('PRRAS', 155, C)) + '; Bilanca: višak ' + fmt0(g('BIL', 199, C)) + ', manjak ' + fmt0(g('BIL', 200, C)) + '.' : '');
+  }
+  for (const C of ['J', 'K']) {
+    if (C === 'J' && !g('PRRAS', 1, 'J') && !g('PRRAS', 54, 'J')) continue;
+    const a = diff(g('PRRAS', 159, C), g('BIL', 75, C));
+    add(a ? 'err' : 'ok', 'Novac na kraju razdoblja: PR-RAS AOP 159 = Bilanca AOP 075 (' + (C === 'J' ? 'prethodna godina' : 'tekuća godina') + ')', a ? 'PR-RAS ' + fmt0(g('PRRAS', 159, C)) + ', Bilanca ' + fmt0(g('BIL', 75, C)) + '.' : '');
+  }
+  if (g('PRRAS', 1, 'J') || g('PRRAS', 54, 'J')) {
+    const a = diff(g('PRRAS', 159, 'J'), g('PRRAS', 156, 'K'));
+    add(a ? 'err' : 'ok', 'Novac na kraju prošle godine (AOP 159, prethodna) = novac na početku ove (AOP 156)', a ? fmt0(g('PRRAS', 159, 'J')) + ' prema ' + fmt0(g('PRRAS', 156, 'K')) + '.' : '');
+  }
+  for (const C of ['J', 'K']) {
+    const v = g('PRRAS', 162, C), sati = g('PRRAS', 163, C);
+    if ((v || sati) && (!v || !sati || v > sati)) add('err', 'Volonteri: broj volontera i sati moraju biti oba upisani, sati ne manje od broja volontera', '');
+  }
+  const ints = [160, 161, 162, 163].filter((a) => ['J', 'K'].some((C) => g('PRRAS', a, C) % 1));
+  if (ints.length) add('err', 'Broj radnika i volontera su cijeli brojevi', 'AOP ' + ints.map(pad3).join(', ') + '.');
+  for (const C of ['J', 'K']) {
+    const radnici = g('PRRAS', 160, C) || g('PRRAS', 161, C), plac = g('PRRAS', 55, C);
+    if (!!radnici !== !!plac) add('warn', 'Radnici i rashodi za radnike (' + (C === 'J' ? 'prethodna' : 'tekuća') + ' godina)', radnici ? 'Upisan je broj radnika, a rashoda za radnike (AOP 055) nema.' : 'Postoje rashodi za radnike (AOP 055), a broj radnika (AOP 160, 161) nije upisan.');
+  }
+  if (g('PRRAS', 82, 'K') + g('PRRAS', 77, 'K') > 0 && !g('PRRAS', 162, 'K')) add('warn', 'Naknade volonterima bez broja volontera', 'AOP 077 ima iznos, a broj volontera (AOP 162) nije upisan.');
+  if (S.bb) {
+    if (INFO.unmapped.length) add('warn', 'Sva konta iz bruto bilance su raspoređena', INFO.unmapped.length + ' konta sa saldom nije raspoređeno, vidi karticu Uvoz.');
+    if (!INFO.prihodi && !INFO.rashodi) add('warn', 'Bruto bilanca je prije zaključnih knjiženja', 'Razredi 3 i 4 nemaju salda. Ako je bilanca nakon zaključka, PR-RAS ostaje prazan.');
+  }
+  if (S.prior && S.bb) {
+    const d = Object.keys(INFO.open).filter((a) => Math.abs((S.prior.BIL[a] || 0) - INFO.open[a]) > 0.01);
+    if (d.length) add('warn', 'Početno stanje iz bruto bilance = stanje 31.12. iz prošlogodišnjeg obrasca', 'Razlika na AOP ' + d.slice(0, 8).map(pad3).join(', ') + (d.length > 8 ? '…' : '') + '. Stupac 1. siječnja uzet je iz prošlogodišnjeg obrasca.');
+  }
+  return out;
+}
+
+// ---------- šifre i zaglavlje ----------
+const REF_CELLS = [
+  ['naziv', 'C7', 't'], ['pbr', 'C9', 'n'], ['mjesto', 'E9', 't'], ['rno', 'J9', 't'], ['adresa', 'C11', 't'], ['mb', 'J11', 't'], ['iban', 'C13', 't'], ['oib', 'J13', 't'],
+  ['djel', 'C15', 't'], ['grad', 'C17', 'n'], ['dvojno', 'J19', 't'], ['zastupnik', 'D39', 't'], ['datum', 'D41', 't'], ['kontakt', 'D43', 't'], ['tel', 'D45', 't'], ['fax', 'D47', 't'], ['email', 'D49', 't'],
+];
+const cellRC = (a) => { const m = a.match(/^([A-Z]+)(\d+)$/); let c = 0; for (const ch of m[1]) c = c * 26 + ch.charCodeAt(0) - 64; return { r: +m[2] - 1, c: c - 1 }; };
+const serial = (y, m, d) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 86400000);
+const year = () => parseInt(S.ref.godina, 10) || new Date().getFullYear() - 1;
+
+// ---------- učitavanje prošlogodišnjeg obrasca ----------
+async function readNpfXls(file) {
+  await loadXlsx();
+  const wb = XLSX.read(new Uint8Array(await file.arrayBuffer()), { type: 'array' });
+  if (!wb.Sheets.BIL || !wb.Sheets.PRRAS || !wb.Sheets.RefStr) throw new Error('To nije FINA-in obrazac za neprofitne (nema listova BIL i PRRAS).');
+  const col = (sn) => {
+    const ws = wb.Sheets[sn], out = {}, rg = XLSX.utils.decode_range(ws['!ref']);
+    for (let r = rg.s.r; r <= rg.e.r; r++) {
+      const ci = ws[XLSX.utils.encode_cell({ r, c: 8 })]; if (!ci) continue;
+      const a = parseInt(ci.v, 10); if (!(a > 0) || String(ci.v).trim() !== String(a) && typeof ci.v !== 'number') continue;
+      const ck = ws[XLSX.utils.encode_cell({ r, c: 10 })];
+      out[a] = ck && typeof ck.v === 'number' ? r2(ck.v) : 0;
+    }
+    return out;
+  };
+  const rs = wb.Sheets.RefStr, gv = (a) => { const c = rs[a]; return c ? String(c.w ?? c.v ?? '').trim() : ''; };
+  const ref = {}; for (const [k, a] of REF_CELLS) { const raw = rs[a]; if (raw && raw.v !== '' && raw.v != null) ref[k] = typeof raw.v === 'number' ? String(raw.v) : String(raw.v).trim(); }
+  return { BIL: col('BIL'), PRRAS: col('PRRAS'), ref, period: gv('J15') };
+}
+
+// ---------- izvoz ----------
+async function exportXls(file, V) {
+  await loadXlsx();
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const edits = { RefStr: [], BIL: [], PRRAS: [] };
+  const R = S.ref, y = year();
+  for (const [k, a, t] of REF_CELLS) {
+    let v = String(R[k] ?? '').trim();
+    if (k === 'iban') v = v.replace(/\s/g, '').toUpperCase();
+    const val = t === 'n' && /^\d+$/.test(v) ? Number(v) : v;
+    edits.RefStr.push({ ...cellRC(a), v: val });
+  }
+  edits.RefStr.push({ ...cellRC('E5'), v: serial(y, 1, 1) }, { ...cellRC('G5'), v: serial(y, 12, 31) }, { ...cellRC('J15'), v: y + '-12' });
+  for (const s of ['BIL', 'PRRAS']) for (const r of ROWS[s]) if (r.input) {
+    edits[s].push({ r: r.r - 1, c: 9, v: r2(V[s].J[r.r] || 0) }, { r: r.r - 1, c: 10, v: r2(V[s].K[r.r] || 0) });
+  }
+  // provjera da obrazac ima iste AOP retke
+  const wb = XLSX.read(bytes, { type: 'array', sheets: ['BIL', 'PRRAS', 'RefStr'] });
+  for (const s of ['BIL', 'PRRAS']) {
+    if (!wb.Sheets[s]) throw new Error('U datoteci nema lista ' + s + '. Odaberi FINA-in obrazac za neprofitne organizacije.');
+    for (const r of ROWS[s]) if (r.input) {
+      const c = wb.Sheets[s][XLSX.utils.encode_cell({ r: r.r - 1, c: 8 })];
+      if (!c || parseInt(c.v, 10) !== r.aop) throw new Error('Obrazac nije iste verzije (' + s + ' AOP ' + pad3(r.aop) + ' nije u retku ' + r.r + '). Javi da uskladimo aplikaciju s novim obrascem.');
+    }
+  }
+  const out = biffPatch(XLSX.CFB, bytes, edits);
+  return new Blob([out], { type: 'application/vnd.ms-excel' });
+}
+
+// ---------- dokumenti ----------
+function grp(s, prefixLen, V, filter) {
+  return ROWS[s].filter((r) => r.aop && r.lvl === prefixLen && (!filter || filter(r)) && (V[s].J[r.r] || V[s].K[r.r]));
+}
+const opisBez = (o) => o.replace(/\s*\(AOP[^)]*\)\s*/g, ' ').trim();
+function tableRows(s, rows, V, hdr) {
+  let t = '<table><tr><th>Račun</th><th>Opis</th><th class="n">' + hdr[0] + '</th><th class="n">' + hdr[1] + '</th><th class="n">Indeks</th></tr>';
+  for (const r of rows) { const j = V[s].J[r.r] || 0, k = V[s].K[r.r] || 0; t += '<tr><td>' + esc(r.k) + '</td><td>' + esc(opisBez(r.o)) + '</td><td class="n">' + fmt0(j) + '</td><td class="n">' + fmt0(k) + '</td><td class="n">' + (j > 0 ? IF0.format(k / j * 100) : '-') + '</td></tr>'; }
+  return t + '</table>';
+}
+function buildDocs(V) {
+  const R = S.ref, D = S.docs, y = year(), g = V.get;
+  const naziv = esc(R.naziv || '[naziv organizacije]'), tijelo = esc(D.tijelo || 'Skupština');
+  const tijeloGen = { 'Skupština': 'Skupštine', 'Upravni odbor': 'Upravnog odbora', 'Izvršni odbor': 'Izvršnog odbora' }[D.tijelo] || esc(D.tijelo || 'Skupštine');
+  const mj = esc(D.mjesto || R.mjesto || ''), dat = esc(D.datumSj || '____________');
+  const cl = esc(D.clanak || '___');
+  const pri = g('PRRAS', 1, 'K'), ras = g('PRRAS', 148, 'K'), vis = g('PRRAS', 149, 'K'), manj = g('PRRAS', 150, 'K');
+  const vR = g('PRRAS', 154, 'K'), mR = g('PRRAS', 155, 'K'), pv = g('PRRAS', 151, 'K'), pm = g('PRRAS', 152, 'K');
+  const imov = g('BIL', 1, 'K');
+  const potpis = '<p style="margin-top:36px">' + (mj || '__________') + ', ' + dat + '</p><p style="text-align:right;margin-top:24px">Predsjedavajući/a ' + tijeloGen.toLowerCase() + '<br><br>______________________</p>';
+  const uvod = (sto) => '<p>Na temelju članka ' + cl + ' Statuta ' + naziv + ', ' + tijelo + ' na sjednici održanoj ' + dat + ' donosi</p><h1>ODLUKU</h1><h2>' + sto + '</h2>';
+  const usv = uvod('o usvajanju godišnjih financijskih izvještaja za ' + y + '. godinu') +
+    '<h4>Članak 1.</h4><p>Usvajaju se godišnji financijski izvještaji ' + naziv + (R.oib ? ', OIB ' + esc(R.oib) : '') + (R.rno ? ', RNO ' + esc(R.rno) : '') + ', za razdoblje od 1. siječnja do 31. prosinca ' + y + '. godine: Bilanca na dan 31. prosinca ' + y + '. (obrazac BIL-NPF), Račun prihoda i rashoda (obrazac PR-RAS-NPF) i Bilješke uz financijske izvještaje.</p>' +
+    '<h4>Članak 2.</h4><p>Prema usvojenim izvještajima ukupni prihodi iznose ' + fmt0(pri) + ' eura, ukupni rashodi ' + fmt0(ras) + ' eura, te je u ' + y + '. godini ostvaren ' + (vis ? 'višak prihoda u iznosu ' + fmt0(vis) : manj ? 'manjak prihoda u iznosu ' + fmt0(manj) : 'rezultat bez viška i manjka prihoda') + (vis || manj ? ' eura' : '') + '. Ukupna imovina na dan 31. prosinca ' + y + '. iznosi ' + fmt0(imov) + ' eura.</p>' +
+    '<h4>Članak 3.</h4><p>Ova odluka stupa na snagu danom donošenja.</p>' + potpis;
+  let raspBody;
+  if (vR) raspBody = '<h4>Članak 1.</h4><p>Utvrđuje se višak prihoda raspoloživ u sljedećem razdoblju u iznosu ' + fmt0(vR) + ' eura' + (pv || pm || vis || manj ? ', koji se sastoji od ' + [vis ? 'viška prihoda ' + y + '. godine u iznosu ' + fmt0(vis) + ' eura' : '', manj ? 'manjka prihoda ' + y + '. godine u iznosu ' + fmt0(manj) + ' eura' : '', pv ? 'prenesenog viška prihoda iz prethodnih razdoblja u iznosu ' + fmt0(pv) + ' eura' : '', pm ? 'prenesenog manjka prihoda u iznosu ' + fmt0(pm) + ' eura' : ''].filter(Boolean).join(', ') : '') + '.</p><h4>Članak 2.</h4><p>Višak prihoda iz članka 1. ove odluke koristit će se za obavljanje djelatnosti i ostvarivanje ciljeva utvrđenih Statutom.</p>';
+  else if (mR) raspBody = '<h4>Članak 1.</h4><p>Utvrđuje se manjak prihoda za pokriće u sljedećem razdoblju u iznosu ' + fmt0(mR) + ' eura' + (pv || pm ? ' (uključuje ' + (pv ? 'preneseni višak ' + fmt0(pv) + ' eura' : 'preneseni manjak ' + fmt0(pm) + ' eura') + ')' : '') + '.</p><h4>Članak 2.</h4><p>Manjak prihoda iz članka 1. ove odluke pokrit će se iz prihoda budućih razdoblja.</p>';
+  else raspBody = '<h4>Članak 1.</h4><p>U ' + y + '. godini nije ostvaren ni višak ni manjak prihoda raspoloživ u sljedećem razdoblju.</p>';
+  const rasp = uvod(vR ? 'o raspodjeli viška prihoda za ' + y + '. godinu' : mR ? 'o pokriću manjka prihoda za ' + y + '. godinu' : 'o rezultatu poslovanja za ' + y + '. godinu') + raspBody + '<h4>Članak 3.</h4><p>Ova odluka stupa na snagu danom donošenja.</p>' + potpis;
+
+  const opc = OPC.get(+R.grad);
+  const zap = g('PRRAS', 160, 'K'), vol = g('PRRAS', 162, 'K'), sati = g('PRRAS', 163, 'K');
+  const prih = grp('PRRAS', 2, V, (r) => r.k[0] === '3'), rash = grp('PRRAS', 2, V, (r) => r.k[0] === '4');
+  const hdrP = [(y - 1) + '.', y + '.'], hdrB = ['1.1.' + y + '.', '31.12.' + y + '.'];
+  const aktiva = grp('BIL', 2, V, (r) => '01'.includes(r.k[0])), pasiva = ROWS.BIL.filter((r) => r.aop && ((r.lvl === 2 && r.k[0] === '2') || [196, 199, 200].includes(r.aop)) && (V.BIL.J[r.r] || V.BIL.K[r.r]));
+  const bil = '<h1>BILJEŠKE</h1><h2>uz godišnje financijske izvještaje za ' + y + '. godinu</h2>' +
+    '<h4>1. Opći podaci</h4><p>' + naziv + (R.adresa ? ', ' + esc(R.adresa) : '') + (R.pbr || R.mjesto ? ', ' + esc(R.pbr || '') + ' ' + esc(R.mjesto || '') : '') + '.<br>OIB: ' + esc(R.oib || '') + (R.mb ? ', matični broj: ' + esc(R.mb) : '') + (R.rno ? ', RNO: ' + esc(R.rno) : '') + '.<br>Djelatnost: ' + esc(R.djel || '') + (DJEL.get(R.djel) ? ' ' + esc(DJEL.get(R.djel)) : '') + (opc ? '. Grad/općina: ' + esc(opc[1]) : '') + '.<br>Osoba ovlaštena za zastupanje: ' + esc(R.zastupnik || '') + '.</p>' +
+    '<p>Prosječan broj radnika na osnovi stanja krajem razdoblja: ' + IF0.format(zap) + '. Broj volontera: ' + IF0.format(vol) + (vol ? ', s ukupno ' + IF0.format(sati) + ' sati volontiranja' : '') + '.</p>' +
+    '<h4>2. Osnova za sastavljanje</h4><p>Financijski izvještaji sastavljeni su u skladu sa Zakonom o financijskom poslovanju i računovodstvu neprofitnih organizacija i pripadajućim pravilnicima. Organizacija vodi ' + (R.dvojno === 'NE' ? 'jednostavno' : 'dvojno') + ' knjigovodstvo prema računskom planu za neprofitne organizacije. Iznosi su iskazani u eurima i centima.</p>' +
+    '<h4>3. Račun prihoda i rashoda (PR-RAS-NPF)</h4><p>Ukupni prihodi iznose ' + fmt0(pri) + ' eura (prethodna godina ' + fmt0(g('PRRAS', 1, 'J')) + ' eura), a ukupni rashodi ' + fmt0(ras) + ' eura (prethodna godina ' + fmt0(g('PRRAS', 148, 'J')) + ' eura).</p>' +
+    (prih.length ? '<p>Struktura prihoda:</p>' + tableRows('PRRAS', prih, V, hdrP) : '') + (rash.length ? '<p>Struktura rashoda:</p>' + tableRows('PRRAS', rash, V, hdrP) : '') +
+    '<p>' + (vis ? 'Ostvaren je višak prihoda u iznosu ' + fmt0(vis) + ' eura.' : manj ? 'Ostvaren je manjak prihoda u iznosu ' + fmt0(manj) + ' eura.' : 'Prihodi i rashodi su jednaki.') + (pv ? ' Preneseni višak iz prethodnih razdoblja iznosi ' + fmt0(pv) + ' eura.' : '') + (pm ? ' Preneseni manjak iz prethodnih razdoblja iznosi ' + fmt0(pm) + ' eura.' : '') + (vR ? ' Višak prihoda raspoloživ u sljedećem razdoblju iznosi ' + fmt0(vR) + ' eura.' : '') + (mR ? ' Manjak prihoda za pokriće u sljedećem razdoblju iznosi ' + fmt0(mR) + ' eura.' : '') + '</p>' +
+    '<h4>4. Bilanca (BIL-NPF)</h4><p>Ukupna imovina na dan 31. prosinca ' + y + '. iznosi ' + fmt0(imov) + ' eura (1. siječnja ' + fmt0(g('BIL', 1, 'J')) + ' eura).</p>' +
+    (aktiva.length ? '<p>Imovina:</p>' + tableRows('BIL', aktiva, V, hdrB) : '') + (pasiva.length ? '<p>Obveze i vlastiti izvori:</p>' + tableRows('BIL', pasiva, V, hdrB) : '') +
+    '<p>Stanje novčanih sredstava na kraju razdoblja iznosi ' + fmt0(g('PRRAS', 159, 'K')) + ' eura. Tijekom godine ukupni priljevi iznosili su ' + fmt0(g('PRRAS', 157, 'K')) + ' eura, a odljevi ' + fmt0(g('PRRAS', 158, 'K')) + ' eura.</p>' +
+    (g('BIL', 201, 'K') ? '<p>Izvanbilančni zapisi iznose ' + fmt0(g('BIL', 201, 'K')) + ' eura.</p>' : '') +
+    '<h4>5. Događaji nakon datuma bilance</h4><p>Nakon datuma bilance nije bilo događaja koji bi značajno utjecali na financijske izvještaje.</p>' +
+    '<p style="margin-top:36px">' + (mj || '__________') + ', ' + esc(R.datum || dat) + '</p><p style="text-align:right;margin-top:24px">Osoba ovlaštena za zastupanje<br>' + esc(R.zastupnik || '') + '<br><br>______________________</p>';
+  return { usv, rasp, bil };
+}
+const DOCS = [['usv', 'Odluka o usvajanju izvještaja'], ['rasp', 'Odluka o višku / manjku'], ['bil', 'Bilješke']];
+function docAsWord(title, html) {
+  return new Blob(['\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.4} h1{font-size:14pt;text-align:center;margin:12pt 0 0} h2{font-size:12pt;text-align:center;font-weight:normal;margin:0 0 12pt} h4{text-align:center;font-size:12pt;margin:10pt 0 4pt} table{border-collapse:collapse;width:100%;font-size:10pt} td,th{border:1px solid #888;padding:2pt 4pt} .n{text-align:right}</style></head><body>' + html + '</body></html>'], { type: 'application/msword' });
+}
+function printHtml(title, html, css) {
+  const f = h('iframe', { style: 'position:fixed;right:0;bottom:0;width:0;height:0;border:0', title: 'ispis' });
+  document.body.append(f);
+  const d = f.contentDocument;
+  d.open(); d.write('<!doctype html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><style>@page{margin:22mm 20mm} body{font:12pt/1.45 "Times New Roman",serif;color:#000} h1{font-size:14pt;text-align:center;margin:12pt 0 0} h2{font-size:12pt;text-align:center;font-weight:normal;margin:0 0 12pt} h4{text-align:center;font-size:12pt;margin:10pt 0 4pt} table{border-collapse:collapse;width:100%;font-size:10pt} td,th{border:1px solid #888;padding:2pt 4pt} .n{text-align:right}' + (css || '') + '</style></head><body>' + html + '</body></html>'); d.close();
+  setTimeout(() => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { alert('Ispis nije dopušten u ovom prozoru. Otvori aplikaciju iz spremljene datoteke.'); } setTimeout(() => f.remove(), 2000); }, 300);
+}
+
+
+function formHtml(s, only) {
+  const R = S.ref, y = year(), opc = OPC.get(+R.grad);
+  const isB = s === 'BIL';
+  const c1 = isB ? 'Stanje 1. siječnja' : 'Ostvareno u istom razdoblju prethodne godine', c2 = isB ? 'Stanje 31. prosinca' : 'Ostvareno u izvještajnom razdoblju';
+  const kv = (k, v) => '<tr><td class="k">' + k + ':</td><td>' + esc(v || '') + '</td></tr>';
+  let o = '<div class="hd"><div><b>' + esc(R.naziv || '') + '</b><br>' + esc(R.adresa || '') + ', ' + esc(R.pbr || '') + ' ' + esc(R.mjesto || '') + '</div><div class="ob">Obrazac<br><b>' + (isB ? 'BIL-NPF' : 'PR-RAS-NPF') + '</b></div></div>' +
+    '<table class="id">' + kv('OIB', R.oib) + kv('Matični broj', R.mb) + kv('RNO broj', R.rno) + kv('Račun (IBAN)', R.iban) + kv('Šifra djelatnosti', (R.djel || '') + (DJEL.get(R.djel) ? ' ' + DJEL.get(R.djel) : '')) + kv('Grad/općina', (R.grad || '') + (opc ? ' ' + opc[1] : '')) + '</table>' +
+    '<h1>' + (isB ? 'BILANCA' : 'IZVJEŠTAJ O PRIHODIMA I RASHODIMA') + '</h1><h2>' + (isB ? 'na dan 31. prosinca ' + y + '.' : 'za razdoblje od 1. siječnja do 31. prosinca ' + y + '.') + '</h2>' +
+    '<p class="eur">Iznosi u eurima i centima</p><table class="f"><colgroup><col style="width:42pt"><col><col style="width:26pt"><col style="width:74pt"><col style="width:74pt"><col style="width:38pt"></colgroup><thead><tr><th>Račun iz rač. plana</th><th>Opis</th><th>AOP</th><th class="n">' + c1 + '</th><th class="n">' + c2 + '</th><th class="n">Indeks</th></tr><tr class="cn"><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr></thead><tbody>';
+  let pend = '';
+  for (const r of ROWS[s]) {
+    if (r.h) { pend = '<tr class="sec"><td colspan="6">' + esc(r.h) + '</td></tr>'; if (!only) { o += pend; pend = ''; } continue; }
+    const j = V[s].J[r.r] || 0, k = V[s].K[r.r] || 0;
+    if (only && !j && !k && ![1, 145, 54, 148].includes(r.aop)) continue;
+    o += pend; pend = '';
+    const isInt = !isB && INT_AOP.has(r.aop), f = (x) => (isInt ? IF0.format(x) : fmt0(x));
+    o += '<tr' + (r.fn ? ' class="s"' : '') + '><td>' + esc(r.k) + '</td><td>' + esc(r.o) + '</td><td class="c">' + pad3(r.aop) + '</td><td class="n">' + f(j) + '</td><td class="n">' + f(k) + '</td><td class="n">' + (j > 0 ? (k / j >= 100 ? '&gt;&gt;100' : NF.format(k / j * 100)) : '-') + '</td></tr>';
+  }
+  o += '</tbody></table><table class="ft"><tr><td>Zakonski zastupnik: ' + esc(R.zastupnik || '') + '</td><td rowspan="3" class="mp">M.P.</td><td>Potpis zakonskog zastupnika</td></tr><tr><td>Osoba za kontakt: ' + esc(R.kontakt || '') + '</td><td rowspan="2" class="sig"></td></tr><tr><td>Telefon: ' + esc(R.tel || '') + (R.email ? ', e-pošta: ' + esc(R.email) : '') + '<br>Datum: ' + esc(R.datum || '') + '</td></tr></table>';
+  return o;
+}
+const FORM_CSS = '@page{size:A4;margin:12mm 10mm} body{font:8.5pt/1.3 Arial,Helvetica,sans-serif} .hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6pt} .ob{text-align:right;border:1px solid #000;padding:3pt 8pt} table.id{width:auto;border-collapse:collapse;margin-bottom:6pt} table.id td{border:0;padding:0 8pt 0 0} table.id td.k{color:#444} h1{font-size:12pt;text-align:left;margin:8pt 0 0} h2{font-size:9.5pt;text-align:left;font-weight:normal;margin:0 0 4pt} .eur{text-align:right;margin:0 0 2pt;font-size:8pt} table.f{width:100%;border-collapse:collapse;font-size:8.5pt;table-layout:fixed} table.f th,table.f td{border:1px solid #777;padding:1.5pt 3pt;vertical-align:top} table.f th{background:#e6e6e6;font-size:7.5pt} table.f thead{display:table-header-group} table.f tr{page-break-inside:avoid} tr.cn td{font-size:7pt;text-align:center;color:#444} td.c{text-align:center} td.n{text-align:right;white-space:nowrap} th.n{text-align:right;white-space:normal} tr.s td{background:#eee;font-weight:bold} tr.sec td{background:#d9d9d9;font-weight:bold} table.ft{width:100%;border-collapse:collapse;margin-top:14pt;page-break-inside:avoid;font-size:8.5pt} table.ft td{border:0;padding:3pt 4pt;vertical-align:top} td.mp{text-align:center;width:60pt;vertical-align:middle} td.sig{border-bottom:1px solid #000!important;height:30pt}';
+function printForm(s, only) { V = evaluate(); printHtml((s === 'BIL' ? 'BIL-NPF' : 'PR-RAS-NPF') + ' ' + safeName(S.ref.naziv) + ' ' + year(), formHtml(s, only), FORM_CSS); }
+
+// ---------- sučelje ----------
+const TABS = [['ref', 'Opći podaci'], ['uvoz', 'Uvoz'], ['BIL', 'Bilanca'], ['PRRAS', 'PR-RAS'], ['kont', 'Kontrole'], ['docs', 'Odluke i bilješke'], ['izvoz', 'Izvoz u FINA obrazac']];
+let tab = localStorage.getItem('npf_tab') || 'ref';
+let V = evaluate();
+let hideZero = { BIL: true, PRRAS: true };
+function renderTabs() {
+  const nav = document.getElementById('tabs'); nav.replaceChildren();
+  const ch = checks(V), ne = ch.filter((c) => c.lvl === 'err').length;
+  for (const [id, label] of TABS) {
+    const b = h('button', { role: 'tab', 'aria-selected': String(tab === id), onclick: () => { tab = id; localStorage.setItem('npf_tab', id); render(); window.scrollTo(0, 0); } }, label);
+    if (id === 'kont') b.append(h('span', { class: 'badge' + (ne ? '' : ' ok') }, ne ? ne : '✓'));
+    nav.append(b);
+  }
+  const R = S.ref;
+  document.getElementById('who').textContent = (R.naziv ? R.naziv + ', ' : '') + 'godina ' + year() + (R.oib ? ', OIB ' + R.oib : '');
+}
+function render() {
+  V = evaluate();
+  renderTabs();
+  const m = document.getElementById('main'); m.replaceChildren();
+  ({ ref: renderRef, uvoz: renderUvoz, BIL: renderSheet('BIL'), PRRAS: renderSheet('PRRAS'), kont: renderKont, docs: renderDocs, izvoz: renderIzvoz }[tab] || renderRef)(m);
+}
+function refresh() {
+  V = evaluate(); renderTabs();
+  document.querySelectorAll('[data-s]').forEach((el) => {
+    const s = el.dataset.s, row = +el.dataset.r, C = el.dataset.c, r = BYROW[s][row], val = V[s][C][row] || 0;
+    if (el.tagName === 'INPUT') {
+      const key = s + ':' + r.aop + ':' + C, isMan = key in S.man;
+      if (document.activeElement !== el) el.value = val ? (INT_AOP.has(r.aop) && s === 'PRRAS' ? IF0.format(val) : NF.format(val)) : '';
+      el.className = 'num-in' + (isMan ? ' man' : key in AUTO && AUTO[key] ? ' auto' : '');
+      const td = el.parentElement, rb = td.querySelector('.rst');
+      if (isMan && !rb) td.append(resetBtn(key)); else if (!isMan && rb) rb.remove();
+    } else el.textContent = fmt(val);
+  });
+  document.querySelectorAll('tr[data-row]').forEach((tr) => {
+    const s = tr.dataset.sheet, row = +tr.dataset.row, j = V[s].J[row] || 0, k = V[s].K[row] || 0;
+    tr.classList.toggle('z', !j && !k);
+    const ix = tr.querySelector('.ix'); if (ix) ix.textContent = j > 0 ? (k / j >= 100 ? '>>100' : NF.format(k / j * 100)) : '-';
+  });
+  const sl = document.getElementById('sumline'); if (sl) sl.replaceWith(sumLine(sl.dataset.s));
+}
+function resetBtn(key) { return h('button', { class: 'rst', title: 'Vrati automatski iznos', 'aria-label': 'Vrati automatski iznos', onclick: () => { delete S.man[key]; save(); refresh(); } }, '↺'); }
+
+function renderRef(m) {
+  const R = S.ref;
+  m.append(h('h2', {}, 'Opći podaci'), h('p', { class: 'lead' }, 'Podaci za referentnu stranicu FINA-inog obrasca. Ako učitaš prošlogodišnji obrazac na kartici Uvoz, prazna polja se popune sama.'));
+  const f = (k, label, opts = {}) => {
+    const hint = h('div', { class: 'hint' });
+    const inp = h('input', { value: R[k] || '', id: 'f_' + k, inputmode: opts.num ? 'numeric' : null, maxlength: opts.max || null, list: opts.list || null });
+    const upd = () => { if (opts.hint) hint.textContent = opts.hint(inp.value.trim()); };
+    inp.addEventListener('input', () => { R[k] = inp.value.trim(); save(); upd(); if (k === 'naziv' || k === 'oib' || k === 'godina') renderTabs(); });
+    inp.addEventListener('change', () => { V = evaluate(); renderTabs(); });
+    upd();
+    return h('div', { class: 'fld' + (opts.wide ? ' wide' : '') }, h('label', { for: 'f_' + k }, label), inp, hint);
+  };
+  const dl = h('datalist', { id: 'dl_djel' }, STRUCT.djel.map((d) => h('option', { value: d[0] }, d[1])));
+  const dlg = h('datalist', { id: 'dl_grad' }, STRUCT.opcine.map((o) => h('option', { value: o[0] }, o[1])));
+  const dv = h('select', { id: 'f_dvojno', onchange: (e) => { R.dvojno = e.target.value; save(); } }, ['DA', 'NE'].map((x) => { const o = h('option', { value: x }, x); if ((R.dvojno || 'DA') === x) o.selected = true; return o; }));
+  m.append(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Obveznik'), h('div', { class: 'grid' },
+    f('naziv', 'Naziv obveznika', { wide: true }),
+    f('adresa', 'Adresa sjedišta'), f('pbr', 'Poštanski broj', { num: true, max: 5 }), f('mjesto', 'Mjesto'),
+    f('oib', 'OIB', { num: true, max: 11 }), f('mb', 'Matični broj', { num: true }), f('rno', 'RNO broj', { num: true }),
+    f('iban', 'Račun (IBAN)', { max: 25 }),
+    f('djel', 'Šifra djelatnosti', { list: 'dl_djel', max: 5, hint: (v) => DJEL.get(v) || (v ? 'Šifra nije u šifarniku' : 'Npr. 94990 Djelatnosti ostalih članskih organizacija') }),
+    f('grad', 'Šifra grada/općine', { list: 'dl_grad', num: true, hint: (v) => { const o = OPC.get(+v); return o ? o[1] + ', ' + (STRUCT.zup[o[2]] || '') : v ? 'Šifra nije u šifarniku' : 'Npr. 98 Dubrovnik'; } }),
+    h('div', { class: 'fld' }, h('label', { for: 'f_dvojno' }, 'Dvojno knjigovodstvo'), dv, h('div', { class: 'hint' }, 'Aplikacija za sada radi obrasce za dvojno knjigovodstvo.')),
+    f('godina', 'Godina izvještaja', { num: true, max: 4, hint: (v) => 'Razdoblje 1.1. do 31.12.' + (v || '') + ', oznaka ' + (v || '') + '-12' }),
+  ), dl, dlg));
+  m.append(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Podnožje obrasca'), h('div', { class: 'grid' },
+    f('zastupnik', 'Zakonski zastupnik'), f('datum', 'Datum', { hint: () => 'Npr. ' + new Date().toLocaleDateString('hr-HR') }),
+    f('kontakt', 'Osoba za kontakt'), f('tel', 'Telefon'), f('fax', 'Telefax'), f('email', 'Adresa e-pošte'))));
+}
+
+function dropZone(id, title, sub, accept, onFile) {
+  const inp = h('input', { type: 'file', id, accept, style: 'position:absolute;width:1px;height:1px;opacity:0' });
+  const lab = h('label', { class: 'drop', for: id }, h('b', {}, title), h('span', {}, sub));
+  inp.addEventListener('change', () => { if (inp.files[0]) onFile(inp.files[0]); inp.value = ''; });
+  lab.addEventListener('dragover', (e) => { e.preventDefault(); lab.classList.add('over'); });
+  lab.addEventListener('dragleave', () => lab.classList.remove('over'));
+  lab.addEventListener('drop', (e) => { e.preventDefault(); lab.classList.remove('over'); if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]); });
+  return h('div', {}, inp, lab);
+}
+function renderUvoz(m) {
+  m.append(h('h2', {}, 'Uvoz podataka'), h('p', { class: 'lead' }, 'Bruto bilanca puni tekuću godinu, a prošlogodišnji FINA-in obrazac stupac prethodne godine i zaglavlje. Bez prošlogodišnjeg obrasca stupac 1. siječnja u Bilanci uzima se iz početnog stanja bruto bilance.'));
+  const msgB = h('p', { class: 'msg', 'aria-live': 'polite' }), msgP = h('p', { class: 'msg', 'aria-live': 'polite' });
+  const bbBox = h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Bruto bilanca (PSPnet, PDF)'),
+    dropZone('bbFile', 'Odaberi bruto bilancu', 'ili je povuci ovdje. Bilanca prije zaključnih knjiženja, npr. stanje na 30.12.', '.pdf,application/pdf', async (f) => {
+      msgB.className = 'msg'; msgB.textContent = 'Čitam ' + f.name + '…';
+      try {
+        const p = parseBB(await pdfLines(f));
+        if (!p.leaves.length) throw new Error('U datoteci nisam našao nijedan konto. Je li to bruto bilanca iz PSPnet-a?');
+        S.bb = { file: f.name, ...p };
+        const ym = (p.do || '').match(/(\d{4})$/); if (ym) S.ref.godina = ym[1];
+        if (!S.ref.naziv && p.firm) S.ref.naziv = p.firm;
+        save(); render();
+      } catch (e) { msgB.className = 'msg err'; msgB.textContent = 'Nisam uspio pročitati datoteku: ' + e.message; }
+    }), msgB);
+  if (S.bb) {
+    const B = S.bb, sum = (i) => r2(B.leaves.reduce((t, l) => t + l.v[i], 0));
+    bbBox.append(h('dl', { class: 'kv', style: 'margin-top:12px' },
+      h('dt', {}, 'Datoteka'), h('dd', {}, B.file), h('dt', {}, 'Organizacija'), h('dd', {}, B.firm || '-'), h('dt', {}, 'Razdoblje'), h('dd', {}, (B.od || '?') + ' do ' + (B.do || '?')),
+      h('dt', {}, 'Konta'), h('dd', {}, B.leaves.length), h('dt', {}, 'Ukupno duguje / potražuje'), h('dd', { class: Math.abs(sum(4) - sum(5)) < 0.01 ? 'ok' : 'err' }, fmt0(sum(4)) + ' / ' + fmt0(sum(5))),
+      h('dt', {}, 'Prihodi / rashodi'), h('dd', {}, fmt0(INFO.prihodi) + ' / ' + fmt0(INFO.rashodi))),
+      h('p', { style: 'margin:12px 0 0' }, h('button', { class: 'btn', onclick: () => { if (confirm('Ukloniti učitanu bruto bilancu?')) { S.bb = null; save(); render(); } } }, 'Ukloni bruto bilancu')));
+  }
+  const prBox = h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Prošlogodišnji FINA obrazac (.xls)'),
+    dropZone('prFile', 'Odaberi prošlogodišnji obrazac', 'popunjeni obrazac za neprofitne koji je predan za prošlu godinu', '.xls,application/vnd.ms-excel', async (f) => {
+      msgP.className = 'msg'; msgP.textContent = 'Čitam ' + f.name + '…';
+      try {
+        const p = await readNpfXls(f);
+        if (!/-12$/.test(p.period)) throw new Error('Obrazac je za razdoblje ' + (p.period || '?') + ', a treba godišnji (oznaka GGGG-12).');
+        S.prior = { file: f.name, period: p.period, BIL: p.BIL, PRRAS: p.PRRAS };
+        for (const k in p.ref) if (!S.ref[k] && k !== 'datum') S.ref[k] = p.ref[k];
+        S.ref.godina = String(parseInt(p.period, 10) + 1);
+        save(); render();
+      } catch (e) { msgP.className = 'msg err'; msgP.textContent = 'Nisam uspio pročitati obrazac: ' + e.message; }
+    }), msgP);
+  if (S.prior) prBox.append(h('dl', { class: 'kv', style: 'margin-top:12px' }, h('dt', {}, 'Datoteka'), h('dd', {}, S.prior.file), h('dt', {}, 'Razdoblje'), h('dd', {}, S.prior.period),
+    h('dt', {}, 'Ukupna imovina 31.12.'), h('dd', {}, fmt0(V.get('BIL', 1, 'J'))), h('dt', {}, 'Prihodi / rashodi'), h('dd', {}, fmt0(V.get('PRRAS', 1, 'J')) + ' / ' + fmt0(V.get('PRRAS', 148, 'J')))),
+    h('p', { style: 'margin:12px 0 0' }, h('button', { class: 'btn', onclick: () => { if (confirm('Ukloniti prošlogodišnji obrazac?')) { S.prior = null; save(); render(); } } }, 'Ukloni prošlu godinu')));
+  m.append(h('div', { class: 'two' }, bbBox, prBox));
+
+  // nemapirana konta i pravila
+  const opts = [['', '— nije raspoređeno —'], ['skip', 'Ne prenosi']].concat(
+    [['BIL', BIL_IN], ['PRRAS', PR_IN]].flatMap(([s, list]) => list.map((r) => [s + ':' + r.aop, (s === 'BIL' ? 'Bilanca ' : 'PR-RAS ') + pad3(r.aop) + ' ' + r.k + ' ' + opisBez(r.o).slice(0, 48)])));
+  const sel = (val, onch) => h('select', { onchange: (e) => onch(e.target.value), 'aria-label': 'Raspored konta' }, opts.map(([v, l]) => { const o = h('option', { value: v }, l); if (v === val) o.selected = true; return o; }));
+  const setRule = (p, t) => { S.map = S.map.filter((x) => x.p !== p); if (t) S.map.push({ p, t }); save(); render(); };
+  const panel = h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Raspored konta'),
+    h('p', { class: 'lead', style: 'margin-bottom:10px' }, 'Konta se raspoređuju sama po računskom planu za neprofitne (npr. 4259xx ide u AOP 096 Ostale usluge). Ovdje odrediš kamo idu konta koja aplikacija ne prepozna. Pravilo vrijedi za sva konta koja počinju tim brojem.'));
+  if (S.bb && INFO.unmapped.length) {
+    panel.append(h('table', { class: 'um' }, h('tbody', {}, INFO.unmapped.map((l) => h('tr', {}, h('td', {}, l.k), h('td', {}, l.name), h('td', { class: 'num' }, fmt0(r2(l.v[4] - l.v[5]))), h('td', {}, sel('', (t) => setRule(l.k, t))))))));
+  } else if (S.bb) panel.append(h('p', { class: 'ok', style: 'margin:0' }, 'Sva konta sa saldom su raspoređena.'));
+  if (S.map.length) {
+    panel.append(h('h3', {}, 'Tvoja pravila'), h('table', { class: 'um' }, h('tbody', {}, S.map.map((x) => h('tr', {}, h('td', {}, x.p + '…'), h('td', {}, sel(x.t, (t) => setRule(x.p, t))), h('td', {}, h('button', { class: 'btn', onclick: () => setRule(x.p, '') }, 'Obriši')))))));
+  }
+  if (S.bb) {
+    const det = h('details', { style: 'margin-top:14px' }, h('summary', {}, 'Pregled svih konta i kamo idu'));
+    const tb = h('tbody');
+    for (const l of S.bb.leaves) {
+      const t = targetOf(l.k);
+      const where = !t ? '—' : t.kind === 'skip' ? 'ne prenosi' : t.kind === 'R52' ? 'rezultat (PR-RAS 151/152, Bilanca 199/200)' : (t.kind === 'BIL' ? 'Bilanca ' : 'PR-RAS ') + pad3(t.row.aop) + ' ' + opisBez(t.row.o).slice(0, 40);
+      tb.append(h('tr', {}, h('td', {}, l.k), h('td', {}, l.name), h('td', { class: 'num' }, fmt0(r2(l.v[0] - l.v[1]))), h('td', { class: 'num' }, fmt0(r2(l.v[4] - l.v[5]))), h('td', {}, where)));
+    }
+    det.append(h('table', { class: 'um' }, h('thead', {}, h('tr', {}, h('td', {}, 'Konto'), h('td', {}, 'Naziv'), h('td', { class: 'num' }, 'Početno'), h('td', { class: 'num' }, 'Saldo'), h('td', {}, 'Ide u'))), tb));
+    panel.append(det);
+  }
+  m.append(panel);
+}
+
+function sumLine(s) {
+  const g = V.get;
+  const el = s === 'BIL'
+    ? h('div', { class: 'sumline', id: 'sumline', 'data-s': s }, h('span', {}, 'Imovina 31.12. ', h('b', {}, fmt0(g('BIL', 1, 'K')))), h('span', {}, 'Obveze i vlastiti izvori ', h('b', {}, fmt0(g('BIL', 145, 'K')))),
+      Math.abs(g('BIL', 1, 'K') - g('BIL', 145, 'K')) > 0.14 ? h('span', { class: 'err' }, 'Razlika ' + fmt0(r2(g('BIL', 1, 'K') - g('BIL', 145, 'K')))) : h('span', { class: 'ok' }, 'Aktiva i pasiva se slažu'))
+    : h('div', { class: 'sumline', id: 'sumline', 'data-s': s }, h('span', {}, 'Prihodi ', h('b', {}, fmt0(g('PRRAS', 1, 'K')))), h('span', {}, 'Rashodi ', h('b', {}, fmt0(g('PRRAS', 148, 'K')))),
+      h('span', {}, g('PRRAS', 149, 'K') ? 'Višak ' : 'Manjak ', h('b', {}, fmt0(g('PRRAS', 149, 'K') || g('PRRAS', 150, 'K')))), h('span', {}, 'Raspoloživo za sljedeće razdoblje ', h('b', {}, g('PRRAS', 154, 'K') ? 'višak ' + fmt0(g('PRRAS', 154, 'K')) : g('PRRAS', 155, 'K') ? 'manjak ' + fmt0(g('PRRAS', 155, 'K')) : '0,00')));
+  return el;
+}
+function renderSheet(s) {
+  return (m) => {
+    const y = year();
+    m.append(h('h2', {}, s === 'BIL' ? 'Bilanca (BIL-NPF) na dan 31.12.' + y + '.' : 'Račun prihoda i rashoda (PR-RAS-NPF) za ' + y + '.'),
+      h('p', { class: 'lead' }, s === 'BIL' ? 'Siva polja su zbrojevi. Višak i manjak prihoda (AOP 199 i 200) dolaze iz PR-RAS-a, AOP 154 i 155.' : 'Siva polja su zbrojevi. Preneseni višak ili manjak (AOP 151, 152) je saldo konta 5221 i 5222 u bruto bilanci prije zaključka. Broj radnika i volontera upisuješ sam.'));
+    m.append(sumLine(s));
+    const tbl = h('table', { class: 'f' + (hideZero[s] ? ' hide0' : '') });
+    const tg = h('label', {}, h('input', { type: 'checkbox', checked: hideZero[s] ? true : null, onchange: (e) => { hideZero[s] = e.target.checked; tbl.classList.toggle('hide0', hideZero[s]); } }), ' Prikaži samo retke s iznosima');
+    m.append(h('div', { class: 'tools' }, h('button', { class: 'btn', onclick: () => printForm(s, false) }, 'Ispiši obrazac'), h('button', { class: 'btn', onclick: () => printForm(s, true) }, 'Ispiši samo retke s iznosima'), tg, h('span', { class: 'legend' }, h('span', {}, h('i', { class: 'sw', style: 'background:var(--autobg)' }), 'iz bruto bilance ili prošle godine'), h('span', {}, h('i', { class: 'sw', style: 'background:var(--manbg)' }), 'ručno upisano, ↺ vraća automatski'))));
+    const c1 = s === 'BIL' ? 'Stanje 1. siječnja' : 'Prethodna godina', c2 = s === 'BIL' ? 'Stanje 31. prosinca' : 'Tekuća godina';
+    tbl.append(h('thead', {}, h('tr', {}, h('th', {}, 'Račun'), h('th', {}, 'Opis'), h('th', {}, 'AOP'), h('th', { class: 'r' }, c1), h('th', { class: 'r' }, c2), h('th', { class: 'r' }, 'Indeks'))));
+    const tb = h('tbody');
+    for (const r of ROWS[s]) {
+      if (r.h) { tb.append(h('tr', { class: 'sec' }, h('td', { colspan: 6 }, r.h.charAt(0) + r.h.slice(1).toLowerCase()))); continue; }
+      const j = V[s].J[r.r] || 0, k = V[s].K[r.r] || 0;
+      const tr = h('tr', { class: (r.fn ? 'sum' : '') + (r.lvl === 1 ? ' lvl1' : '') + (!j && !k ? ' z' : ''), 'data-row': r.r, 'data-sheet': s, id: s + '-' + r.aop },
+        h('td', { class: 'kt' }, r.k), h('td', { class: 'op' }, r.o), h('td', { class: 'aop' }, pad3(r.aop)));
+      for (const C of ['J', 'K']) {
+        const val = V[s][C][r.r] || 0;
+        if (r.fn) { tr.append(h('td', { class: 'num', 'data-s': s, 'data-r': r.r, 'data-c': C }, fmt(val))); continue; }
+        const key = s + ':' + r.aop + ':' + C, isMan = key in S.man, isInt = s === 'PRRAS' && INT_AOP.has(r.aop);
+        const inp = h('input', { class: 'num-in' + (isMan ? ' man' : key in AUTO && AUTO[key] ? ' auto' : ''), value: val ? (isInt ? IF0.format(val) : NF.format(val)) : '', inputmode: 'decimal', 'data-s': s, 'data-r': r.r, 'data-c': C, 'aria-label': 'AOP ' + pad3(r.aop) + ' ' + (C === 'J' ? c1 : c2) });
+        inp.addEventListener('focus', () => inp.select());
+        inp.addEventListener('change', () => {
+          const t = inp.value.trim(), n = t === '' ? 0 : parseNum(t);
+          if (isNaN(n)) { inp.classList.add('bad'); return; }
+          inp.classList.remove('bad');
+          if (r2(n) === r2(AUTO[key] || 0)) delete S.man[key]; else S.man[key] = r2(n);
+          save(); refresh();
+          if (document.activeElement !== inp) inp.value = n ? (isInt ? IF0.format(n) : NF.format(n)) : '';
+        });
+        const td = h('td', { class: 'num' }, inp); if (isMan) td.append(resetBtn(key));
+        tr.append(td);
+      }
+      tr.append(h('td', { class: 'ix' }, j > 0 ? (k / j >= 100 ? '>>100' : NF.format(k / j * 100)) : '-'));
+      tb.append(tr);
+    }
+    tbl.append(tb);
+    m.append(h('div', { class: 'tablewrap' }, tbl));
+  };
+}
+
+function renderKont(m) {
+  const ch = checks(V);
+  const ne = ch.filter((c) => c.lvl === 'err').length, nw = ch.filter((c) => c.lvl === 'warn').length;
+  m.append(h('h2', {}, 'Kontrole'), h('p', { class: 'lead' }, ne ? 'Ima pogrešaka: ' + ne + (nw ? ', upozorenja: ' + nw : '') + '. FINA-ine kontrole u Excelu javit će iste pogreške.' : nw ? 'Nema pogrešaka. Upozorenja: ' + nw + '.' : 'Sve kontrole su ispravne.'));
+  const order = { err: 0, warn: 1, ok: 2 };
+  m.append(h('div', { class: 'panel' }, h('ul', { class: 'chk' }, ch.sort((a, b) => order[a.lvl] - order[b.lvl]).map((c) => h('li', {}, h('span', { class: 'st ' + c.lvl }, { ok: 'Ispravna', err: 'Pogreška', warn: 'Upozorenje' }[c.lvl]), h('span', { class: 'd' }, c.title, c.detail ? h('small', {}, c.detail) : null))))));
+}
+
+let curDoc = 'usv';
+function renderDocs(m) {
+  const D = S.docs;
+  m.append(h('h2', {}, 'Odluke i bilješke'), h('p', { class: 'lead' }, 'Složene iz podataka u obrascu. Tekst možeš mijenjati izravno na stranici, a promjene se pamte. Gumb Složi iznova vraća tekst na podatke iz obrasca.'));
+  const fld = (k, label, ph) => { const i = h('input', { value: D[k] || '', placeholder: ph || '', id: 'd_' + k }); i.addEventListener('change', () => { D[k] = i.value.trim(); save(); render(); }); return h('div', { class: 'fld' }, h('label', { for: 'd_' + k }, label), i); };
+  const tij = h('select', { id: 'd_tijelo', onchange: (e) => { D.tijelo = e.target.value; save(); render(); } }, ['Skupština', 'Upravni odbor', 'Izvršni odbor'].map((x) => { const o = h('option', { value: x }, x); if ((D.tijelo || 'Skupština') === x) o.selected = true; return o; }));
+  m.append(h('div', { class: 'panel noprint' }, h('div', { class: 'grid' }, h('div', { class: 'fld' }, h('label', { for: 'd_tijelo' }, 'Tijelo koje donosi odluke'), tij), fld('clanak', 'Članak Statuta', 'npr. 25.'), fld('datumSj', 'Datum sjednice', 'npr. 20. veljače 2027.'), fld('mjesto', 'Mjesto', S.ref.mjesto || ''))));
+  const gen = buildDocs(V);
+  const doc = h('div', { class: 'doc', contenteditable: 'true', spellcheck: 'true', 'aria-label': 'Tekst dokumenta' });
+  const setDoc = () => { doc.innerHTML = S.docHtml[curDoc] || gen[curDoc]; };
+  doc.addEventListener('input', () => { S.docHtml[curDoc] = doc.innerHTML; save(); });
+  const tabsEl = h('div', { class: 'doctabs noprint' }, DOCS.map(([id, label]) => h('button', { class: 'btn', 'aria-pressed': String(curDoc === id), onclick: () => { curDoc = id; render(); } }, label + (S.docHtml[id] ? ' (uređeno)' : ''))));
+  const title = () => DOCS.find((d) => d[0] === curDoc)[1] + ' ' + year();
+  m.append(tabsEl, h('div', { class: 'tools noprint' },
+    h('button', { class: 'btn', onclick: () => { if (!S.docHtml[curDoc] || confirm('Tvoje izmjene u ovom dokumentu bit će zamijenjene. Nastaviti?')) { delete S.docHtml[curDoc]; save(); render(); } } }, 'Složi iznova'),
+    h('button', { class: 'btn', onclick: () => download(safeName(S.ref.naziv) + ' - ' + title() + '.doc', docAsWord(title(), doc.innerHTML)) }, 'Spremi za Word'),
+    h('button', { class: 'btn', onclick: () => printHtml(title(), doc.innerHTML) }, 'Ispiši ili spremi PDF')), doc);
+  setDoc();
+}
+
+
+function folderPanel() {
+  const info = h('p', { style: 'margin:0 0 10px' }, 'Gumb Spremi u datoteku sprema klijenta u mapu ' + yearFolder() + ' unutar mape koju odabereš (npr. Radna površina).');
+  getRoot().then((hd) => { if (hd) info.textContent = 'Klijenti se spremaju u: ' + hd.name + ' / ' + yearFolder() + '. Mapu za godinu aplikacija napravi sama.'; });
+  return h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Mapa za spremanje klijenata'), info,
+    h('button', { class: 'btn', onclick: async () => { try { const hd = await pickRoot(); toast('Odabrano: ' + hd.name); render(); } catch (e) { if (e.name !== 'AbortError') toast('Odabir mape nije dopušten u ovom prozoru.', true); } } }, 'Odaberi mapu'));
+}
+function renderIzvoz(m) {
+  const ch = checks(V), ne = ch.filter((c) => c.lvl === 'err').length;
+  const msg = h('p', { class: 'msg', 'aria-live': 'polite' });
+  m.append(h('h2', {}, 'Izvoz u FINA-in obrazac'), h('p', { class: 'lead' }, 'Odaberi prazan FINA-in obrazac za neprofitne organizacije (.xls). Aplikacija upiše referentnu stranicu, Bilancu i PR-RAS u oba stupca i ponudi popunjenu kopiju. Formule, kontrole i skriveni listovi ostaju netaknuti.'));
+  const box = h('div', { class: 'panel' }, dropZone('tplFile', 'Odaberi FINA-in obrazac (.xls)', 'npr. Neprof-' + year() + '.xls, prazan, s FINA-ine stranice', '.xls,application/vnd.ms-excel', async (f) => {
+    if (ne && !confirm('Kontrole javljaju ' + ne + (ne === 1 ? ' pogrešku' : ' pogrešaka') + '. Ipak izvesti obrazac?')) return;
+    msg.className = 'msg'; msg.textContent = 'Punim obrazac…';
+    try {
+      const blob = await exportXls(f, V);
+      const name = 'NPF_' + safeName(S.ref.naziv) + '_' + year() + '.xls';
+      download(name, blob);
+      msg.className = 'msg ok'; msg.textContent = 'Spremljeno kao ' + name + '. Otvori u Excelu, klikni Omogući uređivanje i spremi s Ctrl+S u formatu .xls.';
+    } catch (e) { msg.className = 'msg err'; msg.textContent = 'Izvoz nije uspio: ' + e.message; }
+  }), msg);
+  m.append(box, h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, 'Nakon izvoza'), h('ol', { style: 'margin:0;padding-left:20px' },
+    h('li', {}, 'Otvori datoteku u Excelu. Dok je u zaštićenom prikazu, list Kontrole može javljati pogreške jer Excel tada ne računa.'),
+    h('li', {}, 'Klikni Omogući uređivanje. Excel preračuna formule i kontrolni broj.'),
+    h('li', {}, 'Na listu Kontrole provjeri da je stanje isto kao na kartici Kontrole ovdje.'),
+    h('li', {}, 'Spremi s Ctrl+S i ostavi format .xls (Excel 97-2003).'),
+    h('li', {}, 'Predaj datoteku FINA-i, kao i dosad.'))),
+    FS_OK ? folderPanel() : null,
+    h('p', { class: 'note' }, 'Izvoz radi u verziji aplikacije spremljenoj na računalu ili na tvojoj domeni. U pregledu unutar razgovora preglednik ne dopušta spremanje datoteka.'));
+}
+
+// ---------- spremanje klijenta ----------
+// ---------- spremanje u mapu na računalu (Chrome, Edge) ----------
+const FS_OK = typeof window.showDirectoryPicker === 'function';
+function idb(mode, fn) {
+  return new Promise((res, rej) => {
+    const rq = indexedDB.open('npf_fs', 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore('kv');
+    rq.onerror = () => rej(rq.error);
+    rq.onsuccess = () => { const tx = rq.result.transaction('kv', mode), st = tx.objectStore('kv'), r = fn(st); tx.oncomplete = () => res(r && r.result); tx.onerror = () => rej(tx.error); };
+  });
+}
+const getRoot = () => idb('readonly', (st) => st.get('root')).catch(() => null);
+const setRoot = (hd) => idb('readwrite', (st) => st.put(hd, 'root')).catch(() => {});
+async function pickRoot() {
+  const hd = await window.showDirectoryPicker({ id: 'npf', mode: 'readwrite', startIn: 'desktop' });
+  await setRoot(hd); return hd;
+}
+async function rootWithPermission(ask) {
+  let hd = await getRoot();
+  if (hd) {
+    const o = { mode: 'readwrite' };
+    if ((await hd.queryPermission(o)) !== 'granted' && (!ask || (await hd.requestPermission(o)) !== 'granted')) hd = ask ? null : hd;
+  }
+  if (!hd && ask) hd = await pickRoot();
+  return hd;
+}
+const yearFolder = () => 'Neprofitne ' + year();
+function toast(msg, err) {
+  const el = h('div', { role: 'status', style: 'position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;max-width:92vw;padding:10px 16px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.18);background:' + (err ? 'var(--badbg);color:var(--bad)' : 'var(--okbg);color:var(--ok)') + ';font-size:14px' }, msg);
+  document.body.append(el); setTimeout(() => el.remove(), 4500);
+}
+async function saveClient() {
+  const name = safeName(S.ref.naziv) + '_' + year() + '_neprofitne.json';
+  const blob = new Blob([JSON.stringify({ app: 'npf', v: 1, ...S }, null, 1)], { type: 'application/json' });
+  if (FS_OK) {
+    try {
+      const root = await rootWithPermission(true);
+      const dir = await root.getDirectoryHandle(yearFolder(), { create: true });
+      const fh = await dir.getFileHandle(name, { create: true });
+      const w = await fh.createWritable(); await w.write(blob); await w.close();
+      toast('Spremljeno: ' + root.name + ' / ' + yearFolder() + ' / ' + name);
+      return;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+      if (!(e && (e.name === 'SecurityError' || e.name === 'NotAllowedError' || e.name === 'TypeError'))) { toast('Spremanje u mapu nije uspjelo (' + e.message + '). Datoteka ide u Preuzimanja.', true); }
+    }
+  }
+  download(name, blob);
+}
+async function openClient() {
+  if (FS_OK && typeof window.showOpenFilePicker === 'function') {
+    try {
+      const root = await rootWithPermission(false);
+      let startIn = 'desktop';
+      if (root && (await root.queryPermission({ mode: 'read' })) === 'granted') { try { startIn = await root.getDirectoryHandle(yearFolder()); } catch (e) { startIn = root; } }
+      const [fh] = await window.showOpenFilePicker({ id: 'npf-open', startIn, types: [{ description: 'Klijent (neprofitne)', accept: { 'application/json': ['.json'] } }] });
+      await loadClientFile(await fh.getFile());
+      return;
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  document.getElementById('loadJson').click();
+}
+async function loadClientFile(f) {
+  try { const d = JSON.parse(await f.text()); if (d.app !== 'npf') throw new Error('nije datoteka ove aplikacije'); delete d.app; delete d.v; S = Object.assign(blank(), d); save(); render(); toast('Učitano: ' + f.name); }
+  catch (err) { toast('Ne mogu učitati: ' + err.message, true); }
+}
+// ---------- Licenca (kao u Završnom računu, zavrsni/gfi/index.html) ----------
+const SB_URL = 'https://fctpplyerzmvcjjmiwkx.supabase.co';
+const SB_KEY = 'sb_publishable_2MPQsSTjBt-_K7sX-ANNJg_MmSpoK5X';
+const LIC = { ok: false, demo: false, until: null, days: null, email: '', checkedAt: 0 };
+let sbClient = null;
+function deviceId() {
+  let id = null;
+  try { id = localStorage.getItem('zr-device-id'); } catch (e) {}
+  if (!id || id.length < 32) {
+    const a = new Uint8Array(16); crypto.getRandomValues(a);
+    id = Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
+    try { localStorage.setItem('zr-device-id', id); } catch (e) {}
+  }
+  return id;
+}
+const LIC_MSG = {
+  no_licence: 'Za ovaj korisnički račun nema aktivne licence.',
+  expired: 'Licenca je istekla. Za produženje se javite putem retroapplab.com.',
+  other_device: 'Licenca je već aktivirana na drugom računalu. Za prijenos licence na ovo računalo javite se podršci putem retroapplab.com.',
+  bad_device: 'Ovo računalo nije moguće prepoznati. Javite se podršci.',
+  not_logged_in: 'Prijava je istekla, prijavite se ponovno.',
+  offline: 'Za rad je potrebna internetska veza. Provjerite vezu i pokušajte ponovno.',
+};
+async function checkLicence() {
+  if (!navigator.onLine) return { ok: false, reason: 'offline' };
+  try {
+    const { data, error } = await sbClient.rpc('check_licence', { p_device: deviceId() });
+    if (error) return { ok: false, reason: /JWT|auth/i.test(error.message || '') ? 'not_logged_in' : 'offline' };
+    return data || { ok: false, reason: 'offline' };
+  } catch (e) { return { ok: false, reason: 'offline' }; }
+}
+function applyLicence(r) {
+  LIC.ok = !!r.ok; LIC.checkedAt = Date.now();
+  if (r.ok) { LIC.until = r.valid_until; LIC.days = r.days_left; LIC.email = r.email || LIC.email; LIC.demo = false; }
+  renderLicence();
+}
+function renderLicence() {
+  const el = document.getElementById('hLic'); if (!el) return;
+  el.replaceChildren();
+  const fd = (s) => s ? String(s).slice(0, 10).split('-').reverse().join('.') + '.' : '';
+  if (LIC.ok) {
+    el.className = 'lic' + (LIC.days <= 30 ? ' warn' : '');
+    const loc = String(LIC.email || '').split('@')[0];
+    if (loc) el.append(h('span', { class: 'user' }, 'Korisnik: ' + loc.slice(0, Math.min(6, Math.max(3, loc.length - 2))) + '*******'), ' · ');
+    el.append(LIC.days <= 30 ? `Licenca istječe ${fd(LIC.until)} (za ${LIC.days} dana) – produžite na retroapplab.com` : `Licenca vrijedi do ${fd(LIC.until)}`);
+    el.append(' · ', h('a', { class: 'src', href: './' }, 'Izbornik'));
+    el.append(' · ', h('button', { class: 'src', type: 'button', onclick: () => showGate('pwd') }, 'Promijeni lozinku'), ' · ', h('button', { class: 'src', type: 'button', onclick: logout }, 'Odjava'));
+  } else {
+    el.className = 'lic demo';
+    el.append('DEMO – ručni unos. Uvoz, spremanje i izvoz rade uz licencu. ', h('button', { class: 'src', type: 'button', onclick: () => showGate('login') }, 'Prijava'));
+  }
+}
+async function requireLicence() {
+  if (LIC.ok && Date.now() - LIC.checkedAt < 60000 && navigator.onLine) return true;
+  if (!LIC.ok) { showGate('login', LIC.demo ? 'Ova funkcija radi samo uz licencu. Prijavite se.' : ''); return false; }
+  const r = await checkLicence();
+  applyLicence(r);
+  if (!r.ok) { showGate(r.reason === 'offline' ? 'offline' : 'login', LIC_MSG[r.reason] || ''); return false; }
+  return true;
+}
+async function logout() { try { await sbClient.auth.signOut(); } catch (e) {} LIC.ok = false; LIC.demo = false; renderLicence(); showGate('login'); }
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; document.querySelectorAll('.installbtn').forEach(b => b.hidden = false); });
+function installBtn() {
+  const b = h('button', { class: 'btn installbtn', type: 'button', hidden: !installEvt, onclick: async () => { if (!installEvt) return; installEvt.prompt(); try { await installEvt.userChoice; } catch (e) {} installEvt = null; document.querySelectorAll('.installbtn').forEach(x => x.hidden = true); } }, 'Instaliraj aplikaciju na računalo');
+  return b;
+}
+function showGate(kind, msg) {
+  let g = document.getElementById('gate');
+  if (!g) { g = h('div', { id: 'gate', role: 'dialog', 'aria-modal': 'true' }); document.body.append(g); }
+  g.hidden = false;
+  const card = h('div', { class: 'gatecard' }, h('img', { src: 'icons/icon-192.png', alt: '', width: 64, height: 64 }), h('h2', {}, 'Neprofitne organizacije'));
+  if (kind === 'pwd') {
+    const p1 = h('input', { type: 'password', autocomplete: 'new-password', placeholder: 'nova lozinka' });
+    const p2 = h('input', { type: 'password', autocomplete: 'new-password', placeholder: 'ponovi novu lozinku' });
+    const err = h('p', { class: 'pill bad', hidden: true });
+    const ok = h('p', { class: 'okline', hidden: true }, '✓ Lozinka je promijenjena. Sljedeći put se prijavite novom lozinkom.');
+    const save = async () => {
+      err.hidden = true;
+      if (p1.value.length < 8) { err.textContent = 'Lozinka mora imati barem 8 znakova.'; err.hidden = false; return; }
+      if (p1.value !== p2.value) { err.textContent = 'Lozinke se ne podudaraju.'; err.hidden = false; return; }
+      sbtn.disabled = true;
+      const { error } = await sbClient.auth.updateUser({ password: p1.value });
+      sbtn.disabled = false;
+      if (error) { err.textContent = /fetch|network/i.test(error.message || '') ? LIC_MSG.offline : /same|different/i.test(error.message || '') ? 'Nova lozinka mora biti drugačija od stare.' : 'Promjena nije uspjela: ' + error.message; err.hidden = false; return; }
+      ok.hidden = false; p1.value = ''; p2.value = ''; sbtn.hidden = true; close.textContent = 'Zatvori';
+    };
+    const sbtn = h('button', { class: 'btn primary', type: 'button', onclick: save }, 'Spremi novu lozinku');
+    const close = h('button', { class: 'src', type: 'button', style: 'margin-top:8px', onclick: hideGate }, 'Odustani');
+    p2.addEventListener('keydown', (e) => { if (e.key === 'Enter') save(); });
+    card.append(h('p', { class: 'lead' }, 'Promjena lozinke za ' + (LIC.email || 'Vaš račun')), err, ok,
+      h('label', {}, 'Nova lozinka', p1), h('label', {}, 'Ponovi novu lozinku', p2), sbtn, close);
+    g.replaceChildren(card); setTimeout(() => p1.focus(), 50); return;
+  }
+  if (kind === 'loading') card.append(h('p', { class: 'lead' }, 'Provjera licence…'));
+  else if (kind === 'offline') {
+    card.append(h('p', { class: 'pill bad' }, LIC_MSG.offline),
+      h('button', { class: 'btn primary', type: 'button', onclick: () => start() }, 'Pokušaj ponovno'));
+  } else {
+    const em = h('input', { type: 'email', autocomplete: 'username', placeholder: 'e-mail', value: LIC.email || '' });
+    const pw = h('input', { type: 'password', autocomplete: 'current-password', placeholder: 'lozinka' });
+    const err = h('p', { class: 'pill bad', hidden: !msg }, msg || '');
+    const go = async () => {
+      err.hidden = true;
+      if (!navigator.onLine) { err.textContent = LIC_MSG.offline; err.hidden = false; return; }
+      btn.disabled = true; btn.textContent = 'Prijava…';
+      const { error } = await sbClient.auth.signInWithPassword({ email: em.value.trim(), password: pw.value });
+      btn.disabled = false; btn.textContent = 'Prijava';
+      if (error) {
+        const m = String(error.message || error.code || '');
+        err.textContent = /fetch|network/i.test(m) ? LIC_MSG.offline
+          : /invalid login credentials/i.test(m) ? 'Pogrešan e-mail ili lozinka.'
+          : /not confirmed/i.test(m) ? 'E-mail adresa nije potvrđena. Javite se podršci.'
+          : 'Prijava nije uspjela: ' + m;
+        err.hidden = false; console.warn('Supabase prijava:', error); return;
+      }
+      LIC.email = em.value.trim();
+      const r = await checkLicence(); applyLicence(r);
+      if (r.ok) hideGate(); else { err.textContent = LIC_MSG[r.reason] || 'Licencu nije moguće provjeriti.'; err.hidden = false; }
+    };
+    const btn = h('button', { class: 'btn primary', type: 'button', onclick: go }, 'Prijava');
+    pw.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+    em.addEventListener('keydown', (e) => { if (e.key === 'Enter') pw.focus(); });
+    card.append(h('p', { class: 'lead' }, 'Prijavite se korisničkim podacima koje ste dobili uz licencu.'), err,
+      h('label', {}, 'E-mail', em), h('label', {}, 'Lozinka', pw), btn,
+      h('button', { class: 'src', type: 'button', style: 'margin-top:10px', onclick: () => { LIC.demo = true; renderLicence(); hideGate(); } }, 'Isprobaj demo (samo ručni unos)'),
+      installBtn(),
+      h('p', { class: 'note', style: 'border:none;padding:8px 0 0;text-align:center' }, 'Licenca vrijedi za jedno računalo. Podaci iz bilanci ostaju na Vašem računalu.'),
+      h('a', { href: 'gfi/', style: 'align-self:center;font-size:12px;color:var(--ink2)' }, 'Završni račun (poduzetnici)'));
+    setTimeout(() => (em.value ? pw : em).focus(), 50);
+  }
+  g.replaceChildren(card);
+}
+function hideGate() { const g = document.getElementById('gate'); if (g) g.hidden = true; renderLicence(); }
+async function start() {
+  showGate('loading');
+  if (!navigator.onLine) { showGate('offline'); return; }
+  if (!sbClient) sbClient = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+  let session = null;
+  try { session = (await sbClient.auth.getSession()).data.session; } catch (e) { showGate('offline'); return; }
+  if (!session) {
+    if (new URLSearchParams(location.search).has('demo')) { LIC.demo = true; renderLicence(); hideGate(); return; }
+    showGate('login'); return;
+  }
+  LIC.email = session.user && session.user.email || '';
+  const r = await checkLicence(); applyLicence(r);
+  if (r.ok) hideGate(); else if (r.reason === 'offline') showGate('offline'); else showGate('login', LIC_MSG[r.reason]);
+}
+window.addEventListener('offline', () => { if (LIC.ok) { LIC.checkedAt = 0; } });
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// Iste radnje kao u glavnoj aplikaciji rade samo uz licencu: uvoz datoteka, spremanje i učitavanje klijenta,
+// izvoz u FINA obrazac te Word i PDF odluka i bilješki. Ispis obrazaca (s CSS-om obrasca) radi i u demo načinu.
+const licGuard = (fn) => async function (...a) { if (!(await requireLicence())) return; return fn.apply(this, a); };
+{
+  const dz = dropZone;
+  dropZone = (id, title, sub, accept, onFile) => dz(id, title, sub, accept, licGuard(onFile));
+  saveClient = licGuard(saveClient);
+  openClient = licGuard(openClient);
+  loadClientFile = licGuard(loadClientFile);
+  const dl = download;
+  download = licGuard(dl);
+  const ph = printHtml;
+  printHtml = (title, html, css) => css ? ph(title, html, css) : licGuard(ph)(title, html, css);
+}
+start();
+document.getElementById('saveJson').onclick = saveClient;
+document.getElementById('loadBtn').onclick = openClient;
+document.getElementById('loadJson').onchange = (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) loadClientFile(f); };
+document.getElementById('newClient').onclick = () => { if (confirm('Obrisati podatke trenutnog klijenta? Prije toga ga možeš spremiti u datoteku.')) { const map = S.map; S = blank(); S.map = map; save(); tab = 'ref'; render(); } };
+render();
+</script>
+</body>
+</html>

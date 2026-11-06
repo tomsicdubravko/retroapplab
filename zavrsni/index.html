@@ -126,6 +126,15 @@ input,select{font:inherit;font-size:15px;padding:9px 10px;border:1px solid var(-
    <div class="actions" data-actions></div>
   </article>
 
+  <article class="prog" id="p-npf">
+   <div class="prog-head"><div class="mark" aria-hidden="true">NPF</div><div><h2>Neprofitne organizacije</h2><p class="sub">Godišnji financijski izvještaji za 2026.</p></div></div>
+   <p class="desc">Bilanca i PR-RAS-NPF iz bruto bilance, odluke, bilješke i izvoz u FINA obrazac.</p>
+   <dl class="facts"><dt>Rok</dt><dd>1. ožujka</dd></dl>
+   <p class="sub">uz licencu za Završni račun</p>
+   <span class="status" data-status></span><button type="button" class="newcount" data-newcount hidden></button>
+   <div class="actions" data-actions></div>
+  </article>
+
   <article class="prog soon" aria-label="Sljedeći program">
    <div class="prog-head"><div class="mark" aria-hidden="true">+</div><div><h2>Sljedeći obračun</h2><p class="sub">U pripremi</p></div></div>
    <p class="desc">Novi programi pojavljuju se ovdje čim budu spremni, uz isti login.</p>
@@ -189,8 +198,11 @@ const SB_URL = 'https://fctpplyerzmvcjjmiwkx.supabase.co';
 const SB_KEY = 'sb_publishable_2MPQsSTjBt-_K7sX-ANNJg_MmSpoK5X';
 const PRODUCTS = {
   zavrsni: { name: 'Završni račun', open: 'gfi/', demo: 'gfi/?demo=1' },
-  doh: { name: 'DOH', open: 'doh/', demo: '/doh/' }
+  doh: { name: 'DOH', open: 'doh/', demo: '/doh/' },
+  // neprofitne organizacije rade uz licencu za Završni račun
+  npf: { name: 'Neprofitne organizacije', open: 'neprofitne.html', demo: 'neprofitne.html?demo=1', lic: 'zavrsni' }
 };
+const LIC_PRODUCTS = Object.keys(PRODUCTS).filter(k => !PRODUCTS[k].lic);
 const CONTACT = '/kontakt.html';
 const $ = (id) => document.getElementById(id);
 function h(tag, attrs, ...kids) {
@@ -226,7 +238,7 @@ function normLicences(data) {
 function renderPrograms(lic) {
   const rows = $('lic-rows'); rows.replaceChildren();
   for (const key of Object.keys(PRODUCTS)) {
-    const P = PRODUCTS[key], card = $('p-' + key), L = lic && lic[key];
+    const P = PRODUCTS[key], card = $('p-' + key), L = lic && lic[P.lic || key];
     const st = card.querySelector('[data-status]'), act = card.querySelector('[data-actions]');
     act.replaceChildren();
     const btn = (text, href, cls) => act.append(h('a', { class: 'btn' + (cls ? ' ' + cls : ''), href }, text));
@@ -238,7 +250,7 @@ function renderPrograms(lic) {
       st.className = 'status st-warn'; st.textContent = 'Licenca istječe za ' + L.days + (L.days === 1 ? ' dan' : ' dana');
       btn('Otvori', P.open, 'primary'); btn('Produži licencu', CONTACT);
     } else { st.className = 'status st-ok'; st.textContent = 'Licenca do ' + fmtDate(L.until); btn('Otvori', P.open, 'primary'); }
-    rows.append(h('tr', {}, h('td', {}, P.name), h('td', {}, !lic ? '—' : L && L.until ? (L.active ? 'do ' : 'istekla ') + fmtDate(L.until) : 'nema')));
+    if (!P.lic) rows.append(h('tr', {}, h('td', {}, P.name), h('td', {}, !lic ? '—' : L && L.until ? (L.active ? 'do ' : 'istekla ') + fmtDate(L.until) : 'nema')));
   }
   $('lic-section').hidden = !lic;
 }
@@ -396,7 +408,7 @@ async function loadAdmin() {
   $('admin-msg').textContent = '';
   const rows = (data || []).slice().sort((a, b) => String(a.email).localeCompare(String(b.email)) || String(a.product || '').localeCompare(String(b.product || '')));
   tb.replaceChildren(...rows.map(u => {
-    const prodSel = h('select', {}, ...Object.entries(PRODUCTS).map(([k, P]) => h('option', { value: k, selected: k === u.product }, P.name)));
+    const prodSel = h('select', {}, ...LIC_PRODUCTS.map(k => [k, PRODUCTS[k]]).map(([k, P]) => h('option', { value: k, selected: k === u.product }, P.name)));
     if (u.product) prodSel.disabled = true;
     const until = h('input', { type: 'date', value: u.valid_until ? String(u.valid_until).slice(0, 10) : '' });
     const max = h('input', { type: 'number', min: 1, value: u.max_devices || 1, style: 'width:60px' });

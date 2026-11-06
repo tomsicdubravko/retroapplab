@@ -7,6 +7,7 @@ Raspored (jedan PWA, jedan manifest i jedan service worker za sve programe):
 - zavrsni/manifest.webmanifest i zavrsni/sw.js – zajednički; sw.js briše samo predmemorije koje počinju sa 'zavrsni-'
 - zavrsni/gfi/ – Završni račun (iz ZIP-a)
 - zavrsni/doh/index.html – puni DOH s provjerom licence 'doh'
+- zavrsni/neprofitne.html – modul za neprofitne organizacije (ista prijava i licenca 'zavrsni' kao Završni račun)
 - /doh/index.html – javni demo DOH-a (bez prijave)
 - supabase/ – SQL migracije (samo za evidenciju; pokreću se ručno u Supabase SQL Editoru)
 
@@ -36,3 +37,7 @@ Provjeri da se opis vidi ispod prijave i ispod demo aplikacije, a skriva kad je 
 
 Puni DOH: pokreni python3 alati/doh-licenca.py <nova-puna-datoteka.html> zavrsni/doh/index.html. Skripta dodaje prijavu i provjeru licence check_licence(p_device, 'doh'), manifest i service worker PWA-a; kod obrasca ostaje isti. Puni DOH nikad ne objavljuj bez te provjere.
 Javni demo: nova demo datoteka ide nepromijenjena u doh/index.html.
+
+### Nova verzija modula za neprofitne organizacije
+
+Pokreni python3 alati/neprofitne-ugradnja.py <nova neprofitne.html> zavrsni/neprofitne.html. Skripta dodaje manifest i ikone PWA-a, prijavu i licencu prepisane iz zavrsni/gfi/index.html (isti Supabase projekt, ista sesija, zr-device-id, check_licence bez programa = 'zavrsni', upozorenje o isteku), gumb „← Završni račun (poduzetnici)” i provjeru licence prije uvoza, spremanja i učitavanja klijenta, izvoza u FINA obrazac te Word/PDF odluka. pdf.js i xlsx učitava iz zavrsni/gfi/vendor/ (iste verzije i isti način kao Završni, bez cdnjs). Logika modula ostaje ista. Kartica „Neprofitne organizacije” u izborniku koristi licencu za Završni račun. Modul koristi localStorage npf_state_v1 i npf_tab te IndexedDB npf_fs. Prijelaz „Neprofitne organizacije” u Završnom računu dodaje alati/zavrsni-gfi-putanje.py. Nakon nove verzije promijeni CACHE u zavrsni/sw.js.
