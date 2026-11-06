@@ -97,12 +97,12 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://retroapplab.com/zavrsni/</loc>
+    <loc>https://retroapplab.com/zavrsni/gfi/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://retroapplab.com/zavrsni/upute.html</loc>
+    <loc>https://retroapplab.com/zavrsni/gfi/upute.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
