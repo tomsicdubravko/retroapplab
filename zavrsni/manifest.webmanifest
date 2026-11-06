@@ -1,7 +1,7 @@
 {
- "name": "Završni račun",
- "short_name": "Završni račun",
- "description": "Završni račun i GFI-POD za knjigovođe",
+ "name": "Obračuni – Završni račun i DOH",
+ "short_name": "Obračuni",
+ "description": "Završni račun (GFI-POD) i DOH za knjigovođe, uz jednu prijavu",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
