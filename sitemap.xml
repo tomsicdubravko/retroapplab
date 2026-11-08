@@ -152,6 +152,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://retroapplab.com/poker-kontroler/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://retroapplab.com/brojopad/o-igri.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
