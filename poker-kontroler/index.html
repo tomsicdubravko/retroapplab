@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06090a">
+<meta name="description" content="Video poker iz devedesetih u pregledniku i drvena kutija sa sedam arkadnih tipki koju smo izradili da se igra kao pravi aparat. RetroAppLab, Lab Edition 001.">
+<link rel="canonical" href="https://retroapplab.com/poker-kontroler/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="RetroAppLab">
+<meta property="og:title" content="Poker 90s: From Code to Reality — RetroAppLab">
+<meta property="og:description" content="Video poker iz devedesetih i drveni kontroler sa sedam arkadnih tipki. Od koda do stvarnosti.">
+<meta property="og:url" content="https://retroapplab.com/poker-kontroler/">
+<meta property="og:image" content="https://retroapplab.com/poker-kontroler/og-poker-kontroler.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<title>Poker 90s: From Code to Reality — RetroAppLab</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{color-scheme:dark;--gold:#f0c25a;--gold-hi:#ffe7a3;--cream:#fff3cf;--ink:#06090a}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--ink)}
+body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden;-webkit-text-size-adjust:100%}
+
+/* ---------- controls ---------- */
+.ctl{position:fixed;z-index:60;top:calc(10px + env(safe-area-inset-top));right:calc(10px + env(safe-area-inset-right));display:flex;gap:8px}
+.pill{appearance:none;-webkit-appearance:none;cursor:pointer;background:rgba(10,14,12,.6);color:#e9d9a8;border:1px solid rgba(240,194,90,.35);border-radius:999px;padding:9px 13px;font:700 11px/1 "Courier New",monospace;letter-spacing:.14em}
+.pill:hover,.pill:focus-visible{border-color:var(--gold);color:#fff3cf;outline:none}
+.pill[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-hi);box-shadow:0 0 12px rgba(240,170,60,.35)}
+
+/* ---------- scene 1 ---------- */
+.scene{position:relative;min-height:100vh;min-height:100svh;display:grid;place-items:center;isolation:isolate;background:var(--ink)}
+.scene::before{content:"";position:absolute;inset:0;z-index:6;pointer-events:none;opacity:.09;background:repeating-linear-gradient(0deg,transparent 0 3px,#fff 3px 4px)}
+.scene::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 36%,rgba(0,0,0,.74) 100%)}
+.bg{position:absolute;inset:0;pointer-events:none;opacity:0}
+.glow{background:radial-gradient(ellipse 72% 56% at 50% 62%,rgba(30,120,76,.62),rgba(14,60,44,.34) 42%,transparent 74%)}
+.amber{--o:.9;background:radial-gradient(ellipse 58% 26% at 50% 22%,rgba(240,170,60,.22),transparent 72%)}
+.sparks{position:absolute;inset:0;z-index:1;pointer-events:none}
+.spark{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffd98a;box-shadow:0 0 6px #ffb84a;opacity:0}
+
+.stage{position:relative;z-index:2;width:min(100%,1100px);padding:clamp(56px,9vh,110px) 16px clamp(72px,10.5vh,132px);display:flex;flex-direction:column;align-items:center;text-align:center;
+  will-change:transform,opacity;transform:translate3d(0,calc(var(--p,0)*-34px),0) scale(calc(1 - var(--p,0)*.05));opacity:max(0,calc(1 - var(--p,0)*1.15))}
+
+/* neon text: dark "tube" + lit layer (only opacity animates, so it stays cheap on phones) */
+.neon{display:grid;justify-items:center;white-space:nowrap;text-transform:uppercase}
+.neon>span{grid-area:1/1}
+.neon .tube{opacity:0}
+.neon .lit{opacity:0}
+.brand{font:900 clamp(15px,4.4vw,40px)/1.1 "Courier New",monospace;letter-spacing:.36em;margin-left:.36em}
+.brand .tube{color:#2b2412}
+.brand .lit{color:var(--gold-hi);text-shadow:0 0 .08em #fff0c0,0 0 .3em #f5b23c,0 0 .8em rgba(240,140,20,.75)}
+.rule{width:min(62%,460px);height:2px;margin:14px 0 clamp(6px,2vh,18px);background:linear-gradient(90deg,transparent,var(--gold),transparent);box-shadow:0 0 14px rgba(240,170,60,.6);transform:scaleX(0)}
+
+.title{opacity:0;margin:clamp(4px,1.5vh,14px) 0 0;font-family:"Arial Black","Helvetica Neue",system-ui,sans-serif;font-weight:900;font-size:clamp(44px,min(14.5vw,17vh),150px);line-height:1;letter-spacing:.03em;white-space:nowrap}
+.ch{position:relative;display:inline-block;color:#262010}
+.ch::after{content:attr(data-c);position:absolute;left:0;top:0;color:var(--cream);text-shadow:0 0 .05em #fff6d8,0 0 .2em #ffcf6a,0 0 .5em rgba(255,150,30,.65);opacity:0}
+.ch.g::after{color:var(--gold-hi);text-shadow:0 0 .05em #ffe9a8,0 0 .2em #f0a830,0 0 .5em rgba(240,140,20,.7)}
+.sp{display:inline-block;width:.3em}
+
+/* hand of cards */
+.hand{--w:clamp(56px,min(17.5vw,19vh),138px);display:flex;justify-content:center;align-items:flex-start;margin:clamp(26px,6vh,64px) 0 clamp(24px,5.5vh,50px);padding-bottom:calc(var(--w)*.2)}
+.card{position:relative;flex:0 0 auto;width:var(--w);aspect-ratio:5/7;margin:0 calc(var(--w)*-.02);perspective:760px;isolation:isolate;opacity:0;
+  transform:translate3d(0,var(--y,0px),0) rotate(var(--rot,0deg));z-index:calc(var(--i) + 1);font-family:"Courier New",monospace}
+.card::before{content:"";position:absolute;inset:-35% -55%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(255,214,120,.55),transparent 70%);opacity:0}
+.card::after{content:"";position:absolute;left:6%;right:6%;bottom:-9%;height:11%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,.65),transparent 70%);opacity:.7}
+.flip{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(180deg)}
+/* real poker card design */
+.card-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:calc(var(--w)*.077);background:linear-gradient(160deg,#fdfdf5,#e8e6d5);border:2px solid #1a1a1a;
+  box-shadow:0 4px 10px rgba(0,0,0,.55),inset 0 0 0 3px #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold}
+.card-face *{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.card-face.front{overflow:hidden}
+.card-face.back{transform:rotateY(180deg);background:repeating-linear-gradient(45deg,#7a1420,#7a1420 4px,#5c0f18 4px,#5c0f18 8px);box-shadow:0 4px 10px rgba(0,0,0,.55),inset 0 0 0 3px #3a0810}
+.card-face.back::after{content:"";position:absolute;inset:calc(var(--w)*.067);border:1px solid #d4af37;border-radius:4px;opacity:.6;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.card-face.back::before{content:"RETROAPPLAB";position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);font-size:max(6px,calc(var(--w)*.115));font-weight:900;letter-spacing:.5px;white-space:nowrap;color:#f4d35e;text-shadow:0 1px 3px #160400,0 0 5px #b66a12;pointer-events:none;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.rank{font-size:calc(var(--w)*.25);line-height:1}
+.suit{font-size:calc(var(--w)*.27);margin-top:3px;line-height:1}
+.corner{position:absolute;top:calc(var(--w)*.058);left:calc(var(--w)*.067);font-size:calc(var(--w)*.125);text-align:center;line-height:1.1}
+.red{color:#b3142a}
+.sheen{position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.75) 50%,transparent 62%);opacity:0;transform:translateX(-140%)}
+
+.tag{margin:0;font-family:"Arial Black","Helvetica Neue",system-ui,sans-serif;font-weight:900;font-size:clamp(22px,6.4vw,58px);letter-spacing:.07em;line-height:1.1}
+.tag .tube{color:#2a2412}
+.tag .lit{color:var(--cream);text-shadow:0 0 .06em #fff6d8,0 0 .25em #ffc860,0 0 .7em rgba(255,140,30,.65)}
+
+.hintwrap{position:absolute;z-index:7;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none;opacity:max(0,calc(1 - var(--p,0)*2.6))}
+.hint{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 14px;color:#cdbf94;text-decoration:none;font:700 11px/1 "Courier New",monospace;letter-spacing:.3em;opacity:0}
+.hint .txt{white-space:nowrap}.hint svg{width:18px;height:26px}
+
+/* ---------- timeline (all delays come from --t-* set by JS, so sound uses the same numbers) ---------- */
+@keyframes bgIn{to{opacity:var(--o,1)}}
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.78}}
+@keyframes tubeIn{to{opacity:.9}}
+@keyframes ignite{0%{opacity:0}7%{opacity:.95}11%{opacity:.08}19%{opacity:.75}25%{opacity:0}33%{opacity:1}39%{opacity:.3}47%{opacity:1}55%{opacity:.62}63%,100%{opacity:1}}
+@keyframes chOn{0%{opacity:0}10%{opacity:1}20%{opacity:.12}32%{opacity:.95}42%{opacity:.35}56%,100%{opacity:1}}
+@keyframes ruleIn{to{transform:scaleX(1)}}
+@keyframes dealIn{from{opacity:0;transform:translate3d(0,calc(var(--y,0px) + 120px),0) rotate(0deg) scale(.82)}to{opacity:1;transform:translate3d(0,var(--y,0px),0) rotate(var(--rot,0deg)) scale(1)}}
+@keyframes flip{0%{transform:rotateY(180deg) rotateX(0) translateZ(0) scale(1)}30%{transform:rotateY(132deg) rotateX(-9deg) translateZ(26px) scale(1.07)}50%{transform:rotateY(90deg) rotateX(-13deg) translateZ(44px) scale(1.12)}72%{transform:rotateY(42deg) rotateX(-6deg) translateZ(24px) scale(1.06)}100%{transform:rotateY(0deg) rotateX(0) translateZ(0) scale(1)}}
+@keyframes lift{0%,100%{z-index:30}}
+@keyframes flash{0%{opacity:0;transform:scale(.7)}40%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.15)}}
+@keyframes shadowLift{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(.62);opacity:.28}}
+@keyframes sheen{0%{opacity:0;transform:translateX(-140%)}15%{opacity:1}100%{opacity:0;transform:translateX(140%)}}
+@keyframes labelHide{0%{opacity:1}44.9%{opacity:1}45%{opacity:0}100%{opacity:0}}
+@keyframes fadeIn{to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes bob{50%{transform:translateY(5px)}}
+@keyframes twinkle{0%,100%{opacity:0;transform:translateY(0)}50%{opacity:.85;transform:translateY(-10px)}}
+
+.go .glow{animation:bgIn 1.8s ease-out var(--t-glow) forwards,breathe 7s ease-in-out calc(var(--t-glow) + 1.8s) infinite}
+.go .amber{animation:bgIn 2.4s ease-out var(--t-neon) forwards}
+.go .spark{animation:twinkle var(--dur) ease-in-out var(--dly) infinite}
+.go .brand .tube{animation:tubeIn .8s ease-out calc(var(--t-neon) - .5s) forwards}
+.go .brand .lit{animation:ignite 1.9s linear var(--t-neon) forwards}
+.go .rule{animation:ruleIn 1s cubic-bezier(.2,.8,.2,1) calc(var(--t-neon) + .55s) forwards}
+.go .title{animation:tubeIn .9s ease-out calc(var(--t-title) - .7s) forwards}
+.go .ch::after{animation:chOn .85s linear calc(var(--t-title) + var(--k)*.1s) forwards}
+.go .card{animation:dealIn .8s cubic-bezier(.16,.8,.25,1) calc(var(--t-deal) + var(--i)*.16s) forwards,lift .95s linear calc(var(--t-flip) + var(--i)*.28s)}
+.go .flip{animation:flip .95s cubic-bezier(.4,.05,.25,1) calc(var(--t-flip) + var(--i)*.28s) forwards}
+.go .card::before{animation:flash .95s ease-out calc(var(--t-flip) + var(--i)*.28s + .3s)}
+.go .card::after{animation:shadowLift .95s ease-in-out calc(var(--t-flip) + var(--i)*.28s)}
+.go .sheen{animation:sheen .75s ease-in-out calc(var(--t-flip) + var(--i)*.28s + .42s)}
+.go .card-face.back::before{animation:labelHide .95s linear calc(var(--t-flip) + var(--i)*.28s) forwards}
+.go .tag .tube{animation:tubeIn .8s ease-out calc(var(--t-tag) - .6s) forwards}
+.go .tag .lit{animation:ignite 1.7s linear var(--t-tag) forwards}
+.go .hint{animation:fadeIn 1s ease-out var(--t-hint) forwards}
+.go .hint .txt{animation:pulse 2.4s ease-in-out calc(var(--t-hint) + 1s) infinite}
+.go .hint svg{animation:bob 1.6s ease-in-out calc(var(--t-hint) + 1s) infinite}
+
+/* ---------- accessibility ---------- */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .scene *,.scene *::before,.scene *::after{animation:none!important;transition:none!important}
+  .bg{opacity:1}.amber{opacity:.9}.title{opacity:1}.neon .lit,.ch::after{opacity:1}.rule{transform:none}.card{opacity:1}.flip{transform:rotateY(0)}.hint{opacity:1}.card::before{opacity:0}
+  .card-face.back::before{opacity:0}.stage{transform:none;opacity:1}.hintwrap{opacity:1}
+}
+
+/* ---------- scene 2 : the game was built ---------- */
+.s2-line{position:absolute;z-index:3;left:50%;top:0;width:2px;height:clamp(24px,7vh,56px);transform:translateX(-50%) scaleY(0);transform-origin:top;background:linear-gradient(var(--gold),transparent);box-shadow:0 0 12px rgba(240,170,60,.6)}
+.s2-stage{--F:clamp(26px,min(6.4vw,8.5vh),70px);padding-top:clamp(48px,7vh,90px);padding-bottom:clamp(30px,5vh,64px)}
+.s2-kicker{font:700 clamp(10px,1.6vw,13px)/1.4 "Courier New",monospace;letter-spacing:.28em;color:var(--gold);opacity:0;transform:translateY(12px)}
+.s2-title{margin:12px 0 8px;font-family:"Arial Black","Helvetica Neue",system-ui,sans-serif;font-weight:900;font-size:var(--F);line-height:1.05;letter-spacing:.015em;white-space:normal}
+.s2-title .tube{color:#2a2412}
+.s2-title .lit{color:var(--cream);text-shadow:0 0 .05em #fff6d8,0 0 .22em #ffcf6a,0 0 .55em rgba(255,150,30,.6)}
+.s2-title .lit b{color:var(--gold-hi);font-weight:900}
+.s2-title .tube b{font-weight:900}
+.s2-subtitle{font:700 clamp(10px,1.8vw,14px)/1.5 "Courier New",monospace;letter-spacing:.14em;color:#b6c9bd;opacity:0;transform:translateY(12px)}
+.s2-laptop{position:relative;width:min(100%,780px);width:max(240px,min(100%,780px,calc((100svh - 385px - 2.1*var(--F)) * 1.7)));margin:clamp(16px,3.5vh,40px) auto 0;opacity:0;transform:translateY(55px) scale(.92)}
+.s2-laptop::before{content:"";position:absolute;inset:-14% 0 -8%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 55%,rgba(40,150,95,.5),transparent 68%);opacity:0}
+.s2-lid{position:relative;border:clamp(6px,1.4vw,12px) solid #262d30;border-bottom-width:11px;border-radius:15px 15px 6px 6px;background:#080c0d;box-shadow:0 0 0 2px #65706b,0 24px 65px #0008;aspect-ratio:1152/660}
+.s2-camera{position:absolute;top:-8px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#70827b;z-index:4}
+.s2-screen{position:absolute;inset:0;overflow:hidden;background:#04100c;opacity:0;border-radius:3px}
+.s2-f{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.s2-f:not(.s2-f1){opacity:0}
+.s2-base{height:clamp(13px,2.7vw,24px);width:104%;margin-left:-2%;background:linear-gradient(#7c8987,#313b3c 43%,#161d20);border-radius:0 0 45% 45%/0 0 80% 80%;box-shadow:0 10px 24px #0009;position:relative}
+.s2-base::after{content:"";position:absolute;top:2px;left:43%;width:14%;height:3px;border-radius:0 0 6px 6px;background:#151b1c}
+.s2-steps{display:flex;justify-content:center;gap:clamp(6px,1.6vw,14px);margin-top:clamp(16px,3vh,26px)}
+.s2-chip{position:relative;font:700 clamp(10px,2.4vw,13px)/1 "Courier New",monospace;letter-spacing:.2em;padding:8px clamp(9px,2vw,14px);border:1px solid rgba(240,194,90,.2);border-radius:999px;color:#5a5a45}
+.s2-chip::after{content:attr(data-t);position:absolute;inset:-1px;display:grid;place-items:center;border:1px solid var(--gold);border-radius:999px;color:var(--gold-hi);background:rgba(20,22,14,.92);box-shadow:0 0 14px rgba(240,170,60,.5);opacity:0}
+.s2-finale{margin:clamp(16px,3vh,28px) 0 0;font-family:"Arial Black","Helvetica Neue",system-ui,sans-serif;font-weight:900;font-size:clamp(18px,3.6vw,34px);letter-spacing:.08em}
+.s2-finale .tube{color:#2a2412}
+.s2-finale .lit{color:var(--gold-hi);text-shadow:0 0 .08em #fff0c0,0 0 .3em #f5b23c,0 0 .8em rgba(240,140,20,.7)}
+.s2-note{margin:10px auto 0;max-width:640px;font:700 clamp(10px,1.5vw,13px)/1.6 "Courier New",monospace;letter-spacing:.06em;color:#b9c8bd;opacity:0}
+@media(max-width:900px){.card::before{inset:-30% -10%}}
+@media(max-width:380px){.title{font-size:13.2vw}}
+@media(max-width:600px){.s2-lid{aspect-ratio:4/3}.s2-kicker{letter-spacing:.2em}}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes laptopIn{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes crtOn{0%{opacity:0}12%{opacity:.9}20%{opacity:.15}34%{opacity:1}44%{opacity:.5}60%,100%{opacity:1}}
+@keyframes lineIn{to{transform:translateX(-50%) scaleY(1)}}
+.go .s2-line{animation:lineIn 1.1s cubic-bezier(.2,.8,.2,1) .05s forwards}
+.go .s2-kicker{animation:rise .7s ease-out var(--t-kicker) forwards}
+.go .s2-title .tube{animation:tubeIn .8s ease-out calc(var(--t-title) - .1s) forwards}
+.go .s2-title .lit{animation:ignite 1.5s linear var(--t-title) forwards}
+.go .s2-subtitle{animation:rise .8s ease-out var(--t-sub) forwards}
+.go .s2-laptop{animation:laptopIn 1s cubic-bezier(.16,.8,.25,1) var(--t-laptop) forwards}
+.go .s2-laptop::before{animation:fadeIn 1.4s ease-out var(--t-screen) forwards}
+.go .s2-screen{animation:crtOn .7s linear var(--t-screen) forwards}
+.go .s2-f2{animation:fadeIn .4s ease-out var(--t-deal) forwards}
+.go .s2-f3{animation:fadeIn .35s ease-out var(--t-hold) forwards}
+.go .s2-f4{animation:fadeIn .35s ease-out var(--t-draw) forwards}
+.go .s2-f5{animation:fadeIn .35s ease-out var(--t-gamble) forwards}
+.go .s2-f6{animation:fadeIn .35s ease-out var(--t-gres) forwards}
+.go .s2-chip.c1::after{animation:fadeIn .4s ease-out var(--t-deal) forwards}
+.go .s2-chip.c2::after{animation:fadeIn .4s ease-out var(--t-hold) forwards}
+.go .s2-chip.c3::after{animation:fadeIn .4s ease-out var(--t-draw) forwards}
+.go .s2-chip.c4::after{animation:fadeIn .4s ease-out var(--t-gamble) forwards}
+.go .s2-finale .tube{animation:tubeIn .8s ease-out calc(var(--t-finish) - .6s) forwards}
+.go .s2-finale .lit{animation:ignite 1.7s linear var(--t-finish) forwards}
+.go .s2-note{animation:fadeIn .9s ease-out calc(var(--t-finish) + 1s) forwards}
+@media(prefers-reduced-motion:reduce){
+  .s2-kicker,.s2-subtitle,.s2-laptop,.s2-screen,.s2-note{opacity:1!important;transform:none!important}
+  .s2-f2,.s2-f3,.s2-f4,.s2-f5,.s2-f6,.s2-laptop::before{opacity:1!important}
+  .s2-chip::after{opacity:1!important}.s2-line{transform:translateX(-50%) scaleY(1)!important}
+}
+
+/* ---------- scene 3 : from idea to blueprint ---------- */
+#scene3{padding:clamp(25px,5vw,64px) 18px}
+.s3-grid{position:absolute;inset:0;background-image:linear-gradient(#28453c33 1px,transparent 1px),linear-gradient(90deg,#28453c33 1px,transparent 1px);background-size:34px 34px;opacity:0;pointer-events:none}
+.s3-inner{--F3:clamp(24px,min(5.6vw,7.6vh),60px);position:relative;z-index:2;width:min(100%,980px);text-align:center;will-change:transform,opacity;transform:translate3d(0,calc(var(--p,0)*-34px),0) scale(calc(1 - var(--p,0)*.05));opacity:max(0,calc(1 - var(--p,0)*1.15))}
+.s3-kicker{font:700 clamp(10px,1.6vw,13px)/1.4 "Courier New",monospace;letter-spacing:.23em;color:var(--gold);opacity:0;transform:translateY(12px)}
+.s3-heading{font:900 var(--F3)/1.04 "Arial Black","Helvetica Neue",system-ui,sans-serif;color:var(--gold-hi);margin:12px 0 10px;text-shadow:0 0 18px #d5a53b45;opacity:0;transform:translateY(18px)}
+.s3-desc{font:700 clamp(11px,1.6vw,15px) "Courier New",monospace;color:#b2c8b9;letter-spacing:.09em;margin:0 0 clamp(12px,2.5vh,22px);opacity:0;transform:translateY(12px)}
+.s3-board{position:relative;width:min(100%,790px);width:max(240px,min(100%,790px,calc((100svh - 330px - 2.1*var(--F3)) * 1.78)));margin:auto;aspect-ratio:16/9;border:1px solid #53716055;border-radius:14px;background:radial-gradient(ellipse at center,#0b2620 0%,#07110f 67%,#06090a 100%);overflow:hidden;box-shadow:0 0 30px #007c4820}
+.s3-drawing{position:absolute;inset:0;width:100%;height:100%}
+.s3-outline{fill:#0c292433;stroke:#f0c25a;stroke-width:2.5;opacity:0;transform:scale(.95);transform-origin:center}
+.s3-side{fill:#0a1816;stroke:#ad884b;stroke-width:1.8;opacity:0;transform:translateY(-12px)}
+.s3-hole{fill:#071110;stroke:#ffe7a3;stroke-width:2.3;opacity:0;transform:scale(.1);transform-box:fill-box;transform-origin:center}
+.s3-cross{stroke:#8bb6a0;stroke-width:.7;opacity:0}
+.s3-measure{stroke:#8bb6a0;stroke-width:1;opacity:0}
+.s3-note{fill:#a7c6b2;font:700 12px "Courier New",monospace;opacity:0}
+.s3-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#070b0b;opacity:0;transform:scale(1.045)}
+.s3-photo-label{position:absolute;bottom:12px;left:50%;transform:translate(-50%,12px);background:#06090ae6;border:1px solid #f0c25a88;padding:8px 13px;color:var(--gold-hi);font:700 clamp(10px,1.4vw,13px) "Courier New",monospace;white-space:nowrap;opacity:0}
+.s3-footer{margin:clamp(10px,2vh,18px) 0 0;font:700 clamp(10px,1.5vw,12px) "Courier New",monospace;letter-spacing:.14em;color:var(--gold);opacity:0;transform:translateY(12px)}
+@media(max-width:600px){.s3-note{font-size:21px}.s3-photo-label{bottom:8px}}
+@keyframes s3-fade{to{opacity:1}}
+@keyframes s3-rise{to{opacity:1;transform:translateY(0)}}
+@keyframes s3-shape{to{opacity:1;transform:scale(1)}}
+@keyframes s3-side-in{to{opacity:1;transform:translateY(0)}}
+@keyframes s3-hole-in{to{opacity:1;transform:scale(1)}}
+@keyframes s3-photo-in{to{opacity:1;transform:scale(1)}}
+@keyframes s3-label-in{to{opacity:1;transform:translate(-50%,0)}}
+.go .s3-grid{animation:s3-fade .8s ease var(--t-grid) forwards}
+.go .s3-kicker{animation:s3-rise .8s ease var(--t-title) forwards}
+.go .s3-heading{animation:s3-rise .9s ease calc(var(--t-title) + .3s) forwards}
+.go .s3-desc{animation:s3-rise .8s ease calc(var(--t-title) + .7s) forwards}
+.go .s3-outline{animation:s3-shape 1s ease var(--t-outline) forwards}
+.go .s3-side{animation:s3-side-in .8s ease calc(var(--t-outline) + .5s) forwards}
+.go .s3-hole{animation:s3-hole-in .42s cubic-bezier(.18,1.5,.4,1) forwards}
+.go .s3-hole:nth-of-type(1){animation-delay:var(--t-holes)}
+.go .s3-hole:nth-of-type(2){animation-delay:calc(var(--t-holes) + .32s)}
+.go .s3-hole:nth-of-type(3){animation-delay:calc(var(--t-holes) + .64s)}
+.go .s3-hole:nth-of-type(4){animation-delay:calc(var(--t-holes) + .96s)}
+.go .s3-hole:nth-of-type(5){animation-delay:calc(var(--t-holes) + 1.28s)}
+.go .s3-hole:nth-of-type(6){animation-delay:calc(var(--t-holes) + 1.6s)}
+.go .s3-hole:nth-of-type(7){animation-delay:calc(var(--t-holes) + 1.92s)}
+.go .s3-cross,.go .s3-note,.go .s3-measure{animation:s3-fade .65s ease var(--t-details) forwards}
+.go .s3-photo{animation:s3-photo-in 1.2s ease var(--t-photo) forwards}
+.go .s3-photo-label{animation:s3-label-in .7s ease calc(var(--t-photo) + .8s) forwards}
+.go .s3-footer{animation:s3-rise .8s ease var(--t-end) forwards}
+@media(prefers-reduced-motion:reduce){
+  .s3-grid,.s3-kicker,.s3-heading,.s3-desc,.s3-footer,.s3-outline,.s3-side,.s3-hole,.s3-cross,.s3-measure,.s3-note,.s3-photo{opacity:1!important;transform:none!important}
+  .s3-photo-label{opacity:1!important;transform:translateX(-50%)!important}
+}
+
+/* ---------- scene 4 : building the controller ---------- */
+#scene4{padding:clamp(28px,5vw,60px) 14px}
+.s4-grid{position:absolute;inset:0;background-image:linear-gradient(#22443924 1px,transparent 1px),linear-gradient(90deg,#22443924 1px,transparent 1px);background-size:34px 34px;pointer-events:none}
+.s4-inner{--F4:clamp(24px,min(5.4vw,7.4vh),58px);width:min(100%,950px);text-align:center;position:relative;z-index:2;will-change:transform,opacity;transform:translate3d(0,calc(var(--p,0)*-34px),0) scale(calc(1 - var(--p,0)*.05));opacity:max(0,calc(1 - var(--p,0)*1.15))}
+.s4-kicker{font:700 clamp(10px,1.6vw,12px) "Courier New",monospace;letter-spacing:.22em;color:var(--gold);opacity:0;transform:translateY(12px)}
+.s4-title{font:900 var(--F4)/1.06 "Arial Black","Helvetica Neue",system-ui,sans-serif;color:var(--gold-hi);margin:12px 0 10px;opacity:0;transform:translateY(18px);text-shadow:0 0 17px #f0c25a44}
+.s4-sub{font:700 clamp(10px,1.6vw,14px) "Courier New",monospace;letter-spacing:.12em;color:#b4c8ba;margin:0 0 clamp(10px,2.2vh,20px);opacity:0;transform:translateY(10px)}
+.s4-stage{position:relative;margin:auto;width:min(100%,790px);width:max(240px,min(100%,790px,calc((100svh - 345px - 2.1*var(--F4)) * 1.78)));aspect-ratio:16/9;overflow:hidden;border:1px solid #9e7b4566;border-radius:14px;background:radial-gradient(ellipse at 50% 60%,#10261f,#06100e 72%,#06090a);box-shadow:0 0 30px #007c4820}
+.s4-layer{position:absolute;inset:0;display:grid;place-items:center;opacity:0;pointer-events:none}
+.s4-build{opacity:1}
+.s4-svg{width:94%;height:93%;overflow:visible}
+.s4-panel{fill:#8b6846;stroke:#ffe7a3;stroke-width:2;opacity:0;transform:translateY(-65px)}
+.s4-front{fill:#4f3526;stroke:#f0c25a;stroke-width:2;opacity:0;transform:translateY(65px)}
+.s4-left{fill:#674832;stroke:#d5a45c;stroke-width:2;opacity:0;transform:translateX(-55px)}
+.s4-right{fill:#573923;stroke:#d5a45c;stroke-width:2;opacity:0;transform:translateX(55px)}
+.s4-hole{fill:#07100f;stroke:#e8c07b;stroke-width:3;opacity:0}
+.s4-button{opacity:0;transform:translateY(-45px)}
+.s4-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#06090a}
+.s4-layer-label{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);padding:7px 11px;border:1px solid #f0c25a77;border-radius:5px;background:#06090ae8;color:var(--gold-hi);font:700 clamp(10px,1.5vw,13px) "Courier New",monospace;white-space:nowrap}
+.s4-power{background:radial-gradient(ellipse at center,#0d3124 0%,#06090a 75%)}
+.s4-cable{width:min(80%,510px);height:150px;overflow:visible}
+.s4-cable-path{stroke:#a4bdab;stroke-width:9;fill:none;stroke-linecap:round;stroke-dasharray:630;stroke-dashoffset:630}
+.s4-plug{fill:#d5b56b;stroke:var(--cream);stroke-width:2;opacity:0}
+.s4-light{position:absolute;top:21%;left:50%;width:68px;height:68px;border-radius:50%;background:#1989ff;border:7px solid #c6d7d8;box-shadow:0 0 24px #278bff77;opacity:0;transform:translateX(-50%) scale(.5)}
+.s4-alive{position:absolute;bottom:21%;width:100%;font:900 clamp(27px,6vw,56px) "Arial Black","Helvetica Neue",sans-serif;color:var(--gold-hi);letter-spacing:.09em;opacity:0;transform:translateY(18px)}
+.s4-status{font:700 clamp(10px,1.5vw,12px) "Courier New",monospace;color:#b2c8b9;margin:clamp(10px,2vh,18px) 0 0;opacity:0}
+.s4-footer{font:700 clamp(10px,1.4vw,11px) "Courier New",monospace;letter-spacing:.17em;color:var(--gold);margin-top:10px;opacity:0}
+@media(max-width:600px){.s4-stage{aspect-ratio:4/3}.s4-layer-label{bottom:8px}.s4-svg{width:100%}.s4-alive{bottom:18%}}
+@keyframes s4-rise{to{opacity:1;transform:translateY(0)}}
+@keyframes s4-fade{to{opacity:1}}
+@keyframes s4-panel-in{to{opacity:1;transform:translate(0,0)}}
+@keyframes s4-button-in{to{opacity:1;transform:translateY(0)}}
+@keyframes s4-hide{to{opacity:0}}
+@keyframes s4-show-hide{0%{opacity:0}18%,80%{opacity:1}100%{opacity:0}}
+@keyframes s4-draw{to{stroke-dashoffset:0}}
+@keyframes s4-light-in{to{opacity:1;transform:translateX(-50%) scale(1)}}
+.go .s4-kicker{animation:s4-rise .7s ease var(--t-title) forwards}
+.go .s4-title{animation:s4-rise .7s ease calc(var(--t-title) + .2s) forwards}
+.go .s4-sub{animation:s4-rise .7s ease calc(var(--t-title) + .5s) forwards}
+.go .s4-left,.go .s4-right,.go .s4-front,.go .s4-panel{animation:s4-panel-in .7s ease forwards}
+.go .s4-left{animation-delay:var(--t-build)}
+.go .s4-right{animation-delay:calc(var(--t-build) + .4s)}
+.go .s4-front{animation-delay:calc(var(--t-build) + .8s)}
+.go .s4-panel{animation-delay:calc(var(--t-build) + 1.2s)}
+.go .s4-hole{animation:s4-fade .3s ease calc(var(--t-build) + 1.8s) forwards}
+.go .s4-button{animation:s4-button-in .42s cubic-bezier(.2,1.4,.4,1) forwards;animation-delay:calc(var(--t-button) + var(--i) * .34s)}
+.go .s4-build{animation:s4-hide .7s ease var(--t-photo) forwards}
+.go .s4-wood{animation:s4-show-hide 3.1s ease var(--t-photo) forwards}
+.go .s4-inside{animation:s4-show-hide 3.1s ease var(--t-inside) forwards}
+.go .s4-wiring{animation:s4-show-hide 3.3s ease var(--t-wiring) forwards}
+.go .s4-power{animation:s4-fade .6s ease var(--t-power) forwards}
+.go .s4-cable-path{animation:s4-draw 1.1s ease calc(var(--t-power) + .3s) forwards}
+.go .s4-plug{animation:s4-fade .4s ease calc(var(--t-power) + 1.1s) forwards}
+.go .s4-light{animation:s4-light-in .55s ease calc(var(--t-power) + 1.4s) forwards}
+.go .s4-alive{animation:s4-rise .7s ease calc(var(--t-power) + 1.7s) forwards}
+.go .s4-status,.go .s4-footer{animation:s4-fade .7s ease var(--t-end) forwards}
+@media(prefers-reduced-motion:reduce){
+  .s4-kicker,.s4-title,.s4-sub,.s4-status,.s4-footer,.s4-power,.s4-plug,.s4-light,.s4-alive{opacity:1!important;transform:none!important}
+  .s4-light{transform:translateX(-50%)!important}
+  .s4-cable-path{stroke-dashoffset:0!important}
+  .s4-build{opacity:0!important}
+}
+
+/* ---------- scene 5 : the moment of truth ---------- */
+#scene5{padding:clamp(28px,5vw,60px) 14px}
+.s5-inner{--F5:clamp(24px,min(5.4vw,7.4vh),58px);position:relative;z-index:2;width:min(100%,980px);display:grid;justify-items:center;gap:clamp(8px,1.6vh,13px);text-align:center;will-change:transform,opacity;transform:translate3d(0,calc(var(--p,0)*-34px),0) scale(calc(1 - var(--p,0)*.05));opacity:max(0,calc(1 - var(--p,0)*1.15))}
+.s5-kicker{font:700 clamp(10px,1.6vw,12px) "Courier New",monospace;letter-spacing:.22em;color:var(--gold);opacity:0}
+.s5-title{font:900 var(--F5)/1.05 "Arial Black","Helvetica Neue",system-ui,sans-serif;color:var(--gold-hi);margin:0;opacity:0;text-shadow:0 3px 0 #60481c}
+.s5-stage{position:relative;width:min(100%,790px);height:clamp(260px,calc(100svh - 330px - 1.1*var(--F5)),640px);border:1px solid #735f31;border-radius:16px;background:radial-gradient(ellipse at 50% 50%,#10382a,#06100e 64%,#040708);overflow:hidden;box-shadow:0 0 0 5px #12150e}
+.s5-real{position:absolute;inset:0;opacity:0;transform:scale(1.055)}
+.s5-pbox{position:absolute;top:0;left:50%;height:100%;aspect-ratio:844/1500;max-width:100%;transform:translateX(-50%)}
+.s5-pbox img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.s5-press{position:absolute;left:73.7%;top:42.8%;width:clamp(26px,9%,40px);aspect-ratio:1;border:2px solid var(--gold-hi);border-radius:50%;opacity:0;transform:translate(-50%,-50%) scale(.6);box-shadow:0 0 0 8px #f0c25a25;pointer-events:none}
+.s5-game{position:absolute;inset:0;opacity:0;transform:scale(.96);background:radial-gradient(ellipse,#124333,#030706 75%)}
+.s5-game img{position:absolute;left:3%;top:4%;width:94%;height:92%;object-fit:contain;border-radius:8px;display:block}
+.s5-game-label{position:absolute;bottom:15px;left:0;right:0;font:700 clamp(10px,1.6vw,12px) "Courier New",monospace;letter-spacing:.16em;color:var(--gold-hi);text-shadow:0 2px 4px #000}
+.s5-final{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:20px 12px 26px;background:linear-gradient(transparent 43%,#020505df 90%);opacity:0;transform:translateY(14px)}
+.s5-final strong{font:900 clamp(20px,5vw,44px)/1.12 "Arial Black","Helvetica Neue",sans-serif;color:var(--gold-hi);text-shadow:0 3px 0 #543e19}
+.s5-final span{font:700 clamp(10px,2.1vw,15px)/1.6 "Courier New",monospace;color:var(--cream);letter-spacing:.08em}
+.s5-footer{opacity:0;font:700 clamp(10px,1.8vw,14px)/1.6 "Courier New",monospace;letter-spacing:.1em;color:var(--gold)}
+@media(max-width:600px){.s5-game img{left:0;top:0;width:100%;height:100%;object-fit:cover;border-radius:0;transform:scale(.93)}}
+@keyframes s5-fade{to{opacity:1}}
+@keyframes s5-photo{to{opacity:1;transform:scale(1)}}
+@keyframes s5-showhide{0%{opacity:0;transform:scale(.96)}15%,82%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+@keyframes s5-realhide{0%,75%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+@keyframes s5-pulse{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}40%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+@keyframes s5-up{to{opacity:1;transform:translateY(0)}}
+.go .s5-kicker{animation:s5-fade .6s ease var(--t-intro) forwards}
+.go .s5-title{animation:s5-fade .8s ease var(--t-intro) forwards}
+.go .s5-real{animation:s5-photo 1.4s ease var(--t-photo) forwards,s5-realhide .8s linear var(--t-deal) forwards,s5-photo 1s ease var(--t-return) forwards}
+.go .s5-press{animation:s5-pulse .65s ease var(--t-press) forwards}
+.go .s5-game.s5-deal{animation:s5-showhide 1.5s ease var(--t-deal) forwards}
+.go .s5-game.s5-hold{animation:s5-showhide 1.5s ease var(--t-hold) forwards}
+.go .s5-game.s5-win{animation:s5-showhide 1.75s ease var(--t-win) forwards}
+.go .s5-final{animation:s5-up .85s ease var(--t-end) forwards}
+.go .s5-footer{animation:s5-fade .6s ease calc(var(--t-end) + .5s) forwards}
+@media(prefers-reduced-motion:reduce){
+  .s5-kicker,.s5-title,.s5-real,.s5-final,.s5-footer{opacity:1!important;transform:none!important}
+  .s5-game,.s5-press{display:none!important}
+}
+
+/* ---------- details + call to action (after the last scene) ---------- */
+.details{position:relative;padding:clamp(48px,9vh,110px) 18px clamp(40px,7vh,80px);background:linear-gradient(#070c0d,#06090a);color:#cdd9d0}
+.details-inner{max-width:760px;margin:0 auto}
+.details h2{font:900 clamp(24px,4.4vw,40px)/1.1 "Arial Black","Helvetica Neue",system-ui,sans-serif;color:var(--gold-hi);text-align:center;margin:0 0 18px;text-shadow:0 0 18px #d5a53b33}
+.details h3{font:700 13px "Courier New",monospace;letter-spacing:.2em;color:var(--gold);margin:28px 0 8px;text-transform:uppercase}
+.details p,.details li{font:16px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif;color:#cdd9d0;margin:0 0 10px}
+.details ul{padding-left:20px;margin:6px 0}
+.details table{width:100%;border-collapse:collapse;font:14px/1.5 "Courier New",monospace;margin:8px 0}
+.details th,.details td{padding:9px 10px;border-bottom:1px solid #2a3a33;text-align:left;color:#cdd9d0;vertical-align:top}
+.details th{color:var(--gold);width:64px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:36px 0 8px}
+.cta a{font:700 13px "Courier New",monospace;letter-spacing:.14em;color:#1a1204;background:var(--gold);padding:13px 20px;border-radius:999px;text-decoration:none}
+.cta a.alt{background:transparent;color:var(--gold-hi);border:1px solid var(--gold)}
+.cta a:hover,.cta a:focus-visible{background:var(--gold-hi);color:#1a1204;outline:none}
+.fine{font:700 11px "Courier New",monospace;letter-spacing:.14em;color:#7d8f86;text-align:center;margin:26px 0 0}
+</style>
+<noscript><style>.title,.bg,.neon .lit,.ch::after,.card,.hint,.s2-kicker,.s2-subtitle,.s2-laptop,.s2-screen,.s2-note,.s2-f2,.s2-f3,.s2-f4,.s2-f5,.s2-f6,.s2-chip::after,.s5-kicker,.s5-title,.s5-real,.s5-final,.s5-footer,.s4-kicker,.s4-title,.s4-sub,.s4-status,.s4-footer,.s4-power,.s4-plug,.s4-light,.s4-alive,.s3-grid,.s3-kicker,.s3-heading,.s3-desc,.s3-footer,.s3-outline,.s3-side,.s3-hole,.s3-cross,.s3-measure,.s3-note,.s3-photo,.s3-photo-label{opacity:1!important}.s3-outline,.s3-side,.s3-hole,.s3-kicker,.s3-heading,.s3-desc,.s3-footer,.s3-photo{transform:none!important}.rule,.flip{transform:none!important}.s2-laptop,.s2-kicker,.s2-subtitle{transform:none!important}.s2-line{transform:translateX(-50%) scaleY(1)!important}</style></noscript>
+</head>
+<body>
+<div class="ctl">
+  <button id="replay" class="pill" type="button" aria-label="Ponovi scenu koja je na ekranu">↻</button>
+  <button id="snd" class="pill" type="button" aria-pressed="false">SOUND OFF</button>
+</div>
+
+<section class="scene" id="scene1" aria-label="Scena 1: Remember the 90s">
+  <div class="bg glow"></div><div class="bg amber"></div><div class="sparks" id="sparks" aria-hidden="true"></div>
+  <div class="stage">
+    <div class="neon brand" role="img" aria-label="RetroAppLab"><span class="tube" aria-hidden="true">RETROAPPLAB</span><span class="lit" aria-hidden="true">RETROAPPLAB</span></div>
+    <div class="rule" aria-hidden="true"></div>
+    <h1 class="title" aria-label="Poker 90s">
+      <span class="ch" style="--k:0" data-c="P" aria-hidden="true">P</span><span class="ch" style="--k:1" data-c="O" aria-hidden="true">O</span><span class="ch" style="--k:2" data-c="K" aria-hidden="true">K</span><span class="ch" style="--k:3" data-c="E" aria-hidden="true">E</span><span class="ch" style="--k:4" data-c="R" aria-hidden="true">R</span><span class="sp" aria-hidden="true"></span><span class="ch g" style="--k:5" data-c="9" aria-hidden="true">9</span><span class="ch g" style="--k:6" data-c="0" aria-hidden="true">0</span><span class="ch g" style="--k:7" data-c="s" aria-hidden="true">s</span>
+    </h1>
+    <div class="hand" role="img" aria-label="Pet karata: as, kralj, dama, dečko i desetka u srcu — kraljevski flush">
+      <div class="card" style="--i:0;--rot:-8deg;--y:16px"><div class="flip"><div class="card-face back"></div><div class="card-face front"><div class="corner red">A<br>♥</div><div class="rank red">A</div><div class="suit red">♥</div><i class="sheen"></i></div></div></div>
+      <div class="card" style="--i:1;--rot:-4deg;--y:6px"><div class="flip"><div class="card-face back"></div><div class="card-face front"><div class="corner red">K<br>♥</div><div class="rank red">K</div><div class="suit red">♥</div><i class="sheen"></i></div></div></div>
+      <div class="card" style="--i:2;--rot:0deg;--y:0px"><div class="flip"><div class="card-face back"></div><div class="card-face front"><div class="corner red">Q<br>♥</div><div class="rank red">Q</div><div class="suit red">♥</div><i class="sheen"></i></div></div></div>
+      <div class="card" style="--i:3;--rot:4deg;--y:6px"><div class="flip"><div class="card-face back"></div><div class="card-face front"><div class="corner red">J<br>♥</div><div class="rank red">J</div><div class="suit red">♥</div><i class="sheen"></i></div></div></div>
+      <div class="card" style="--i:4;--rot:8deg;--y:16px"><div class="flip"><div class="card-face back"></div><div class="card-face front"><div class="corner red">10<br>♥</div><div class="rank red">10</div><div class="suit red">♥</div><i class="sheen"></i></div></div></div>
+    </div>
+    <p class="tag neon" role="img" aria-label="Remember the 90s?"><span class="tube" aria-hidden="true">REMEMBER THE 90s?</span><span class="lit" aria-hidden="true">REMEMBER THE 90s?</span></p>
+  </div>
+  <div class="hintwrap"><a class="hint" href="#scene2" aria-label="Pomakni se na sljedeću scenu"><span class="txt">SCROLL TO DISCOVER</span><svg viewBox="0 0 20 28" fill="none" aria-hidden="true"><path d="M10 1v23m-7-7 7 7 7-7" stroke="#f0c25a" stroke-width="2" stroke-linecap="round"/></svg></a></div>
+</section>
+
+<section class="scene" id="scene2" aria-label="Scena 2: Nastanak HTML pokera">
+  <div class="s2-line" aria-hidden="true"></div>
+  <div class="bg glow"></div><div class="sparks" id="sparks2" aria-hidden="true"></div>
+  <div class="stage s2-stage">
+    <div class="s2-kicker">SCENE 02 / THE BEGINNING</div>
+    <h2 class="neon s2-title" role="img" aria-label="First, we built the game."><span class="tube" aria-hidden="true">FIRST, WE<br><b>BUILT THE GAME.</b></span><span class="lit" aria-hidden="true">FIRST, WE<br><b>BUILT THE GAME.</b></span></h2>
+    <div class="s2-subtitle">BEFORE THE BUTTONS, THERE WAS CODE.</div>
+    <div class="s2-laptop" role="img" aria-label="Laptop na kojem se vrti RetroAppLab poker: dijeljenje karata, držanje, izvlačenje i gemblanje veća/manja">
+      <div class="s2-lid"><i class="s2-camera" aria-hidden="true"></i><div class="s2-screen"><img class="s2-f s2-f1" src="slike/scena2-1-ready.webp" alt="" decoding="async"><img class="s2-f s2-f2" src="slike/scena2-2-dealt.webp" alt="" decoding="async" loading="lazy"><img class="s2-f s2-f3" src="slike/scena2-3-held.webp" alt="" decoding="async" loading="lazy"><img class="s2-f s2-f4" src="slike/scena2-4-win.webp" alt="" decoding="async" loading="lazy"><img class="s2-f s2-f5" src="slike/scena2-5-gamble.webp" alt="" decoding="async" loading="lazy"><img class="s2-f s2-f6" src="slike/scena2-6-gres.webp" alt="" decoding="async" loading="lazy"></div></div><div class="s2-base" aria-hidden="true"></div>
+    </div>
+    <div class="s2-steps" aria-hidden="true"><span class="s2-chip c1" data-t="DEAL">DEAL</span><span class="s2-chip c2" data-t="HOLD">HOLD</span><span class="s2-chip c3" data-t="DRAW">DRAW</span><span class="s2-chip c4" data-t="GAMBLE">GAMBLE</span></div>
+    <p class="neon s2-finale" role="img" aria-label="The game was ready."><span class="tube" aria-hidden="true">THE GAME WAS READY.</span><span class="lit" aria-hidden="true">THE GAME WAS READY.</span></p>
+    <p class="s2-note">FIVE CARDS. HOLD. DRAW. GAMBLE. THE FIRST STEP TOWARD SOMETHING REAL.</p>
+  </div>
+</section>
+
+<section class="scene" id="scene3" aria-label="Scena 3: Od ideje do nacrta">
+  <div class="s2-line" aria-hidden="true"></div>
+  <div class="s3-grid" aria-hidden="true"></div>
+  <div class="s3-inner">
+    <div class="s3-kicker">SCENE 03 / THE BLUEPRINT</div>
+    <h2 class="s3-heading">FROM IDEA<br>TO BLUEPRINT</h2>
+    <p class="s3-desc">SEVEN BUTTONS. ONE WOODEN CONTROLLER.</p>
+    <div class="s3-board">
+      <svg class="s3-drawing" viewBox="0 0 800 450" role="img" aria-label="Konceptualni nacrt kašuna sa sedam otvora, pet u glavnom nizu i dva desno">
+        <path class="s3-side" d="M86 305 L718 305 L696 358 L108 358 Z"/>
+        <path class="s3-outline" d="M80 130 L711 130 L725 305 L87 305 Z"/>
+        <g class="s3-holes">
+          <circle class="s3-hole" cx="163" cy="229" r="29"/><circle class="s3-hole" cx="259" cy="229" r="29"/><circle class="s3-hole" cx="355" cy="229" r="29"/><circle class="s3-hole" cx="451" cy="229" r="29"/><circle class="s3-hole" cx="547" cy="229" r="29"/><circle class="s3-hole" cx="650" cy="180" r="29"/><circle class="s3-hole" cx="650" cy="260" r="29"/>
+        </g>
+        <g class="s3-cross"><path d="M134 229h58m-29-29v58 M230 229h58m-29-29v58 M326 229h58m-29-29v58 M422 229h58m-29-29v58 M518 229h58m-29-29v58 M621 180h58m-29-29v58 M621 260h58m-29-29v58"/></g>
+        <g class="s3-measure"><path d="M80 104H711 M80 96v16 M711 96v16 M742 130v175 M734 130h16 M734 305h16"/></g>
+        <g class="s3-note"><text x="400" y="90" text-anchor="middle">TOP PANEL · CONCEPT</text><text x="400" y="397" text-anchor="middle">NO DIMENSIONS ASSUMED · BASED ON ACTUAL BUILD</text></g>
+      </svg>
+      <img class="s3-photo" alt="Stvarna fotografija drvenog kašuna s izbušenim otvorima i jednom ugrađenom plavom tipkom" loading="lazy" decoding="async" src="slike/scena3-kutija.webp">
+      <div class="s3-photo-label">THE BLUEPRINT BECAME REAL</div>
+    </div>
+    <p class="s3-footer">FROM THE DRAWING BOARD TO THE WORKBENCH.</p>
+  </div>
+</section>
+
+<section class="scene" id="scene4" aria-label="Scena 4: Izrada kontrolera">
+  <div class="s2-line" aria-hidden="true"></div>
+  <div class="s4-grid" aria-hidden="true"></div>
+  <div class="s4-inner">
+    <div class="s4-kicker">SCENE 04 / THE BUILD</div>
+    <h2 class="s4-title">BUILDING<br>THE CONTROLLER</h2>
+    <p class="s4-sub">FROM BLUEPRINT TO HARDWARE</p>
+    <div class="s4-stage">
+      <div class="s4-layer s4-build"><svg class="s4-svg" viewBox="0 0 800 450" role="img" aria-label="Simbolična montaža drvenog kućišta sa sedam tipki"><path class="s4-left" d="M92 165L140 135L140 329L92 305Z"/><path class="s4-right" d="M710 160L740 142L740 319L710 305Z"/><path class="s4-front" d="M92 305L710 305L740 350L125 350Z"/><path class="s4-panel" d="M92 165L710 165L710 305L92 305Z"/><g><circle class="s4-hole" cx="165" cy="234" r="24"/><circle class="s4-hole" cx="263" cy="234" r="24"/><circle class="s4-hole" cx="361" cy="234" r="24"/><circle class="s4-hole" cx="459" cy="234" r="24"/><circle class="s4-hole" cx="557" cy="234" r="24"/><circle class="s4-hole" cx="655" cy="207" r="24"/><circle class="s4-hole" cx="655" cy="268" r="24"/></g><g><g class="s4-button" style="--i:0"><circle cx="165" cy="234" r="24" fill="#c3cbd1"/><circle cx="165" cy="234" r="18" fill="#e6a23c"/></g><g class="s4-button" style="--i:1"><circle cx="263" cy="234" r="24" fill="#c3cbd1"/><circle cx="263" cy="234" r="18" fill="#e6a23c"/></g><g class="s4-button" style="--i:2"><circle cx="361" cy="234" r="24" fill="#c3cbd1"/><circle cx="361" cy="234" r="18" fill="#e6a23c"/></g><g class="s4-button" style="--i:3"><circle cx="459" cy="234" r="24" fill="#c3cbd1"/><circle cx="459" cy="234" r="18" fill="#e6a23c"/></g><g class="s4-button" style="--i:4"><circle cx="557" cy="234" r="24" fill="#c3cbd1"/><circle cx="557" cy="234" r="18" fill="#e6a23c"/></g><g class="s4-button" style="--i:5"><circle cx="655" cy="207" r="24" fill="#c3cbd1"/><circle cx="655" cy="207" r="18" fill="#298fe8"/></g><g class="s4-button" style="--i:6"><circle cx="655" cy="268" r="24" fill="#c3cbd1"/><circle cx="655" cy="268" r="18" fill="#b73539"/></g></g></svg></div>
+      <div class="s4-layer s4-wood"><img class="s4-photo" loading="lazy" decoding="async" src="slike/scena4-wood.webp" alt="Stvarna fotografija drvenog kućišta s otvorima za tipke"><div class="s4-layer-label">THE WOODEN FRAME</div></div>
+      <div class="s4-layer s4-inside"><img class="s4-photo" loading="lazy" decoding="async" src="slike/scena4-inside.webp" alt="Stvarna fotografija unutrašnjosti kašuna i ugrađene tipke"><div class="s4-layer-label">BUTTONS &amp; CONNECTIONS</div></div>
+      <div class="s4-layer s4-wiring"><img class="s4-photo" loading="lazy" decoding="async" src="slike/scena4-wiring.webp" alt="Stvarna fotografija ožičenja i osvijetljenih tipki unutar kontrolera"><div class="s4-layer-label">WIRED BY HAND</div></div>
+      <div class="s4-layer s4-power"><div class="s4-light"></div><svg class="s4-cable" viewBox="0 0 540 150" aria-hidden="true"><path class="s4-cable-path" d="M40 130Q90 130 110 96T205 62T325 72T475 72"/><path class="s4-plug" d="M470 52h30v40h-30z M500 62h22v6h-22z M500 78h22v6h-22z"/></svg><div class="s4-alive">IT’S ALIVE!</div></div>
+    </div>
+    <p class="s4-status">SEVEN BUTTONS. ONE CONTROLLER.</p>
+    <div class="s4-footer">↓ SCROLL TO SEE IT IN ACTION</div>
+  </div>
+</section>
+
+<section class="scene" id="scene5" aria-label="Scena 5: Trenutak istine">
+  <div class="s2-line" aria-hidden="true"></div>
+  <div class="s5-inner">
+    <div class="s5-kicker">SCENE 05 / THE FIRST TEST</div>
+    <h2 class="s5-title">THE MOMENT<br>OF TRUTH</h2>
+    <div class="s5-stage">
+      <div class="s5-real"><div class="s5-pbox"><img src="slike/scena5-kike-poker.webp" loading="lazy" decoding="async" alt="Stvarni RetroAppLab drveni kontroler s osvijetljenim tipkama, laptopom i papigom Kike na ramenu igrača"><div class="s5-press" aria-hidden="true"></div></div></div>
+      <div class="s5-game s5-deal"><img data-from="s2-f2" decoding="async" alt="Stvarna poker igra nakon dijeljenja karata"><span class="s5-game-label">DEAL</span></div>
+      <div class="s5-game s5-hold"><img data-from="s2-f3" decoding="async" alt="Stvarna poker igra s označenim zadržanim kartama"><span class="s5-game-label">HOLD</span></div>
+      <div class="s5-game s5-win"><img data-from="s2-f4" decoding="async" alt="Stvarni prikaz dobitka u RetroAppLab pokeru"><span class="s5-game-label">DRAW · IT WORKS!</span></div>
+      <div class="s5-final"><strong>FROM CODE TO REALITY</strong><span>BUILT BY RETROAPPLAB · TESTED BY HUMANS</span><span>SUPERVISED BY KIKE 🦜</span></div>
+    </div>
+    <div class="s5-footer">RETROAPPLAB · POKER 90s — LAB EDITION 001<br>BUILT IN THE LAB. MADE TO PLAY.</div>
+  </div>
+</section>
+
+<section class="details" id="details" aria-label="O projektu">
+  <div class="details-inner">
+    <h2>O projektu</h2>
+    <p>Poker 90s je video poker u pregledniku, nadahnut aparatima iz devedesetih, s igrom „veća ili manja” za kojom se godinama žudjelo. Kad je igra bila gotova, dobila je i pravi kontroler: drvenu kutiju sa sedam arkadnih tipki koja se USB kabelom spaja na računalo.</p>
+    <h3>Što je unutra</h3>
+    <ul>
+      <li>sedam arkadnih tipki s kromiranim prstenom</li>
+      <li>Zero Delay USB enkoder koji pritiske tipki pretvara u signal za računalo</li>
+      <li>drvena kutija od šperploče koju je izradio stolar</li>
+    </ul>
+    <h3>Kako radi</h3>
+    <p>Enkoder se računalu javlja kao igrači kontroler (gamepad), a ne kao tipkovnica, pa igra tipke čita preko Gamepad API-ja preglednika. Raspored se jednom kalibrira tipkom K u igri i pamti se u pregledniku. Provjereno u Chromeu na računalu. Igra radi i bez kontrolera: mišem, dodirom i tipkovnicom.</p>
+    <h3>Raspored tipki</h3>
+    <table>
+      <tr><th>K1–K4</th><td>HOLD 1 do 4; u gemblanju K2 je MANJA, a K4 VEĆA</td></tr>
+      <tr><th>K5</th><td>HOLD 5; prije dijeljenja diže ulog; u gemblanju polovi iznos</td></tr>
+      <tr><th>K6</th><td>DEAL, zatim DRAW, a nakon dobitka GAMBLE</td></tr>
+      <tr><th>K7</th><td>uzmi iznos; dok biraš karte poništava odabir; između dvije ruke isplati i završava igru</td></tr>
+    </table>
+    <div class="cta"><a href="/poker/">PLAY POKER →</a><a class="alt" href="/#lab">← BACK TO RETROAPPLAB</a></div>
+    <p class="fine">FOR ENTERTAINMENT ONLY · NO CASH VALUE</p>
+  </div>
+</section>
+<footer style="text-align:center;font:12px/1.6 system-ui,-apple-system,'Segoe UI',sans-serif;color:#b9ab86;padding:18px 16px calc(22px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(240,194,90,.18)"><nav aria-label="O stranici"><a href="/o-nama.html" style="color:inherit">O nama</a> · <a href="/kontakt.html" style="color:inherit">Kontakt</a> · <a href="/privatnost.html" style="color:inherit">Pravila privatnosti</a> · <a href="/uvjeti.html" style="color:inherit">Uvjeti korištenja</a></nav></footer>
+<script>
+(()=>{
+  const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // timelines in seconds: CSS delays and sound read the same numbers
+  const T1={glow:.45,neon:1.1,title:2.3,deal:3.2,flip:5.0,tag:7.0,hint:7.9};
+  const T5={intro:.35,photo:1.2,press:3.2,deal:4.3,hold:5.7,win:7.1,return:9.1,end:10.2};
+  const T4={title:.3,build:1.8,button:4.2,photo:7.3,inside:10,wiring:13,power:16.2,end:18.2};
+  const T3={title:.5,grid:.9,outline:1.6,holes:3.0,details:5.4,photo:7.1,end:8.1};
+  const T2={glow:0,kicker:.1,title:.25,sub:.9,laptop:1.2,screen:2.2,deal:2.9,hold:4.1,draw:5.0,gamble:6.3,gres:7.3,finish:8.2};
+
+  // ---------- sound engine (optional, synthesized) ----------
+  let AC=null,master=null,noiseBuf=null,runGain=null,soundOn=false;
+  function ensureAudio(){
+    if(!AC){const C=window.AudioContext||window.webkitAudioContext; if(!C) return false;
+      AC=new C(); master=AC.createGain(); master.gain.value=.8; master.connect(AC.destination);
+      noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate); const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;}
+    if(AC.state==='suspended') AC.resume(); return true;
+  }
+  function noise(t,dur,type,f0,f1,q,peak){
+    const s=AC.createBufferSource(); s.buffer=noiseBuf; const fl=AC.createBiquadFilter(); fl.type=type; fl.Q.value=q;
+    fl.frequency.setValueAtTime(f0,t); if(f1) fl.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    const g=AC.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(peak,t+Math.min(.012,dur/3)); g.gain.exponentialRampToValueAtTime(.0005,t+dur);
+    s.connect(fl); fl.connect(g); g.connect(runGain); s.start(t); s.stop(t+dur+.02);
+  }
+  function tone(t,f0,f1,dur,peak,type){
+    const o=AC.createOscillator(); o.type=type||'sine'; o.frequency.setValueAtTime(f0,t); if(f1) o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    const g=AC.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(peak,t+.008); g.gain.exponentialRampToValueAtTime(.0005,t+dur);
+    o.connect(g); g.connect(runGain); o.start(t); o.stop(t+dur+.02);
+  }
+  const swish=t=>noise(t,.11,'bandpass',900,2600,1.1,.22);
+  const flick=t=>{noise(t,.055,'highpass',2800,null,.7,.2); tone(t,230,90,.08,.16);};
+  const land=t=>noise(t,.04,'bandpass',1500,null,1.2,.16);
+  const chime=t=>[[1318.5,.09],[1975.5,.06],[2637,.03]].forEach(([f,p])=>tone(t,f,null,1.5,p));
+  const beep=(t,f,d,p)=>tone(t,f,null,d||.07,p||.05,'square');
+  function buzz(t,total){
+    const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=420;
+    const g=AC.createGain(); g.gain.setValueAtTime(0,t);
+    [[.05,.14],[.11,.01],[.2,.16],[.28,.02],[.4,.18],[.5,.07],[.62,.17],[.9,.08]].forEach(([dt,v])=>g.gain.setValueAtTime(v,t+dt));
+    g.gain.linearRampToValueAtTime(.05,t+1.6); g.gain.setValueAtTime(.05,t+total); g.gain.linearRampToValueAtTime(0,t+total+1.2);
+    [100,101.4].forEach(f=>{const o=AC.createOscillator(); o.type='sawtooth'; o.frequency.value=f; o.connect(lp); o.start(t); o.stop(t+total+1.3);});
+    lp.connect(g); g.connect(runGain);
+    [.05,.2,.4,.62].forEach(dt=>noise(t+dt,.03,'highpass',3200,null,.7,.12));
+  }
+  function stopAudio(){
+    if(!AC||!runGain) return; const g=runGain; runGain=null;
+    try{ g.gain.cancelScheduledValues(AC.currentTime); g.gain.setValueAtTime(0,AC.currentTime);}catch(e){}
+    setTimeout(()=>{try{g.disconnect();}catch(e){}},80);
+  }
+  // one function per scene: schedules its cues relative to t0
+  function audio1(t0,T){
+    buzz(t0+T.neon,(T.tag-T.neon)+1.2);
+    for(let i=0;i<5;i++) swish(t0+T.deal+i*.16+.1);
+    for(let i=0;i<5;i++){const tf=t0+T.flip+i*.28; flick(tf+.3); land(tf+.82);}
+    chime(t0+T.tag+.15);
+  }
+  function audio2(t0,T){
+    noise(t0+T.laptop+.1,.55,'bandpass',200,900,.8,.12);                       // laptop slides in
+    tone(t0+T.screen,90,45,.22,.18); noise(t0+T.screen+.02,.12,'highpass',4000,null,.7,.1); tone(t0+T.screen+.06,300,1400,.25,.05,'triangle'); // screen powers on
+    swish(t0+T.deal); for(let i=0;i<5;i++) flick(t0+T.deal+.1+i*.13);             // deal
+    beep(t0+T.hold,880); beep(t0+T.hold+.14,880);                                // two HOLDs
+    swish(t0+T.draw); for(let i=0;i<3;i++) flick(t0+T.draw+.12+i*.13);           // draw 3
+    [523,659,784,1047].forEach((f,i)=>beep(t0+T.draw+.75+i*.1,f,.1,.06));        // win jingle
+    beep(t0+T.gamble,660,.08); beep(t0+T.gamble+.11,880,.1);                     // gamble
+    flick(t0+T.gres); land(t0+T.gres+.25); chime(t0+T.gres+.4);                  // card result
+    chime(t0+T.finish+.15);                                                     // THE GAME WAS READY
+  }
+
+  function audio3(t0,T){
+    noise(t0+T.grid,.5,'highpass',5000,null,.7,.04);                              // grid powers up
+    noise(t0+T.outline,.9,'bandpass',1200,3600,1.4,.07);                          // pencil along the ruler
+    noise(t0+T.outline+.5,.06,'highpass',3000,null,.7,.08);                       // side panel taps in
+    for(let i=0;i<7;i++){const t=t0+T.holes+i*.32; tone(t,300+i*45,null,.12,.07); noise(t,.05,'bandpass',900,null,1,.1);} // seven holes
+    [0,.12,.24].forEach(d=>beep(t0+T.details+d,2200,.03,.03));                    // measuring ticks
+    noise(t0+T.photo,.035,'highpass',3500,null,.7,.2); noise(t0+T.photo+.05,.09,'bandpass',1200,null,1,.15); // camera shutter
+    chime(t0+T.photo+.8);                                                         // THE BLUEPRINT BECAME REAL
+    tone(t0+T.end,660,null,.15,.04);
+  }
+
+  function audio4(t0,T){
+    [0,.4,.8,1.2].forEach((d,i)=>{const t=t0+T.build+d; tone(t,210+i*30,70+i*10,.18,.14); noise(t,.09,'bandpass',500,null,.9,.14);}); // four panels knock into place
+    noise(t0+T.build+1.8,.35,'bandpass',700,250,1.2,.08);                                    // drilling the holes
+    for(let i=0;i<7;i++){const t=t0+T.button+i*.34; tone(t,460+i*28,null,.07,.06,'triangle'); noise(t,.03,'highpass',3000,null,.7,.1);} // seven buttons click in
+    [T.photo,T.inside,T.wiring].forEach(x=>{noise(t0+x,.035,'highpass',3500,null,.7,.16); noise(t0+x+.05,.08,'bandpass',1200,null,1,.12);}); // camera shutter per photo
+    noise(t0+T.power+.3,1.0,'bandpass',500,2500,1,.05);                                      // cable runs out
+    noise(t0+T.power+1.1,.05,'bandpass',1800,null,1.4,.15); tone(t0+T.power+1.1,140,90,.1,.12); // plug clicks in
+    tone(t0+T.power+1.4,660,null,.18,.06,'triangle');                                        // light turns on
+    tone(t0+T.power+1.7,200,1400,.5,.05,'triangle'); chime(t0+T.power+1.85);                 // IT'S ALIVE
+  }
+
+  function audio5(t0,T){
+    chime(t0+T.photo+.2);                                                              // the photo appears
+    noise(t0+T.press,.04,'bandpass',1800,null,1.4,.18); tone(t0+T.press,170,80,.1,.14); // the real button clacks
+    swish(t0+T.deal); for(let i=0;i<5;i++) flick(t0+T.deal+.12+i*.12);                 // DEAL on screen
+    beep(t0+T.hold,880); beep(t0+T.hold+.14,880);                                      // HOLD
+    swish(t0+T.win-.4); for(let i=0;i<3;i++) flick(t0+T.win-.3+i*.12);                 // DRAW
+    [523,659,784,1047].forEach((f,i)=>beep(t0+T.win+.25+i*.1,f,.1,.06)); chime(t0+T.win+.7); // win jingle
+    noise(t0+T.return,.4,'bandpass',300,1200,.8,.06);                                  // back to the real photo
+    chime(t0+T.end); chime(t0+T.end+.12);                                              // FROM CODE TO REALITY
+    [0,.16].forEach(d=>{tone(t0+T.end+.9+d,1800,2700,.07,.05); tone(t0+T.end+.9+d+.08,2300,3100,.06,.04);}); // Kike
+  }
+
+  // ---------- scene registry ----------
+  const scenes=[
+    {el:document.getElementById('scene1'),T:T1,audio:audio1},
+    {el:document.getElementById('scene2'),T:T2,audio:audio2},
+    {el:document.getElementById('scene3'),T:T3,audio:audio3},
+    {el:document.getElementById('scene4'),T:T4,audio:audio4},
+    {el:document.getElementById('scene5'),T:T5,audio:audio5}
+  ];
+  scenes.forEach(s=>{
+    for(const k in s.T) s.el.style.setProperty('--t-'+k,s.T[k]+'s');
+    s.visible=false; s.vh=0; s.started=false;
+    const sp=s.el.querySelector('.sparks');
+    if(sp) for(let i=0;i<14;i++){const e=document.createElement('span'); e.className='spark';
+      e.style.left=(6+Math.random()*88)+'%'; e.style.top=(8+Math.random()*80)+'%';
+      e.style.setProperty('--dur',(3+Math.random()*3)+'s'); e.style.setProperty('--dly',((s.T.neon||s.T.screen||1)+Math.random()*4)+'s'); sp.appendChild(e);}
+  });
+  document.querySelectorAll('img[data-from]').forEach(i=>{const src=document.querySelector('.'+i.dataset.from); if(src) i.src=src.src;}); // scene 5 reuses scene 2's real game frames
+  let current=scenes[0];
+  function play(s){
+    stopAudio();
+    s.el.classList.remove('go'); void s.el.offsetWidth; s.el.classList.add('go');
+    if(soundOn && !RM){ runGain=AC.createGain(); runGain.gain.value=1; runGain.connect(master); s.audio(AC.currentTime+.03,s.T); }
+  }
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>{
+      for(const e of es){ const s=scenes.find(x=>x.el===e.target); s.vh=e.intersectionRect.height; s.visible=s.vh>innerHeight*.5;
+        if(s.visible&&!s.started){s.started=true; play(s);} }
+      current=scenes.reduce((a,b)=>b.vh>a.vh?b:a,scenes[0]);
+    },{threshold:[0,.1,.25,.5,.75,1]});
+    scenes.forEach(s=>io.observe(s.el));
+  } else { scenes.forEach(s=>{s.started=true; play(s);}); }
+
+  // ---------- controls ----------
+  document.getElementById('replay').addEventListener('click',()=>play(current));
+  const snd=document.getElementById('snd');
+  snd.addEventListener('click',()=>{
+    soundOn=!soundOn;
+    if(soundOn && !ensureAudio()){soundOn=false; snd.textContent='NO AUDIO'; return;}
+    snd.textContent='SOUND '+(soundOn?'ON':'OFF'); snd.setAttribute('aria-pressed',soundOn);
+    if(soundOn) play(current); else stopAudio();
+  });
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden) stopAudio(); });
+
+  // ---------- scroll transition: each scene drifts up and fades as it leaves ----------
+  if(!RM){
+    let tick=false;
+    const upd=()=>{tick=false; scenes.forEach(s=>{const r=s.el.getBoundingClientRect(); const p=Math.min(1,Math.max(0,-r.top/(innerHeight*.85))); s.el.style.setProperty('--p',p.toFixed(3));});};
+    addEventListener('scroll',()=>{ if(!tick){tick=true; requestAnimationFrame(upd);} },{passive:true});
+  }
+})();
+</script>
+</body>
+</html>
