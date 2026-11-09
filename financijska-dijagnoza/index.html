@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Financijska dijagnoza – RetroAppLab</title>
+<meta name="description" content="Učitaj GFI-POD izvještaje i dobij financijski semafor, trend kroz tri godine i razumljivu dijagnozu poslovanja. Podaci ostaju u tvom pregledniku.">
+<link rel="canonical" href="https://retroapplab.com/financijska-dijagnoza/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Financijska dijagnoza – RetroAppLab Tools">
+<meta property="og:description" content="Učitaj GFI-POD izvještaje i dobij financijski semafor, trend kroz tri godine i razumljivu dijagnozu poslovanja. Podaci ostaju u tvom pregledniku.">
+<meta property="og:url" content="https://retroapplab.com/financijska-dijagnoza/">
+<meta property="og:image" content="https://retroapplab.com/shot-financijska-dijagnoza.jpg">
+<meta name="theme-color" content="#182c46">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/zavrsni/zaglavlje.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#edf1f6; --surface:#ffffff; --surface2:#f6f8fb; --text:#16212e; --muted:#5b6779; --line:#d8e0ea;
+  --head:#123a68; --head2:#0b2849; --headtext:#fff; --headmuted:#b6c9e2;
+  --accent:#1d5fae; --accentbg:#e3edf9; --inbg:#fff; --inline:#c6d1df;
+  --g:#1c7d45; --gbg:#e0f3e7; --y:#a46a06; --ybg:#fcefd5; --r:#b8321f; --rbg:#fbe2dd;
+  --lampoff:#cfd7e2; --c1:#1d5fae; --c2:#e08a1e; --c3:#2a9d6a; --c4:#8a5cc7;
+  --btn:#e4ebf4; --btntext:#123a68; --demo:#7a4bd1; --demobg:#efe8fc; --onaccent:#ffffff;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0c1320; --surface:#131e2f; --surface2:#182538; --text:#e5ebf3; --muted:#9aa7ba; --line:#26354c;
+  --head:#0f2c52; --head2:#09203d; --headtext:#fff; --headmuted:#9cb3d3;
+  --accent:#79abee; --accentbg:#1a2c47; --inbg:#0f1928; --inline:#2c3d57;
+  --g:#55c78a; --gbg:#123323; --y:#ebb75e; --ybg:#382b11; --r:#f27a6c; --rbg:#3b1a17;
+  --lampoff:#2a374b; --c1:#79abee; --c2:#f0a54a; --c3:#4fc28c; --c4:#b08ae6;
+  --btn:#1c2b43; --btntext:#d0e1f7; --demo:#b99af0; --demobg:#2a2140; --onaccent:#08182c; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0c1320; --surface:#131e2f; --surface2:#182538; --text:#e5ebf3; --muted:#9aa7ba; --line:#26354c;
+  --head:#0f2c52; --head2:#09203d; --headtext:#fff; --headmuted:#9cb3d3;
+  --accent:#79abee; --accentbg:#1a2c47; --inbg:#0f1928; --inline:#2c3d57;
+  --g:#55c78a; --gbg:#123323; --y:#ebb75e; --ybg:#382b11; --r:#f27a6c; --rbg:#3b1a17;
+  --lampoff:#2a374b; --c1:#79abee; --c2:#f0a54a; --c3:#4fc28c; --c4:#b08ae6;
+  --btn:#1c2b43; --btntext:#d0e1f7; --demo:#b99af0; --demobg:#2a2140; --onaccent:#08182c; color-scheme:dark; }
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:#182c46}
+.num,td.n,input{font-variant-numeric:tabular-nums}
+.wrap{max-width:1040px;margin:0 auto;padding:0 14px}
+/* Zaglavlje i podnožje kao u ostalim obrascima (DOH, Završni, Neprofitne): /zavrsni/zaglavlje.css.
+   Boje su iste i u tamnom načinu. Tamna traka i gumbi su ljepljivi; na mobitelu ostaju samo gumbi. */
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--zg-h1,0px) + var(--zg-h2,0px) + 8px)}
+html header.top[data-zg="blok"] [data-zg-traka]{top:env(safe-area-inset-top,0px)}
+html header.top[data-zg="blok"] [data-zg-gumbi]{top:calc(env(safe-area-inset-top,0px) + var(--zg-h1,0px))}
+.obr-traka .fd-podnaslov{display:inline-block;margin-left:6px;font:400 14px/1.2 Arial,Helvetica,sans-serif;color:#dce5f0;white-space:nowrap;vertical-align:middle}
+@media (max-width:600px){.obr-traka .fd-podnaslov{display:block;margin:4px 0 0}}
+html header.top[data-zg="blok"] [data-zg-gumbi] button[aria-pressed="true"]{background:#213b5a;border-color:#213b5a;color:#fff;font-weight:700}
+@media (max-width:699.98px){
+  html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--zg-h2,0px) + 8px)}
+  html header.top[data-zg="blok"] [data-zg-gumbi]{top:env(safe-area-inset-top,0px)}
+}
+.obr-podnozje .obr-pod-l #btnWipe{margin-top:8px;font:12.5px Arial,Helvetica,sans-serif;padding:4px 10px;border:1px solid rgba(255,255,255,.45);border-radius:6px;background:transparent;color:#fff;font-weight:400}
+.obr-podnozje .obr-pod-l #btnWipe:hover{background:rgba(255,255,255,.12)}
+.obr-podnozje .obr-pod-l #btnWipe:focus-visible,.obr-podnozje .obr-pod-d a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.obr-podnozje .obr-pod-d a{color:#fff;text-decoration:none}
+.obr-podnozje .obr-pod-d a:hover{text-decoration:underline}
+main{padding:18px 0 50px}
+section.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+h1{font-size:clamp(2rem,6vw,3.1rem);line-height:1.05;margin:0;font-weight:800;letter-spacing:-.5px}
+h2{font-size:1.2rem;margin:0 0 6px}
+h3{font-size:1rem;margin:14px 0 6px}
+.sub{font-size:1.15rem;color:var(--muted);margin:6px 0 18px}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+button,.btn{font:inherit;font-weight:600;font-size:.92rem;border:1px solid var(--line);background:var(--btn);color:var(--btntext);padding:8px 13px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--onaccent);font-size:1.05rem;padding:12px 20px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,label.slot:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:6px 0 16px}
+label.slot{display:block;border:2px dashed var(--inline);border-radius:12px;padding:14px;cursor:pointer;background:var(--surface2);min-height:112px;position:relative}
+label.slot.ok{border-style:solid;border-color:var(--g)}
+label.slot.err{border-style:solid;border-color:var(--r)}
+label.slot input{position:absolute;opacity:0;width:1px;height:1px}
+.slot .t{font-weight:700}
+.slot .s{font-size:.86rem;color:var(--muted);margin-top:4px;word-break:break-word}
+.slot .x{position:absolute;top:8px;right:8px;padding:2px 8px;font-size:.8rem}
+.demo-banner{background:var(--demobg);color:var(--demo);border:1px solid var(--demo);border-radius:10px;padding:10px 14px;font-weight:700;margin-bottom:16px}
+.warns{margin:10px 0;padding:0;list-style:none}
+.warns li{padding:8px 12px;border-radius:8px;margin-bottom:6px;font-size:.92rem;background:var(--ybg);color:var(--text);border-left:4px solid var(--y)}
+.warns li.info{background:var(--accentbg);border-left-color:var(--accent)}
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%}
+table.data{min-width:560px;font-size:.9rem}
+table.data th,table.data td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.data th{font-size:.8rem;color:var(--muted);font-weight:600;white-space:nowrap}
+table.data th.n,table.data td.n{text-align:right}
+table.data tr.grp td{font-weight:700;color:var(--accent);padding-top:12px;border-bottom:2px solid var(--line)}
+table.data td.lbl{min-width:190px}
+table.data td.lbl small{display:block;color:var(--muted);font-size:.74rem;line-height:1.2}
+table.data input{width:118px;padding:5px 6px;border:1px solid var(--inline);border-radius:6px;background:var(--inbg);color:var(--text);text-align:right;font:inherit;font-size:.9rem}
+table.data input.blank{color:var(--muted)}
+table.data input.conf{border-color:var(--y);background:var(--ybg)}
+table.data select{font:inherit;font-size:.8rem;max-width:118px;margin-top:3px}
+table.data .meta{display:block;font-size:.7rem;color:var(--muted);line-height:1.2;margin-top:2px;white-space:nowrap}
+table.data .meta.warn{color:var(--y);font-weight:700}
+.warns li.err{background:var(--rbg);border-left-color:var(--r)}
+.diag li b{font-weight:700}
+.diag .why{display:block;margin-top:2px}
+.diag .chk{display:block;color:var(--muted);font-size:.92rem;margin-top:2px}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:20px;background:var(--btn);color:var(--muted)}
+
+/* semafor */
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.lamp{background:#1a2230;border-radius:20px;padding:12px 10px;display:flex;flex-direction:column;gap:10px;box-shadow:inset 0 0 0 3px #2b3546}
+.lamp span{width:54px;height:54px;border-radius:50%;background:#2c3747;display:block}
+.lamp .on.r{background:#e9442e;box-shadow:0 0 22px #e9442e}
+.lamp .on.y{background:#f5b51b;box-shadow:0 0 22px #f5b51b}
+.lamp .on.g{background:#2fc06c;box-shadow:0 0 22px #2fc06c}
+.lamp .on.na{background:#8794a8}
+.vtitle{font-size:clamp(1.5rem,4.5vw,2.2rem);font-weight:800;line-height:1.1}
+.vtitle.g{color:var(--g)} .vtitle.y{color:var(--y)} .vtitle.r{color:var(--r)}
+.score{font-size:1rem;color:var(--muted);margin-top:4px}
+.score b{font-size:1.6rem;color:var(--text)}
+.vdesc{margin:8px 0 0;max-width:62ch}
+ul.rules{margin:10px 0 0;padding-left:18px;font-size:.92rem}
+.areas{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:18px}
+.area{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface2)}
+.area .h{display:flex;justify-content:space-between;font-weight:700}
+.area .bar{height:8px;border-radius:4px;background:var(--lampoff);margin:8px 0 6px;overflow:hidden}
+.area .bar i{display:block;height:100%;border-radius:4px}
+.area p{margin:0;font-size:.85rem;color:var(--muted)}
+.fill-g{background:var(--g)} .fill-y{background:var(--y)} .fill-r{background:var(--r)}
+
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.chart h3{margin:0 0 4px}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted);margin-top:4px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{border-radius:20px;padding:4px 11px;font-size:.88rem;font-weight:600}
+.chip.g{background:var(--gbg);color:var(--g)} .chip.w{background:var(--ybg);color:var(--y)} .chip.b{background:var(--rbg);color:var(--r)}
+
+.sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 20px;margin:10px 0}
+.sliders label{font-size:.9rem;display:block}
+.sliders label b{float:right;font-variant-numeric:tabular-nums}
+.sliders input[type=range]{width:100%;accent-color:var(--accent)}
+table.sc{font-size:.92rem;min-width:520px}
+table.sc th,table.sc td{padding:7px 6px;border-bottom:1px solid var(--line)}
+table.sc th{font-size:.8rem;color:var(--muted);text-align:right}
+table.sc th:first-child,table.sc td:first-child{text-align:left}
+table.sc td{text-align:right;white-space:nowrap}
+table.sc tr.base td{font-weight:700}
+
+.diag{max-width:72ch}
+.diag h3{font-size:1.05rem;margin:18px 0 6px;color:var(--accent)}
+.diag p{margin:0 0 8px}
+.diag ul{margin:0 0 8px;padding-left:20px}
+.diag li{margin-bottom:6px}
+.only-detail{display:none}
+body.detail .only-detail{display:block}
+body.detail .only-simple{display:none}
+details.f summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.9rem}
+.ok{color:var(--g);font-weight:700} .bad{color:var(--r);font-weight:700}
+.hidden{display:none!important}
+.printhead{display:none}
+@media (max-width:560px){
+  .verdict{grid-template-columns:1fr;justify-items:start}
+  .lamp{flex-direction:row}
+  .lamp span{width:40px;height:40px}
+  section.panel{padding:14px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header.top,#start,#check,.noprint,.sliders,details.f summary{display:none!important}
+  section.panel{border:none;padding:0;margin-bottom:14px;break-inside:avoid-page}
+  .printhead{display:block;margin-bottom:12px}
+  .only-detail:not(.hidden){display:block!important}
+  .lamp{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header class="top" data-zg="blok">
+  <div class="obr-traka" data-zg-traka>
+    <div class="obr-r1"><div class="obr-naslov">Financijska dijagnoza <small class="fd-podnaslov">RetroAppLab Tools</small></div><a class="obr-izbornik" href="/#software">← RetroAppLab</a></div>
+    <p class="obr-r2"><span id="zgTvrtka" class="empty">Tvrtka još nije učitana</span></p>
+    <p class="obr-r3">Podaci se obrađuju samo u ovom pregledniku i ne šalju se na server.</p>
+  </div>
+  <div class="obr-gumbi noprint" data-zg-gumbi role="group" aria-label="Pogled">
+    <button type="button" id="vSimple" aria-pressed="true">Jednostavno</button>
+    <button type="button" id="vDetail" aria-pressed="false">Detaljno</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="demoBanner" class="demo-banner hidden">DEMO način: svi podaci su izmišljeni i služe samo za testiranje. Tvrtka „DEMO Trgovina d.o.o.“ ne postoji.</div>
+
+  <section class="panel" id="start">
+    <h1>Financijska dijagnoza</h1>
+    <p class="sub">Brojke govore. Mi ih tumačimo.</p>
+    <div class="slots" id="slots"></div>
+    <p class="small muted" style="margin-top:-6px">Učitaj GFI-POD izvještaje (.xls ili .xlsx). Dovoljna su dva uzastopna izvještaja: svaki sadrži i prethodnu godinu, pa npr. GFI za 2024. i 2025. pokrivaju 2023.–2025. Treći izvještaj daje početno stanje za prosjeke. PDF uvoz još nije podržan.</p>
+    <div class="row">
+      <button type="button" class="primary" id="btnAnalyze" disabled>Analiziraj poslovanje</button>
+      <button type="button" id="btnDemo">Učitaj DEMO podatke</button>
+      <button type="button" id="btnManual">Ručni unos</button>
+      <label class="btn" for="jsonIn">Učitaj spremljenu analizu<input type="file" id="jsonIn" accept=".json,application/json" class="hidden"></label>
+    </div>
+    <div id="manualBox" class="row hidden" style="margin-top:12px">
+      <label class="small">Zadnja godina za analizu <input type="number" id="manualYear" min="2016" max="2035" style="width:90px;padding:6px;border:1px solid var(--inline);border-radius:6px;background:var(--inbg);color:var(--text)"></label>
+      <button type="button" id="btnManualGo">Napravi praznu tablicu</button>
+    </div>
+    <div id="demoFiles" class="small muted" style="margin-top:14px">
+      Nemaš GFI pri ruci? Preuzmi simulirane DEMO GFI-POD datoteke (izmišljeni podaci) i isprobaj pravi uvoz:
+      <span class="row" style="display:inline-flex;margin-top:6px">
+        <button type="button" data-demo-year="2023">DEMO GFI 2023</button>
+        <button type="button" data-demo-year="2024">DEMO GFI 2024</button>
+        <button type="button" data-demo-year="2025">DEMO GFI 2025</button>
+      </span>
+      <span id="dlMsg"></span>
+    </div>
+    <p class="small muted" style="margin-bottom:4px">Učitani podaci automatski se spremaju samo u ovom pregledniku (lokalno, ne šalju se nikamo), kako bi se analiza mogla nastaviti kasnije. Spremljena je uvijek samo jedna analiza; DEMO se ne sprema. Brisanje: „Nova analiza“ ili „Obriši sve spremljene podatke“ na dnu stranice.</p>
+    <p class="small muted" id="storeLine" style="margin-bottom:0"></p>
+  </section>
+
+  <section class="panel hidden" id="check">
+    <h2>Provjera učitanih podataka</h2>
+    <p class="small muted">Provjeri iznose prije analize; svaki možeš ispraviti. Ispod iznosa piše iz koje je AOP pozicije preuzet. „prazno = 0 (zbroj)“ znači da je polje u obrascu prazno, a zbroj nadređene pozicije potvrđuje da je 0. Žuto označena polja nisu potvrđena i neće se računati kao 0 dok ih ne upišeš ili potvrdiš.</p>
+    <ul class="warns" id="warns"></ul>
+    <details id="dataBox" open><summary class="small" style="cursor:pointer;color:var(--accent);font-weight:600;margin-bottom:6px">Tablica učitanih podataka</summary><div class="tblwrap"><table class="data" id="dataTbl"></table></div></details>
+    <div class="row" style="margin-top:14px">
+      <button type="button" class="primary" id="btnAnalyze2">Analiziraj poslovanje</button>
+      <button type="button" id="btnZero" class="hidden">Nepotvrđena prazna polja postavi na 0</button>
+    </div>
+  </section>
+
+  <div id="results" class="hidden">
+    <div class="printhead" id="printHead"></div>
+
+    <section class="panel">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <h2 id="rFirma" style="font-size:1.35rem"></h2>
+          <div class="muted small" id="rMeta"></div>
+        </div>
+        <div class="row noprint">
+          <button type="button" id="btnPrint">Ispis / PDF</button>
+          <button type="button" id="btnSave">Spremi analizu (.json)</button>
+          <button type="button" id="btnNew">Nova analiza</button>
+        </div>
+      </div>
+      <div class="verdict" style="margin-top:16px">
+        <div class="lamp" aria-hidden="true"><span id="lr"></span><span id="ly"></span><span id="lg"></span></div>
+        <div>
+          <div class="vtitle" id="vTitle"></div>
+          <div class="score" id="vScore"></div>
+          <p class="vdesc" id="vDesc"></p>
+          <ul class="rules" id="vRules"></ul>
+        </div>
+      </div>
+      <div class="areas" id="areas"></div>
+    </section>
+
+    <section class="panel">
+      <h2 id="chartsH">Tri godine u brojkama</h2>
+      <div class="charts" id="charts"></div>
+      <h3>Prepoznati obrasci</h3>
+      <div class="chips" id="patterns"></div>
+    </section>
+
+    <section class="panel" id="fcPanel">
+      <h2>Što možemo očekivati</h2>
+      <p class="small muted" id="fcIntro"></p>
+      <details class="f noprint" id="fcDetails"><summary>Prilagodi pretpostavke</summary>
+        <div class="sliders">
+          <label>Rast poslovnih prihoda <b id="sgV"></b><input type="range" id="sg" min="-30" max="40" step="0.5"></label>
+          <label>Promjena udjela materijalnih troškova (p.b.) <b id="sdmV"></b><input type="range" id="sdm" min="-5" max="5" step="0.1"></label>
+          <label>Rast troškova osoblja <b id="sgoV"></b><input type="range" id="sgo" min="-20" max="40" step="0.5"></label>
+          <label>Promjena financijskih rashoda <b id="sgkV"></b><input type="range" id="sgk" min="-50" max="100" step="5"></label>
+        </div>
+        <button type="button" id="fcReset">Vrati izračunate pretpostavke</button>
+      </details>
+      <div class="tblwrap" style="margin-top:10px"><table class="sc" id="scTbl"></table></div>
+      <div class="chart" id="fcChart" style="max-width:620px;margin-top:12px"></div>
+      <p class="small muted">Scenariji su ilustrativne procjene na temelju pretpostavki, a ne predviđanje. Povoljni scenarij: rast prihoda +5 p.b. i udio materijalnih troškova −1 p.b. u odnosu na osnovni. Nepovoljni: rast prihoda −15 p.b., materijalni troškovi +1,5 p.b., troškovi osoblja +5 p.b., financijski rashodi +30 %.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Financijska dijagnoza</h2>
+      <div class="diag" id="diag"></div>
+    </section>
+
+    <section class="panel only-detail">
+      <h2>Pokazatelji po godinama</h2>
+      <div class="tblwrap"><table class="data" id="indTbl"></table></div>
+    </section>
+
+    <section class="panel only-detail">
+      <h2>Kako je izračunata ocjena</h2>
+      <p class="small muted">Ponderi: profitabilnost 25 %, likvidnost 30 %, zaduženost i kapital 25 %, trend 20 %. Svaki pokazatelj boduje se linearno između dvije granice (0 do 100), a ocjena područja je prosjek njegovih pokazatelja. Ponderi i granice su početna projektna pretpostavka, a ne službeni model. Zelena: 65 i više, žuta: 45 do 64, crvena: ispod 45, uz posebna pravila iznad.</p>
+      <div class="tblwrap"><table class="data" id="scoreTbl"></table></div>
+      <h3>Dodatna provjera: Altman Z'' (neproizvodne tvrtke)</h3>
+      <div class="tblwrap"><table class="data" id="altTbl" style="min-width:300px"></table></div>
+    </section>
+
+    <section class="panel only-detail hidden" id="testPanel">
+      <h2>Kontrola DEMO izračuna</h2>
+      <p class="small muted">Očekivani rezultati izračunati su neovisno (zasebnim programom, iz istih izmišljenih podataka). Aplikacija ih ovdje uspoređuje sa svojim izračunom.</p>
+      <div id="testSum"></div>
+      <details class="f"><summary>Prikaži sve provjere</summary><div class="tblwrap"><table class="data" id="testTbl"></table></div></details>
+    </section>
+
+    <section class="panel small muted">
+      <b>Ograničenja analize.</b> Analiza je informativna i ne zamjenjuje reviziju, stručnu financijsku procjenu, kreditnu analizu ni savjetovanje ovlaštenih stručnjaka. Godišnji izvještaji prikazuju prošle rezultate i stanje na određeni datum; sami po sebi ne dokazuju trenutačnu solventnost, urednost naplate ni buduće poslovne događaje. Ukupne obveze u pokazateljima su dugoročne i kratkoročne obveze, bez rezerviranja i odgođenog plaćanja troškova.
+    </section>
+  </div>
+
+</main>
+
+<footer class="obr-podnozje noprint" role="contentinfo">
+  <div class="obr-pod-in">
+    <div class="obr-pod-l"><strong>RetroAppLab Tools</strong><small>Sve se obrađuje u ovom pregledniku. Izvještaji se nikamo ne šalju.</small><button type="button" id="btnWipe" class="noprint">Obriši sve spremljene podatke</button></div>
+    <nav class="obr-pod-s" aria-label="RetroAppLab"><a href="/">RetroAppLab</a> · <a href="/kontakt.html">Kontakt</a> · <a href="/privatnost.html">Pravila privatnosti</a></nav>
+    <div class="obr-pod-d"><a href="mailto:kontakt@retroapplab.com">kontakt@retroapplab.com</a><small>Financijska dijagnoza, verzija 2026-11-09</small></div>
+  </div>
+</footer>
+
+<script>
+/* ===== Financijska dijagnoza – jezgra v2 (bez DOM-a) ===== */
+const FD = (function(){
+"use strict";
+const HRK = 7.5345;
+const TOL = 0.15; // FINA dopušta 0,14 € zbog zaokruživanja
+
+/* ---------- stavke ---------- */
+// s: B bilanca, R RDG; re: naziv (normalizirano); after/beforeRe: položaj u obrascu; sum: zbroj više redaka; hidden: ne prikazuje se
+const FIELDS = [
+  {k:'upk',  s:'B', g:'Aktiva', l:'Potraživanja za upisani a neuplaćeni kapital', re:/^potrazivanja za upisani a neuplaceni kapital/, hidden:true},
+  {k:'dug',  s:'B', g:'Aktiva', l:'Dugotrajna imovina', re:/^dugotrajna imovina/},
+  {k:'kti',  s:'B', g:'Aktiva', l:'Kratkotrajna imovina', re:/^kratkotrajna imovina/},
+  {k:'zal',  s:'B', g:'Aktiva', l:'Zalihe', re:/^zalihe/, after:'kti'},
+  {k:'pot',  s:'B', g:'Aktiva', l:'Kratkoročna potraživanja', re:/^potrazivanja$/, after:'kti'},
+  {k:'kup',  s:'B', g:'Aktiva', l:'od toga: potraživanja od kupaca', re:/^potrazivanja od kupaca/, after:'kti'},
+  {k:'kfi',  s:'B', g:'Aktiva', l:'Kratkotrajna financijska imovina', re:/^kratkotrajna financijska imovina/},
+  {k:'nov',  s:'B', g:'Aktiva', l:'Novac u banci i blagajni', re:/^novac u banci i blagajn/},
+  {k:'ppti', s:'B', g:'Aktiva', l:'Plaćeni troškovi budućeg razdoblja', re:/^placeni troskovi buduceg razdoblja/},
+  {k:'akt',  s:'B', g:'Aktiva', l:'Ukupno aktiva', re:/^ukupno\s*[-–]?\s*aktiva/},
+  {k:'kap',  s:'B', g:'Pasiva', l:'Kapital i rezerve', re:/^kapital i rezerve/},
+  {k:'tk',   s:'B', g:'Pasiva', l:'Temeljni (upisani) kapital', re:/^temeljni \(?upisani\)? kapital/},
+  {k:'zad',  s:'B', g:'Pasiva', l:'Zadržana dobit / preneseni gubitak', re:/^zadrzana dobit ili preneseni gubitak/},
+  {k:'dg',   s:'B', g:'Pasiva', l:'Dobit / gubitak poslovne godine', re:/^dobit ili gubitak poslovne godine/},
+  {k:'rez',  s:'B', g:'Pasiva', l:'Rezerviranja', re:/^rezerviranja/, after:'kap'},
+  {k:'dob',  s:'B', g:'Pasiva', l:'Dugoročne obveze', re:/^dugorocne obveze/},
+  {k:'dobBanke', s:'B', g:'Pasiva', l:'od toga: prema bankama (dugoročne)', re:/^obveze prema bankama i drugim financijskim institucijama/, after:'dob', beforeRe:/^kratkorocne obveze/},
+  {k:'dobZajm',  s:'B', g:'Pasiva', l:'od toga: zajmovi (dugoročni)', re:/^obveze za zajmove, depozite i slicno/, sum:true, after:'dob', beforeRe:/^kratkorocne obveze/},
+  {k:'kob',  s:'B', g:'Pasiva', l:'Kratkoročne obveze', re:/^kratkorocne obveze/},
+  {k:'kobBanke', s:'B', g:'Pasiva', l:'od toga: prema bankama (kratkoročne)', re:/^obveze prema bankama i drugim financijskim institucijama/, after:'kob', beforeRe:/^odgodeno placanje troskova/},
+  {k:'kobZajm',  s:'B', g:'Pasiva', l:'od toga: zajmovi (kratkoročni)', re:/^obveze za zajmove, depozite i slicno/, sum:true, after:'kob', beforeRe:/^odgodeno placanje troskova/},
+  {k:'dobav',s:'B', g:'Pasiva', l:'od toga: prema dobavljačima', re:/^obveze prema dobavljacima/, after:'kob', beforeRe:/^odgodeno placanje troskova/},
+  {k:'opt',  s:'B', g:'Pasiva', l:'Odgođeno plaćanje troškova i PBR', re:/^odgodeno placanje troskova i prihod/},
+  {k:'pas',  s:'B', g:'Pasiva', l:'Ukupno pasiva', re:/^ukupno\s*[-–]?\s*pasiva/},
+  {k:'ppr',  s:'R', g:'Račun dobiti i gubitka', l:'Poslovni prihodi', re:/^poslovni prihodi/},
+  {k:'prod', s:'R', g:'Račun dobiti i gubitka', l:'od toga: prihodi od prodaje', re:/^prihodi od prodaje/, sum:true, after:'ppr', beforeRe:/^poslovni rashodi/},
+  {k:'prs',  s:'R', g:'Račun dobiti i gubitka', l:'Poslovni rashodi', re:/^poslovni rashodi/},
+  {k:'mat',  s:'R', g:'Račun dobiti i gubitka', l:'Materijalni troškovi', re:/^materijalni troskovi/, after:'prs', beforeRe:/^financijski prihodi/},
+  {k:'osob', s:'R', g:'Račun dobiti i gubitka', l:'Troškovi osoblja', re:/^troskovi osoblja/, after:'prs', beforeRe:/^financijski prihodi/},
+  {k:'amo',  s:'R', g:'Račun dobiti i gubitka', l:'Amortizacija', re:/^amortizacija/, after:'prs', beforeRe:/^financijski prihodi/},
+  {k:'fpr',  s:'R', g:'Račun dobiti i gubitka', l:'Financijski prihodi', re:/^financijski prihodi/},
+  {k:'frs',  s:'R', g:'Račun dobiti i gubitka', l:'Financijski rashodi', re:/^financijski rashodi/},
+  {k:'kam',  s:'R', g:'Račun dobiti i gubitka', l:'od toga: kamate', re:/^rashodi s osnove kamata/, sum:true, after:'frs', beforeRe:/^(udio u |ukupni prihodi)/},
+  {k:'upr',  s:'R', g:'Račun dobiti i gubitka', l:'Ukupni prihodi', re:/^ukupni prihodi/},
+  {k:'urs',  s:'R', g:'Račun dobiti i gubitka', l:'Ukupni rashodi', re:/^ukupni rashodi/},
+  {k:'dpo',  s:'R', g:'Račun dobiti i gubitka', l:'Dobit / gubitak prije oporezivanja', re:/^dobit ili gubitak prije oporezivanja/},
+  {k:'por',  s:'R', g:'Račun dobiti i gubitka', l:'Porez na dobit', re:/^porez na dobit/},
+  {k:'neto', s:'R', g:'Račun dobiti i gubitka', l:'Dobit / gubitak razdoblja', re:/^dobit ili gubitak razdoblja/}
+];
+const FK = Object.fromEntries(FIELDS.map(f=>[f.k,f]));
+// očekivane AOP oznake u obrascu GFI-POD od 2024. (Excel 5.x za 2024., 6.x za 2025.)
+const AOP24 = {upk:'1',dug:'2',kti:'37',zal:'38',pot:'46',kup:'49',kfi:'53',nov:'63',ppti:'64',akt:'65',kap:'67',tk:'68',zad:'84',dg:'87',rez:'91',dob:'98',dobBanke:'104',dobZajm:'100+102+103',kob:'110',kobBanke:'116',kobZajm:'112+114+115',dobav:'118',opt:'125',pas:'126',ppr:'128',prod:'129+130',prs:'134',mat:'136',osob:'140',amo:'144',fpr:'157',frs:'168',kam:'169+171',upr:'180',urs:'181',dpo:'182',por:'185',neto:'186'};
+
+/* ---------- pomoćne ---------- */
+function norm(s){
+  s = String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/\u00a0/g,' ');
+  s = s.replace(/\(aop[^)]*\)/g,' ').replace(/\s+/g,' ').trim();
+  for(let i=0;i<4;i++){
+    const t = s.replace(/^(\(?[a-z]\)|[ivxl]+\.|\d+(\.\d+)*\.?\)?|[a-z]\.)\s*/,'');
+    if(t===s) break; s=t;
+  }
+  return s.replace(/[:*]+$/,'').trim();
+}
+const isNum = v => typeof v==='number' && isFinite(v);
+function toNum(v){
+  if(isNum(v)) return v;
+  if(typeof v==='string'){
+    let s=v.trim().replace(/\s/g,'').replace(/\u2212/g,'-').replace(/€|eur$/i,'');
+    if(!s) return null;
+    if(/^-?[\d.]+,\d+$/.test(s)) s=s.replace(/\./g,'').replace(',','.');
+    else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s=s.replace(/\./g,'');
+    else if(/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s=s.replace(/,/g,'');
+    const n=Number(s); return isFinite(n)?n:null;
+  }
+  return null;
+}
+const dv = (a,b) => (a==null||b==null||b===0) ? null : a/b;
+const add = (...a) => a.some(x=>x==null) ? null : a.reduce((s,x)=>s+x,0);
+const lin = (x,a,b) => x==null ? null : Math.max(0,Math.min(1,(x-a)/(b-a)))*100;
+const avg = l => { l=l.filter(x=>x!=null&&isFinite(x)); return l.length? l.reduce((s,x)=>s+x,0)/l.length : null; };
+const growth = (a,b) => (a==null||b==null||b<=0) ? null : a/b-1; // rast samo od pozitivne osnovice
+function parseDate(v){
+  if(v instanceof Date && !isNaN(v)) return v;
+  if(typeof v==='string'){ const m=v.match(/(\d{1,2})\.\s?(\d{1,2})\.\s?(\d{4})/); if(m) return new Date(+m[3],+m[2]-1,+m[1]); }
+  return null;
+}
+// "(AOP 068 do 070+076+077+084+087+090)" -> [[+1,68],[+1,69],...]
+function parseFormula(label){
+  const m = String(label||'').match(/\(\s*AOP\s*([0-9\s+\-dot]+)\)/i);
+  if(!m) return null;
+  const s = m[1].replace(/\s+/g,' ').trim();
+  const terms=[]; let sign=1;
+  const parts = s.split(/([+\-])/).map(x=>x.trim()).filter(Boolean);
+  for(const p of parts){
+    if(p==='+'){sign=1;continue;} if(p==='-'){sign=-1;continue;}
+    const r = p.match(/^(\d+)\s*do\s*(\d+)$/i);
+    if(r){ for(let a=+r[1];a<=+r[2];a++) terms.push([sign,a]); }
+    else if(/^\d+$/.test(p)) terms.push([sign,+p]);
+    else return null;
+  }
+  return terms.length>1 ? terms : null;
+}
+
+/* ---------- uvoz jednog GFI-POD workbooka ---------- */
+function parseWorkbook(wb, XLSX, fileName){
+  const warn=[], info=[];
+  const sheets = wb.SheetNames.map(n=>({name:n, rows:XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:null,blankrows:true})}));
+  const dstr = d => `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+  const rowText = r => (r||[]).map(c=> c instanceof Date && !isNaN(c) ? dstr(c) : typeof c==='string' ? c : '').filter(Boolean).join(' ');
+  const findByContent = re => sheets.find(s=>s.rows.slice(0,400).some(r=>(r||[]).some(c=>typeof c==='string' && re.test(norm(c)))));
+  const shB = sheets.find(s=>/^bilanca/i.test(s.name)) || findByContent(/^ukupno\s*[-–]?\s*aktiva/);
+  const shR = sheets.find(s=>/^rdg|racun dobiti|račun dobiti/i.test(s.name)) || findByContent(/^poslovni prihodi/);
+  if(!shB) warn.push('U datoteci nije pronađen list s bilancom.');
+  if(!shR) warn.push('U datoteci nije pronađen list s računom dobiti i gubitka.');
+
+  // zaglavlja: "Obveznik: OIB; naziv", razdoblje, valuta
+  let oib=null, firma=null, from=null, to=null, hdrText='';
+  for(const sh of [shB,shR].filter(Boolean)){
+    sh.rows.slice(0,15).forEach(r=>{
+      const t=rowText(r); hdrText+=' '+t;
+      const m=t.match(/Obveznik:\s*(\d{11})\s*;\s*(.+?)(?:\s+Iznosi u\b.*)?$/i);
+      if(m && !oib){ oib=m[1]; firma=m[2].trim(); }
+      const p=t.match(/razdoblj[eu]\s+(?:od\s+)?(\d{1,2}\.\s?\d{1,2}\.\s?\d{4})\.?\s*do\s+(\d{1,2}\.\s?\d{1,2}\.\s?\d{4})/i);
+      if(p && !from){ from=parseDate(p[1]); to=parseDate(p[2]); }
+      const b=t.match(/stanje na dan\s+(\d{1,2}\.\s?\d{1,2}\.\s?\d{4})/i);
+      if(b && !to) to=parseDate(b[1]);
+    });
+  }
+  const ref = sheets.find(s=>/ref|opci|opći/i.test(s.name)) || sheets[0];
+  if(!oib || !firma || !to){
+    const dates=[];
+    ref.rows.slice(0,80).forEach((row,ri)=>{
+      (row||[]).forEach((c,ci)=>{
+        const t=norm(c);
+        if(!firma && /^naziv( obveznika| poduzetnika| subjekta)?$/.test(t)){ const v=row.slice(ci+1).find(x=>typeof x==='string'&&x.trim().length>1); if(v) firma=v.trim(); }
+        if(!oib && /^oib( subjekta| obveznika)?$/.test(t)){ const v=row.slice(ci+1).find(x=>/^\d{11}$/.test(String(x==null?'':x).trim())); if(v!=null) oib=String(v).trim(); }
+        const d=parseDate(c); if(d) dates.push(d);
+      });
+    });
+    if(!oib){ for(const r of ref.rows.slice(0,80)){ const v=(r||[]).find(x=>/^\d{11}$/.test(String(x==null?'':x).trim())); if(v!=null){ oib=String(v).trim(); break; } } }
+    dates.sort((a,b)=>a-b);
+    if(!to && dates.length){ from=dates[0]; to=dates[dates.length-1]; }
+  }
+  let yearSrc = to ? 'datum u zaglavlju' : null;
+  if(!to){ // datumi u zaglavljima listova kao zasebne ćelije
+    for(const sh of [shR,shB].filter(Boolean)){ for(const r of sh.rows.slice(0,15)){ for(const c of (r||[])){ const d=parseDate(c); if(d && (!to || d>to)){ to=d; yearSrc='datum u zaglavlju lista'; } } } if(to) break; }
+  }
+  let year = to ? to.getFullYear() : null;
+  if(!year){ // "Godina: 2025" na bilo kojem listu
+    for(const sh of sheets){ for(const r of sh.rows.slice(0,60)){ const t=rowText(r); const m=t.match(/godin[ae]\s*:?\s*(20[1-4]\d)\b/i) || t.match(/31\.\s?12\.\s?(20[1-4]\d)/); if(m){ year=+m[1]; yearSrc='oznaka godine u datoteci'; break; } (r||[]).forEach((c,i)=>{ if(!year && /^godina:?$/i.test(String(c||'').trim())){ const v=(r||[]).slice(i+1).find(x=>/^20[1-4]\d$/.test(String(x==null?'':x).trim())); if(v!=null){ year=+v; yearSrc='polje Godina'; } } }); if(year) break; } if(year) break; }
+  }
+  const months = (from&&to) ? (to.getFullYear()-from.getFullYear())*12 + (to.getMonth()-from.getMonth()) + 1 : null;
+  const nh = norm(hdrText);
+  let currency = /\bkun/.test(nh) ? 'HRK' : /\beur/.test(nh) ? 'EUR' : (year!=null && year<=2022 ? 'HRK' : 'EUR');
+  const currencyAssumed = !/\bkun|\beur/.test(nh);
+
+  // čitanje lista
+  function readSheet(sh, tag){
+    if(!sh) return {rows:[], ok:false};
+    let hdr=-1, aopCol=-1, prevCol=-1, curCol=-1;
+    for(let i=0;i<Math.min(40,sh.rows.length) && hdr<0;i++){
+      (sh.rows[i]||[]).forEach((c,ci)=>{ if(aopCol<0 && /^aop( oznaka)?$/.test(norm(c))){ aopCol=ci; hdr=i; } });
+    }
+    if(hdr>=0){
+      // samo kratke ćelije zaglavlja (u FINA obrascu desno postoje dugi tekstovi kontrola koji također spominju AOP i godine)
+      for(let i=hdr;i<=Math.min(hdr+2,sh.rows.length-1);i++) (sh.rows[i]||[]).forEach((c,ci)=>{ const t=norm(c); if(t.length>40) return; if(prevCol<0 && /^(prethodn|isto razdoblje prethodn)/.test(t)) prevCol=ci; if(curCol<0 && /^tekuc/.test(t)) curCol=ci; });
+    }
+    if(aopCol<0 || prevCol<0 || curCol<0) warn.push(`List ${sh.name}: zaglavlje stupaca (AOP, prethodna, tekuća godina) nije prepoznato.`);
+    const cell = v => { if(v==null || (typeof v==='string' && !v.trim())) return {v:null,blank:true}; const n=toNum(v); return n==null? {v:null,blank:true,text:true} : {v:n,blank:false}; };
+    const rows=[];
+    sh.rows.forEach((row,ri)=>{
+      if(!row || ri<=hdr) return;
+      const lim = aopCol>=0 ? aopCol : row.length;
+      const label = row.slice(0,lim).filter(x=>typeof x==='string').join(' ').trim();
+      if(!label) return;
+      let aop=null;
+      if(aopCol>=0){ const a=row[aopCol]; if(a==null || !/^\d{1,4}$/.test(String(a).trim())) return; aop=+String(a).trim(); }
+      if(prevCol<0||curCol<0) return;
+      const nl=norm(label);
+      rows.push({label, n:nl, aop, f:parseFormula(label), cond:/^(dobit|gubitak) (prije oporezivanja|razdoblja|prekinutog)/.test(nl), prev:cell(row[prevCol]), cur:cell(row[curCol])});
+    });
+    return {rows, ok: aopCol>=0 && prevCol>=0 && curCol>=0};
+  }
+  const S = {B:readSheet(shB,'B'), R:readSheet(shR,'R')};
+
+  // provjera formula iz naziva pozicija: potvrđuje prazna polja kao 0 i hvata neslaganja
+  const confirmed = {B:{prev:new Set(),cur:new Set()}, R:{prev:new Set(),cur:new Set()}};
+  const mismatch = [];
+  for(const t of ['B','R']){
+    const byAop = {}; S[t].rows.forEach(r=>{ if(r.aop!=null) byAop[r.aop]=r; });
+    for(const col of ['prev','cur']){
+      for(const r of S[t].rows){
+        if(!r.f || r[col].blank) continue;
+        if((t==='B' && r.aop>127) || (t==='R' && r.aop>188)) continue; // prekinuto poslovanje, sveobuhvatna dobit: popunjava samo dio obveznika
+        let sum=0, ok=true; const blanks=[];
+        for(const [sg,a] of r.f){ const c=byAop[a]; if(!c){ ok=false; break; } if(c[col].blank) blanks.push(a); else sum+=sg*c[col].v; }
+        if(!ok) continue;
+        const target = r.cond ? Math.max(0,sum) : sum;   // retci "1. Dobit…/2. Gubitak…" su samo pozitivni dio
+        if(Math.abs(r[col].v-target)<=TOL){ if(!r.cond) blanks.forEach(a=>confirmed[t][col].add(a)); }
+        else mismatch.push({t, col, aop:r.aop, label:r.label, diff:r[col].v-target});
+      }
+    }
+  }
+
+  // mapiranje stavki
+  const found={}, pos={B:{},R:{}};
+  for(const f of FIELDS){
+    const list=S[f.s].rows; let start=0, end=list.length;
+    if(f.after){ if(pos[f.s][f.after]==null) continue; start=pos[f.s][f.after]+1; }
+    if(f.beforeRe){ const i=list.findIndex((r,ix)=>ix>=start && f.beforeRe.test(r.n)); if(i>=0) end=i; }
+    const hits=[];
+    for(let i=start;i<end;i++){ if(f.re.test(list[i].n)){ hits.push(i); if(!f.sum) break; } }
+    if(!hits.length) continue;
+    pos[f.s][f.k]=hits[0];
+    const res = {};
+    for(const col of ['prev','cur']){
+      let s=0, anyVal=false, unresolved=false, conf=false;
+      hits.forEach(h=>{ const r=list[h]; if(!r[col].blank){ s+=r[col].v; anyVal=true; } else if(r.aop!=null && confirmed[f.s][col].has(r.aop)) conf=true; else unresolved=true; });
+      if(unresolved) res[col]={v:null, blank:true, status:'prazno'};
+      else res[col]={v: anyVal? s : 0, blank:!anyVal, status: anyVal ? 'ok' : (conf?'potvrđeno 0':'prazno')};
+      if(res[col].status==='prazno' && !unresolved) res[col]={v:null,blank:true,status:'prazno'};
+    }
+    found[f.k]={aop: hits.map(h=>list[h].aop).filter(a=>a!=null).join('+'), label: hits.map(h=>list[h].label).join(' + '), prev:res.prev, cur:res.cur};
+  }
+
+  // verzija obrasca i provjera AOP oznaka
+  let version='nepoznata';
+  if(found.akt && found.pas && found.neto && found.akt.aop==='65' && found.pas.aop==='126' && found.neto.aop==='186') version='2024+';
+  else if(found.akt && found.pas) version='stariji';
+  const aopIssues=[];
+  if(version==='2024+'){
+    for(const k in found){ if(AOP24[k] && found[k].aop!==AOP24[k]) aopIssues.push(`${FK[k].l}: pronađeno na AOP ${found[k].aop}, očekivano ${AOP24[k]}`); }
+    if(aopIssues.length) warn.push('Neke stavke nisu na očekivanim AOP oznakama obrasca 2024+: '+aopIssues.join('; ')+'.');
+  } else if(version==='stariji'){
+    info.push('Obrazac nije u strukturi 2024+ (vjerojatno verzija za 2023. ili ranije). Stavke su prepoznate po nazivima pozicija; AOP oznake za tu verziju nisu dodatno provjerene.');
+    if(year>=2024) warn.push(`Izvještaj je za ${year}., a struktura ne odgovara FINA-inu obrascu od 2024. Provjeri datoteku.`);
+  }
+  if(mismatch.length) warn.push(`Zbrojevi u obrascu se ne slažu na ${mismatch.length} mjesta (npr. AOP ${String(mismatch[0].aop).padStart(3,'0')}, razlika ${mismatch[0].diff.toFixed(2)} €).`);
+
+  const hrk = currency==='HRK';
+  if(hrk) info.push(`Iznosi su u kunama${currencyAssumed?' (zaključeno prema godini izvještaja)':''}; preračunati su u eure po fiksnom tečaju ${String(HRK).replace('.',',')}.`);
+  if(months && months!==12) warn.push(`Izvještajno razdoblje traje ${months} mjeseci, a ne 12. Godišnji iznosi nisu izravno usporedivi.`);
+  const recs=[];
+  for(const col of ['cur','prev']){
+    const vals={};
+    for(const k in found){
+      const c=found[k][col];
+      vals[k] = {v: c.v==null?null:(hrk? Math.round(c.v/HRK*100)/100 : c.v), blank:c.blank, status:c.status, aop:found[k].aop, label:found[k].label,
+        src:`${fileName} – ${col==='cur'?'tekuća':'prethodna'} godina`};
+    }
+    recs.push({year: year==null? null : (col==='cur'? year : year-1), col, months: col==='cur'?months:null, vals, file:fileName});
+  }
+  const missing = FIELDS.filter(f=>!found[f.k] && !f.hidden).map(f=>f.l);
+  const diag = [
+    `Listovi u datoteci: ${sheets.map(s=>s.name).join(', ')}`,
+    `Bilanca: ${shB?`list „${shB.name}“, ${S.B.rows.length} redaka s AOP oznakom${S.B.ok?'':' (zaglavlje stupaca nije prepoznato)'}`:'nije pronađena'}`,
+    `RDG: ${shR?`list „${shR.name}“, ${S.R.rows.length} redaka s AOP oznakom${S.R.ok?'':' (zaglavlje stupaca nije prepoznato)'}`:'nije pronađen'}`,
+    `Godina: ${year?year+' ('+yearSrc+')':'nije pronađena'} · OIB: ${oib||'nije pronađen'} · naziv: ${firma||'nije pronađen'}`,
+    `Prepoznato stavki: ${Object.keys(found).length} od ${FIELDS.length}`
+  ];
+  return {fileName, firma, oib, year, from, to, months, currency, version, recs, warn, info, missing, mismatch, aopIssues, diag,
+    foundCount:Object.keys(found).length, structOk: S.B.ok && S.R.ok};
+}
+
+/* ---------- spajanje ---------- */
+// 'same' samo kad oba izvještaja imaju isti OIB; 'different' kad su OIB-i različiti; inače 'unknown' (traži potvrdu korisnika)
+function sameCompany(a,b){
+  if(a.oib && b.oib) return a.oib===b.oib ? 'same' : 'different';
+  return 'unknown';
+}
+function merge(parsed){
+  const warn=[], conflicts=[];
+  const years={};
+  const order=[...parsed].sort((a,b)=>(b.year||0)-(a.year||0));
+  for(const p of order){
+    for(const r of p.recs){
+      if(r.year==null) continue;
+      const Y = years[r.year] ||= {vals:{}, alt:{}, months:null, sources:[]};
+      if(!Y.sources.includes(p.fileName)) Y.sources.push(p.fileName);
+      if(r.col==='cur' && r.months) Y.months=r.months;
+      for(const k in r.vals){
+        const nv={...r.vals[k], orig:r.col==='cur'}; const cur=Y.vals[k];
+        if(!cur){ Y.vals[k]=nv; continue; }
+        if(cur.v==null && nv.v!=null){ Y.vals[k]=nv; continue; }
+        if(nv.v==null) continue;
+        if(Math.abs(cur.v-nv.v)>1){
+          (Y.alt[k] ||= [cur]).push(nv);
+          if(nv.orig && !cur.orig) Y.vals[k]=nv; // prednost: izvorni podatak (tekuća godina tog izvještaja)
+        } else if(nv.orig && !cur.orig) Y.vals[k]=nv;
+      }
+    }
+  }
+  for(const y in years) for(const k in years[y].alt) conflicts.push({year:+y,k,options:years[y].alt[k]});
+  if(conflicts.length) warn.push(`Za ${conflicts.length} ${conflicts.length===1?'stavku':'stavki'} ista godina ima različite iznose u dva izvještaja (npr. naknadno ispravljen podatak). Zadano je uzet izvorni iznos; po potrebi odaberi drugi u tablici (označeno ⚠).`);
+  return {firma: parsed.find(p=>p.firma)?.firma||null, oib: parsed.find(p=>p.oib)?.oib||null, years, conflicts, warn, demo:false};
+}
+
+function val(ds,y,k){ const Y=ds.years[y]; if(!Y) return null; const c=Y.vals[k]; return c==null||c.v==null? null : c.v; }
+function yearData(ds,y){ const o={}; FIELDS.forEach(f=>o[f.k]=val(ds,y,f.k)); return o; }
+
+/* ---------- provjere usklađenosti ---------- */
+function validate(ds){
+  const out=[];
+  const ys=Object.keys(ds.years).map(Number).sort((a,b)=>a-b);
+  const near=(a,b)=>Math.abs(a-b)<=TOL;
+  for(const y of ys){
+    const d=yearData(ds,y), e=(lvl,t)=>out.push({y,lvl,t});
+    if(d.akt!=null && d.pas!=null && !near(d.akt,d.pas)) e('err',`Aktiva (${fE(d.akt)}) i pasiva (${fE(d.pas)}) se ne slažu.`);
+    if([d.zal,d.pot,d.kfi,d.nov,d.kti].every(x=>x!=null) && !near(d.kti,d.zal+d.pot+d.kfi+d.nov)) e('err','Kratkotrajna imovina nije jednaka zbroju zaliha, potraživanja, financijske imovine i novca.');
+    if([d.kap,d.rez,d.dob,d.kob,d.opt,d.pas].every(x=>x!=null) && !near(d.pas,d.kap+d.rez+d.dob+d.kob+d.opt)) e('err','Ukupna pasiva nije jednaka zbroju kapitala, rezerviranja, obveza i odgođenih troškova.');
+    if([d.upr,d.urs,d.dpo].every(x=>x!=null) && !near(d.upr-d.urs,d.dpo)) e('err','Ukupni prihodi − ukupni rashodi ne daju dobit prije oporezivanja.');
+    if([d.dpo,d.por,d.neto].every(x=>x!=null) && !near(d.dpo-d.por,d.neto)) e('err','Dobit prije oporezivanja − porez ne daje dobit razdoblja.');
+    if(d.dg!=null && d.neto!=null && !near(d.dg,d.neto)) e('err','Dobit u bilanci (AOP 087) i dobit u RDG-u (AOP 186) se razlikuju.');
+    if(d.ppr!=null && d.prod!=null && d.prod>d.ppr+TOL) e('warn','Prihodi od prodaje veći su od ukupnih poslovnih prihoda.');
+    if([d.prs,d.mat,d.osob,d.amo].every(x=>x!=null) && d.mat+d.osob+d.amo>d.prs+TOL) e('warn','Materijalni troškovi, troškovi osoblja i amortizacija zajedno su veći od poslovnih rashoda.');
+    if(d.kup!=null && d.pot!=null && d.kup>d.pot+TOL) e('warn','Potraživanja od kupaca veća su od ukupnih kratkoročnih potraživanja.');
+    if(d.kob!=null && [d.kobBanke,d.kobZajm,d.dobav].every(x=>x!=null) && d.kobBanke+d.kobZajm+d.dobav>d.kob+TOL) e('warn','Dijelovi kratkoročnih obveza zajedno su veći od ukupnih kratkoročnih obveza.');
+    for(const k of ['akt','kti','kob','dob','ppr','prs','upr','urs','nov','pot','zal'] ) if(d[k]!=null && d[k]<-TOL) e('err',`${FK[k].l} ne može biti negativna stavka.`);
+    if(d.kti!=null && d.akt!=null && d.kti>d.akt+TOL) e('err','Kratkotrajna imovina veća je od ukupne aktive.');
+    const m=ds.years[y].months; if(m && m!==12) e('warn',`Razdoblje od ${m} mjeseci; usporedba s cijelim godinama je ograničena.`);
+    const blanks=FIELDS.filter(f=>!f.hidden && ds.years[y].vals[f.k] && ds.years[y].vals[f.k].v==null).map(f=>f.l);
+    if(blanks.length) e('warn',`Prazna polja koja nisu potvrđena zbrojem: ${blanks.join(', ')}. Upiši iznos ili potvrdi 0.`);
+  }
+  return out;
+}
+
+/* ---------- odabir godina ---------- */
+function pickYears(ds){
+  const ys = Object.keys(ds.years).map(Number).sort((a,b)=>a-b);
+  const full = ys.filter(y=>val(ds,y,'ppr')!=null && val(ds,y,'akt')!=null);
+  const last3 = full.slice(-3);
+  const seq=[]; for(let i=last3.length-1;i>=0;i--){ if(!seq.length || seq[0]-last3[i]===1) seq.unshift(last3[i]); else break; }
+  const opening = seq.length && ds.years[seq[0]-1] && val(ds,seq[0]-1,'akt')!=null ? seq[0]-1 : null;
+  return {years:seq, opening};
+}
+
+/* ---------- pokazatelji ---------- */
+function indicators(d,p,y){
+  const r={y};
+  r.EBIT = (d.ppr!=null && d.prs!=null) ? d.ppr-d.prs : null;           // operativni rezultat
+  r.EBITDA = add(r.EBIT, d.amo);
+  r.rastPpr = p? growth(d.ppr,p.ppr) : null;
+  r.rastUpr = p? growth(d.upr,p.upr) : null;
+  r.netoMarza = (d.upr!=null && d.upr>0) ? dv(d.neto,d.upr) : null;
+  r.opMarza = (d.ppr!=null && d.ppr>0) ? dv(r.EBIT,d.ppr) : null;
+  const avgA = p && p.akt!=null && d.akt!=null ? (d.akt+p.akt)/2 : null;
+  const avgK = p && p.kap!=null && d.kap!=null ? (d.kap+p.kap)/2 : null;
+  r.ROA = (avgA!=null && avgA>0) ? dv(d.neto,avgA) : null;
+  r.negKap = d.kap!=null && d.kap<=0;
+  r.ROE = (avgK!=null && avgK>0 && !r.negKap && !(p&&p.kap<=0)) ? dv(d.neto,avgK) : null;
+  r.TL = d.kob>0 ? dv(d.kti,d.kob) : null;
+  r.UL = d.kob>0 ? dv(add(d.nov,d.kfi,d.pot), d.kob) : null;
+  r.NL = d.kob>0 ? dv(d.nov,d.kob) : null;
+  r.NOK = add(d.kti, d.kob==null?null:-d.kob);
+  r.obveze = add(d.dob,d.kob);
+  r.udioObveza = (d.akt>0) ? dv(r.obveze,d.akt) : null;
+  r.obvKap = (d.kap!=null && d.kap>0) ? dv(r.obveze,d.kap) : null;
+  r.udioKap = (d.akt>0) ? dv(d.kap,d.akt) : null;
+  r.finDug = add(d.kobBanke,d.dobBanke,d.kobZajm,d.dobZajm);
+  r.dugEbitda = (r.EBITDA!=null && r.EBITDA>0 && r.finDug!=null) ? r.finDug/r.EBITDA : null;
+  const days = (y%4===0 && y%100!==0) || y%400===0 ? 366 : 365;
+  r.daniNaplate = (p && p.kup!=null && d.kup!=null && d.prod>0) ? ((d.kup+p.kup)/2)/d.prod*days : null;
+  r.rastPot = p? growth(d.pot,p.pot) : null;
+  r.rastKob = p? growth(d.kob,p.kob) : null;
+  r.rastZal = p? growth(d.zal,p.zal) : null;
+  const X1=dv(r.NOK,d.akt), X2=dv(add(d.zad,d.dg),d.akt), X3=dv(r.EBIT,d.akt), X4=(r.obveze>0)?dv(d.kap,r.obveze):null;
+  r.altman = [X1,X2,X3,X4].some(x=>x==null)? null : 6.56*X1+3.26*X2+6.72*X3+1.05*X4;
+  return r;
+}
+
+/* ---------- analiza ---------- */
+const CORE = ['akt','kti','kob','kap','ppr','prs','upr','neto'];
+function analyze(ds){
+  const {years, opening} = pickYears(ds);
+  const A = {years, opening, firma:ds.firma, oib:ds.oib, demo:!!ds.demo, D:{}, I:{}, notes:[], checks:[]};
+  if(!years.length){ A.status='na'; A.missingCore=CORE.map(k=>k); return A; }
+  const all = opening!=null ? [opening,...years] : years;
+  all.forEach(y=>A.D[y]=yearData(ds,y));
+  years.forEach(y=>A.I[y]=indicators(A.D[y], A.D[y-1]||null, y));
+  const vv = validate(ds).filter(c=>all.includes(c.y));
+  A.checks = vv.filter(c=>c.lvl!=='err').map(c=>`${c.y}.: ${c.t}`);
+  A.critical = vv.filter(c=>c.lvl==='err').map(c=>`${c.y}.: ${c.t}`);
+  A.partial = years.length<3;
+  const yN=years[years.length-1], y0=years[0], L=A.I[yN], d=A.D[yN];
+  A.missingCore = CORE.filter(k=>d[k]==null);
+  if(A.missingCore.length){ A.status='na'; return A; }
+  if(A.critical.length){ A.status='blocked'; return A; }
+  if(opening==null) A.notes.push(`Nema početnog stanja bilance za ${y0}., pa ROA, ROE i dani naplate za tu godinu nisu izračunati.`);
+
+  const debtScore = L.dugEbitda!=null ? lin(L.dugEbitda,5,1) : (L.EBITDA!=null && L.EBITDA<=0 && L.finDug!=null ? (L.finDug>0?0:100) : null);
+  const BR = {
+    P:[['Neto profitna marža',L.netoMarza,'%','0 % → 0, 10 % → 100',lin(L.netoMarza,0,.10)],
+       ['Operativna marža',L.opMarza,'%','0 % → 0, 12 % → 100',lin(L.opMarza,0,.12)],
+       ['ROA (prosječna imovina)',L.ROA,'%','0 % → 0, 10 % → 100',lin(L.ROA,0,.10)],
+       ['ROE (prosječni kapital)',L.ROE,'%','0 % → 0, 20 % → 100; kapital ≤ 0 = 0 bodova',L.negKap?0:lin(L.ROE,0,.20)]],
+    L:[['Tekuća likvidnost',L.TL,'x','0,8 → 0, 2,0 → 100',lin(L.TL,.8,2.0)],
+       ['Ubrzana likvidnost',L.UL,'x','0,5 → 0, 1,2 → 100',lin(L.UL,.5,1.2)],
+       ['Novčana likvidnost',L.NL,'x','0,05 → 0, 0,5 → 100',lin(L.NL,.05,.5)],
+       ['Neto obrtni kapital / aktiva',dv(L.NOK,d.akt),'%','−10 % → 0, 20 % → 100',lin(dv(L.NOK,d.akt),-.1,.2)]],
+    Z:[['Udio vlastitog kapitala',L.udioKap,'%','0 % → 0, 50 % → 100',lin(L.udioKap,0,.5)],
+       ['Obveze / kapital',L.obvKap,'x','4 → 0, 1 → 100; kapital ≤ 0 = 0 bodova',L.negKap?0:lin(L.obvKap,4,1)],
+       ['Krediti i zajmovi / EBITDA',L.dugEbitda,'x','5 → 0, 1 → 100; EBITDA ≤ 0 uz dug = 0',debtScore]],
+    T:[]
+  };
+  if(d.kob===0){ BR.L.slice(0,3).forEach(x=>x[4]=100); A.notes.push('Tvrtka na kraju godine nema kratkoročnih obveza, pa se omjeri likvidnosti ne mogu izračunati dijeljenjem; u ocjeni se taj dio boduje kao izvrstan.'); }
+  const P = avg(BR.P.map(x=>x[4])), Lq = avg(BR.L.map(x=>x[4])), Z = avg(BR.Z.map(x=>x[4]));
+  let T=null; const td={};
+  if(years.length>=2){
+    const F=A.D[y0], n=years.length-1;
+    td.cagr = (F.ppr>0 && d.ppr>0) ? Math.pow(d.ppr/F.ppr,1/n)-1 : null;
+    td.dTL = (A.I[y0].TL!=null && L.TL!=null) ? L.TL-A.I[y0].TL : null;
+    td.dUdioKap = (A.I[y0].udioKap!=null && L.udioKap!=null) ? L.udioKap-A.I[y0].udioKap : null;
+    td.gKob = growth(d.kob,F.kob);
+    td.gPpr = growth(d.ppr,F.ppr);
+    td.pos = years.filter(y=>A.D[y].neto>0).length/years.length*100;
+    BR.T = [['Prosječni godišnji rast poslovnih prihoda',td.cagr,'%','−10 % → 0, +10 % → 100',lin(td.cagr,-.1,.1)],
+      ['Promjena tekuće likvidnosti',td.dTL,'d','−0,5 → 0, +0,5 → 100',lin(td.dTL,-.5,.5)],
+      ['Promjena udjela kapitala',td.dUdioKap,'pb','−10 p.b. → 0, +10 p.b. → 100',lin(td.dUdioKap,-.1,.1)],
+      ['Rast kratk. obveza − rast prihoda',(td.gKob!=null&&td.gPpr!=null)?td.gKob-td.gPpr:null,'pb','+30 p.b. → 0, −10 p.b. → 100',(td.gKob!=null&&td.gPpr!=null)? lin(td.gKob-td.gPpr,.3,-.1):null],
+      ['Udio godina s dobiti',td.pos/100,'%','0 % → 0, 100 % → 100',td.pos]];
+    T = avg(BR.T.map(x=>x[4]));
+  } else A.notes.push('Analizirana je samo jedna godina, pa trend nije ocijenjen.');
+  A.breakdown=BR; A.trend=td;
+
+  const ostppr = (d.prod!=null && d.ppr!=null) ? d.ppr-d.prod : null;
+  A.izvShare = d.upr>0 && ostppr!=null ? (ostppr+(d.fpr||0))/d.upr : null;
+  let Pc=P;
+  if(A.izvShare!=null && A.izvShare>0.2 && P!=null){ Pc=Math.min(P,60); A.notes.push(`Ostali poslovni i financijski prihodi (izvan prodaje) čine ${fP(A.izvShare)} ukupnih prihoda. Dio dobiti može ovisiti o jednokratnim ili izvanrednim prihodima, pa je ocjena profitabilnosti ograničena na 60.`); }
+
+  const parts={P:Pc, L:Lq, Z, T}, W={P:.25, L:.30, Z:.25, T:.20};
+  let sw=0, ss=0; for(const k in W){ if(parts[k]!=null){ sw+=W[k]; ss+=W[k]*parts[k]; } }
+  A.parts=parts; A.weights=W; A.score = sw? ss/sw : null;
+  if(sw>0 && sw<0.999) A.notes.push('Neka područja nisu mogla biti ocijenjena; ukupna ocjena preračunata je na raspoložive pondere.');
+
+  // semafor i pravila
+  let st = A.score>=65 ? 'g' : A.score>=45 ? 'y' : 'r';
+  const why=[]; const rank={g:0,y:1,r:2};
+  const cap=(lvl,t)=>{ const ch=rank[st]<rank[lvl]; if(ch) st=lvl; why.push({t,lvl,changed:ch}); };
+  const severeLiq = (L.TL!=null && L.TL<0.75 && L.NL!=null && L.NL<0.05);
+  if(L.negKap){ cap('y','Kapital je negativan ili nula: obveze su veće od imovine.'); if((L.TL!=null&&L.TL<1) || d.neto<0) cap('r','Negativan kapital uz gubitak ili nedovoljnu likvidnost.'); }
+  if(L.NOK!=null && L.NOK<0) cap('y','Kratkoročne obveze veće su od kratkotrajne imovine (negativan obrtni kapital).');
+  if(Lq!=null && Lq<40) cap('y','Ocjena likvidnosti je niska.');
+  if(severeLiq) cap('r','Ozbiljan problem likvidnosti: kratkotrajna imovina pokriva manje od 75 % kratkoročnih obveza, a novca je manje od 5 % tih obveza.');
+  if(Lq!=null && Z!=null && Lq<25 && Z<40) cap('r','Istodobno slaba likvidnost i visoka zaduženost.');
+  if(d.neto<0) cap('y','U zadnjoj godini iskazan je gubitak.');
+  if(!(d.ppr>0)) cap('y','Tvrtka u zadnjoj godini nema poslovnih prihoda.');
+  if(years.length>=2 && d.neto<0 && A.D[years[years.length-2]].neto<0) cap('y','Gubitak dvije godine zaredom.');
+  A.status=st; A.why=why;
+
+  // obrasci
+  A.patterns=[];
+  for(let i=1;i<years.length;i++){
+    const a=A.D[years[i-1]], b=A.D[years[i]], ia=A.I[years[i-1]], ib=A.I[years[i]], y=years[i];
+    const tlDown = ib.TL!=null && ia.TL!=null && ib.TL<ia.TL-0.05;
+    if(b.ppr>a.ppr && b.neto<a.neto) A.patterns.push([y,'Prihodi rastu, dobit pada','w']);
+    if(b.ppr<a.ppr && b.prs>a.prs) A.patterns.push([y,'Prihodi padaju, troškovi rastu','b']);
+    if(b.neto>a.neto && tlDown) A.patterns.push([y,'Dobit raste, likvidnost slabi','w']);
+    if(a.kap!=null && b.kap!=null && a.kap<=0 && b.kap>a.kap) A.patterns.push([y,'Kapital se oporavlja','g']);
+    if(ia.obveze!=null && ib.obveze!=null && ib.obveze<ia.obveze) A.patterns.push([y,'Obveze se smanjuju','g']);
+    if(a.neto<0 && b.neto>0) A.patterns.push([y,'Prijelaz iz gubitka u dobit','g']);
+    if(a.neto>0 && b.neto<0) A.patterns.push([y,'Prijelaz iz dobiti u gubitak','b']);
+    if(b.ppr>a.ppr && b.neto>a.neto && b.neto>0 && !tlDown) A.patterns.push([y,'Rastu prihodi i dobit','g']);
+  }
+  years.forEach(y=>{ if(A.D[y].neto>0 && A.I[y].NOK!=null && A.I[y].NOK<0) A.patterns.push([y,'Dobit uz negativan obrtni kapital','b']); });
+  return A;
+}
+
+/* ---------- prognoza ---------- */
+function forecastDefaults(A){
+  const ys=A.years, d=A.D[ys[ys.length-1]], F=A.D[ys[0]], n=ys.length-1;
+  const cl=(x,a,b)=>Math.max(a,Math.min(b,x));
+  const raw = n>0 && F.ppr>0 && d.ppr>0 ? Math.pow(d.ppr/F.ppr,1/n)-1 : 0;
+  const g = cl(raw,-.25,.25);
+  const go = n>0 && F.osob>0 && d.osob>0 ? cl(Math.pow(d.osob/F.osob,1/n)-1,-.2,.3) : g;
+  return {g, dm:0, go, gk:0, raw};
+}
+function scenario(A, s){
+  const d=A.D[A.years[A.years.length-1]];
+  const pp=d.ppr*(1+s.g), fpr=d.fpr||0, frs=(d.frs||0)*(1+s.gk);
+  let urs, detail=false;
+  if(d.mat!=null && d.osob!=null && d.amo!=null){
+    detail=true;
+    const ms=d.mat/d.ppr, ors=(d.prs-d.mat-d.osob-d.amo)/d.ppr;
+    urs = pp*(ms+s.dm) + d.osob*(1+s.go) + d.amo + pp*ors + frs;
+  } else urs = pp*(d.prs/d.ppr + s.dm) + frs;
+  const upr=pp+fpr;
+  return {ppr:pp, upr, urs, dpo:upr-urs, detail};
+}
+function forecast(A, base){
+  const last=A.D[A.years[A.years.length-1]];
+  if(!(last.ppr>0) || last.prs==null) return null;
+  const b = base || forecastDefaults(A);
+  return { base:b, year:A.years[A.years.length-1]+1,
+    osnovni: scenario(A,b),
+    optimisticni: scenario(A,{g:b.g+.05, dm:b.dm-.01, go:b.go, gk:b.gk}),
+    pesimisticni: scenario(A,{g:b.g-.15, dm:b.dm+.015, go:b.go+.05, gk:b.gk+.30}) };
+}
+
+/* ---------- formatiranje ---------- */
+const nf = d => new Intl.NumberFormat('hr-HR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fE = v => v==null||!isFinite(v) ? '–' : nf(0).format(Math.round(v))+' €';
+const fP = (v,d=1) => v==null||!isFinite(v) ? '–' : nf(d).format(v*100)+' %';
+const fN = (v,d=2) => v==null||!isFinite(v) ? '–' : nf(d).format(v);
+const pp = v => (v>0?'+':'')+nf(1).format(v*100)+' %';
+
+/* ---------- dijagnoza ---------- */
+// Svaki problem: {sev, fact (potvrđeno brojkama), meaning (što može značiti), check (što provjeriti)}
+function diagnose(A, FC){
+  const ys=A.years, y0=ys[0], yN=ys[ys.length-1], D=A.D, I=A.I, d=D[yN], f=D[y0], L=I[yN], i0=I[y0], n=ys.length;
+  const td=A.trend||{};
+  const good=[], bad=[], recs=[];
+  const profYears = ys.filter(y=>D[y].neto>0).length;
+  const allY = n===2 ? 'u obje analizirane godine' : 'u svim analiziranim godinama';
+  const growingProfit = n>1 && ys.every((y,i)=> i===0 || D[y].neto>D[ys[i-1]].neto);
+  const gPot = n>1 ? growth(d.pot,f.pot) : null, gZal = n>1 ? growth(d.zal,f.zal) : null;
+  const kapFall = n>1 && L.udioKap!=null && i0.udioKap!=null && i0.udioKap-L.udioKap>0.05;
+
+  // --- pozitivno (samo potvrđeno brojkama)
+  if(n>1 && td.cagr!=null && td.cagr>0.03) good.push(`Poslovni prihodi rastu: s ${fE(f.ppr)} u ${y0}. na ${fE(d.ppr)} u ${yN}., prosječno oko ${fP(td.cagr,0)} godišnje.`);
+  if(profYears===n && n>1) good.push(growingProfit ? `Tvrtka je ${allY} poslovala s dobiti, a neto dobit je narasla s ${fE(f.neto)} na ${fE(d.neto)}.` : `Tvrtka je ${allY} poslovala s dobiti (u ${yN}. ${fE(d.neto)}).`);
+  if(n>1 && L.netoMarza!=null && i0.netoMarza!=null && L.netoMarza>0 && L.netoMarza-i0.netoMarza>0.01) good.push(`Od svakih 100 € prihoda tvrtki ostaje više dobiti nego prije: neto marža je porasla s ${fP(i0.netoMarza)} na ${fP(L.netoMarza)}.`);
+  if(L.ROE!=null && L.ROE>=0.15 && L.udioKap>=0.2) good.push(`Uloženi kapital vlasnika dobro zarađuje: neto dobit u ${yN}. iznosi ${fP(L.ROE,0)} prosječnog kapitala.`);
+  if(L.udioKap!=null && L.udioKap>=0.3 && !kapFall) good.push(`Vlastiti kapital pokriva ${fP(L.udioKap,0)} imovine, pa se tvrtka uglavnom financira vlastitim sredstvima.`);
+  if(L.dugEbitda!=null && L.dugEbitda<=2.5 && L.finDug>0) good.push(`Krediti i zajmovi (${fE(L.finDug)}) iznose oko ${fN(L.dugEbitda,1)} puta godišnja EBITDA (operativni rezultat prije amortizacije), što je umjerena razina zaduženosti.`);
+  if(L.finDug===0) good.push('Tvrtka na kraju godine nema obveza prema bankama ni obveza za zajmove.');
+  if(L.TL!=null && L.TL>=1.5) good.push(`Kratkotrajna imovina dobro pokriva kratkoročne obveze: na svaki euro obveza dolazi ${fN(L.TL,2)} € imovine koja se može pretvoriti u novac unutar godine.`);
+  if(n>1 && i0.daniNaplate!=null && L.daniNaplate!=null && L.daniNaplate<i0.daniNaplate-3) good.push(`Procijenjeno vrijeme naplate od kupaca skratilo se s oko ${fN(i0.daniNaplate,0)} na oko ${fN(L.daniNaplate,0)} dana.`);
+  if(n>1 && f.neto<0 && d.neto>0) good.push(`Tvrtka je iz gubitka u ${y0}. (${fE(f.neto)}) prešla u dobit u ${yN}. (${fE(d.neto)}).`);
+
+  // --- problemi
+  const P=(sev,fact,meaning,check)=>bad.push({sev,fact,meaning,check});
+  if(L.negKap){ P(3,`Kapital je negativan (${fE(d.kap)}): obveze su veće od ukupne imovine tvrtke.`,'Gubici iz prošlih godina premašili su uloženi kapital. Tvrtka posluje na teret vjerovnika.','Plan pokrića gubitaka: dokapitalizacija ili pretvaranje zajmova vlasnika u kapital.'); }
+  if(d.neto<0) P(3,`U ${yN}. iskazan je gubitak od ${fE(-d.neto)}.`, profYears>0?'Nakon razdoblja s dobiti poslovanje je u zadnjoj godini negativno.':'Prihodi ne pokrivaju troškove poslovanja.','Koji troškovi ili poslovi stvaraju gubitak i što se može promijeniti.');
+  if(!(d.ppr>0)) P(3,`U ${yN}. tvrtka nema poslovnih prihoda.`,'Tvrtka trenutačno ne ostvaruje prihode iz redovnog poslovanja.','Je li poslovanje privremeno zaustavljeno ili je riječ o pogrešci u podacima.');
+  if(L.NOK!=null && L.NOK<0) P(3,`Na dan bilance kratkoročne obveze (${fE(d.kob)}) veće su od kratkotrajne imovine (${fE(d.kti)}) za ${fE(-L.NOK)}.`,'Ako sve obveze s rokom do godinu dana dospiju na naplatu, tvrtka ih ne bi mogla podmiriti samo iz imovine koju ima, nego bi trebala nove izvore novca ili odgodu plaćanja. To ne znači da je tvrtka nelikvidna danas – GFI ne pokazuje rokove dospijeća.','Rokove dospijeća obveza i plan plaćanja za iduće mjesece.');
+  if(n>1 && L.TL!=null && i0.TL!=null && i0.TL-L.TL>0.3) P(2,`Pokrivenost kratkoročnih obveza slabi: na svaki euro obveza ${y0}. je bilo ${fN(i0.TL,2)} € kratkotrajne imovine, a ${yN}. ${fN(L.TL,2)} €.`,'Tvrtka ima sve manju „rezervu“ za plaćanje obveza koje dolaze na naplatu.',null);
+  if(L.NL!=null && L.NL<0.1 && d.kob>0) P(2,`Novca na računu i u blagajni ima ${fE(d.nov)}, a kratkoročnih obveza ${fE(d.kob)} (novac pokriva oko ${fP(L.NL,0)} obveza).`, d.neto>0?'Dobit iz računa dobiti i gubitka nije isto što i novac na računu: dobit može biti „zarobljena“ u potraživanjima, zalihama ili ulaganjima.':'Tvrtka ima malo raspoloživog novca u odnosu na obveze.','Mjesečni pregled priljeva i odljeva novca.');
+  if(n>1 && td.gKob!=null && td.gPpr!=null && td.gKob>0 && td.gKob-td.gPpr>0.1) P(2,`Od ${y0}. do ${yN}. kratkoročne obveze narasle su ${fP(td.gKob,0)}, a poslovni prihodi ${td.gPpr>=0?'narasli su '+fP(td.gPpr,0):'pali su '+fP(-td.gPpr,0)}.`,'Poslovanje se sve više financira obvezama s kratkim rokom plaćanja.',null);
+  if(n>1 && f.kobBanke!=null && d.kobBanke!=null && d.kobBanke>Math.max(f.kobBanke*1.5, f.kobBanke+0.05*d.akt)) P(2,`Kratkoročne obveze prema bankama narasle su s ${fE(f.kobBanke)} na ${fE(d.kobBanke)}.`,'Veći dio duga dospijeva unutar godinu dana i treba ga vratiti ili obnoviti.','Uvjete i rokove kredita te mogućnost dugoročnog refinanciranja.');
+  if(gPot!=null && td.gPpr!=null && gPot>0 && gPot-td.gPpr>0.1 && d.pot>0.05*d.akt){
+    let fact=`Kratkoročna potraživanja narasla su ${fP(gPot,0)} (s ${fE(f.pot)} na ${fE(d.pot)}), a prihodi ${td.gPpr>=0?fP(td.gPpr,0):'su pali '+fP(-td.gPpr,0)}.`;
+    if(i0.daniNaplate!=null && L.daniNaplate!=null) fact+=` Procijenjeno vrijeme naplate od kupaca poraslo je s oko ${fN(i0.daniNaplate,0)} na oko ${fN(L.daniNaplate,0)} dana.`;
+    P(2,fact,'Iz GFI-ja se ne vidi kasne li kupci. Rast može biti i posljedica veće prodaje krajem godine ili duljih ugovorenih rokova plaćanja. U svakom slučaju, u potraživanjima je vezano više novca.','Starosnu strukturu potraživanja (koliko je dospjelo i koliko dugo) i ugovorene rokove s kupcima.');
+  }
+  if(gZal!=null && td.gPpr!=null && gZal>0 && gZal-td.gPpr>0.15 && d.zal>0.05*d.akt) P(1,`Zalihe su narasle ${fP(gZal,0)} (na ${fE(d.zal)}), brže od prihoda.`,'U zalihama je vezano više novca; razlog može biti planirana nabava ili roba koja se sporije prodaje.','Strukturu i obrtaj zaliha.');
+  if(n>1 && d.dug!=null && f.dug!=null && d.dug>f.dug*1.1 && d.dob!=null && f.dob!=null && d.dob<=f.dob && d.kob>f.kob)
+    P(2,`Dugotrajna imovina narasla je s ${fE(f.dug)} na ${fE(d.dug)}, dugoročne obveze su s ${fE(f.dob)} pale na ${fE(d.dob)}, a kratkoročne obveze su porasle.`,'To može značiti da se dugoročna ulaganja dijelom financiraju kratkoročnim izvorima, što opterećuje likvidnost.','Kako su financirana ulaganja (kredit, leasing, vlastita sredstva, obveze prema dobavljačima).');
+  if(n>1){
+    const sumNeto = ys.slice(1).reduce((s,y)=>s+(D[y].neto||0),0), dKap=d.kap-f.kap, razl=sumNeto-dKap;
+    if(sumNeto>0 && razl>0.05*sumNeto && razl>0.01*d.akt)
+      P(1,`Kapital se od ${y0}. do ${yN}. ${dKap>=0?'povećao za '+fE(dKap):'smanjio za '+fE(-dKap)}, a ostvarena dobit u ${ys.slice(1).join('. i ')}. iznosila je ${fE(sumNeto)} (razlika ${fE(razl)}).`,'Iz bilance i RDG-a ne vidi se razlog razlike. Uobičajeni razlozi su isplata dobiti vlasnicima ili druge promjene kapitala.','Odluke o raspodjeli dobiti i izvještaj o promjenama kapitala. Ako je dobit isplaćivana, uskladiti buduće isplate s likvidnošću.');
+  }
+  if(kapFall && !L.negKap) P(1,`Udio vlastitog kapitala u imovini pao je s ${fP(i0.udioKap,0)} na ${fP(L.udioKap,0)}.`,(d.akt>f.akt && d.kap>=f.kap ? 'Imovina raste brže od kapitala' : d.kap<f.kap ? 'Kapital se smanjio' : 'Kapital se smanjio brže od imovine')+', pa se tvrtka sve više oslanja na tuđe izvore.',null);
+  if(L.dugEbitda!=null && L.dugEbitda>3) P(2,`Krediti i zajmovi (${fE(L.finDug)}) iznose ${fN(L.dugEbitda,1)} puta godišnja EBITDA.`,'Uz sadašnji operativni rezultat otplata duga trajala bi više godina.','Plan otplate i uvjete kredita.');
+  if(L.EBITDA!=null && L.EBITDA<=0 && L.finDug>0.02*d.akt) P(3,`EBITDA je negativna ili nula (${fE(L.EBITDA)}), a krediti i zajmovi iznose ${fE(L.finDug)}.`,'Redovno poslovanje ne stvara sredstva za otplatu duga.','Izvore otplate duga.');
+  if(n>1 && L.opMarza!=null && i0.opMarza!=null && i0.opMarza-L.opMarza>0.02) P(1,`Operativna marža pala je s ${fP(i0.opMarza)} na ${fP(L.opMarza)}.`,'Troškovi poslovanja rastu brže od prihoda.','Koji troškovi rastu najbrže.');
+  if(n>1 && td.gPpr!=null && td.gPpr<-0.05) P(2,`Poslovni prihodi pali su s ${fE(f.ppr)} na ${fE(d.ppr)} (${fP(td.gPpr,0)}).`,'Opseg poslovanja se smanjuje.',null);
+  if(A.izvShare!=null && A.izvShare>0.2) P(1,`Ostali poslovni i financijski prihodi (izvan prodaje) čine ${fP(A.izvShare,0)} ukupnih prihoda u ${yN}.`,'Rezultat znatno ovisi o prihodima koji nisu redovna prodaja (npr. potpore, otpisi obveza, prodaja imovine) i koji se ne moraju ponoviti.','Vrstu tih prihoda i hoće li se ponoviti.');
+  bad.sort((a,b)=>b.sev-a.sev);
+
+  // --- preporuke (samo za prepoznate probleme)
+  const has = re => bad.some(b=>re.test(b.fact));
+  if(L.NOK!=null && L.NOK<0) recs.push('Napraviti pregled svih obveza po rokovima dospijeća i plan plaćanja za idućih 3–6 mjeseci.');
+  if((L.NL!=null && L.NL<0.1) || (L.NOK!=null && L.NOK<0)) recs.push('Uvesti mjesečno praćenje novčanog toka: koliko novca ulazi od kupaca, a koliko izlazi za obveze.');
+  if(has(/potraživanja/i)) recs.push('Redovito pratiti dospjela potraživanja i po potrebi skratiti rokove plaćanja ili uvesti osiguranje naplate.');
+  if(has(/Zalihe/)) recs.push('Provjeriti zalihe koje se sporo kreću i uskladiti nabavu s prodajom.');
+  if(has(/Dugotrajna imovina narasla/)) recs.push('Buduća ulaganja financirati dugoročnim kreditom ili leasingom, a ne kratkoročnim obvezama.');
+  if(has(/bankama narasle|Krediti i zajmovi \(.*puta/)) recs.push('Razgovarati s bankom o dugoročnom refinanciranju dijela kratkoročnog duga.');
+  if(has(/Kapital se od/)) recs.push('Prije svake isplate dobiti provjeriti stanje likvidnosti.');
+  if(L.negKap) recs.push('Izraditi plan oporavka kapitala.');
+  if(d.neto<0) recs.push('Napraviti analizu troškova po vrstama i poslovima te odrediti mjere za povratak u dobit.');
+  if(has(/Ostali poslovni i financijski prihodi/)) recs.push('Procijeniti rezultat bez jednokratnih prihoda kako bi se vidjela stvarna snaga redovnog poslovanja.');
+
+  // --- 1. opće stanje
+  let profitTxt;
+  if(profYears===n) profitTxt = n>1 ? `${allY} posluje s dobiti${growingProfit?(n===2?', a dobit je porasla':', a dobit iz godine u godinu raste'):''}` : `u ${yN}. posluje s dobiti`;
+  else if(d.neto>0) profitTxt = `u ${yN}. posluje s dobiti, nakon gubitka u ${ys.filter(y=>D[y].neto<=0).map(y=>y+'.').join(' i ')}`;
+  else if(profYears===0) profitTxt = n>1 ? `${allY} posluje s gubitkom` : `u ${yN}. posluje s gubitkom`;
+  else profitTxt = `u ${yN}. iskazuje gubitak`;
+  let s1;
+  if(A.status==='g') s1 = `Prema godišnjim financijskim izvještajima tvrtka ${profitTxt} i nisu prepoznati ozbiljni financijski problemi.`;
+  else if(A.status==='y') s1 = `Tvrtka ${profitTxt}, ali postoje financijski rizici na koje treba pripaziti. Najvažniji: ${bad[0]?bad[0].fact.charAt(0).toLowerCase()+bad[0].fact.slice(1):'vidi niže.'}`;
+  else s1 = `Više važnih pokazatelja upućuje na ozbiljne financijske rizike. Tvrtka ${profitTxt}. ${bad.filter(b=>!/iskazan je gubitak/.test(b.fact)).slice(0,2).map(b=>b.fact).join(' ')}`;
+  if(n<3) s1 = `Djelomična analiza: dostupn${n===1?'a je samo jedna godina':'e su samo dvije godine'} (${ys.map(y=>y+'.').join(' i ')}), pa ${n===1?'promjene kroz vrijeme nije moguće ocijeniti':'se zaključci o kretanju temelje na usporedbi dvije godine, a ne tri'}. ` + s1;
+  if(A.status!=='g' && (d.neto>0) && ((L.NOK!=null&&L.NOK<0) || (L.NL!=null&&L.NL<0.1))) s1 += ' Dobit u računu dobiti i gubitka ne znači automatski da tvrtka ima dovoljno novca za obveze.';
+
+  // --- 4. promjene
+  const s4=[];
+  if(n>1){
+    s4.push(`Poslovni prihodi: ${ys.map(y=>`${y}. ${fE(D[y].ppr)}`).join(', ')}.`);
+    s4.push(`Neto rezultat: ${ys.map(y=>`${y}. ${fE(D[y].neto)}`).join(', ')}.`);
+    s4.push(`Kapital je ${d.kap>=f.kap?'narastao':'pao'} s ${fE(f.kap)} na ${fE(d.kap)}, a dugoročne i kratkoročne obveze zajedno ${L.obveze>=i0.obveze?'narasle su':'pale su'} s ${fE(i0.obveze)} na ${fE(L.obveze)}.`);
+    if(L.TL!=null && i0.TL!=null) s4.push(`Na svaki euro kratkoročnih obveza tvrtka je ${y0}. imala ${fN(i0.TL,2)} € kratkotrajne imovine, a ${yN}. ${fN(L.TL,2)} €.`);
+    const up=[], down=[];
+    const cmp=(name,a,b,better)=>{ if(a==null||b==null||Math.abs(b-a)<1e-9) return; ((b>a)===better?up:down).push(name); };
+    cmp('prihodi',f.ppr,d.ppr,true); cmp('neto rezultat',f.neto,d.neto,true); cmp('likvidnost',i0.TL,L.TL,true); cmp('udio kapitala',i0.udioKap,L.udioKap,true);
+    s4.push(`Od ${y0}. do ${yN}. poboljšali su se: ${up.length?up.join(', '):'nijedan od praćenih pokazatelja'}; pogoršali su se: ${down.length?down.join(', '):'nijedan'}.`);
+  } else s4.push('Za usporedbu kroz godine potrebna su barem dva godišnja izvještaja.');
+
+  // --- 5. očekivanja
+  const s5=[];
+  if(!FC) s5.push('Projekcija nije moguća jer zadnja godina nema poslovnih prihoda ili rashoda.');
+  else {
+    const b=FC.base, o=FC.osnovni;
+    if(n===1) s5.push(`Dostupna je samo jedna godina, pa dosadašnje kretanje prihoda nije poznato. Osnovni scenarij pretpostavlja prihode i odnos troškova kao u ${yN}.: rezultat prije oporezivanja u ${FC.year}. bio bi oko ${fE(FC.osnovni.dpo)}.`);
+    const clampTxt = (b.raw!=null && Math.abs(b.raw-b.g)>1e-9) ? ` (dosadašnja prosječna promjena bila je ${fP(b.raw)}, a u izračunu je ograničena na ${fP(b.g,0)})` : '';
+    if(n>1) s5.push(`Ako se nastavi ${b.g>=0?'rast':'pad'} poslovnih prihoda od oko ${fP(Math.abs(b.g))} godišnje${clampTxt}, uz isti odnos troškova prema prihodima kao u ${yN}., rezultat prije oporezivanja u ${FC.year}. bio bi oko ${fE(o.dpo)}. Uz povoljnije pretpostavke oko ${fE(FC.optimisticni.dpo)}, a uz nepovoljnije oko ${fE(FC.pesimisticni.dpo)}.`);
+    if(FC.optimisticni.dpo<0) s5.push('Uz sadašnji odnos prihoda i troškova rezultat bi u sva tri scenarija ostao negativan. Za povratak u dobit potrebne su promjene u prihodima ili troškovima, a ne samo nastavak dosadašnjeg kretanja.');
+    else if(FC.osnovni.dpo<0) s5.push('U osnovnom i nepovoljnom scenariju rezultat bi bio negativan, pa je važno pratiti maržu i troškove.');
+    else if(FC.pesimisticni.dpo<0) s5.push('U nepovoljnom scenariju rezultat bi bio negativan, pa je važno pratiti maržu i troškove.');
+    if(b.g>0 && ((gPot!=null && td.gPpr!=null && gPot>0 && gPot>td.gPpr) || (td.gKob!=null && td.gPpr!=null && td.gKob>0 && td.gKob>td.gPpr))) s5.push('Projekcija se odnosi na dobit, ne na novac. Ako potraživanja, zalihe i kratkoročne obveze nastave rasti brže od prihoda, za daljnji rast mogli bi trebati dodatni izvori financiranja.');
+    s5.push(`Ovo su ilustrativni izračuni na temelju pretpostavki, a ne predviđanje. Podaci za ${n} ${n===1?'godinu':'godine'} nisu dovoljni za pouzdanu prognozu, a GFI ne sadrži rokove dospijeća ni mjesečne novčane tokove.`);
+  }
+
+  // --- 6. zaključak (povezan s podocjenama)
+  const AR={P:'profitabilnost',L:'likvidnost',Z:'zaduženost i kapital',T:'trend'};
+  const ks=Object.keys(A.parts).filter(k=>A.parts[k]!=null).sort((a,b)=>A.parts[b]-A.parts[a]);
+  const best=ks[0], worst=ks[ks.length-1];
+  const areaTxt = ks.length>1 ? `Najjače područje je ${AR[best]} (${fN(A.parts[best],0)}/100), a najslabije ${AR[worst]} (${fN(A.parts[worst],0)}/100).` : '';
+  let s6;
+  if(A.status==='g') s6 = `${areaTxt} Financijska slika je povoljna; preporučuje se svake godine pratiti iste pokazatelje.`;
+  else if(A.status==='y') s6 = `${areaTxt} Ukupna ocjena je ${fN(A.score,0)}/100 i semafor je žut: potreban je oprez i nekoliko konkretnih mjera.`;
+  else s6 = `${areaTxt} Ukupna ocjena je ${fN(A.score,0)}/100 i semafor je crven: stanje zahtijeva brzu reakciju.`;
+  return {s1, good, bad, s4, s5, s6, recs:[...new Set(recs)]};
+}
+
+/* ---------- provjera proturječja (za testove) ---------- */
+function consistency(A, g){
+  const out=[]; if(A.status==='na'||A.status==='blocked') return out;
+  const d=A.D[A.years[A.years.length-1]], L=A.I[A.years[A.years.length-1]];
+  if(A.status==='g' && g.bad.some(b=>b.sev===3)) out.push('Zeleni semafor uz ozbiljan problem.');
+  if(A.status==='r' && !g.bad.length) out.push('Crveni semafor bez navedenih problema.');
+  if(A.status==='g' && (L.NOK<0 || L.negKap || d.neto<0)) out.push('Zeleni semafor uz negativan obrtni kapital, kapital ili gubitak.');
+  if(L.NOK<0 && !g.bad.some(b=>/kratkotrajne imovine \(/.test(b.fact))) out.push('Negativan obrtni kapital nije naveden u problemima.');
+  if(d.neto<0 && g.good.some(x=>/(svim analiziranim godinama|obje analizirane godine) poslovala s dobiti/.test(x))) out.push('Tekst tvrdi dobit u svim godinama, a zadnja godina je gubitak.');
+  if(A.status!=='r' && /ozbiljne financijske rizike/.test(g.s1)) out.push('Uvod govori o ozbiljnim rizicima, a semafor nije crven.');
+  if(A.status==='g' && /rizici na koje treba pripaziti/.test(g.s1)) out.push('Uvod upozorava, a semafor je zelen.');
+  const txt=[g.s1,...g.good,...g.bad.map(b=>b.fact+' '+b.meaning+' '+(b.check||'')),...g.s4,...g.s5,g.s6,...g.recs].join(' ');
+  if(/NaN|undefined|Infinity/.test(txt)) out.push('Tekst sadrži neispravnu vrijednost (NaN/undefined).');
+  if(/isplatili|isplaćena je|kupci kasne|bit će nelikvidn|sigurno/i.test(txt)) out.push('Tekst sadrži nedopuštenu kategoričku tvrdnju.');
+  if(/narast\w* −|narasl\w* (su )?(za )?−|porasl\w* (su )?−|povećao za −/.test(txt)) out.push('Tekst opisuje pad kao rast (negativan postotak uz „narasle“).');
+  return out;
+}
+
+/* ---------- DEMO ---------- */
+const DEMO_DATA = {"2022":{"dug":220000,"kti":422000,"zal":120000,"pot":172000,"kup":157000,"ostpot":15000,"kfi":20000,"nov":110000,"ppti":5000,"akt":647000,"kap":372890,"tk":20000,"zad":300000,"dg":52890,"rez":0,"dob":80000,"dobBanke":80000,"kob":190110,"kobBanke":65110,"dobav":91000,"zap":12000,"drz":22000,"opt":4000,"pas":647000,"ppr":1050000,"prod":1040000,"ostppr":10000,"prs":980000,"mat":735000,"osob":180000,"amo":25000,"ostr":40000,"fpr":500,"frs":6000,"kam":6000,"upr":1050500,"urs":986000,"dpo":64500,"por":11610,"neto":52890},"2023":{"dug":300000,"kti":473000,"zal":160000,"pot":233000,"kup":215000,"ostpot":18000,"kfi":10000,"nov":70000,"ppti":6000,"akt":779000,"kap":420056,"tk":20000,"zad":312890,"dg":87166,"rez":0,"dob":60000,"dobBanke":60000,"kob":293944,"kobBanke":130944,"dobav":121000,"zap":14000,"drz":28000,"opt":5000,"pas":779000,"ppr":1280000,"prod":1268000,"ostppr":12000,"prs":1165200,"mat":883200,"osob":205000,"amo":30000,"ostr":47000,"fpr":500,"frs":9000,"kam":9000,"upr":1280500,"urs":1174200,"dpo":106300,"por":19134,"neto":87166},"2024":{"dug":420000,"kti":587000,"zal":220000,"pot":327000,"kup":305000,"ostpot":22000,"kfi":0,"nov":40000,"ppti":7000,"akt":1014000,"kap":451334,"tk":20000,"zad":310056,"dg":121278,"rez":0,"dob":40000,"dobBanke":40000,"kob":516666,"kobBanke":295666,"dobav":170000,"zap":16000,"drz":35000,"opt":6000,"pas":1014000,"ppr":1560000,"prod":1546000,"ostppr":14000,"prs":1396600,"mat":1068600,"osob":235000,"amo":38000,"ostr":55000,"fpr":500,"frs":16000,"kam":16000,"upr":1560500,"urs":1412600,"dpo":147900,"por":26622,"neto":121278},"2025":{"dug":560000,"kti":777000,"zal":300000,"pot":459000,"kup":434000,"ostpot":25000,"kfi":0,"nov":18000,"ppti":8000,"akt":1345000,"kap":488204,"tk":20000,"zad":301334,"dg":166870,"rez":0,"dob":20000,"dobBanke":20000,"kob":829796,"kobBanke":535796,"dobav":234000,"zap":18000,"drz":42000,"opt":7000,"pas":1345000,"ppr":1900000,"prod":1884000,"ostppr":16000,"prs":1671000,"mat":1292000,"osob":270000,"amo":45000,"ostr":64000,"fpr":500,"frs":26000,"kam":26000,"upr":1900500,"urs":1697000,"dpo":203500,"por":36630,"neto":166870}};
+function demoDataset(){
+  const years={};
+  for(const y in DEMO_DATA){ const vals={}; for(const f of FIELDS){ let v=DEMO_DATA[y][f.k]; if(v==null && ['upk','dobZajm','kobZajm'].includes(f.k)) v=0; if(v!=null) vals[f.k]={v, status:'ok', src:'DEMO (izmišljeno)', aop:AOP24[f.k]||'', label:f.l, orig:true}; } years[y]={vals,alt:{},months:12,sources:['DEMO']}; }
+  return {firma:'DEMO Trgovina d.o.o. (izmišljena tvrtka)', oib:'00000000000', years, conflicts:[], warn:[], demo:true};
+}
+
+return {FIELDS, FK, AOP24, HRK, TOL, norm, toNum, parseFormula, parseWorkbook, sameCompany, merge, validate, pickYears, analyze, forecast, forecastDefaults, scenario, diagnose, consistency, demoDataset, DEMO_DATA, fE, fP, fN, pp, nf, val, yearData, indicators};
+})();
+
+
+</script>
+<script>
+/* ===== Struktura GFI-POD (Excel 5.x za 2024., 6.x za 2025.) – nazivi i AOP oznake prema javno objavljenim obrascima ===== */
+const GFI_ROWS = {
+B: [
+[1,'A) POTRAŽIVANJA ZA UPISANI A NEUPLAĆENI KAPITAL'],
+[2,'B) DUGOTRAJNA IMOVINA (AOP 003+010+020+031+036)'],
+[3,'I. NEMATERIJALNA IMOVINA (AOP 004 do 009)'],[4,'1. Izdaci za razvoj'],[5,'2. Koncesije, patenti, licencije, robne i uslužne marke, softver i ostala prava'],[6,'3. Goodwill'],[7,'4. Predujmovi za nabavu nematerijalne imovine'],[8,'5. Nematerijalna imovina u pripremi'],[9,'6. Ostala nematerijalna imovina'],
+[10,'II. MATERIJALNA IMOVINA (AOP 011 do 019)'],[11,'1. Zemljište'],[12,'2. Građevinski objekti'],[13,'3. Postrojenja i oprema'],[14,'4. Alati, pogonski inventar i transportna imovina'],[15,'5. Biološka imovina'],[16,'6. Predujmovi za materijalnu imovinu'],[17,'7. Materijalna imovina u pripremi'],[18,'8. Ostala materijalna imovina'],[19,'9. Ulaganje u nekretnine'],
+[20,'III. DUGOTRAJNA FINANCIJSKA IMOVINA (AOP 021 do 030)'],[21,'1. Ulaganja u udjele (dionice) poduzetnika unutar grupe'],[22,'2. Ulaganja u ostale vrijednosne papire poduzetnika unutar grupe'],[23,'3. Dani zajmovi, depoziti i slično poduzetnicima unutar grupe'],[24,'4. Ulaganja u udjele (dionice) društava povezanih sudjelujućim interesom'],[25,'5. Ulaganja u ostale vrijednosne papire društava povezanih sudjelujućim interesom'],[26,'6. Dani zajmovi, depoziti i slično društvima povezanim sudjelujućim interesom'],[27,'7. Ulaganja u vrijednosne papire'],[28,'8. Dani zajmovi, depoziti i slično'],[29,'9. Ostala ulaganja koja se obračunavaju metodom udjela'],[30,'10. Ostala dugotrajna financijska imovina'],
+[31,'IV. POTRAŽIVANJA (AOP 032 do 035)'],[32,'1. Potraživanja od poduzetnika unutar grupe'],[33,'2. Potraživanja od društava povezanih sudjelujućim interesom'],[34,'3. Potraživanja od kupaca'],[35,'4. Ostala potraživanja'],
+[36,'V. ODGOĐENA POREZNA IMOVINA'],
+[37,'C) KRATKOTRAJNA IMOVINA (AOP 038+046+053+063)'],
+[38,'I. ZALIHE (AOP 039 do 045)'],[39,'1. Sirovine i materijal'],[40,'2. Proizvodnja u tijeku'],[41,'3. Gotovi proizvodi'],[42,'4. Trgovačka roba'],[43,'5. Predujmovi za zalihe'],[44,'6. Dugotrajna imovina namijenjena prodaji'],[45,'7. Biološka imovina'],
+[46,'II. POTRAŽIVANJA (AOP 047 do 052)'],[47,'1. Potraživanja od poduzetnika unutar grupe'],[48,'2. Potraživanja od društava povezanih sudjelujućim interesom'],[49,'3. Potraživanja od kupaca'],[50,'4. Potraživanja od zaposlenika i članova poduzetnika'],[51,'5. Potraživanja od države i drugih institucija'],[52,'6. Ostala potraživanja'],
+[53,'III. KRATKOTRAJNA FINANCIJSKA IMOVINA (AOP 054 do 062)'],[54,'1. Ulaganja u udjele (dionice) poduzetnika unutar grupe'],[55,'2. Ulaganja u ostale vrijednosne papire poduzetnika unutar grupe'],[56,'3. Dani zajmovi, depoziti i slično poduzetnicima unutar grupe'],[57,'4. Ulaganja u udjele (dionice) društava povezanih sudjelujućim interesom'],[58,'5. Ulaganja u ostale vrijednosne papire društava povezanih sudjelujućim interesom'],[59,'6. Dani zajmovi, depoziti i slično društvima povezanim sudjelujućim interesom'],[60,'7. Ulaganja u vrijednosne papire'],[61,'8. Dani zajmovi, depoziti i slično'],[62,'9. Ostala financijska imovina'],
+[63,'IV. NOVAC U BANCI I BLAGAJNI'],
+[64,'D) PLAĆENI TROŠKOVI BUDUĆEG RAZDOBLJA I OBRAČUNATI PRIHODI'],
+[65,'E) UKUPNO AKTIVA (AOP 001+002+037+064)'],
+[66,'F) IZVANBILANČNI ZAPISI'],
+[67,'A) KAPITAL I REZERVE (AOP 068 do 070+076+077+084+087+090)'],
+[68,'I. TEMELJNI (UPISANI) KAPITAL'],[69,'II. KAPITALNE REZERVE'],
+[70,'III. REZERVE IZ DOBITI (AOP 071+072-073+074+075)'],[71,'1. Zakonske rezerve'],[72,'2. Rezerve za vlastite dionice'],[73,'3. Vlastite dionice i udjeli (odbitna stavka)'],[74,'4. Statutarne rezerve'],[75,'5. Ostale rezerve'],
+[76,'IV. REVALORIZACIJSKE REZERVE'],
+[77,'V. REZERVE FER VRIJEDNOSTI I OSTALO (AOP 078 do 083)'],[78,'1. Fer vrijednost financijske imovine kroz ostalu sveobuhvatnu dobit (odnosno raspoložive za prodaju)'],[79,'2. Učinkoviti dio zaštite novčanih tokova'],[80,'3. Učinkoviti dio zaštite neto ulaganja u inozemstvu'],[81,'4. Ostale rezerve fer vrijednosti'],[82,'5. Tečajne razlike iz preračuna inozemnog poslovanja (konsolidacija)'],[83,'6. Tečajne razlike zbog preračuna u prezentacijsku valutu'],
+[84,'VI. ZADRŽANA DOBIT ILI PRENESENI GUBITAK (AOP 085-086)'],[85,'1. Zadržana dobit'],[86,'2. Preneseni gubitak'],
+[87,'VII. DOBIT ILI GUBITAK POSLOVNE GODINE (AOP 088-089)'],[88,'1. Dobit poslovne godine'],[89,'2. Gubitak poslovne godine'],
+[90,'VIII. MANJINSKI (NEKONTROLIRAJUĆI) INTERES'],
+[91,'B) REZERVIRANJA (AOP 092 do 097)'],[92,'1. Rezerviranja za mirovine, otpremnine i slične obveze'],[93,'2. Rezerviranja za porezne obveze'],[94,'3. Rezerviranja za započete sudske sporove'],[95,'4. Rezerviranja za troškove obnavljanja prirodnih bogatstava'],[96,'5. Rezerviranja za troškove u jamstvenim rokovima'],[97,'6. Druga rezerviranja'],
+[98,'C) DUGOROČNE OBVEZE (AOP 099 do 109)'],[99,'1. Obveze prema poduzetnicima unutar grupe'],[100,'2. Obveze za zajmove, depozite i slično poduzetnika unutar grupe'],[101,'3. Obveze prema društvima povezanim sudjelujućim interesom'],[102,'4. Obveze za zajmove, depozite i slično društava povezanih sudjelujućim interesom'],[103,'5. Obveze za zajmove, depozite i slično'],[104,'6. Obveze prema bankama i drugim financijskim institucijama'],[105,'7. Obveze za predujmove'],[106,'8. Obveze prema dobavljačima'],[107,'9. Obveze po vrijednosnim papirima'],[108,'10. Ostale dugoročne obveze'],[109,'11. Odgođena porezna obveza'],
+[110,'D) KRATKOROČNE OBVEZE (AOP 111 do 124)'],[111,'1. Obveze prema poduzetnicima unutar grupe'],[112,'2. Obveze za zajmove, depozite i slično poduzetnika unutar grupe'],[113,'3. Obveze prema društvima povezanim sudjelujućim interesom'],[114,'4. Obveze za zajmove, depozite i slično društava povezanih sudjelujućim interesom'],[115,'5. Obveze za zajmove, depozite i slično'],[116,'6. Obveze prema bankama i drugim financijskim institucijama'],[117,'7. Obveze za predujmove'],[118,'8. Obveze prema dobavljačima'],[119,'9. Obveze po vrijednosnim papirima'],[120,'10. Obveze prema zaposlenicima'],[121,'11. Obveze za poreze, doprinose i slična davanja'],[122,'12. Obveze s osnove udjela u rezultatu'],[123,'13. Obveze po osnovi dugotrajne imovine namijenjene prodaji'],[124,'14. Ostale kratkoročne obveze'],
+[125,'E) ODGOĐENO PLAĆANJE TROŠKOVA I PRIHOD BUDUĆEGA RAZDOBLJA'],
+[126,'F) UKUPNO – PASIVA (AOP 067+091+098+110+125)'],
+[127,'G) IZVANBILANČNI ZAPISI']
+],
+R: [
+[128,'I. POSLOVNI PRIHODI (AOP 129 do 133)'],[129,'1. Prihodi od prodaje s poduzetnicima unutar grupe'],[130,'2. Prihodi od prodaje (izvan grupe)'],[131,'3. Prihodi na temelju upotrebe vlastitih proizvoda, robe i usluga'],[132,'4. Ostali poslovni prihodi s poduzetnicima unutar grupe'],[133,'5. Ostali poslovni prihodi (izvan grupe)'],
+[134,'II. POSLOVNI RASHODI (AOP 135+136+140+144 do 146+149+156)'],[135,'1. Promjene vrijednosti zaliha proizvodnje u tijeku i gotovih proizvoda'],
+[136,'2. Materijalni troškovi (AOP 137 do 139)'],[137,'a) Troškovi sirovina i materijala'],[138,'b) Troškovi prodane robe'],[139,'c) Ostali vanjski troškovi'],
+[140,'3. Troškovi osoblja (AOP 141 do 143)'],[141,'a) Neto plaće i nadnice'],[142,'b) Troškovi poreza i doprinosa iz plaća'],[143,'c) Doprinosi na plaće'],
+[144,'4. Amortizacija'],[145,'5. Ostali troškovi'],
+[146,'6. Vrijednosna usklađenja (AOP 147+148)'],[147,'a) dugotrajne imovine osim financijske imovine'],[148,'b) kratkotrajne imovine osim financijske imovine'],
+[149,'7. Rezerviranja (AOP 150 do 155)'],[150,'a) Rezerviranja za mirovine, otpremnine i slične obveze'],[151,'b) Rezerviranja za porezne obveze'],[152,'c) Rezerviranja za započete sudske sporove'],[153,'d) Rezerviranja za troškove obnavljanja prirodnih bogatstava'],[154,'e) Rezerviranja za troškove u jamstvenim rokovima'],[155,'f) Druga rezerviranja'],
+[156,'8. Ostali poslovni rashodi'],
+[157,'III. FINANCIJSKI PRIHODI (AOP 158 do 167)'],[158,'1. Prihodi od ulaganja u udjele (dionice) poduzetnika unutar grupe'],[159,'2. Prihodi od ulaganja u udjele (dionice) društava povezanih sudjelujućim interesima'],[160,'3. Prihodi od ostalih dugotrajnih financijskih ulaganja i zajmova poduzetnicima unutar grupe'],[161,'4. Ostali prihodi s osnove kamata iz odnosa s poduzetnicima unutar grupe'],[162,'5. Tečajne razlike i ostali financijski prihodi iz odnosa s poduzetnicima unutar grupe'],[163,'6. Prihodi od ostalih dugotrajnih financijskih ulaganja i zajmova'],[164,'7. Ostali prihodi s osnove kamata'],[165,'8. Tečajne razlike i ostali financijski prihodi'],[166,'9. Nerealizirani dobici (prihodi) od financijske imovine'],[167,'10. Ostali financijski prihodi'],
+[168,'IV. FINANCIJSKI RASHODI (AOP 169 do 175)'],[169,'1. Rashodi s osnove kamata i slični rashodi s poduzetnicima unutar grupe'],[170,'2. Tečajne razlike i drugi rashodi s poduzetnicima unutar grupe'],[171,'3. Rashodi s osnove kamata i slični rashodi'],[172,'4. Tečajne razlike i drugi rashodi'],[173,'5. Nerealizirani gubici (rashodi) od financijske imovine'],[174,'6. Vrijednosna usklađenja financijske imovine (neto)'],[175,'7. Ostali financijski rashodi'],
+[176,'V. UDIO U DOBITI OD DRUŠTAVA POVEZANIH SUDJELUJUĆIM INTERESOM'],[177,'VI. UDIO U DOBITI OD ZAJEDNIČKIH POTHVATA'],[178,'VII. UDIO U GUBITKU OD DRUŠTAVA POVEZANIH SUDJELUJUĆIM INTERESOM'],[179,'VIII. UDIO U GUBITKU OD ZAJEDNIČKIH POTHVATA'],
+[180,'IX. UKUPNI PRIHODI (AOP 128+157+176 + 177)'],[181,'X. UKUPNI RASHODI (AOP 134+168+178 + 179)'],
+[182,'XI. DOBIT ILI GUBITAK PRIJE OPOREZIVANJA (AOP 180-181)'],[183,'1. Dobit prije oporezivanja (AOP 180-181)'],[184,'2. Gubitak prije oporezivanja (AOP 181-180)'],
+[185,'XII. POREZ NA DOBIT'],
+[186,'XIII. DOBIT ILI GUBITAK RAZDOBLJA (AOP 182-185)'],[187,'1. Dobit razdoblja (AOP 182-185)'],[188,'2. Gubitak razdoblja (AOP 185-182)'],
+[189,'XIV. DOBIT ILI GUBITAK PREKINUTOG POSLOVANJA PRIJE OPOREZIVANJA (AOP 190-191)'],
+[195,'XVI. DOBIT ILI GUBITAK PRIJE OPOREZIVANJA (AOP 182+189)'],
+[198,'XVII. POREZ NA DOBIT (AOP 185+192)'],
+[199,'XVIII. DOBIT ILI GUBITAK RAZDOBLJA (AOP 195-198)']
+]};
+// retci koji su u FINA-inom obrascu formule (uvijek imaju iznos, i 0)
+const GFI_TOTALS = new Set([2,3,10,20,31,37,38,46,53,65,67,70,77,84,87,91,98,110,126,128,134,136,140,146,149,157,168,180,181,182,183,184,186,187,188,189,195,198,199]);
+
+/* Generator datoteke u rasporedu FINA-ina Excela: naziv u A, AOP u G, bilješka u H, prethodna godina u I, tekuća u J */
+function buildGFIWorkbook(XLSX, o){
+  // o: {naziv, oib, year, prev:{aop:v}, cur:{aop:v}, note, months}
+  const d2 = (d,m,y)=>`${String(d).padStart(2,'0')}.${String(m).padStart(2,'0')}.${y}`;
+  const val = (map,aop)=>{ const v=map?map[aop]:undefined; if(GFI_TOTALS.has(aop)) return v==null?0:v; return (v==null||v===0)?null:v; };
+  const mo = o.months||12;
+  const from = d2(1, 13-mo, o.year);
+  const sheet = (title, rows, datum)=>{
+    const out=[];
+    const K=(t)=>[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1,t]; // kontrolni tekstovi kao u FINA obrascu (stupac R)
+    const r0=K('- ako je bilo koji AOP različit od nule 1 u suprotnom 0'); r0[0]=o.note||null; out.push(r0);
+    const r1=K('- ako je upisan bilo koji AOP u koloni prethodne godine, 1 u suprotnom 0'); r1[9]='Obrazac'; out.push(r1);
+    const r2=K('- ako je upisan bilo koji AOP u koloni tekuće godine 1 u suprotnom 0'); r2[0]=title; out.push(r2);
+    out.push([datum]);
+    out.push([`Obveznik: ${o.oib}; ${o.naziv}`,null,null,null,null,null,null,null,null,'Iznosi u eurima i centima']);
+    out.push(['Naziv pozicije',null,null,null,null,null,'AOP oznaka','Rbr. bilješke','Prethodna godina (neto)','Tekuća godina (neto)']);
+    out.push([1,null,null,null,null,null,2,3,4,5]);
+    rows.forEach(([aop,l])=> out.push([l,null,null,null,null,null,String(aop).padStart(3,'0'),null,val(o.prev,aop),val(o.cur,aop)]));
+    const ws=XLSX.utils.aoa_to_sheet(out);
+    ws['!cols']=[{wch:70},{wch:1},{wch:1},{wch:1},{wch:1},{wch:1},{wch:7},{wch:7},{wch:16},{wch:16}];
+    return ws;
+  };
+  const wb=XLSX.utils.book_new();
+  const ref=[[o.note||null],['GODIŠNJI FINANCIJSKI IZVJEŠTAJ PODUZETNIKA'],['Izvještajno razdoblje:',from,'do',d2(31,12,o.year)],['Naziv obveznika:',o.naziv],['OIB subjekta:',o.oib],['Broj mjeseci poslovanja:',12,mo]];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ref),'RefStr');
+  XLSX.utils.book_append_sheet(wb,sheet('BILANCA',GFI_ROWS.B,`stanje na dan ${d2(31,12,o.year)}.`),'Bilanca');
+  XLSX.utils.book_append_sheet(wb,sheet('RAČUN DOBITI I GUBITKA',GFI_ROWS.R,`za razdoblje ${from}. do ${d2(31,12,o.year)}.`),'RDG');
+  return wb;
+}
+/* DEMO polja -> AOP */
+function demoToAop(d){
+  if(!d) return null;
+  const m={};
+  m[2]=d.dug; m[10]=d.dug; m[13]=d.dug;
+  m[37]=d.kti; m[38]=d.zal; m[42]=d.zal; m[46]=d.pot; m[49]=d.kup; m[51]=d.ostpot; m[53]=d.kfi; m[61]=d.kfi; m[63]=d.nov; m[64]=d.ppti; m[65]=d.akt;
+  m[67]=d.kap; m[68]=d.tk; m[84]=d.zad; m[85]=d.zad>0?d.zad:0; m[86]=d.zad<0?-d.zad:0; m[87]=d.dg; m[88]=d.dg>0?d.dg:0; m[89]=d.dg<0?-d.dg:0;
+  m[91]=0; m[98]=d.dob; m[104]=d.dobBanke; m[110]=d.kob; m[116]=d.kobBanke; m[118]=d.dobav; m[120]=d.zap; m[121]=d.drz; m[125]=d.opt; m[126]=d.pas;
+  m[128]=d.ppr; m[130]=d.prod; m[133]=d.ostppr; m[134]=d.prs; m[136]=d.mat; m[138]=d.mat; m[140]=d.osob;
+  const o1=Math.round(d.osob*0.6), o2=Math.round(d.osob*0.25); m[141]=o1; m[142]=o2; m[143]=d.osob-o1-o2;
+  m[144]=d.amo; m[145]=d.ostr; m[146]=0; m[149]=0; m[157]=d.fpr; m[164]=d.fpr; m[168]=d.frs; m[171]=d.kam;
+  m[180]=d.upr; m[181]=d.urs; m[182]=d.dpo; m[183]=d.dpo>0?d.dpo:0; m[184]=d.dpo<0?-d.dpo:0; m[185]=d.por; m[186]=d.neto; m[187]=d.neto>0?d.neto:0; m[188]=d.neto<0?-d.neto:0;
+  m[189]=0; m[195]=d.dpo; m[198]=d.por; m[199]=d.neto;
+  return m;
+}
+function buildDemoGFI(XLSX, FD, year){
+  const D=FD.DEMO_DATA;
+  return buildGFIWorkbook(XLSX,{naziv:'DEMO Trgovina d.o.o. (izmišljena tvrtka)', oib:'00000000000', year, prev:demoToAop(D[year-1]), cur:demoToAop(D[year]),
+    note:'DEMO – IZMIŠLJENI PODACI. Simulirana datoteka u rasporedu FINA-ina GFI-POD obrasca (verzija 2024+), nije službeni FINA obrazac.'});
+}
+
+
+</script>
+<script>
+(function(){
+"use strict";
+const EXPECTED = {"god":{"2023":{"EBIT":114800,"EBITDA":144800,"rastPpr":0.21904761904761916,"rastUpr":0.21894336030461692,"netoMarza":0.0680718469347911,"opMarza":0.0896875,"ROA":0.12225245441795231,"ROE":0.21985355875431617,"TL":1.6091500421849059,"UL":1.0648286748496312,"NL":0.2381405982091827,"NOK":179056,"obveze":353944,"udioObveza":0.4543568677792041,"obvKap":0.8426114613289657,"udioKap":0.539224646983312,"finDug":190944,"dugEbitda":1.3186740331491713,"daniNaplate":53.541009463722396,"rastPot":0.35465116279069764,"rastKob":0.5461785282205038},"2024":{"EBIT":163400,"EBITDA":201400,"rastPpr":0.21875,"rastUpr":0.21866458414681755,"netoMarza":0.07771739826978533,"opMarza":0.10474358974358974,"ROA":0.13527941996653653,"ROE":0.27835527146283523,"TL":1.136130498232901,"UL":0.7103234971916093,"NL":0.0774194547347803,"NOK":70334,"obveze":556666,"udioObveza":0.5489802761341223,"obvKap":1.2333792712270735,"udioKap":0.4451025641025641,"finDug":335666,"dugEbitda":1.6666633565044686,"daniNaplate":61.55239327296248,"rastPot":0.4034334763948497,"rastKob":0.7577021473477941},"2025":{"EBIT":229000,"EBITDA":274000,"rastPpr":0.21794871794871784,"rastUpr":0.21787888497276509,"netoMarza":0.08780320968166272,"opMarza":0.12052631578947369,"ROA":0.14147520135650699,"ROE":0.35521713863622334,"TL":0.9363747234259987,"UL":0.5748400811765784,"NL":0.02169207853496522,"NOK":-52796,"obveze":849796,"udioObveza":0.6318185873605948,"obvKap":1.7406575939566247,"udioKap":0.3629769516728625,"finDug":555796,"dugEbitda":2.0284525547445256,"daniNaplate":71.58572186836518,"rastPot":0.4036697247706422,"rastKob":0.6060588465275438}},"P":96.95080242041568,"L":10.576205813519543,"Z":74.06516333357952,"T":40.0,"trendDetalji":{"cagr":0.2183492931011204,"dTL":-0.6727753187589072,"dUdioKap":-0.17624769531044948,"gKob":1.8229730833083853,"gPpr":0.484375,"pos":100.0},"score":53.926853182554666,"prognoza":{"g":0.2183492931011204,"osobG":0.14763808351400898,"osnovni":{"ppr":2314863.6568921288,"upr":2315363.6568921288,"urs":2032943.9239939018,"dpo":282419.73289822694},"optimisticni":{"ppr":2409863.6568921288,"upr":2410363.6568921288,"urs":2076645.2874249804,"dpo":333718.3694671483},"pesimisticni":{"ppr":2029863.656892129,"upr":2030363.656892129,"urs":1881291.878847284,"dpo":149071.77804484498}},"status":"y"};
+const $ = id => document.getElementById(id);
+const {fE,fP,fN,nf,FIELDS} = FD;
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let slots=[null,null,null];
+let ds=null, fcBase=null, A=null, analyzed=false;
+const SKEY='fd-analiza-v1';
+
+/* ---------- uvoz ---------- */
+function renderSlots(){
+  $('slots').innerHTML = slots.map((s,i)=>{
+    const cls = s ? (s.err||s.rej?'err':'ok') : '';
+    let body = '<div class="s">Klikni i odaberi .xls ili .xlsx</div>';
+    const dg = s && s.p && s.p.diag ? `<details class="s" style="margin-top:6px"><summary style="cursor:pointer">Što je pronađeno u datoteci</summary>${s.p.diag.map(x=>`<div>${esc(x)}</div>`).join('')}</details>` : '';
+    if(s && s.needYear) body = `<div class="s">${esc(s.name)}</div><div class="s" style="color:var(--y)">Godina izvještaja nije pronađena u datoteci. Upiši je:</div><div class="row" style="margin-top:6px"><input type="number" min="2016" max="2035" data-year-for="${i}" style="width:90px;padding:6px;border:1px solid var(--inline);border-radius:6px;background:var(--inbg);color:var(--text)"><button type="button" data-year-ok="${i}">Potvrdi</button></div>${dg}`;
+    else if(s && s.err) body = `<div class="s">${esc(s.name)}</div><div class="s" style="color:var(--r)">${esc(s.err)}</div>${dg}`;
+    else if(s && s.pendingId) body = `<div class="s">${esc(s.name)}</div><div class="s"><b>${s.p.year}.</b> · ${esc(s.p.firma||'naziv nije pronađen')} · OIB ${esc(s.p.oib||'nije pronađen')}</div><div class="s" style="color:var(--y)">Bez OIB-a nije moguće provjeriti je li ovo ista tvrtka kao u ostalim izvještajima. Je li?</div><div class="row" style="margin-top:6px"><button type="button" data-id-ok="${i}">Da, ista tvrtka</button></div>`;
+    else if(s) body = `<div class="s">${esc(s.name)}</div><div class="s"><b>${s.p.year?s.p.year+'.':'godina nije prepoznata'}</b>${s.p.firma?' · '+esc(s.p.firma):''}${s.p.oib?'<br>OIB '+esc(s.p.oib):''}<br>Obrazac: ${s.p.version==='2024+'?'2024+ (AOP provjeren)':s.p.version==='stariji'?'stariji (prepoznato po nazivima)':'nepoznat'} · ${s.p.foundCount} stavki${s.p.currency==='HRK'?' · kune → euri':''}</div>${s.rej?`<div class="s" style="color:var(--r)"><b>Nije uključeno:</b> ${esc(s.rej)}</div>`:''}`;
+    if(s && (s.needYear || s.err || s.pendingId)) return `<div class="slot err"><div class="t">GFI-POD ${i+1}</div>${body}<button type="button" class="x" data-clear="${i}" aria-label="Ukloni">Ukloni</button></div>`;
+    return `<label class="slot ${cls}"><input type="file" accept=".xls,.xlsx" data-slot="${i}"><div class="t">GFI-POD ${i+1}</div>${body}${s?`<button type="button" class="x" data-clear="${i}" aria-label="Ukloni">Ukloni</button>`:''}</label>`;
+  }).join('');
+}
+async function readFile(file, i){
+  try{
+    if(typeof XLSX==='undefined') throw new Error('Biblioteka za čitanje Excela nije učitana. Provjeri internetsku vezu.');
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf,{type:'array',cellDates:true});
+    const p = FD.parseWorkbook(wb, XLSX, file.name);
+    if(p.foundCount<10){ slots[i]={name:file.name, p, err:`Prepoznato je samo ${p.foundCount} stavki, pa ovo nije prepoznato kao GFI-POD obrazac.`}; }
+    else if(!p.year){ slots[i]={name:file.name, p, needYear:true}; }
+    else slots[i]={name:file.name,p};
+  }catch(e){
+    const m=String(e&&e.message||e);
+    slots[i]={name:file.name, err: /password|encrypt|lozink/i.test(m) ? 'Datoteka je zaštićena lozinkom. Otvori je u Excelu, ukloni zaštitu i spremi ponovno (.xls ili .xlsx).' : 'Datoteku nije moguće pročitati: '+m};
+  }
+  renderSlots(); rebuildFromSlots();
+  const sl=slots[i];
+  if(sl && sl.rej) alert(`Datoteka „${sl.name}“ nije uključena u analizu:\n${sl.rej}\n\nU jednu analizu mogu ući samo izvještaji iste tvrtke (isti OIB).`);
+}
+function rebuildFromSlots(){
+  const ok=[]; let ref=null;
+  slots.forEach(s=>{ if(!s || s.err || s.needYear) return; s.rej=null; s.pendingId=false;
+    const rel = ref ? FD.sameCompany(ref,s.p) : 'same';
+    if(rel==='different') s.rej=`druga tvrtka (OIB ${s.p.oib}) – analiza se radi samo za OIB ${ref.oib}. Izvještaji različitih tvrtki ne smiju se spajati.`;
+    else if(ok.some(p=>p.year===s.p.year)) s.rej=`izvještaj za ${s.p.year}. već je učitan; ista godina se ne broji dvaput.`;
+    else if(rel==='unknown' && !s.idOk) s.pendingId=true;
+    else { ok.push(s.p); ref=ref||s.p; } });
+  renderSlots();
+  if(!ok.length){ if(ds && !ds.demo && !ds.manual && !ds.loaded){ ds=null; } updateButtons(); return; }
+  ds = FD.merge(ok); ds.info=[];
+  ds.errs = slots.filter(s=>s && s.rej).map(s=>`${s.name}: NIJE UKLJUČENO – ${s.rej}`);
+  slots.filter(s=>s && s.pendingId).forEach(s=>ds.errs.push(`${s.name}: čeka potvrdu – OIB nije pronađen u ${s.p.oib?'prvom':'ovom'} izvještaju, pa nije moguće provjeriti je li riječ o istoj tvrtki.`));
+  if(slots.some(s=>s && s.idOk)) ds.info.push('Korisnik je ručno potvrdio da izvještaji bez OIB-a pripadaju istoj tvrtki.');
+  ok.forEach(p=>{ p.warn.forEach(w=>ds.warn.push(`${p.fileName}: ${w}`)); (p.info||[]).forEach(w=>ds.info.push(`${p.fileName}: ${w}`)); if(p.missing.length) ds.warn.push(`${p.fileName}: nisu pronađene stavke: ${p.missing.join(', ')}. Upiši ih ručno ako ih imaš.`); });
+  fcBase=null; afterData();
+}
+function afterData(){
+  $('demoBanner').classList.toggle('hidden', !(ds&&ds.demo));
+  updateButtons(); renderCheck(); save();
+  if(analyzed) runAnalysis(false);
+}
+function updateButtons(){ $('btnAnalyze').disabled = !ds; }
+
+/* ---------- tablica provjere ---------- */
+function dsYears(){
+  const {years,opening} = FD.pickYears(ds);
+  const all = Object.keys(ds.years).map(Number).sort((a,b)=>a-b);
+  let show = years.length ? (opening!=null?[opening,...years]:years) : all.slice(-4);
+  return {show, opening, years};
+}
+function renderCheck(){
+  if(!ds){ $('check').classList.add('hidden'); return; }
+  $('check').classList.remove('hidden');
+  const w = [...(ds.errs||[]).map(t=>({t,c:'err'})), ...(ds.warn||[]).map(t=>({t,c:''})), ...(ds.info||[]).map(t=>({t,c:'info'}))];
+  FD.validate(ds).forEach(v=>w.push({t:`${v.y}.: ${v.t}`, c:v.lvl==='err'?'err':''}));
+  const {show, opening, years} = dsYears();
+  if(!years.length) w.push({t:'Nema nijedne godine s ukupnom aktivom i poslovnim prihodima. Učitaj GFI ili upiši podatke.',c:'err'});
+  else if(years.length<3) w.push({t:`Za analizu su dostupne ${years.length===1?'jedna godina':'dvije godine'} (${years.join('., ')}.). Usporedba tri godine nije moguća.`,c:'info'});
+  if(opening==null && years.length) w.push({t:`Nema početnog stanja za ${years[0]}., pa ROA, ROE i dani naplate za tu godinu neće biti izračunati.`,c:'info'});
+  $('warns').innerHTML = w.map(x=>`<li class="${x.c}">${esc(x.t)}</li>`).join('');
+  const anyBlank = show.some(y=>ds.years[y] && FIELDS.some(f=>!f.hidden && ds.years[y].vals[f.k] && ds.years[y].vals[f.k].v==null));
+  $('btnZero').classList.toggle('hidden', !anyBlank);
+  let h = `<thead><tr><th>Stavka</th>${show.map(y=>`<th class="n">${y}.${y===opening?'<br><span class="badge">početno stanje</span>':''}</th>`).join('')}</tr></thead><tbody>`;
+  let g='';
+  for(const f of FIELDS){
+    if(f.hidden) continue;
+    if(f.g!==g){ g=f.g; h+=`<tr class="grp"><td colspan="${show.length+1}">${g}</td></tr>`; }
+    h+=`<tr><td class="lbl">${esc(f.l)}</td>`;
+    for(const y of show){
+      const Y=ds.years[y]; const c=Y&&Y.vals[f.k];
+      const alt = Y&&Y.alt&&Y.alt[f.k];
+      const val = c==null||c.v==null ? '' : nf(Number.isInteger(c.v)?0:2).format(c.v);
+      const title = c ? `${c.label||''}${c.aop?' (AOP '+c.aop+')':''} – ${c.src||''}` : 'Nije pronađeno u obrascu';
+      let meta = !c ? '<span class="meta warn">nije pronađeno</span>'
+        : c.v==null ? `<span class="meta warn">prazno, nepotvrđeno${c.aop?' · AOP '+esc(c.aop):''}</span>`
+        : c.status==='potvrđeno 0' ? `<span class="meta">prazno = 0 (zbroj) · AOP ${esc(c.aop)}</span>`
+        : c.src==='ručni ispravak' || c.src==='potvrđeno ručno' ? `<span class="meta">${esc(c.src)}</span>`
+        : c.aop ? `<span class="meta">AOP ${esc(c.aop)}</span>` : '';
+      h+=`<td class="n"><input data-y="${y}" data-k="${f.k}" inputmode="decimal" value="${val}" placeholder="–" title="${esc(title)}" class="${c&&c.status==='potvrđeno 0'?'blank':''}${alt?' conf':''}" aria-label="${esc(f.l)} ${y}">${meta}`;
+      if(alt){ h+=`<br><select data-alt-y="${y}" data-alt-k="${f.k}" aria-label="Odaberi izvor">${alt.map((o,i)=>`<option value="${i}" ${Math.abs(o.v-c.v)<=1?'selected':''}>${fE(o.v)} – ${esc(o.src.split(' – ').slice(-1)[0])}, ${esc(o.src.split(' – ')[0])}</option>`).join('')}</select>`; }
+      h+=`</td>`;
+    }
+    h+='</tr>';
+  }
+  $('dataTbl').innerHTML = h+'</tbody>';
+}
+$('dataTbl').addEventListener('change', e=>{
+  const t=e.target;
+  if(t.dataset.k){
+    const y=+t.dataset.y, k=t.dataset.k, Y=ds.years[y] ||= {vals:{},alt:{},sources:[]};
+    if(!t.value.trim()) delete Y.vals[k];
+    else { const v=FD.toNum(t.value); if(v==null){ t.value=''; delete Y.vals[k]; } else { Y.vals[k]={v, status:'ok', src:'ručni ispravak', label:FD.FK[k].l, aop:(Y.vals[k]&&Y.vals[k].aop)||'', orig:true}; t.value=nf(Number.isInteger(v)?0:2).format(v); t.classList.remove('blank'); } }
+    save(); if(analyzed) runAnalysis(false);
+  } else if(t.dataset.altY){
+    const y=+t.dataset.altY, k=t.dataset.altK, o=ds.years[y].alt[k][+t.value];
+    ds.years[y].vals[k]={...o, orig:true}; renderCheck(); save(); if(analyzed) runAnalysis(false);
+  }
+});
+
+/* ---------- analiza i prikaz ---------- */
+const ST = {
+  g:{t:'ZELENO – Zdravo poslovanje', d:'Tvrtka prema raspoloživim podacima pokazuje povoljnu financijsku kondiciju, stabilnost ili poboljšanje poslovanja, bez prepoznatih kritičnih problema.'},
+  y:{t:'ŽUTO – Potreban oprez', d:'Postoje nepovoljni trendovi ili financijski rizici koje treba pratiti i poduzeti mjere za njihovo smanjenje.'},
+  r:{t:'CRVENO – Ozbiljni financijski rizici', d:'Više važnih pokazatelja upućuje na financijske poteškoće, mogućnost pogoršanja poslovanja ili povećan rizik nelikvidnosti.'},
+  na:{t:'Nedovoljno podataka', d:'Za ocjenu nedostaju ključni podaci, pa semafor ne daje boju.'},
+  blocked:{t:'Analiza nije pouzdana', d:'Učitani podaci sadrže matematičke ili bilančne nepravilnosti. Dok se ne isprave, semafor i dijagnoza se ne prikazuju. Ispravi iznose u tablici provjere iznad (ili provjeri izvorni GFI) – analiza se osvježava odmah.'}
+};
+const AREAS = [['P','Profitabilnost','koliko dobiti ostaje od prihoda i imovine'],['L','Likvidnost','može li tvrtka podmiriti kratkoročne obveze'],['Z','Zaduženost i kapital','koliko se oslanja na tuđe izvore'],['T','Trend i stabilnost','kako se stanje mijenjalo kroz godine']];
+const fillCls = v => v>=65?'fill-g':v>=45?'fill-y':'fill-r';
+
+function runAnalysis(scroll){
+  if(!ds) return;
+  A = FD.analyze(ds); analyzed=true;
+  if(scroll) $('dataBox').open=false;
+  $('results').classList.remove('hidden');
+  const ys=A.years;
+  $('rFirma').textContent = (A.firma||'Tvrtka bez naziva');
+  $('rMeta').textContent = (A.oib?'OIB '+A.oib+' · ':'') + (ys.length? `Analizirane godine: ${ys[0]}.${ys.length>1?'–'+ys[ys.length-1]+'.':''}` : '') + (ys.length && ys.length<3 ? ` · DJELOMIČNA ANALIZA (${ys.length===1?'samo jedna godina':'samo dvije godine'})` : '') + (A.demo?' · DEMO, izmišljeni podaci':'');
+  $('printHead').innerHTML = `<h1 style="font-size:1.6rem">Financijska dijagnoza</h1><div>${esc(A.firma||'')}${A.oib?', OIB '+esc(A.oib):''}</div><div>Razdoblje: ${ys.join('., ')}. · Izrađeno: ${new Date().toLocaleDateString('hr-HR')}</div>${A.demo?'<p><b>DEMO: svi podaci su izmišljeni.</b></p>':''}`;
+  ['lr','ly','lg'].forEach(id=>$(id).className='');
+  const st=A.status;
+  if(st==='na'||st==='blocked'){ $('lr').className=$('ly').className=$('lg').className='on na'; }
+  else $({r:'lr',y:'ly',g:'lg'}[st]).className='on '+st;
+  $('vTitle').className='vtitle '+(st==='na'||st==='blocked'?'':st); $('vTitle').textContent=ST[st].t;
+  $('vDesc').textContent=ST[st].d;
+  if(st==='na'||st==='blocked'){
+    $('vScore').textContent='';
+    $('vRules').innerHTML = st==='na' ? `<li>Nedostaje za zadnju godinu: ${A.missingCore.map(k=>FD.FK[k].l).join(', ')}.</li>`
+      : '<li><b>Što treba ispraviti:</b></li>'+A.critical.map(c=>`<li>${esc(c)}</li>`).join('');
+    $('chartsH').textContent='Brojke po godinama';
+    ['areas','charts','patterns','diag','indTbl','scoreTbl','altTbl','scTbl','fcChart'].forEach(id=>$(id).innerHTML='');
+    $('fcPanel').classList.add('hidden'); $('testPanel').classList.add('hidden');
+    zgTvrtka(); if(scroll) $('results').scrollIntoView({behavior:'smooth'}); return;
+  }
+  $('fcPanel').classList.remove('hidden');
+  $('chartsH').textContent = ys.length===3 ? 'Tri godine u brojkama' : `Dostupne godine u brojkama (${ys.length})`;
+  $('vScore').innerHTML = `Ukupna ocjena <b class="num">${fN(A.score,0)}</b> / 100`;
+  $('vRules').innerHTML = [...A.why.map(w=>`<li>${esc(w.t)}${w.changed?' <b>Zbog toga je boja ograničena.</b>':''}</li>`), ...A.checks.map(c=>`<li>Kontrola: ${esc(c)}</li>`), ...A.notes.map(n=>`<li>${esc(n)}</li>`)].join('');
+  $('areas').innerHTML = AREAS.map(([k,n,dsc])=>{ const v=A.parts[k]; return `<div class="area"><div class="h"><span>${n}</span><span class="num">${v==null?'–':fN(v,0)}</span></div><div class="bar"><i class="${v==null?'':fillCls(v)}" style="width:${v==null?0:v}%"></i></div><p>${dsc}</p></div>`; }).join('');
+  renderCharts(); renderPatterns(); renderForecast(); renderDetail(); renderTest();
+  if(scroll) $('results').scrollIntoView({behavior:'smooth'});
+  zgTvrtka();
+}
+// 2. redak tamne trake: učitana tvrtka (naziv · OIB · godine), samo prikaz
+function zgTvrtka(){
+  const el=$('zgTvrtka'); if(!el) return;
+  if(!A){ el.textContent='Tvrtka još nije učitana'; el.className='empty'; return; }
+  const ys=A.years||[], dio=[A.firma||'Tvrtka bez naziva'];
+  if(!A.demo){
+    if(A.oib) dio.push('OIB '+A.oib);
+    if(ys.length) dio.push(ys[0]+'.'+(ys.length>1?'–'+ys[ys.length-1]+'.':''));
+  }
+  el.textContent = dio.join(' · ') + (ys.length && ys.length<3 ? ' · djelomična analiza' : '');
+  el.className='';
+}
+
+/* grafikoni (SVG) */
+const short = v => { const a=Math.abs(v); return a>=1e6? nf(1).format(v/1e6)+' mil.' : a>=1e3? nf(0).format(v/1e3)+' tis.' : nf(0).format(v); };
+function niceMax(m){ if(m<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(m))); const f=m/p; return (f<=1?1:f<=2?2:f<=5?5:10)*p; }
+const CW = () => window.innerWidth<640 ? 380 : 600;
+function barChart(labels, series, opt={}){
+  const W=CW(),H=W<600?230:250,L=52,R=8,T=12,B=30, w=W-L-R, h=H-T-B;
+  const vals=series.flatMap(s=>s.v).filter(v=>v!=null);
+  let mx=niceMax(Math.max(0,...vals)), mn=Math.min(0,...vals); if(mn<0) mn=-niceMax(-mn);
+  const y=v=>T+h-(v-mn)/(mx-mn)*h;
+  let g='';
+  for(let i=0;i<=4;i++){ const v=mn+(mx-mn)*i/4, yy=y(v); g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${L-6}" y="${yy+4}" text-anchor="end" font-size="11" fill="var(--muted)">${short(v)}</text>`; }
+  const gw=w/labels.length, bw=Math.min(34,(gw*0.75)/series.length);
+  labels.forEach((lab,i)=>{
+    const x0=L+gw*i+(gw-bw*series.length)/2;
+    series.forEach((s,j)=>{ const v=s.v[i]; if(v==null) return; const y1=y(Math.max(v,0)), y2=y(Math.min(v,0)); g+=`<rect x="${x0+j*bw+1}" y="${y1}" width="${bw-2}" height="${Math.max(1,y2-y1)}" rx="2" fill="${s.c}"><title>${s.n} ${lab}: ${fE(v)}</title></rect>`; });
+    g+=`<text x="${L+gw*i+gw/2}" y="${H-10}" text-anchor="middle" font-size="12" fill="var(--text)">${lab}</text>`;
+  });
+  if(mn<0) g+=`<line x1="${L}" x2="${W-R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--muted)"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opt.title||'')}">${g}</svg><div class="legend">${series.map(s=>`<span><i style="background:${s.c}"></i>${s.n}</span>`).join('')}</div>`;
+}
+function lineChart(labels, series, ref){
+  const W=CW(),H=W<600?230:250,L=40,R=26,T=16,B=30,w=W-L-R,h=H-T-B;
+  const vals=series.flatMap(s=>s.v).filter(v=>v!=null).concat(ref!=null?[ref]:[]);
+  const mx=Math.max(2,Math.ceil(Math.max(...vals)*2)/2), mn=0;
+  const y=v=>T+h-(v-mn)/(mx-mn)*h, x=i=>L+(labels.length===1?w/2:w*i/(labels.length-1));
+  let g='';
+  for(let i=0;i<=4;i++){ const v=mn+(mx-mn)*i/4; g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${fN(v,1)}</text>`; }
+  if(ref!=null) g+=`<line x1="${L}" x2="${W-R}" y1="${y(ref)}" y2="${y(ref)}" stroke="var(--r)" stroke-dasharray="5 4"/><text x="${L+4}" y="${y(ref)+14}" font-size="11" fill="var(--r)">granica 1,0</text>`;
+  series.forEach(s=>{
+    const pts=s.v.map((v,i)=>v==null?null:[x(i),y(v)]).filter(Boolean);
+    g+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${s.c}" stroke-width="3"/>`;
+    s.v.forEach((v,i)=>{ if(v!=null) g+=`<circle cx="${x(i)}" cy="${y(v)}" r="5" fill="${s.c}"><title>${s.n} ${labels[i]}: ${fN(v,2)}</title></circle><text x="${x(i)}" y="${y(v)-10}" text-anchor="middle" font-size="11" fill="var(--text)">${fN(v,2)}</text>`; });
+  });
+  labels.forEach((l,i)=>g+=`<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="12" fill="var(--text)">${l}</text>`);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg><div class="legend">${series.map(s=>`<span><i style="background:${s.c}"></i>${s.n}</span>`).join('')}</div>`;
+}
+function renderCharts(){
+  const ys=A.years, lab=ys.map(y=>y+'.'), D=A.D, I=A.I;
+  $('charts').innerHTML =
+    `<div class="chart"><h3>Prihodi, rashodi i rezultat</h3>${barChart(lab,[{n:'Ukupni prihodi',c:'var(--c1)',v:ys.map(y=>D[y].upr)},{n:'Ukupni rashodi',c:'var(--c2)',v:ys.map(y=>D[y].urs)},{n:'Neto rezultat',c:'var(--c3)',v:ys.map(y=>D[y].neto)}],{title:'Prihodi, rashodi i rezultat'})}</div>`+
+    `<div class="chart"><h3>Imovina, obveze i kapital</h3>${barChart(lab,[{n:'Ukupna imovina',c:'var(--c1)',v:ys.map(y=>D[y].akt)},{n:'Obveze',c:'var(--c2)',v:ys.map(y=>I[y].obveze)},{n:'Kapital',c:'var(--c3)',v:ys.map(y=>D[y].kap)}],{title:'Imovina, obveze i kapital'})}</div>`+
+    `<div class="chart"><h3>Likvidnost</h3>${lineChart(lab,[{n:'Tekuća likvidnost',c:'var(--c1)',v:ys.map(y=>I[y].TL)},{n:'Ubrzana likvidnost',c:'var(--c4)',v:ys.map(y=>I[y].UL)}],1)}<p class="small muted" style="margin:4px 0 0">Ispod 1,0 kratkoročne obveze su veće od imovine kojom se pokrivaju.</p></div>`;
+}
+function renderPatterns(){
+  $('patterns').innerHTML = A.patterns.length ? A.patterns.map(p=>`<span class="chip ${p[2]}">${p[0]}.: ${esc(p[1])}</span>`).join('') : '<span class="muted small">Nema posebno izraženih obrazaca.</span>';
+}
+
+/* prognoza */
+function sliderSet(){
+  const b=fcBase;
+  $('sg').value=(b.g*100).toFixed(1); $('sdm').value=(b.dm*100).toFixed(1); $('sgo').value=(b.go*100).toFixed(1); $('sgk').value=(b.gk*100).toFixed(0);
+  sliderLabels();
+}
+function sliderLabels(){
+  $('sgV').textContent=fN(+$('sg').value,1)+' %'; $('sdmV').textContent=(+$('sdm').value>0?'+':'')+fN(+$('sdm').value,1);
+  $('sgoV').textContent=fN(+$('sgo').value,1)+' %'; $('sgkV').textContent=fN(+$('sgk').value,0)+' %';
+}
+['sg','sdm','sgo','sgk'].forEach(id=>$(id).addEventListener('input',()=>{
+  fcBase={g:+$('sg').value/100, dm:+$('sdm').value/100, go:+$('sgo').value/100, gk:+$('sgk').value/100};
+  sliderLabels(); renderForecast(true); save();
+}));
+$('fcReset').onclick=()=>{ fcBase=FD.forecastDefaults(A); sliderSet(); renderForecast(true); save(); };
+function renderForecast(fromSlider){
+  if(!fcBase) fcBase=FD.forecastDefaults(A);
+  if(!fromSlider) sliderSet();
+  const F=FD.forecast(A,fcBase), yN=A.years[A.years.length-1], d=A.D[yN];
+  if(!F){ $('fcIntro').textContent='Projekcija nije moguća: zadnja godina nema poslovnih prihoda ili rashoda.'; $('scTbl').innerHTML=''; $('fcChart').innerHTML=''; renderDiag(null); return; }
+  $('fcIntro').textContent = `Projekcija za ${F.year}. na temelju ${A.years.length} godine podataka. Osnovni scenarij: rast poslovnih prihoda ${fP(fcBase.g)}, troškovi osoblja ${fP(fcBase.go)}, ostali troškovi u istom odnosu prema prihodima kao u ${yN}.`;
+  const rows=[['Nepovoljni',F.pesimisticni],['Osnovni',F.osnovni],['Povoljni',F.optimisticni]];
+  $('scTbl').innerHTML = `<tr><th>Scenarij</th><th>Poslovni prihodi</th><th>Ukupni rashodi</th><th>Rezultat prije oporezivanja</th><th>Promjena u odnosu na ${yN}.</th></tr>`+
+    `<tr><td class="muted">Stvarno ${yN}.</td><td class="num">${fE(d.ppr)}</td><td class="num">${fE(d.urs)}</td><td class="num">${fE(d.dpo)}</td><td></td></tr>`+
+    rows.map(([n,s])=>`<tr class="${n==='Osnovni'?'base':''}"><td>${n}</td><td class="num">${fE(s.ppr)}</td><td class="num">${fE(s.urs)}</td><td class="num">${fE(s.dpo)}</td><td class="num">${d.dpo? (s.dpo>=d.dpo?'+':'')+fP((s.dpo-d.dpo)/Math.abs(d.dpo)) : '–'}</td></tr>`).join('');
+  $('fcChart').innerHTML = `<h3>Rezultat prije oporezivanja</h3>`+barChart([`${yN}. stvarno`,'Nepovoljni','Osnovni','Povoljni'],[{n:'Rezultat prije oporezivanja',c:'var(--c3)',v:[d.dpo,F.pesimisticni.dpo,F.osnovni.dpo,F.optimisticni.dpo]}]);
+  renderDiag(F);
+}
+
+/* dijagnoza */
+function renderDiag(F){
+  const g=FD.diagnose(A,F);
+  const ul = a => a.length? `<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  $('diag').innerHTML =
+    `<h3>1. Opće stanje poslovanja</h3><p>${esc(g.s1)}</p>`+
+    `<h3>2. Što tvrtka radi dobro?</h3>${g.good.length?ul(g.good):'<p>Iz dostupnih podataka nije moguće izdvojiti izrazito pozitivne pokazatelje.</p>'}`+
+    `<h3>3. Gdje postoje problemi?</h3>${g.bad.length?`<ul>${g.bad.map(b=>`<li><b>${esc(b.fact)}</b><span class="why">${esc(b.meaning)}</span>${b.check?`<span class="chk">Provjeriti: ${esc(b.check)}</span>`:''}</li>`).join('')}</ul>`:'<p>Nisu prepoznati značajni financijski problemi.</p>'}`+
+    `<h3>4. Kako se poslovanje mijenjalo?</h3>${g.s4.map(p=>`<p>${esc(p)}</p>`).join('')}`+
+    `<h3>5. Što možemo očekivati?</h3>${g.s5.map(p=>`<p>${esc(p)}</p>`).join('')}`+
+    `<h3>6. Završni zaključak i preporuke</h3><p>${esc(g.s6)}</p>${ul(g.recs)}`;
+}
+
+/* detaljno */
+const IND = [
+  ['Rast poslovnih prihoda','rastPpr','%','Poslovni prihodi / prethodna godina − 1'],
+  ['Neto profitna marža','netoMarza','%','Neto dobit / ukupni prihodi'],
+  ['Operativna marža','opMarza','%','EBIT / poslovni prihodi; EBIT = poslovni prihodi − poslovni rashodi'],
+  ['ROA','ROA','%','Neto dobit / prosječna ukupna imovina (početak i kraj godine)'],
+  ['ROE','ROE','%','Neto dobit / prosječni kapital; ne računa se uz kapital ≤ 0'],
+  ['EBIT','EBIT','e','Poslovni prihodi − poslovni rashodi'],
+  ['EBITDA','EBITDA','e','EBIT + amortizacija (vrijednosna usklađenja nisu dodana)'],
+  ['Tekuća likvidnost','TL','x','Kratkotrajna imovina / kratkoročne obveze'],
+  ['Ubrzana likvidnost','UL','x','(Novac + kratkotrajna financijska imovina + kratkoročna potraživanja) / kratkoročne obveze'],
+  ['Novčana likvidnost','NL','x','Novac / kratkoročne obveze'],
+  ['Neto obrtni kapital','NOK','e','Kratkotrajna imovina − kratkoročne obveze'],
+  ['Ukupne obveze','obveze','e','Dugoročne + kratkoročne obveze'],
+  ['Udio obveza u imovini','udioObveza','%','Ukupne obveze / ukupna imovina'],
+  ['Obveze / kapital','obvKap','x','Ukupne obveze / kapital'],
+  ['Udio vlastitog kapitala','udioKap','%','Kapital / ukupna imovina'],
+  ['Krediti i zajmovi','finDug','e','Obveze prema bankama i fin. institucijama + obveze za zajmove, depozite i slično (dugoročne i kratkoročne)'],
+  ['Krediti i zajmovi / EBITDA','dugEbitda','x','Financijski dug / EBITDA'],
+  ['Dani naplate (procjena)','daniNaplate','d','Prosječna potraživanja od kupaca / prihodi od prodaje × broj dana; procjena jer uključuje PDV u potraživanjima'],
+  ['Rast potraživanja','rastPot','%','Kratkoročna potraživanja / prethodna godina − 1'],
+  ['Rast kratkoročnih obveza','rastKob','%','Kratkoročne obveze / prethodna godina − 1']
+];
+const fmtI=(v,t)=> t==='%'?fP(v): t==='e'?fE(v): t==='d'?(v==null?'–':fN(v,0)+' dana'): fN(v,2);
+function renderDetail(){
+  const ys=A.years;
+  $('indTbl').innerHTML = `<tr><th>Pokazatelj</th>${ys.map(y=>`<th class="n">${y}.</th>`).join('')}<th>Formula</th></tr>`+
+    IND.map(([n,k,t,f])=>`<tr><td>${n}</td>${ys.map(y=>`<td class="n num">${fmtI(A.I[y][k],t)}</td>`).join('')}<td class="small muted">${esc(f)}</td></tr>`).join('');
+  const fv=(v,t)=> t==='%'?fP(v): t==='pb'?(v==null?'–':(v>0?'+':'')+fN(v*100,1)+' p.b.'): t==='d'?(v==null?'–':(v>0?'+':'')+fN(v,2)): fN(v,2);
+  let h=`<tr><th>Područje / pokazatelj</th><th class="n">Vrijednost</th><th>Bodovanje</th><th class="n">Bodovi</th></tr>`;
+  AREAS.forEach(([k,n])=>{
+    h+=`<tr class="grp"><td colspan="3">${n} (ponder ${fP(A.weights[k],0)})</td><td class="n">${A.parts[k]==null?'–':fN(A.parts[k],1)}</td></tr>`;
+    (A.breakdown[k]||[]).forEach(r=>{ h+=`<tr><td>${esc(r[0])}</td><td class="n num">${fv(r[1],r[2])}</td><td class="small muted">${esc(r[3])}</td><td class="n num">${r[4]==null?'–':fN(r[4],1)}</td></tr>`; });
+  });
+  h+=`<tr class="grp"><td colspan="3">Ukupna ocjena</td><td class="n">${fN(A.score,1)}</td></tr>`;
+  $('scoreTbl').innerHTML=h;
+  $('altTbl').innerHTML = `<tr>${ys.map(y=>`<th class="n">${y}.</th>`).join('')}</tr><tr>${ys.map(y=>{const z=A.I[y].altman; const c=z==null?'':z>2.6?'ok':z<1.1?'bad':''; return `<td class="n num ${c}">${fN(z,2)}</td>`;}).join('')}</tr><tr><td colspan="${ys.length}" class="small muted">Iznad 2,6 sigurna zona, 1,1 do 2,6 siva zona, ispod 1,1 zona rizika. Ne ulazi u ocjenu semafora.</td></tr>`;
+}
+
+/* kontrola DEMO */
+function renderTest(){
+  if(!A.demo){ $('testPanel').classList.add('hidden'); return; }
+  $('testPanel').classList.remove('hidden');
+  const rows=[]; let ok=0;
+  const cmp=(n,a,b,t)=>{ const pass=(a==null&&b==null)||(a!=null&&b!=null&&Math.abs(a-b)<=1e-6*Math.max(1,Math.abs(b))); if(pass) ok++; rows.push([n,b,a,pass,t]); };
+  for(const y of [2023,2024,2025]) for(const [n,k,t] of IND) if(k in EXPECTED.god[y]) cmp(`${n} ${y}.`, A.I[y]&&A.I[y][k], EXPECTED.god[y][k], t);
+  [['Profitabilnost','P'],['Likvidnost','L'],['Zaduženost i kapital','Z'],['Trend','T']].forEach(([n,k])=>cmp('Ocjena: '+n,A.parts[k],EXPECTED[k],'x'));
+  cmp('Ukupna ocjena',A.score,EXPECTED.score,'x');
+  const F=FD.forecast(A,FD.forecastDefaults(A));
+  [['Osnovni','osnovni'],['Povoljni','optimisticni'],['Nepovoljni','pesimisticni']].forEach(([n,k])=>{ cmp(`Prognoza ${n}: poslovni prihodi`,F[k].ppr,EXPECTED.prognoza[k].ppr,'e'); cmp(`Prognoza ${n}: rezultat prije oporezivanja`,F[k].dpo,EXPECTED.prognoza[k].dpo,'e'); });
+  const stOk = A.status===EXPECTED.status; if(stOk) ok++;
+  rows.push(['Boja semafora',EXPECTED.status==='y'?'žuto':EXPECTED.status, A.status==='y'?'žuto':A.status, stOk,'s']);
+  const total=rows.length;
+  $('testSum').innerHTML = `<p class="${ok===total?'ok':'bad'}">${ok===total?'✓':'✗'} Prošlo ${ok} od ${total} provjera.${ok===total?' Izračuni se slažu s očekivanim rezultatima.':' Neke vrijednosti se ne slažu, vidi tablicu.'}</p>`;
+  const fv=(v,t)=> t==='s'? v : t==='x'? fN(v,4) : fmtI(v,t);
+  $('testTbl').innerHTML = `<tr><th>Provjera</th><th class="n">Očekivano</th><th class="n">Aplikacija</th><th></th></tr>`+rows.map(r=>`<tr><td>${esc(r[0])}</td><td class="n num">${fv(r[1],r[4])}</td><td class="n num">${fv(r[2],r[4])}</td><td class="${r[3]?'ok':'bad'}">${r[3]?'✓':'✗'}</td></tr>`).join('');
+}
+
+/* ---------- spremanje ---------- */
+// DEMO se ne sprema; sprema se samo jedna (zadnja) analiza; vraća se isključivo na izričit zahtjev korisnika
+function save(){ try{ if(ds && !ds.demo) localStorage.setItem(SKEY, JSON.stringify({ds, fcBase, t:Date.now()})); }catch(e){} }
+function readStored(){ try{ const s=JSON.parse(localStorage.getItem(SKEY)||'null'); return s&&s.ds?s:null; }catch(e){ return null; } }
+function offerRestore(){
+  const s=readStored();
+  if(!s){ $('storeLine').innerHTML=''; return; }
+  $('storeLine').innerHTML = `U ovom pregledniku spremljena je ranija analiza: <b>${esc(s.ds.firma||'bez naziva')}</b>${s.ds.oib?' (OIB '+esc(s.ds.oib)+')':''}, ${new Date(s.t).toLocaleString('hr-HR')}. Ako učitaš nove izvještaje, ona će biti zamijenjena. <span class="row" style="display:inline-flex;margin-top:6px"><button type="button" id="btnRestore">Nastavi tu analizu</button><button type="button" id="btnRestoreDel">Obriši je</button></span>`;
+}
+function restore(){
+  const s=readStored(); if(!s) return;
+  slots=[null,null,null]; renderSlots();
+  ds=s.ds; fcBase=s.fcBase||null; ds.loaded=true;
+  $('storeLine').textContent = `Nastavljena je spremljena analiza (${ds.firma||'bez naziva'}).`;
+  afterData();
+}
+function resetAll(){ ds=null; A=null; analyzed=false; slots=[null,null,null]; fcBase=null; renderSlots(); $('results').classList.add('hidden'); $('check').classList.add('hidden'); $('demoBanner').classList.add('hidden'); updateButtons(); zgTvrtka(); }
+document.addEventListener('click', e=>{
+  if(e.target.id==='btnRestore') restore();
+  if(e.target.id==='btnRestoreDel' && confirm('Obrisati spremljenu analizu iz ovog preglednika?')){ try{ localStorage.removeItem(SKEY); }catch(_){} $('storeLine').textContent='Spremljena analiza je obrisana.'; }
+});
+let downloads=null;
+if(window.claude && typeof window.claude.use==='function'){ window.claude.use('downloads').then(d=>{ downloads=d; }).catch(()=>{}); }
+async function offer(filename, data, msgEl){
+  if(!downloads){
+    try{
+      const blob = data instanceof Blob ? data : new Blob([data],{type: /\.json$/.test(filename)?'application/json':'application/octet-stream'});
+      const url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),2000); if(msgEl) msgEl.textContent='';
+    }catch(e){ if(msgEl) msgEl.textContent=' Spremanje datoteka nije dostupno u ovom prikazu.'; }
+    return;
+  }
+  try{ await downloads.save({filename, data}); if(msgEl) msgEl.textContent=''; }
+  catch(e){ if(msgEl && e && e.code!=='declined') msgEl.textContent=' Spremanje nije uspjelo ('+(e.code||'greška')+').'; }
+}
+
+/* ---------- gumbi ---------- */
+document.addEventListener('change', e=>{ const t=e.target; if(t.dataset && t.dataset.slot!=null && t.files && t.files[0]){ ds&&ds.demo&&(ds=null); readFile(t.files[0], +t.dataset.slot); t.value=''; } });
+document.addEventListener('click', e=>{
+  const io=e.target.closest('[data-id-ok]'); if(io){ const s=slots[+io.dataset.idOk]; if(s && confirm(`Potvrđuješ da „${s.name}“ (${s.p.firma||'bez naziva'}) pripada istoj tvrtki kao ostali učitani izvještaji?`)){ s.idOk=true; rebuildFromSlots(); } return; }
+  const yo=e.target.closest('[data-year-ok]'); if(yo){ const i=+yo.dataset.yearOk, s=slots[i], y=+document.querySelector(`[data-year-for="${i}"]`).value;
+    if(s && y>2000 && y<2100){ s.p.year=y; s.p.recs.forEach(r=>r.year= r.col==='cur'? y : y-1); s.needYear=false; s.p.info=(s.p.info||[]).concat(`Godina ${y}. upisana ručno.`); renderSlots(); rebuildFromSlots(); } return; }
+  const c=e.target.closest('[data-clear]'); if(c){ e.preventDefault(); slots[+c.dataset.clear]=null; renderSlots(); rebuildFromSlots(); if(!slots.some(Boolean)){ ds=null; analyzed=false; $('results').classList.add('hidden'); $('check').classList.add('hidden'); updateButtons(); } }
+  const dy=e.target.closest('[data-demo-year]'); if(dy){
+    if(typeof XLSX==='undefined'){ $('dlMsg').textContent=' Biblioteka za Excel nije učitana.'; return; }
+    const y=+dy.dataset.demoYear, wb=buildDemoGFI(XLSX,FD,y);
+    const arr=XLSX.write(wb,{type:'array',bookType:'xlsx'});
+    offer(`DEMO_GFI-POD_${y}_izmisljeni_podaci.xlsx`, new Uint8Array(arr), $('dlMsg'));
+  }
+});
+$('btnAnalyze').onclick = $('btnAnalyze2').onclick = ()=>runAnalysis(true);
+$('btnZero').onclick = ()=>{ if(!confirm('Sva prazna polja koja zbroj u obrascu nije potvrdio bit će postavljena na 0. Nastaviti?')) return;
+  for(const y in ds.years) for(const k in ds.years[y].vals){ const c=ds.years[y].vals[k]; if(c.v==null) ds.years[y].vals[k]={...c, v:0, status:'ok', src:'potvrđeno ručno'}; }
+  renderCheck(); save(); if(analyzed) runAnalysis(false); };
+$('btnDemo').onclick = ()=>{ slots=[null,null,null]; renderSlots(); ds=FD.demoDataset(); fcBase=null; afterData(); runAnalysis(true); };
+$('btnManual').onclick = ()=>{ $('manualBox').classList.toggle('hidden'); $('manualYear').value = new Date().getFullYear()-1; };
+$('btnManualGo').onclick = ()=>{
+  const y=+$('manualYear').value; if(!(y>2000&&y<2100)) return;
+  const years={}; [y-3,y-2,y-1,y].forEach(v=>years[v]={vals:{},alt:{},months:12,sources:['ručni unos']});
+  slots=[null,null,null]; renderSlots();
+  ds={firma:null,oib:null,years,conflicts:[],warn:['Ručni unos: upiši iznose iz GFI-ja. Najstarija godina služi samo kao početno stanje bilance.'],manual:true};
+  fcBase=null; analyzed=false; $('results').classList.add('hidden'); afterData();
+  $('check').scrollIntoView({behavior:'smooth'});
+};
+$('jsonIn').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const o=JSON.parse(await f.text()); if(o.app!=='financijska-dijagnoza'||!o.ds) throw 0; ds=o.ds; ds.loaded=true; fcBase=o.fcBase||null; slots=[null,null,null]; renderSlots(); afterData(); runAnalysis(true); }
+  catch(_){ alert('Datoteka nije spremljena analiza Financijske dijagnoze.'); }
+  e.target.value='';
+});
+$('btnSave').onclick = ()=>{
+  const name=(ds.firma||'analiza').replace(/[^\w\-čćžšđČĆŽŠĐ ]+/g,'').trim().replace(/\s+/g,'_');
+  offer(`Financijska_dijagnoza_${name}.json`, JSON.stringify({app:'financijska-dijagnoza',v:1,created:new Date().toISOString(),ds,fcBase},null,1));
+};
+$('btnPrint').onclick = ()=>{ try{ window.print(); }catch(_){ alert('Ispis nije dostupan u ovom prikazu. Otvori stranicu u pregledniku i ispiši je (Ctrl+P → Spremi kao PDF).'); } };
+$('btnNew').onclick = ()=>{
+  const demo = ds && ds.demo;
+  if(!demo && !confirm('Započeti novu analizu?\n\nTrenutni podaci bit će uklonjeni s ekrana i obrisani iz ovog preglednika. Ako ih želiš sačuvati, odustani i klikni „Spremi analizu (.json)“.')) return;
+  if(!demo){ try{ localStorage.removeItem(SKEY); }catch(_){} }
+  resetAll(); offerRestore(); if(!demo) $('storeLine').textContent='Prethodni podaci obrisani su iz preglednika. Možeš učitati nove izvještaje.';
+  window.scrollTo({top:0,behavior:'smooth'}); };
+$('btnWipe').onclick = ()=>{ if(!confirm('Obrisati sve spremljene podatke iz ovog preglednika?')) return; try{ localStorage.removeItem(SKEY); }catch(_){} resetAll(); $('storeLine').textContent='Spremljeni podaci su obrisani.'; window.scrollTo({top:0,behavior:'smooth'}); };
+function setView(detail){ document.body.classList.toggle('detail',detail); $('vSimple').setAttribute('aria-pressed',!detail); $('vDetail').setAttribute('aria-pressed',detail); }
+$('vSimple').onclick=()=>setView(false); $('vDetail').onclick=()=>setView(true);
+
+renderSlots(); offerRestore(); updateButtons();
+})();
+</script>
+<script src="/zavrsni/zaglavlje.js" data-app="Financijska dijagnoza" data-verzija="2026-11-09"></script>
+</body>
+</html>
