@@ -56,6 +56,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--zg-h1,0px) + var(--zg-h2,0px) + 8px)}
 html header.top[data-zg="blok"] [data-zg-traka]{top:env(safe-area-inset-top,0px)}
 html header.top[data-zg="blok"] [data-zg-gumbi]{top:calc(env(safe-area-inset-top,0px) + var(--zg-h1,0px))}
+.obr-traka .fd-podnaslov{display:inline-block;margin-left:6px;font:400 14px/1.2 Arial,Helvetica,sans-serif;color:#dce5f0;white-space:nowrap;vertical-align:middle}
+@media (max-width:600px){.obr-traka .fd-podnaslov{display:block;margin:4px 0 0}}
 html header.top[data-zg="blok"] [data-zg-gumbi] button[aria-pressed="true"]{background:#213b5a;border-color:#213b5a;color:#fff;font-weight:700}
 @media (max-width:699.98px){
   html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--zg-h2,0px) + 8px)}
@@ -184,8 +186,9 @@ details.f summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.
 <body>
 <header class="top" data-zg="blok">
   <div class="obr-traka" data-zg-traka>
-    <div class="obr-r1"><div class="obr-naslov">Financijska dijagnoza</div><a class="obr-izbornik" href="/#software">← RetroAppLab</a></div>
-    <p class="obr-r2">RetroAppLab Tools</p>
+    <div class="obr-r1"><div class="obr-naslov">Financijska dijagnoza <small class="fd-podnaslov">RetroAppLab Tools</small></div><a class="obr-izbornik" href="/#software">← RetroAppLab</a></div>
+    <p class="obr-r2"><span id="zgTvrtka" class="empty">Tvrtka još nije učitana</span></p>
+    <p class="obr-r3">Podaci se obrađuju samo u ovom pregledniku i ne šalju se na server.</p>
   </div>
   <div class="obr-gumbi noprint" data-zg-gumbi role="group" aria-label="Pogled">
     <button type="button" id="vSimple" aria-pressed="true">Jednostavno</button>
@@ -322,7 +325,7 @@ details.f summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.
   <div class="obr-pod-in">
     <div class="obr-pod-l"><strong>RetroAppLab Tools</strong><small>Sve se obrađuje u ovom pregledniku. Izvještaji se nikamo ne šalju.</small><button type="button" id="btnWipe" class="noprint">Obriši sve spremljene podatke</button></div>
     <nav class="obr-pod-s" aria-label="RetroAppLab"><a href="/">RetroAppLab</a> · <a href="/kontakt.html">Kontakt</a> · <a href="/privatnost.html">Pravila privatnosti</a></nav>
-    <div class="obr-pod-d"><a href="mailto:kontakt@retroapplab.com">kontakt@retroapplab.com</a><small>Financijska dijagnoza</small></div>
+    <div class="obr-pod-d"><a href="mailto:kontakt@retroapplab.com">kontakt@retroapplab.com</a><small>Financijska dijagnoza, verzija 2026-11-09</small></div>
   </div>
 </footer>
 
@@ -1249,7 +1252,7 @@ function runAnalysis(scroll){
     $('chartsH').textContent='Brojke po godinama';
     ['areas','charts','patterns','diag','indTbl','scoreTbl','altTbl','scTbl','fcChart'].forEach(id=>$(id).innerHTML='');
     $('fcPanel').classList.add('hidden'); $('testPanel').classList.add('hidden');
-    if(scroll) $('results').scrollIntoView({behavior:'smooth'}); return;
+    zgTvrtka(); if(scroll) $('results').scrollIntoView({behavior:'smooth'}); return;
   }
   $('fcPanel').classList.remove('hidden');
   $('chartsH').textContent = ys.length===3 ? 'Tri godine u brojkama' : `Dostupne godine u brojkama (${ys.length})`;
@@ -1258,6 +1261,19 @@ function runAnalysis(scroll){
   $('areas').innerHTML = AREAS.map(([k,n,dsc])=>{ const v=A.parts[k]; return `<div class="area"><div class="h"><span>${n}</span><span class="num">${v==null?'–':fN(v,0)}</span></div><div class="bar"><i class="${v==null?'':fillCls(v)}" style="width:${v==null?0:v}%"></i></div><p>${dsc}</p></div>`; }).join('');
   renderCharts(); renderPatterns(); renderForecast(); renderDetail(); renderTest();
   if(scroll) $('results').scrollIntoView({behavior:'smooth'});
+  zgTvrtka();
+}
+// 2. redak tamne trake: učitana tvrtka (naziv · OIB · godine), samo prikaz
+function zgTvrtka(){
+  const el=$('zgTvrtka'); if(!el) return;
+  if(!A){ el.textContent='Tvrtka još nije učitana'; el.className='empty'; return; }
+  const ys=A.years||[], dio=[A.firma||'Tvrtka bez naziva'];
+  if(!A.demo){
+    if(A.oib) dio.push('OIB '+A.oib);
+    if(ys.length) dio.push(ys[0]+'.'+(ys.length>1?'–'+ys[ys.length-1]+'.':''));
+  }
+  el.textContent = dio.join(' · ') + (ys.length && ys.length<3 ? ' · djelomična analiza' : '');
+  el.className='';
 }
 
 /* grafikoni (SVG) */
@@ -1423,7 +1439,7 @@ function restore(){
   $('storeLine').textContent = `Nastavljena je spremljena analiza (${ds.firma||'bez naziva'}).`;
   afterData();
 }
-function resetAll(){ ds=null; A=null; analyzed=false; slots=[null,null,null]; fcBase=null; renderSlots(); $('results').classList.add('hidden'); $('check').classList.add('hidden'); $('demoBanner').classList.add('hidden'); updateButtons(); }
+function resetAll(){ ds=null; A=null; analyzed=false; slots=[null,null,null]; fcBase=null; renderSlots(); $('results').classList.add('hidden'); $('check').classList.add('hidden'); $('demoBanner').classList.add('hidden'); updateButtons(); zgTvrtka(); }
 document.addEventListener('click', e=>{
   if(e.target.id==='btnRestore') restore();
   if(e.target.id==='btnRestoreDel' && confirm('Obrisati spremljenu analizu iz ovog preglednika?')){ try{ localStorage.removeItem(SKEY); }catch(_){} $('storeLine').textContent='Spremljena analiza je obrisana.'; }
@@ -1496,6 +1512,6 @@ $('vSimple').onclick=()=>setView(false); $('vDetail').onclick=()=>setView(true);
 renderSlots(); offerRestore(); updateButtons();
 })();
 </script>
-<script src="/zavrsni/zaglavlje.js" data-app="Financijska dijagnoza"></script>
+<script src="/zavrsni/zaglavlje.js" data-app="Financijska dijagnoza" data-verzija="2026-11-09"></script>
 </body>
 </html>
