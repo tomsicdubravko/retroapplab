@@ -1,6 +1,10 @@
 // Jedan service worker za cijeli PWA "Obračuni" (/zavrsni/): izbornik, Završni račun (gfi/), DOH (doh/), Neprofitne i Financijska dijagnoza (dijagnoza/).
 // Kod svake nove verzije bilo kojeg programa promijeni CACHE, da preglednik preuzme nove datoteke.
-const CACHE = 'zavrsni-20261109170000';
+// Stranice (.html), skripte (.js), stilovi (.css) i novosti (.json) idu "network-first": uz mrežu uvijek sa servera
+// (uz provjeru i mimo HTTP predmemorije preglednika), a iz predmemorije samo kad mreže nema. Ikone idu iz predmemorije.
+// Nova verzija se aktivira odmah (skipWaiting + clients.claim); stranice se jednom same osvježe (controllerchange u zaglavlje.js i izborniku).
+// Lokalno spremljeni podaci korisnika (localStorage, IndexedDB) ovdje se ne diraju.
+const CACHE = 'zavrsni-20261109190000';
 const PREFIX = 'zavrsni-';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'novosti.json',
@@ -13,7 +17,8 @@ const FILES = [
   'neprofitne.html', 'dijagnoza/', 'dijagnoza/index.html', 'zaglavlje.css', 'zaglavlje.js'
 ];
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  // cache: 'reload' – datoteke za rad bez mreže preuzimaju se sa servera, ne iz HTTP predmemorije preglednika
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 // Briše samo vlastite stare predmemorije (zavrsni-…), ne dira predmemorije drugih aplikacija na retroapplab.com.
 self.addEventListener('activate', e => {
@@ -24,12 +29,15 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url);
   if (e.request.method !== 'GET' || u.origin !== location.origin) return;
-  // Stranice i novosti: prvo s interneta, bez interneta zadnja spremljena verzija.
-  if (e.request.mode === 'navigate' || u.pathname.endsWith('.html') || u.pathname.endsWith('/') || u.pathname.endsWith('.json')) {
-    e.respondWith(fetch(e.request).then(r => {
+  const p = u.pathname;
+  if (e.request.mode === 'navigate' || p.endsWith('/') || /\.(html|js|css|json|webmanifest)$/.test(p)) {
+    // cache: 'no-cache' – preglednik uvijek pita server (ETag), pa nakon objave odmah dobije novu verziju
+    e.respondWith(fetch(u.href, { cache: 'no-cache', credentials: 'same-origin' }).then(r => {
       if (r.ok) { const c = r.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); }
       return r;
-    }).catch(() => caches.match(e.request, { ignoreSearch: true }).then(r => r || caches.match('index.html'))));
+    }).catch(() => caches.match(e.request, { ignoreSearch: true })
+      .then(r => r || (e.request.mode === 'navigate' ? caches.match('index.html') : undefined))
+      .then(r => r || Response.error())));
     return;
   }
   e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));

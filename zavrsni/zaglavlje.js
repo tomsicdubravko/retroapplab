@@ -3,8 +3,29 @@
 //   <script src="…/zaglavlje.js" data-app="Neprofitne" data-verzija="2026-11-07"></script>
 // - računa visine fiksnog zaglavlja (vidi zaglavlje.css)
 // - umeće isto podnožje na kraj stranice
+// - kad se aktivira nova verzija service workera: jednom osvježi stranicu ako korisnik još ništa nije upisao,
+//   inače na vrhu pokaže traku „Dostupna je nova verzija programa…” s gumbom „Osvježi”
 (function () {
   'use strict';
+  // nova verzija service workera (sw.js), samo ako je stranicu već kontrolirala starija verzija:
+  // - korisnik od otvaranja stranice ništa nije upisao ni promijenio: stranica se jednom sama osvježi
+  // - inače se ne osvježava (upis bi se izgubio), nego se na vrhu pokaže traka s gumbom „Osvježi”
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    let upisano = false, gotovo = false;
+    const oznaci = (e) => { if (e.isTrusted) upisano = true; };
+    window.addEventListener('input', oznaci, true);
+    window.addEventListener('change', oznaci, true);
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (gotovo) return; gotovo = true;
+      if (!upisano) { location.reload(); return; }
+      const t = document.createElement('div');
+      t.className = 'obr-nova-verzija'; t.setAttribute('role', 'alert');
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Osvježi';
+      b.addEventListener('click', () => location.reload());
+      t.append('Dostupna je nova verzija programa. Spremite rad pa kliknite Osvježi. ', b);
+      document.body.prepend(t);
+    });
+  }
   const me = document.currentScript;
   const app = (me && me.dataset.app) || 'Obračuni';
   const ver = (me && me.dataset.verzija) || '';
