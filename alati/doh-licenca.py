@@ -158,11 +158,14 @@ def zamijeni_funkciju(s, ime, nova):
     return s[:i] + nova.strip() + s[k+1:]
 assert s.count('function parseIssuedPKPages(') == 1
 s = zamijeni_funkciju(s, 'parseIssuedPKPages', open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'doh-pk-izdana.js'), encoding='utf-8').read())
+# Raspored STR. 1-9 prema Excel obrascu (alati/doh-raspored.js), na kraj <body> kao u javnom demu; logiku i polja ne dira
+RASPORED = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'doh-raspored.js'), encoding='utf-8').read()
 # zajedničko zaglavlje (fiksno pri skrolanju) i podnožje: zavrsni/zaglavlje.css i zaglavlje.js
 for x,y in [('<header><h1>DOH 2026 – prijava poreza na dohodak</h1><p>Obrazac DOH, P-PPI i TZ1 na jednom mjestu. Podaci ostaju na ovom računalu.</p></header>',
              '<header class="obr-traka" data-zg="traka"><div class="obr-r1"><h1 class="obr-naslov">DOH 2026 – prijava poreza na dohodak</h1><a class="obr-izbornik" href="/zavrsni/">← Izbornik</a></div><p class="obr-r2"><span id="doh-klijent" class="empty">Obveznik još nije upisan</span></p><p class="obr-r3"></p></header>'),
              ('<div class="toolbar">','<div class="toolbar obr-gumbi" data-zg="gumbi">'),('<nav aria-label="Listovi obrasca">','<nav aria-label="Listovi obrasca" data-zg="kartice">')]:
     assert s.count(x)==1,x; s=s.replace(x,y)
 SCRIPT=SCRIPT+'\n<script src="../zaglavlje.js" data-app="DOH" data-verzija="'+VER+'"></script>'
+SCRIPT=SCRIPT+'<script>'+RASPORED+'</script>'
 s=s.replace('</title>','</title>'+HEAD,1).replace('<body>','<body>'+GATE,1).replace('</body>',SCRIPT+'</body>',1)
 open(out,'w',encoding='utf-8').write(s); print('doh ok', len(s))
