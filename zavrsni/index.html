@@ -137,6 +137,14 @@ input,select{font:inherit;font-size:15px;padding:9px 10px;border:1px solid var(-
    <div class="actions" data-actions></div>
   </article>
 
+  <article class="prog" id="p-dij">
+   <div class="prog-head"><div class="mark" aria-hidden="true">FD</div><div><h2>Financijska dijagnoza</h2><p class="sub">Analiza GFI-POD izvještaja</p></div></div>
+   <p class="desc">Učitaj GFI-POD izvještaje klijenta i dobij financijski semafor, kretanje kroz tri godine i razumljivu dijagnozu poslovanja za vlasnika tvrtke.</p>
+   <p class="sub">uz licencu za Završni račun</p>
+   <span class="status" data-status></span><button type="button" class="newcount" data-newcount hidden></button>
+   <div class="actions" data-actions></div>
+  </article>
+
   <article class="prog soon" aria-label="Sljedeći program">
    <div class="prog-head"><div class="mark" aria-hidden="true">+</div><div><h2>Sljedeći obračun</h2><p class="sub">U pripremi</p></div></div>
    <p class="desc">Novi programi pojavljuju se ovdje čim budu spremni, uz isti login.</p>
@@ -158,6 +166,7 @@ input,select{font:inherit;font-size:15px;padding:9px 10px;border:1px solid var(-
      <button type="button" data-filter="doh" aria-pressed="false">DOH</button>
      <button type="button" data-filter="zavrsni" aria-pressed="false">Završni račun</button>
      <button type="button" data-filter="npf" aria-pressed="false">Neprofitne</button>
+     <button type="button" data-filter="dij" aria-pressed="false">Dijagnoza</button>
     </div>
     <ul class="news" id="news-list"></ul>
    </div>
@@ -203,7 +212,9 @@ const PRODUCTS = {
   zavrsni: { name: 'Završni račun', open: 'gfi/', demo: 'gfi/?demo=1' },
   doh: { name: 'DOH', open: 'doh/', demo: '/doh/' },
   // neprofitne organizacije rade uz licencu za Završni račun
-  npf: { name: 'Neprofitne organizacije', open: 'neprofitne.html', demo: 'neprofitne.html?demo=1', lic: 'zavrsni' }
+  npf: { name: 'Neprofitne organizacije', open: 'neprofitne.html', demo: 'neprofitne.html?demo=1', lic: 'zavrsni' },
+  // financijska dijagnoza radi uz licencu za Završni račun; bez nje demo s izmišljenom tvrtkom
+  dij: { name: 'Financijska dijagnoza', open: 'dijagnoza/', demo: 'dijagnoza/?demo=1', lic: 'zavrsni' }
 };
 const LIC_PRODUCTS = Object.keys(PRODUCTS).filter(k => !PRODUCTS[k].lic);
 const CONTACT = '/kontakt.html';
@@ -244,7 +255,7 @@ function renderPrograms(lic) {
     const P = PRODUCTS[key], card = $('p-' + key), L = lic && lic[P.lic || key];
     const st = card.querySelector('[data-status]'), act = card.querySelector('[data-actions]');
     act.replaceChildren();
-    const btn = (text, href, cls) => act.append(h('a', { class: 'btn' + (cls ? ' ' + cls : ''), href }, text));
+    const btn = (text, href, cls) => { if (href) act.append(h('a', { class: 'btn' + (cls ? ' ' + cls : ''), href }, text)); };
     if (!lic) { st.className = 'status st-off'; st.textContent = 'Prijavite se za rad uz licencu'; btn('Otvori demo', P.demo); }
     else if (!L || !L.active) {
       st.className = 'status st-off'; st.textContent = L && L.until ? 'Licenca je istekla ' + fmtDate(L.until) : 'Nema licence';

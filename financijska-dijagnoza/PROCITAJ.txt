@@ -1,9 +1,0 @@
-FINANCIJSKA DIJAGNOZA (verzija 2.4) – RetroAppLab Tools
-
-index.html   cijela aplikacija (radi online; SheetJS s cdnjs, podaci se obrađuju samo u pregledniku)
-demo/        tri simulirana GFI-POD izvještaja (.xls) za testiranje uvoza
-             DEMO – IZMIŠLJENI PODACI, raspored kao FINA obrazac 2024+, nije službeni FINA obrazac
-
-Objava: mapu financijska-dijagnoza raspakirati u korijen repozitorija retroapplab
--> retroapplab.com/financijska-dijagnoza/
-Datoteke ISPRAVCI.md i TESTIRANJE.md nisu dio stranice i ne treba ih objavljivati.
