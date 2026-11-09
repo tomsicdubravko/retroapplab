@@ -1,6 +1,20 @@
 {
  "novosti": [
   {
+   "p": "dij",
+   "d": "2026-11-09",
+   "t": "Financijska dijagnoza, studeni 2026.",
+   "x": "Novi modul uz licencu za Završni račun: analiza financijskog zdravlja klijenta iz GFI-POD izvještaja.",
+   "l": [
+    "Učitavanje FINA GFI-POD obrazaca (.xls/.xlsx); dva izvještaja daju tri godine.",
+    "Kontrola tvrtke po OIB-u i provjera bilance prije analize.",
+    "Financijski semafor s ocjenom 0–100 i četiri područja.",
+    "Grafikoni i prognoza u tri scenarija.",
+    "Završna dijagnoza razumljiva vlasniku, s preporukama.",
+    "Ispis i spremanje analize (JSON)."
+   ]
+  },
+  {
    "p": "npf",
    "d": "2026-11-06",
    "t": "Neprofitne organizacije, studeni 2026.",

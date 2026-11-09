@@ -1,6 +1,6 @@
-// Jedan service worker za cijeli PWA "Obračuni" (/zavrsni/): izbornik, Završni račun (gfi/) i DOH (doh/).
+// Jedan service worker za cijeli PWA "Obračuni" (/zavrsni/): izbornik, Završni račun (gfi/), DOH (doh/), Neprofitne i Financijska dijagnoza (dijagnoza/).
 // Kod svake nove verzije bilo kojeg programa promijeni CACHE, da preglednik preuzme nove datoteke.
-const CACHE = 'zavrsni-20261109150000';
+const CACHE = 'zavrsni-20261109170000';
 const PREFIX = 'zavrsni-';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'novosti.json',
@@ -10,7 +10,7 @@ const FILES = [
   'gfi/vendor/pdf.min.js', 'gfi/vendor/pdf.worker.min.js', 'gfi/vendor/xlsx.full.min.js', 'gfi/vendor/supabase.js',
   'gfi/icons/icon-192.png', 'gfi/icons/favicon-32.png', 'gfi/icons/apple-touch-icon.png',
   'doh/', 'doh/index.html',
-  'neprofitne.html', 'zaglavlje.css', 'zaglavlje.js'
+  'neprofitne.html', 'dijagnoza/', 'dijagnoza/index.html', 'zaglavlje.css', 'zaglavlje.js'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
