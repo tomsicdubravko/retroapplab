@@ -38,7 +38,8 @@ Provjeri da se opis vidi ispod prijave i ispod demo aplikacije, a skriva kad je 
 
 Puni DOH: pokreni python3 alati/doh-licenca.py <nova-puna-datoteka.html> zavrsni/doh/index.html. Skripta dodaje prijavu i provjeru licence check_licence(p_device, 'doh'), ujednačeno zaglavlje (tamna traka s gumbom „← Izbornik”, klijent iz Osnovnih podataka, traka licence s promjenom lozinke i odjavom), podnožje, manifest i service worker PWA-a; kod obrasca ostaje isti. Treći argument je verzija za podnožje. Puni DOH nikad ne objavljuj bez te provjere.
 Skripta zamjenjuje i funkciju parseIssuedPKPages funkcijom iz alati/doh-pk-izdana.js (čitanje izdane PK kartice: nova „Elektronički zapis” i stara bez njega; OIB obveznika samo iz dijela I. uz provjeru kontrolne znamenke, ime bez „1.”, najnovija adresa po datumu, uzdržavani samo iz II.3). Testne PK kartice (Obrazac_PK__8_.pdf, PoreznaKartica__5_.pdf) su u testni-podaci/, koja je u .gitignore i ne ide u repozitorij; nakon svake nove verzije DOH-a provjeri da obje daju očekivane podatke.
-Javni demo: nova demo datoteka ide nepromijenjena u doh/index.html.
+Raspored STR. 1-9 (alati/doh-raspored.js: širine stupaca, visine redova i područje ispisa iz Excel obrasca; logiku i polja ne dira, a stupac skriven u Excelu ostaje vidljiv ako u njemu ima polja za unos) umeće se na kraj <body> u oba DOH-a: puni DOH preko alati/doh-licenca.py, javni demo preko alati/doh-demo.py. Nakon svake nove verzije provjeri da spremljeni JSON ima ista polja kao bez rasporeda. Raspored kod ispisa stavlja svaki list STR. 1-9 na jednu A4 stranicu uspravno (mjerilo se samo smanjuje, kao „prilagodi jednoj stranici” u Excelu); ostali dijelovi ispisa ostaju položeni. Provjeri da „Ispiši sve listove” daje po jednu stranicu za svaki STR. list.
+Javni demo: python3 alati/doh-demo.py <nova demo datoteka.html> doh/index.html (demo ostaje isti, umeće se samo raspored).
 
 ### Nova verzija modula za neprofitne organizacije
 

@@ -1,6 +1,6 @@
 // Jedan service worker za cijeli PWA "Obračuni" (/zavrsni/): izbornik, Završni račun (gfi/) i DOH (doh/).
 // Kod svake nove verzije bilo kojeg programa promijeni CACHE, da preglednik preuzme nove datoteke.
-const CACHE = 'zavrsni-20261107200000';
+const CACHE = 'zavrsni-20261109150000';
 const PREFIX = 'zavrsni-';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'novosti.json',
