@@ -4,7 +4,7 @@
 // (uz provjeru i mimo HTTP predmemorije preglednika), a iz predmemorije samo kad mreže nema. Ikone idu iz predmemorije.
 // Nova verzija se aktivira odmah (skipWaiting + clients.claim); stranice se jednom same osvježe (controllerchange u zaglavlje.js i izborniku).
 // Lokalno spremljeni podaci korisnika (localStorage, IndexedDB) ovdje se ne diraju.
-const CACHE = 'zavrsni-20261110150000';
+const CACHE = 'zavrsni-20261110160000';
 const PREFIX = 'zavrsni-';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'novosti.json',
