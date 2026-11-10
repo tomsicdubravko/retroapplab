@@ -13,7 +13,7 @@ Raspored (jedan PWA, jedan manifest i jedan service worker za sve programe):
 - zavrsni/zaglavlje.css i zavrsni/zaglavlje.js – ujednačeno zaglavlje (izgled tamne trake DOH-a: naslov i „← Izbornik”, klijent, traka licence; bijela traka s gumbima istog izgleda; kartice u jednom redu), fiksno pri skrolanju (na mobitelu ostaju samo gumbi i kartice) i zajedničko podnožje sve tri aplikacije, s verzijom (data-verzija); skripte u alati/ ih ugrađuju, a treći argument skripte je verzija (datum), inače današnji datum
 - supabase/ – SQL migracije (samo za evidenciju; pokreću se ručno u Supabase SQL Editoru)
 
-Kod svake nove verzije bilo kojeg programa promijeni CACHE u zavrsni/sw.js (npr. 'zavrsni-GGGGMMDDhhmmss').
+Kod svake nove verzije bilo kojeg programa promijeni CACHE u zavrsni/sw.js (npr. 'zavrsni-GGGGMMDDhhmmss'). sw.js poslužuje stranice, .js, .css i .json „network-first” s cache: 'no-cache' (uz mrežu uvijek sa servera, mimo HTTP predmemorije preglednika; predmemorija samo bez mreže), datoteke za rad bez mreže preuzima s cache: 'reload', a nova verzija se aktivira odmah (skipWaiting + clients.claim). Tada se izbornik jednom sam osvježi (controllerchange), a moduli (zaglavlje.js) samo ako korisnik od otvaranja stranice ništa nije upisao ni promijenio (nijedan input/change događaj); inače se ne osvježavaju, nego na vrhu pokažu traku „Dostupna je nova verzija programa. Spremite rad pa kliknite Osvježi.” s gumbom „Osvježi”. Lokalne podatke korisnika (localStorage, IndexedDB) sw.js ne dira. U izborniku se uz novost prikazuje naziv modula, nikad sirova oznaka.
 
 ### Novi ZIP Završnog računa
 

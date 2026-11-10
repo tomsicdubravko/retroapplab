@@ -217,6 +217,8 @@ const PRODUCTS = {
   dij: { name: 'Financijska dijagnoza', open: 'dijagnoza/', demo: 'dijagnoza/?demo=1', lic: 'zavrsni' }
 };
 const LIC_PRODUCTS = Object.keys(PRODUCTS).filter(k => !PRODUCTS[k].lic);
+// naziv modula u novostima; nepoznata oznaka nikad se ne prikazuje sirovo
+const NAZIV = (p) => (PRODUCTS[p] && PRODUCTS[p].name) || { zavrsni: 'Završni račun', doh: 'DOH', npf: 'Neprofitne organizacije', dij: 'Financijska dijagnoza' }[p] || 'Obračuni';
 const CONTACT = '/kontakt.html';
 const $ = (id) => document.getElementById(id);
 function h(tag, attrs, ...kids) {
@@ -277,7 +279,7 @@ function renderNews(f) {
   const list = NEWS.filter(n => f === 'all' || n.p === f);
   if (!list.length) ul.append(h('li', {}, h('span', { class: 'empty' }, 'Nema novosti.')));
   for (const n of list) {
-    const s = h('strong', {}, h('span', { class: 'tag' }, (PRODUCTS[n.p] || {}).name || n.p), n.t);
+    const s = h('strong', {}, h('span', { class: 'tag' }, NAZIV(n.p)), n.t);
     if (lastSeen && n.d > lastSeen) s.append(h('span', { class: 'fresh' }, 'novo'));
     ul.append(h('li', {}, h('time', { datetime: n.d }, fmtDate(n.d)), h('div', {}, s, n.x, Array.isArray(n.l) && n.l.length ? h('ul', { class: 'news-l' }, n.l.map(t => h('li', {}, t))) : null)));
   }
@@ -470,6 +472,11 @@ async function start() {
 }
 start();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+// nova verzija service workera (sw.js): stranica se jednom sama osvježi, samo ako ju je već kontrolirala starija verzija
+if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  let osvjezeno = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (osvjezeno) return; osvjezeno = true; location.reload(); });
+}
 })();
 </script>
 </body>

@@ -76,8 +76,13 @@ html [data-zg="kartice"]{position:sticky;top:calc(var(--zg-h1,0px) + var(--zg-h2
   .obr-podnozje .obr-pod-s,.obr-podnozje .obr-pod-d{text-align:center;white-space:normal}
 }
 
+/* traka „Dostupna je nova verzija programa” (zaglavlje.js, kad je korisnik već nešto upisao) */
+.obr-nova-verzija{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 14px;padding:10px max(16px,4vw);background:#ffd27a;color:#1c2635;font:600 14px/1.4 Arial,Helvetica,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.2);text-align:center}
+.obr-nova-verzija button{font:700 14px Arial,Helvetica,sans-serif;height:34px;padding:0 16px;border:1px solid #182c46;border-radius:6px;background:#182c46;color:#fff;cursor:pointer}
+.obr-nova-verzija button:focus-visible{outline:2px solid #182c46;outline-offset:2px}
+
 /* ispis obrazaca, odluka i bilješki: bez podnožja i bez fiksnog zaglavlja */
 @media print{
-  .obr-podnozje{display:none!important}
+  .obr-podnozje,.obr-nova-verzija{display:none!important}
   [data-zg],[data-zg-traka],[data-zg-gumbi],header[data-zg] > nav{position:static!important}
 }
