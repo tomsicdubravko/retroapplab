@@ -121,11 +121,20 @@ table.data input{width:118px;padding:5px 6px;border:1px solid var(--inline);bord
 table.data input.blank{color:var(--muted)}
 table.data input.conf{border-color:var(--y);background:var(--ybg)}
 table.data select{font:inherit;font-size:.8rem;max-width:118px;margin-top:3px}
+table.cl td.nm b{display:block}
+table.cl td.nm small{display:block;color:var(--muted);font-size:.78rem;line-height:1.3;margin-top:2px}
+table.cl td.na{color:var(--muted);font-size:.78rem;font-style:italic;text-align:right;max-width:140px;white-space:normal}
+table.cl .out{color:var(--muted);font-size:.72rem;display:block;font-style:normal}
+table.data tr.tot td{font-weight:700}
 table.data .meta{display:block;font-size:.7rem;color:var(--muted);line-height:1.2;margin-top:2px;white-space:nowrap}
 table.data .meta.warn{color:var(--y);font-weight:700}
 .warns li.err{background:var(--rbg);border-left-color:var(--r)}
 .diag li b{font-weight:700}
 .diag .why{display:block;margin-top:2px}
+.diag .anote{margin-top:22px;padding:12px 14px;border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:8px;background:var(--surface2);font-size:.88rem;color:var(--text);break-inside:avoid;page-break-inside:avoid}
+.diag .anote h4{margin:0 0 6px;font-size:.92rem}
+.diag .anote p{margin:0 0 6px;color:var(--muted)}
+.diag .anote p:first-of-type{color:var(--text)}
 .diag .chk{display:block;color:var(--muted);font-size:.92rem;margin-top:2px}
 .badge{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:20px;background:var(--btn);color:var(--muted)}
 
@@ -322,8 +331,26 @@ details.f summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.
       <h2>Kako je izračunata ocjena</h2>
       <p class="small muted">Ponderi: profitabilnost 25 %, likvidnost 30 %, zaduženost i kapital 25 %, trend 20 %. Svaki pokazatelj boduje se linearno između dvije granice (0 do 100), a ocjena područja je prosjek njegovih pokazatelja. Ponderi i granice su početna projektna pretpostavka, a ne službeni model. Zelena: 65 i više, žuta: 45 do 64, crvena: ispod 45, uz posebna pravila iznad.</p>
       <div class="tblwrap"><table class="data" id="scoreTbl"></table></div>
-      <h3>Dodatna provjera: Altman Z'' (neproizvodne tvrtke)</h3>
-      <div class="tblwrap"><table class="data" id="altTbl" style="min-width:300px"></table></div>
+    </section>
+
+    <section class="panel only-detail">
+      <h2>Klasični financijski pokazatelji</h2>
+      <p class="small muted">Stručni pregled za knjigovođu, složen kao uobičajena analiza financijskih izvještaja. Ovi pokazatelji ne utječu na semafor ni na ocjenu. Računaju se iz stanja na kraju godine (u glavnom dijelu ROA i ROE koriste prosjek početka i kraja godine). Granice su <b>orijentacijske</b>: vrijednost izvan uobičajenog raspona (oznaka ◦) nije sama po sebi dokaz lošeg poslovanja i treba je promatrati uz djelatnost i ostale pokazatelje. Kad podatak nedostaje ili pokazatelj nema smisla, piše razlog umjesto rezultata.</p>
+      <div id="classic"></div>
+      <p class="small muted"><b>Faktor zaduženosti:</b> u klasičnoj formuli nazivnik je zadržana dobit + amortizacija. GFI ne pokazuje isplate dobiti tekuće godine, pa se kao zadržana dobit uzima neto dobit razdoblja (kao u predlošku ANALIZA.xlsx); ukupne obveze su dugoročne + kratkoročne obveze. Ako se dio dobiti isplaćuje, stvarni faktor je veći. <b>Ukupni prihodi</b> u pokazateljima aktivnosti i profitabilnosti uključuju poslovne i financijske prihode.</p>
+      <p class="small muted">Nisu uključeni: ekonomičnost redovnog poslovanja (GFI od 2016. ne razlikuje izvanredne stavke, pa bi bila jednaka ekonomičnosti ukupnog poslovanja) i obrtaj sirovina i materijala (zasad se ne učitava iz GFI-ja).</p>
+    </section>
+
+    <section class="panel only-detail">
+      <h2>Altman Z – modeli i primjenjivost</h2>
+      <p class="small muted">Altmanovi modeli procjenjuju rizik financijskih poteškoća, a razvijeni su na određenim vrstama tvrtki. Nisu univerzalni: rezultat vrijedi samo za tvrtke za koje je model namijenjen, a nije primjenjiv na banke i osiguranja. Rezultat može biti i negativan. Kad tvrtka gotovo nema obveza, X4 (kapital / obveze) postaje vrlo velik i napuhuje rezultat. Ne ulazi u ocjenu semafora.</p>
+      <div id="altman"></div>
+    </section>
+
+    <section class="panel only-detail">
+      <h2>Horizontalna i vertikalna analiza</h2>
+      <p class="small muted"><b>Vertikalna:</b> udio stavke u ukupnoj aktivi, pasivi ili ukupnim prihodima. <b>Horizontalna:</b> promjena u odnosu na prethodnu godinu (ne računa se kad je prethodna vrijednost 0 ili negativna).</p>
+      <div id="hv"></div>
     </section>
 
     <section class="panel only-detail hidden" id="testPanel">
@@ -846,6 +873,146 @@ const fP = (v,d=1) => v==null||!isFinite(v) ? '–' : nf(d).format(v*100)+' %';
 const fN = (v,d=2) => v==null||!isFinite(v) ? '–' : nf(d).format(v);
 const pp = v => (v>0?'+':'')+nf(1).format(v*100)+' %';
 
+/* ---------- KLASIČNI FINANCIJSKI POKAZATELJI (stručni prikaz; ne utječu na semafor) ---------- */
+// Rezultat pokazatelja: broj ili {na:'razlog'}
+const NA = r => ({na:r});
+const isNA = v => v!=null && typeof v==='object' && 'na' in v;
+function cdiv(a,b,zeroMsg){ if(a==null||b==null) return NA('Nije dostupno'); if(b===0) return NA(zeroMsg||'Nije dostupno (nazivnik je 0)'); return a/b; }
+const daysIn = y => ((y%4===0 && y%100!==0) || y%400===0) ? 366 : 365;
+const obv = d => (d.dob==null||d.kob==null) ? null : d.dob+d.kob;
+
+// [kratica, naziv, jedinica, formula, objašnjenje, orijentacija (tekst), test(v) → true/false ili null, izračun(d,y)]
+const CLASSIC = [
+ {g:'Likvidnost', rows:[
+  ['KTL','Koeficijent tekuće likvidnosti','koef.','Kratkotrajna imovina / kratkoročne obveze','Koliko eura kratkotrajne imovine dolazi na 1 € obveza koje dospijevaju unutar godine.','≥ 2',v=>v>=2,
+    d=>cdiv(d.kti,d.kob,'Nema kratkoročnih obveza')],
+  ['KUL','Koeficijent ubrzane likvidnosti','koef.','(Kratkotrajna imovina − zalihe) / kratkoročne obveze','Pokriće kratkoročnih obveza bez oslanjanja na prodaju zaliha.','≥ 1',v=>v>=1,
+    d=>(d.kti==null||d.zal==null)?NA('Nije dostupno'):cdiv(d.kti-d.zal,d.kob,'Nema kratkoročnih obveza')],
+  ['KFS','Koeficijent financijske stabilnosti','koef.','Dugotrajna imovina / (kapital + dugoročne obveze)','Koliki dio dugoročnih izvora je vezan u dugotrajnoj imovini. Ispod 1 dio dugoročnih izvora financira i kratkotrajnu imovinu.','< 1',v=>v<1,
+    d=>(d.dug==null||d.kap==null||d.dob==null)?NA('Nije dostupno'):(d.kap+d.dob<=0?NA('Nije primjenjivo: kapital + dugoročne obveze ≤ 0'):d.dug/(d.kap+d.dob))]
+ ]},
+ {g:'Zaduženost', rows:[
+  ['KZ','Koeficijent zaduženosti','koef.','(Dugoročne + kratkoročne obveze) / ukupna imovina','Koliki dio imovine je financiran tuđim izvorima.','≤ 0,5',v=>v<=0.5,
+    d=>cdiv(obv(d),d.akt)],
+  ['KVF','Koeficijent vlastitog financiranja','koef.','Kapital / ukupna imovina','Koliki dio imovine je financiran vlastitim kapitalom.','≥ 0,5',v=>v>=0.5,
+    d=>cdiv(d.kap,d.akt)],
+  ['KF','Koeficijent financiranja','koef.','(Dugoročne + kratkoročne obveze) / kapital','Koliko eura tuđih izvora dolazi na 1 € vlastitog kapitala.','≤ 1',v=>v<=1,
+    d=>(obv(d)==null||d.kap==null)?NA('Nije dostupno'):(d.kap<=0?NA('Nije primjenjivo: kapital ≤ 0'):obv(d)/d.kap)],
+  ['PTK','Pokriće troškova kamata','puta','(Dobit prije oporezivanja + kamate) / kamate','Koliko puta dobit prije kamata i poreza pokriva troškove kamata.','≥ 3',v=>v>=3,
+    d=>(d.dpo==null||d.kam==null)?NA('Nije dostupno'):(d.kam===0?NA('Nema troškova kamata'):(d.kam<50?NA(`Kamate su zanemarive (${fE(d.kam)}), pa pokazatelj nema smisla`):(d.dpo+d.kam)/d.kam))],
+  ['FZ','Faktor zaduženosti','godina','(Dugoročne + kratkoročne obveze) / (neto dobit + amortizacija)','Za koliko godina bi se obveze podmirile iz neto dobiti i amortizacije. Obračunska veličina, ne stvarni plan otplate (vidi napomenu ispod tablica).','≤ 3–3,5',v=>v<=3.5,
+    d=>(obv(d)==null||d.neto==null||d.amo==null)?NA('Nije dostupno'):(d.neto+d.amo<=0?NA('Nije izračunljivo: neto dobit + amortizacija ≤ 0'):obv(d)/(d.neto+d.amo))],
+  ['SP1','Stupanj pokrića I','koef.','Kapital / dugotrajna imovina','Koliki dio dugotrajne imovine je pokriven vlastitim kapitalom.','≥ 1',v=>v>=1,
+    d=>cdiv(d.kap,d.dug,'Nema dugotrajne imovine')],
+  ['SP2','Stupanj pokrića II','koef.','(Kapital + dugoročne obveze) / dugotrajna imovina','Pokriće dugotrajne imovine dugoročnim izvorima (recipročno KFS-u).','≥ 1',v=>v>=1,
+    d=>(d.kap==null||d.dob==null)?NA('Nije dostupno'):cdiv(d.kap+d.dob,d.dug,'Nema dugotrajne imovine')]
+ ]},
+ {g:'Aktivnost', rows:[
+  ['KOui','Koeficijent obrtaja ukupne imovine','puta','Ukupni prihodi / ukupna imovina','Koliko eura prihoda donosi 1 € imovine godišnje.','ovisi o djelatnosti',null,
+    d=>cdiv(d.upr,d.akt)],
+  ['KOki','Koeficijent obrtaja kratkotrajne imovine','puta','Ukupni prihodi / kratkotrajna imovina','Koliko se puta kratkotrajna imovina obrne kroz prihode.','ovisi o djelatnosti',null,
+    d=>cdiv(d.upr,d.kti,'Nema kratkotrajne imovine')],
+  ['KOz1','Koeficijent obrtaja zaliha I','puta','Ukupni prihodi / zalihe','Obrtaj zaliha mjeren prihodima.','ovisi o djelatnosti',null,
+    d=>cdiv(d.upr,d.zal,'Nema zaliha')],
+  ['KOz2','Koeficijent obrtaja zaliha II','puta','Materijalni troškovi / zalihe','Obrtaj zaliha mjeren materijalnim troškovima (uključuju trošak prodane robe).','ovisi o djelatnosti',null,
+    d=>cdiv(d.mat,d.zal,'Nema zaliha')],
+  ['KOp1','Koeficijent obrtaja potraživanja I','puta','Ukupni prihodi / kratkoročna potraživanja','Koliko se puta godišnje naplate kratkoročna potraživanja.','ovisi o djelatnosti',null,
+    d=>cdiv(d.upr,d.pot,'Nema potraživanja')],
+  ['TNP1','Trajanje naplate potraživanja I','dana','Broj dana u godini / KOp1','Prosječno trajanje naplate prema ukupnim potraživanjima.','ovisi o ugovorenim rokovima',null,
+    (d,y)=>{ const k=cdiv(d.upr,d.pot,'Nema potraživanja'); return isNA(k)?k:(k<=0?NA('Nije izračunljivo'):daysIn(y)/k); }],
+  ['KOp2','Koeficijent obrtaja potraživanja II','puta','Prihodi od prodaje / potraživanja od kupaca','Obrtaj potraživanja od kupaca. Potraživanja uključuju PDV, a prihodi ne, pa je ovo procjena.','ovisi o djelatnosti',null,
+    d=>cdiv(d.prod,d.kup,'Nema potraživanja od kupaca')],
+  ['TNP2','Trajanje naplate potraživanja II','dana','Broj dana u godini / KOp2','Procijenjeno trajanje naplate od kupaca (stanje na kraju godine).','ovisi o ugovorenim rokovima',null,
+    (d,y)=>{ const k=cdiv(d.prod,d.kup,'Nema potraživanja od kupaca'); return isNA(k)?k:(k<=0?NA('Nije izračunljivo'):daysIn(y)/k); }]
+ ]},
+ {g:'Ekonomičnost', rows:[
+  ['Eu','Ekonomičnost ukupnog poslovanja','koef.','Ukupni prihodi / ukupni rashodi','Koliko eura prihoda dolazi na 1 € rashoda. Iznad 1 znači dobit prije oporezivanja.','> 1',v=>v>1,
+    d=>cdiv(d.upr,d.urs)],
+  ['Ep','Ekonomičnost poslovnih aktivnosti','koef.','Poslovni prihodi / poslovni rashodi','Isto, samo za redovno poslovanje (bez financijskih stavki).','> 1',v=>v>1,
+    d=>cdiv(d.ppr,d.prs)],
+  ['Ef','Ekonomičnost financiranja','koef.','Financijski prihodi / financijski rashodi','Odnos financijskih prihoda i rashoda; kod većine tvrtki je ispod 1 jer imaju kamate na kredite.','informativno',null,
+    d=>cdiv(d.fpr,d.frs,'Nema financijskih rashoda')]
+ ]},
+ {g:'Profitabilnost', rows:[
+  ['MP1','Neto marža profita (s kamatama)','%','(Neto dobit + kamate) / ukupni prihodi','Dobit uvećana za kamate na 100 € prihoda; ne ovisi o načinu financiranja.','ovisi o djelatnosti',null,
+    d=>(d.neto==null||d.kam==null)?NA('Nije dostupno'):cdiv(d.neto+d.kam,d.upr)],
+  ['MP2','Neto marža profita','%','Neto dobit / ukupni prihodi','Koliko neto dobiti ostaje od 100 € prihoda.','ovisi o djelatnosti',null,
+    d=>cdiv(d.neto,d.upr)],
+  ['MPb','Bruto marža profita','%','(Dobit prije oporezivanja + kamate) / ukupni prihodi','Dobit prije kamata i poreza na 100 € prihoda.','ovisi o djelatnosti',null,
+    d=>(d.dpo==null||d.kam==null)?NA('Nije dostupno'):cdiv(d.dpo+d.kam,d.upr)],
+  ['Ri1','Neto rentabilnost imovine (s kamatama)','%','(Neto dobit + kamate) / ukupna imovina','Prinos na imovinu neovisno o načinu financiranja.','ovisi o djelatnosti',null,
+    d=>(d.neto==null||d.kam==null)?NA('Nije dostupno'):cdiv(d.neto+d.kam,d.akt)],
+  ['Ri2','Neto rentabilnost imovine','%','Neto dobit / ukupna imovina','Neto dobit na 100 € imovine (stanje na kraju godine; u glavnom dijelu ROA koristi prosjek).','ovisi o djelatnosti',null,
+    d=>cdiv(d.neto,d.akt)],
+  ['Rib','Bruto rentabilnost imovine','%','(Dobit prije oporezivanja + kamate) / ukupna imovina','Dobit prije kamata i poreza na 100 € imovine.','ovisi o djelatnosti',null,
+    d=>(d.dpo==null||d.kam==null)?NA('Nije dostupno'):cdiv(d.dpo+d.kam,d.akt)],
+  ['Rvk','Rentabilnost vlastitog kapitala','%','Neto dobit / kapital','Neto dobit na 100 € kapitala (stanje na kraju godine; u glavnom dijelu ROE koristi prosjek).','ovisi o djelatnosti',null,
+    d=>(d.neto==null||d.kap==null)?NA('Nije dostupno'):(d.kap<=0?NA('Nije primjenjivo: kapital ≤ 0'):d.neto/d.kap)]
+ ]}
+];
+
+// Altman: varijante i primjenjivost
+const ALTMAN = [
+  {id:'Z', n:'Originalni Z (1968.)', f:'1,2·X1 + 1,4·X2 + 3,3·X3 + 0,6·X4 + 1,0·X5; X4 = tržišna vrijednost dionica / obveze', zones:[1.81,2.99],
+   use:'Uvrštena proizvodna dionička društva.', always:'Nije primjenjiv: model traži tržišnu vrijednost dionica, koje nema u GFI-POD-u. Zamjena knjigovodstvenim kapitalom (kao u predlošku ANALIZA.xlsx) više nije originalni model, nego približno Z\'.'},
+  {id:'Z1', n:'Z\' (privatna proizvodna društva)', f:'0,717·X1 + 0,847·X2 + 3,107·X3 + 0,420·X4 + 0,998·X5; X4 = kapital / obveze', zones:[1.23,2.9],
+   use:'Privatna proizvodna društva. Djelatnost se iz GFI-ja ne čita, pa primjenjivost procijeni sam; za trgovinu i usluge koristi Z\'\'.'},
+  {id:'Z2', n:'Z\'\' (neproizvodna društva)', f:'6,56·X1 + 3,26·X2 + 6,72·X3 + 1,05·X4; bez X5', zones:[1.1,2.6],
+   use:'Neproizvodna društva i tržišta u razvoju; najprikladniji za većinu malih hrvatskih d.o.o.-a. Uključen je i u semafor kao dodatna informacija (ne ulazi u ocjenu).'}
+];
+function altmanParts(d){
+  const o=obv(d), ebit=(d.ppr==null||d.prs==null)?null:d.ppr-d.prs;
+  if([d.akt,d.kti,d.kob,d.zad,d.dg,d.kap,o,ebit,d.ppr].some(x=>x==null)) return NA('Nije dostupno');
+  if(!(d.akt>0)) return NA('Nije primjenjivo: ukupna imovina ≤ 0');
+  if(!(o>0)) return NA('Nije primjenjivo: tvrtka nema obveza (X4 nije definiran)');
+  return {X1:(d.kti-d.kob)/d.akt, X2:(d.zad+d.dg)/d.akt, X3:ebit/d.akt, X4:d.kap/o, X5:d.ppr/d.akt};
+}
+function altmanCalc(id,d){
+  if(id==='Z') return NA(ALTMAN[0].always);
+  const x=altmanParts(d); if(isNA(x)) return x;
+  if(id==='Z1') return 0.717*x.X1+0.847*x.X2+3.107*x.X3+0.420*x.X4+0.998*x.X5;
+  return 6.56*x.X1+3.26*x.X2+6.72*x.X3+1.05*x.X4;
+}
+
+// Horizontalna i vertikalna analiza
+const HV = {
+  B:[['dug','Dugotrajna imovina'],['kti','Kratkotrajna imovina'],['zal','  zalihe'],['pot','  potraživanja'],['kfi','  financijska imovina'],['nov','  novac'],['ppti','Plaćeni troškovi budućeg razdoblja'],['akt','UKUPNO AKTIVA',1],
+     ['kap','Kapital i rezerve'],['rez','Rezerviranja'],['dob','Dugoročne obveze'],['kob','Kratkoročne obveze'],['opt','Odgođeno plaćanje troškova i PBR'],['pas','UKUPNO PASIVA',1]],
+  R:[['ppr','Poslovni prihodi'],['fpr','Financijski prihodi'],['upr','UKUPNI PRIHODI',1],['mat','Materijalni troškovi'],['osob','Troškovi osoblja'],['amo','Amortizacija'],['ostr','Ostali poslovni rashodi'],['prs','Poslovni rashodi',1],['frs','Financijski rashodi'],['urs','UKUPNI RASHODI',1],['dpo','Dobit / gubitak prije oporezivanja',1],['por','Porez na dobit'],['neto','Dobit / gubitak razdoblja',1]]
+};
+function hvValue(d,k){ if(k==='ostr') return (d.prs==null||d.mat==null||d.osob==null||d.amo==null)?null:d.prs-d.mat-d.osob-d.amo; return d[k]; }
+function hvBase(k){ return HV.B.findIndex(r=>r[0]===k)>=0 ? (HV.B.findIndex(r=>r[0]===k)<=7?'akt':'pas') : 'upr'; }
+
+function classic(A){
+  const ys=A.years, out={groups:[], altman:[], hv:{years:ys, all:(A.opening!=null?[A.opening,...ys]:ys), B:[], R:[]}};
+  for(const G of CLASSIC){
+    const rows=G.rows.map(([id,n,unit,f,e,ot,test,fn])=>{
+      const v={}; ys.forEach(y=>{ const d=A.D[y]; v[y]= d ? fn(d,y) : NA('Nije dostupno'); });
+      return {id,n,unit,f,e,o:ot,test,v};
+    });
+    out.groups.push({g:G.g, rows});
+  }
+  for(const M of ALTMAN){
+    const v={}, zone={};
+    ys.forEach(y=>{ const r=altmanCalc(M.id,A.D[y]); v[y]=r; if(!isNA(r)) zone[y]= r>M.zones[1]?'sigurna zona':r>=M.zones[0]?'siva zona':'zona povećanog rizika'; });
+    out.altman.push({...M, v, zone});
+  }
+  for(const t of ['B','R']){
+    for(const [k,l,bold] of HV[t]){
+      const row={k,l,bold:!!bold,val:{},str:{},chg:{}};
+      out.hv.all.forEach(y=>{
+        const d=A.D[y]; const x=d?hvValue(d,k):null; row.val[y]=x;
+        const base = d ? d[t==='B'?hvBase(k):'upr'] : null;
+        row.str[y] = (x==null||!(base>0)) ? null : x/base;
+        const p=A.D[y-1]; const px=p?hvValue(p,k):null;
+        row.chg[y] = (x==null||px==null||px<=0) ? null : x/px-1;
+      });
+      out.hv[t].push(row);
+    }
+  }
+  return out;
+}
+
 /* ---------- dijagnoza ---------- */
 // Svaki problem: {sev, fact (potvrđeno brojkama), meaning (što može značiti), check (što provjeriti)}
 function diagnose(A, FC){
@@ -899,6 +1066,15 @@ function diagnose(A, FC){
   if(n>1 && L.opMarza!=null && i0.opMarza!=null && i0.opMarza-L.opMarza>0.02) P(1,`Operativna marža pala je s ${fP(i0.opMarza)} na ${fP(L.opMarza)}.`,'Troškovi poslovanja rastu brže od prihoda.','Koji troškovi rastu najbrže.');
   if(n>1 && td.gPpr!=null && td.gPpr<-0.05) P(2,`Poslovni prihodi pali su s ${fE(f.ppr)} na ${fE(d.ppr)} (${fP(td.gPpr,0)}).`,'Opseg poslovanja se smanjuje.',null);
   if(A.izvShare!=null && A.izvShare>0.2) P(1,`Ostali poslovni i financijski prihodi (izvan prodaje) čine ${fP(A.izvShare,0)} ukupnih prihoda u ${yN}.`,'Rezultat znatno ovisi o prihodima koji nisu redovna prodaja (npr. potpore, otpisi obveza, prodaja imovine) i koji se ne moraju ponoviti.','Vrstu tih prihoda i hoće li se ponoviti.');
+  // klasični pokazatelji – samo kad ukazuju na značajan rizik
+  const ptkV = (d.dpo!=null && d.kam!=null && d.kam>0) ? (d.dpo+d.kam)/d.kam : null;
+  if(ptkV!=null && d.upr>0 && d.kam>0.005*d.upr && ptkV<1.5){
+    if(ptkV<1) P(3,`Dobit prije kamata i poreza (${fE(d.dpo+d.kam)}) manja je od troškova kamata (${fE(d.kam)}); pokriće kamata iznosi ${fN(ptkV,2)}.`,'Poslovanje ne zarađuje dovoljno ni za kamate na posuđena sredstva.','Uvjete kredita i mogućnost smanjenja kamatnog opterećenja.');
+    else P(2,`Dobit prije kamata i poreza pokriva troškove kamata (${fE(d.kam)}) samo ${fN(ptkV,1)} puta.`,'Već manji pad dobiti bio bi dovoljan da kamate premaše zaradu.','Uvjete kredita i mogućnost smanjenja kamatnog opterećenja.');
+  }
+  const fzDen = (d.neto!=null && d.amo!=null) ? d.neto+d.amo : null;
+  if(fzDen!=null && fzDen>0 && L.obveze!=null && L.obveze>0.2*d.akt && L.obveze/fzDen>5)
+    P(2,`Uz neto dobit i amortizaciju iz ${yN}. (${fE(fzDen)}) za podmirenje svih obveza (${fE(L.obveze)}) trebalo bi oko ${fN(L.obveze/fzDen,1)} godina (faktor zaduženosti).`,'To je obračunska veličina, a ne stvarni plan otplate; orijentacijski se smatra da ne bi trebala prelaziti 3–3,5 godine.','Strukturu obveza po rokovima i plan njihova smanjenja.');
   bad.sort((a,b)=>b.sev-a.sev);
 
   // --- preporuke (samo za prepoznate probleme)
@@ -912,6 +1088,8 @@ function diagnose(A, FC){
   if(has(/Kapital se od/)) recs.push('Prije svake isplate dobiti provjeriti stanje likvidnosti.');
   if(L.negKap) recs.push('Izraditi plan oporavka kapitala.');
   if(d.neto<0) recs.push('Napraviti analizu troškova po vrstama i poslovima te odrediti mjere za povratak u dobit.');
+  if(has(/troškove kamata|troškova kamata/)) recs.push('Razgovarati s bankom o uvjetima kredita i smanjenju kamatnog opterećenja.');
+  if(has(/faktor zaduženosti/)) recs.push('Izraditi plan smanjenja obveza i dio dobiti zadržati u tvrtki za njihovu otplatu.');
   if(has(/Ostali poslovni i financijski prihodi/)) recs.push('Procijeniti rezultat bez jednokratnih prihoda kako bi se vidjela stvarna snaga redovnog poslovanja.');
 
   // --- 1. opće stanje
@@ -993,7 +1171,7 @@ function demoDataset(){
   return {firma:'DEMO Trgovina d.o.o. (izmišljena tvrtka)', oib:'00000000000', years, conflicts:[], warn:[], demo:true};
 }
 
-return {FIELDS, FK, AOP24, HRK, TOL, norm, toNum, parseFormula, parseWorkbook, sameCompany, merge, validate, pickYears, analyze, forecast, forecastDefaults, scenario, diagnose, consistency, demoDataset, DEMO_DATA, fE, fP, fN, pp, nf, val, yearData, indicators};
+return {FIELDS, FK, AOP24, HRK, TOL, norm, toNum, parseFormula, parseWorkbook, sameCompany, merge, validate, pickYears, analyze, forecast, forecastDefaults, scenario, diagnose, consistency, classic, CLASSIC, ALTMAN, isNA, demoDataset, DEMO_DATA, fE, fP, fN, pp, nf, val, yearData, indicators};
 })();
 
 
@@ -1111,7 +1289,7 @@ function buildDemoGFI(XLSX, FD, year){
 <script>
 (function(){
 "use strict";
-const EXPECTED = {"god":{"2023":{"EBIT":114800,"EBITDA":144800,"rastPpr":0.21904761904761916,"rastUpr":0.21894336030461692,"netoMarza":0.0680718469347911,"opMarza":0.0896875,"ROA":0.12225245441795231,"ROE":0.21985355875431617,"TL":1.6091500421849059,"UL":1.0648286748496312,"NL":0.2381405982091827,"NOK":179056,"obveze":353944,"udioObveza":0.4543568677792041,"obvKap":0.8426114613289657,"udioKap":0.539224646983312,"finDug":190944,"dugEbitda":1.3186740331491713,"daniNaplate":53.541009463722396,"rastPot":0.35465116279069764,"rastKob":0.5461785282205038},"2024":{"EBIT":163400,"EBITDA":201400,"rastPpr":0.21875,"rastUpr":0.21866458414681755,"netoMarza":0.07771739826978533,"opMarza":0.10474358974358974,"ROA":0.13527941996653653,"ROE":0.27835527146283523,"TL":1.136130498232901,"UL":0.7103234971916093,"NL":0.0774194547347803,"NOK":70334,"obveze":556666,"udioObveza":0.5489802761341223,"obvKap":1.2333792712270735,"udioKap":0.4451025641025641,"finDug":335666,"dugEbitda":1.6666633565044686,"daniNaplate":61.55239327296248,"rastPot":0.4034334763948497,"rastKob":0.7577021473477941},"2025":{"EBIT":229000,"EBITDA":274000,"rastPpr":0.21794871794871784,"rastUpr":0.21787888497276509,"netoMarza":0.08780320968166272,"opMarza":0.12052631578947369,"ROA":0.14147520135650699,"ROE":0.35521713863622334,"TL":0.9363747234259987,"UL":0.5748400811765784,"NL":0.02169207853496522,"NOK":-52796,"obveze":849796,"udioObveza":0.6318185873605948,"obvKap":1.7406575939566247,"udioKap":0.3629769516728625,"finDug":555796,"dugEbitda":2.0284525547445256,"daniNaplate":71.58572186836518,"rastPot":0.4036697247706422,"rastKob":0.6060588465275438}},"P":96.95080242041568,"L":10.576205813519543,"Z":74.06516333357952,"T":40.0,"trendDetalji":{"cagr":0.2183492931011204,"dTL":-0.6727753187589072,"dUdioKap":-0.17624769531044948,"gKob":1.8229730833083853,"gPpr":0.484375,"pos":100.0},"score":53.926853182554666,"prognoza":{"g":0.2183492931011204,"osobG":0.14763808351400898,"osnovni":{"ppr":2314863.6568921288,"upr":2315363.6568921288,"urs":2032943.9239939018,"dpo":282419.73289822694},"optimisticni":{"ppr":2409863.6568921288,"upr":2410363.6568921288,"urs":2076645.2874249804,"dpo":333718.3694671483},"pesimisticni":{"ppr":2029863.656892129,"upr":2030363.656892129,"urs":1881291.878847284,"dpo":149071.77804484498}},"status":"y"};
+const EXPECTED = {"god":{"2023":{"EBIT":114800,"EBITDA":144800,"rastPpr":0.21904761904761916,"rastUpr":0.21894336030461692,"netoMarza":0.0680718469347911,"opMarza":0.0896875,"ROA":0.12225245441795231,"ROE":0.21985355875431617,"TL":1.6091500421849059,"UL":1.0648286748496312,"NL":0.2381405982091827,"NOK":179056,"obveze":353944,"udioObveza":0.4543568677792041,"obvKap":0.8426114613289657,"udioKap":0.539224646983312,"finDug":190944,"dugEbitda":1.3186740331491713,"daniNaplate":53.541009463722396,"rastPot":0.35465116279069764,"rastKob":0.5461785282205038},"2024":{"EBIT":163400,"EBITDA":201400,"rastPpr":0.21875,"rastUpr":0.21866458414681755,"netoMarza":0.07771739826978533,"opMarza":0.10474358974358974,"ROA":0.13527941996653653,"ROE":0.27835527146283523,"TL":1.136130498232901,"UL":0.7103234971916093,"NL":0.0774194547347803,"NOK":70334,"obveze":556666,"udioObveza":0.5489802761341223,"obvKap":1.2333792712270735,"udioKap":0.4451025641025641,"finDug":335666,"dugEbitda":1.6666633565044686,"daniNaplate":61.55239327296248,"rastPot":0.4034334763948497,"rastKob":0.7577021473477941},"2025":{"EBIT":229000,"EBITDA":274000,"rastPpr":0.21794871794871784,"rastUpr":0.21787888497276509,"netoMarza":0.08780320968166272,"opMarza":0.12052631578947369,"ROA":0.14147520135650699,"ROE":0.35521713863622334,"TL":0.9363747234259987,"UL":0.5748400811765784,"NL":0.02169207853496522,"NOK":-52796,"obveze":849796,"udioObveza":0.6318185873605948,"obvKap":1.7406575939566247,"udioKap":0.3629769516728625,"finDug":555796,"dugEbitda":2.0284525547445256,"daniNaplate":71.58572186836518,"rastPot":0.4036697247706422,"rastKob":0.6060588465275438}},"P":96.95080242041568,"L":10.576205813519543,"Z":74.06516333357952,"T":40.0,"trendDetalji":{"cagr":0.2183492931011204,"dTL":-0.6727753187589072,"dUdioKap":-0.17624769531044948,"gKob":1.8229730833083853,"gPpr":0.484375,"pos":100.0},"score":53.926853182554666,"prognoza":{"g":0.2183492931011204,"osobG":0.14763808351400898,"osnovni":{"ppr":2314863.6568921288,"upr":2315363.6568921288,"urs":2032943.9239939018,"dpo":282419.73289822694},"optimisticni":{"ppr":2409863.6568921288,"upr":2410363.6568921288,"urs":2076645.2874249804,"dpo":333718.3694671483},"pesimisticni":{"ppr":2029863.656892129,"upr":2030363.656892129,"urs":1881291.878847284,"dpo":149071.77804484498}},"status":"y","classic":{"2023":{"KTL":1.6091500421849059,"KUL":1.0648286748496312,"KFS":0.6249270918392854,"KZ":0.4543568677792041,"KVF":0.539224646983312,"KF":0.8426114613289657,"PTK":12.811111111111112,"FZ":3.0208763634501477,"SP1":1.4001866666666667,"SP2":1.6001866666666666,"KOui":1.6437740693196405,"KOki":2.707188160676533,"KOz1":8.003125,"KOz2":5.52,"KOp1":5.4957081545064375,"TNP1":66.41546270987895,"KOp2":5.897674418604651,"TNP2":61.888801261829656,"Eu":1.0905297223641628,"Ep":1.0985238585650532,"Ef":0.05555555555555555,"MP1":0.07510035142522452,"MP2":0.0680718469347911,"MPb":0.09004295197188598,"Ri1":0.12344801026957639,"Ri2":0.11189473684210527,"Rib":0.14801026957637997,"Rvk":0.20751042718113774,"Z1":3.195952538076547,"Z2":5.418457031969288},"2024":{"KTL":1.136130498232901,"KUL":0.7103234971916093,"KFS":0.8548156651076457,"KZ":0.5489802761341223,"KVF":0.4451025641025641,"KF":1.2333792712270735,"PTK":10.24375,"FZ":3.4949333869084245,"SP1":1.0746047619047618,"SP2":1.1698428571428572,"KOui":1.5389546351084813,"KOki":2.6584327086882453,"KOz1":7.093181818181818,"KOz2":4.857272727272727,"KOp1":4.77217125382263,"TNP1":76.69464915091318,"KOp2":5.0688524590163935,"TNP2":72.20569210866753,"Eu":1.1047005521732975,"Ep":1.1169984247458113,"Ef":0.03125,"MP1":0.08797052226850369,"MP2":0.07771739826978533,"MPb":0.1050304389618712,"Ri1":0.1353826429980276,"Ri2":0.119603550295858,"Rib":0.16163708086785009,"Rvk":0.26871009053162404,"Z1":2.786615801692765,"Z2":3.775962521983391},"2025":{"KTL":0.9363747234259987,"KUL":0.5748400811765784,"KFS":1.101919701537178,"KZ":0.6318185873605948,"KVF":0.3629769516728625,"KF":1.7406575939566247,"PTK":8.826923076923077,"FZ":4.010931231415491,"SP1":0.8717928571428571,"SP2":0.9075071428571428,"KOui":1.4130111524163569,"KOki":2.445945945945946,"KOz1":6.335,"KOz2":4.306666666666667,"KOp1":4.140522875816994,"TNP1":88.1531176006314,"KOp2":4.341013824884793,"TNP2":84.08174097664543,"Eu":1.119917501473188,"Ep":1.1370436864153202,"Ef":0.019230769230769232,"MP1":0.10148382004735595,"MP2":0.08780320968166272,"MPb":0.12075769534333071,"Ri1":0.1433977695167286,"Ri2":0.12406691449814126,"Rib":0.17063197026022306,"Rvk":0.34180383610130194,"Z1":2.446802660690677,"Z2":2.6246948599051305}}};
 const $ = id => document.getElementById(id);
 const {fE,fP,fN,nf,FIELDS} = FD;
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1263,7 +1441,7 @@ function runAnalysis(scroll){
     $('vRules').innerHTML = st==='na' ? `<li>Nedostaje za zadnju godinu: ${A.missingCore.map(k=>FD.FK[k].l).join(', ')}.</li>`
       : '<li><b>Što treba ispraviti:</b></li>'+A.critical.map(c=>`<li>${esc(c)}</li>`).join('');
     $('chartsH').textContent='Brojke po godinama';
-    ['areas','charts','patterns','diag','indTbl','scoreTbl','altTbl','scTbl','fcChart'].forEach(id=>$(id).innerHTML='');
+    ['areas','charts','patterns','diag','indTbl','scoreTbl','classic','altman','hv','scTbl','fcChart'].forEach(id=>$(id).innerHTML='');
     $('fcPanel').classList.add('hidden'); $('testPanel').classList.add('hidden');
     zgTvrtka(); if(scroll) $('results').scrollIntoView({behavior:'smooth'}); return;
   }
@@ -1366,6 +1544,16 @@ function renderForecast(fromSlider){
 }
 
 /* dijagnoza */
+// Napomena o vremenskom ograničenju analize (zadnja analizirana godina iz podataka)
+function timeNote(){
+  const ys=A.years, y0=ys[0], yN=ys[ys.length-1];
+  const raz = ys.length>1 ? `${y0}.–${yN}.` : `${yN}.`;
+  return `<aside class="anote" aria-label="Važna napomena o analizi"><h4>Važna napomena o analizi</h4>`+
+    `<p><b>Posljednja analizirana poslovna godina je ${yN}.</b> (stanje na dan 31. 12. ${yN}.). Semafor i zaključci ne prikazuju nužno stanje tvrtke u ${yN+1}. godini ni danas.</p>`+
+    `<p>Ova financijska dijagnoza izrađena je na temelju godišnjih financijskih izvještaja za navedena poslovna razdoblja (${raz}) i prikazuje financijsko stanje i rezultate poslovanja u tim razdobljima.</p>`+
+    `<p>Stvarno financijsko stanje tvrtke na današnji dan može biti značajno drugačije, osobito ako su nakon posljednjeg izvještaja nastupile promjene u prihodima, rashodima, naplati potraživanja, obvezama ili poslovanju općenito.</p>`+
+    `<p>Rezultati semafora, zaključci i buduće projekcije informativne su prirode te ne predstavljaju potvrdu trenutačnog financijskog stanja tvrtke.</p></aside>`;
+}
 function renderDiag(F){
   const g=FD.diagnose(A,F);
   const ul = a => a.length? `<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '';
@@ -1375,7 +1563,7 @@ function renderDiag(F){
     `<h3>3. Gdje postoje problemi?</h3>${g.bad.length?`<ul>${g.bad.map(b=>`<li><b>${esc(b.fact)}</b><span class="why">${esc(b.meaning)}</span>${b.check?`<span class="chk">Provjeriti: ${esc(b.check)}</span>`:''}</li>`).join('')}</ul>`:'<p>Nisu prepoznati značajni financijski problemi.</p>'}`+
     `<h3>4. Kako se poslovanje mijenjalo?</h3>${g.s4.map(p=>`<p>${esc(p)}</p>`).join('')}`+
     `<h3>5. Što možemo očekivati?</h3>${g.s5.map(p=>`<p>${esc(p)}</p>`).join('')}`+
-    `<h3>6. Završni zaključak i preporuke</h3><p>${esc(g.s6)}</p>${ul(g.recs)}`;
+    `<h3>6. Završni zaključak i preporuke</h3><p>${esc(g.s6)}</p>${ul(g.recs)}`+timeNote();
 }
 
 /* detaljno */
@@ -1414,10 +1602,27 @@ function renderDetail(){
   });
   h+=`<tr class="grp"><td colspan="3">Ukupna ocjena</td><td class="n">${fN(A.score,1)}</td></tr>`;
   $('scoreTbl').innerHTML=h;
-  $('altTbl').innerHTML = `<tr>${ys.map(y=>`<th class="n">${y}.</th>`).join('')}</tr><tr>${ys.map(y=>{const z=A.I[y].altman; const c=z==null?'':z>2.6?'ok':z<1.1?'bad':''; return `<td class="n num ${c}">${fN(z,2)}</td>`;}).join('')}</tr><tr><td colspan="${ys.length}" class="small muted">Iznad 2,6 sigurna zona, 1,1 do 2,6 siva zona, ispod 1,1 zona rizika. Ne ulazi u ocjenu semafora.</td></tr>`;
+  renderClassic();
 }
 
 /* kontrola DEMO */
+function renderClassic(){
+  const C=FD.classic(A), ys=A.years;
+  const fmtC=(v,u)=> u==='%'?fP(v): u==='dana'?fN(v,0)+' dana': u==='godina'?fN(v,1)+' god.': fN(v,2);
+  const cell=(r,y)=>{ const v=r.v[y]; if(FD.isNA(v)) return `<td class="na">${esc(v.na)}</td>`;
+    const out = r.test && r.test(v)===false ? '<span class="out" title="Izvan orijentacijskog raspona – nije nužno loše">◦ izvan raspona</span>' : '';
+    return `<td class="n num">${fmtC(v,r.unit)}${out}</td>`; };
+  $('classic').innerHTML = C.groups.map(G=>`<h3>${G.g}</h3><div class="tblwrap"><table class="data cl"><tr><th>Pokazatelj</th>${ys.map(y=>`<th class="n">${y}.</th>`).join('')}<th>Jedinica</th><th>Orijentacijski</th></tr>`+
+    G.rows.map(r=>`<tr><td class="nm"><b>${esc(r.n)} (${esc(r.id)})</b><small>${esc(r.f)}</small><small>${esc(r.e)}</small></td>${ys.map(y=>cell(r,y)).join('')}<td class="small">${esc(r.unit)}</td><td class="small">${esc(r.o)}</td></tr>`).join('')+`</table></div>`).join('');
+  $('altman').innerHTML = `<div class="tblwrap"><table class="data cl"><tr><th>Model</th>${ys.map(y=>`<th class="n">${y}.</th>`).join('')}<th>Zone (orijentacijski)</th></tr>`+
+    C.altman.map(m=>`<tr><td class="nm"><b>${esc(m.n)}</b><small>${esc(m.f)}</small><small>Namijenjen: ${esc(m.use)}</small></td>${m.id==='Z'?`<td class="na" colspan="${ys.length}">${esc(m.always)}</td>`:ys.map(y=>{ const v=m.v[y]; return FD.isNA(v)?`<td class="na">${esc(v.na)}</td>`:`<td class="n num">${fN(v,2)}<span class="out">${esc(m.zone[y])}</span></td>`; }).join('')}<td class="small">ispod ${fN(m.zones[0],2)} povećan rizik · ${fN(m.zones[0],2)}–${fN(m.zones[1],2)} siva zona · iznad ${fN(m.zones[1],2)} sigurna zona</td></tr>`).join('')+`</table></div>`;
+  const H=C.hv, all=H.all;
+  const vert=(rows)=>`<div class="tblwrap"><table class="data"><tr><th>Stavka</th>${ys.map(y=>`<th class="n">${y}.</th>`).join('')}</tr>`+rows.map(r=>`<tr class="${r.bold?'tot':''}"><td>${esc(r.l.trim())}</td>${ys.map(y=>`<td class="n num">${r.str[y]==null?'–':fP(r.str[y])}</td>`).join('')}</tr>`).join('')+`</table></div>`;
+  const horiz=(rows)=>`<div class="tblwrap"><table class="data"><tr><th>Stavka</th>${all.map((y,i)=>`<th class="n">${y}.${y===A.opening?'<br><span class="badge">početno</span>':''}</th>${i>0?'<th class="n">promjena</th>':''}`).join('')}</tr>`+
+    rows.map(r=>`<tr class="${r.bold?'tot':''}"><td>${esc(r.l.trim())}</td>${all.map((y,i)=>`<td class="n num">${r.val[y]==null?'–':fE(r.val[y])}</td>${i>0?`<td class="n num">${r.chg[y]==null?'–':pp(r.chg[y])}</td>`:''}`).join('')}</tr>`).join('')+`</table></div>`;
+  const pp=v=>(v>0?'+':'')+fP(v);
+  $('hv').innerHTML = `<h3>Vertikalna analiza – bilanca (udio u aktivi / pasivi)</h3>${vert(H.B)}<h3>Vertikalna analiza – račun dobiti i gubitka (udio u ukupnim prihodima)</h3>${vert(H.R)}<h3>Horizontalna analiza – bilanca</h3>${horiz(H.B)}<h3>Horizontalna analiza – račun dobiti i gubitka</h3>${horiz(H.R)}`;
+}
 function renderTest(){
   if(!A.demo){ $('testPanel').classList.add('hidden'); return; }
   $('testPanel').classList.remove('hidden');
@@ -1431,7 +1636,11 @@ function renderTest(){
   const stOk = A.status===EXPECTED.status; if(stOk) ok++;
   rows.push(['Boja semafora',EXPECTED.status==='y'?'žuto':EXPECTED.status, A.status==='y'?'žuto':A.status, stOk,'s']);
   const total=rows.length;
-  $('testSum').innerHTML = `<p class="${ok===total?'ok':'bad'}">${ok===total?'✓':'✗'} Prošlo ${ok} od ${total} provjera.${ok===total?' Izračuni se slažu s očekivanim rezultatima.':' Neke vrijednosti se ne slažu, vidi tablicu.'}</p>`;
+  // klasični pokazatelji (zaseban zbroj)
+  const C=FD.classic(A); let cok=0, ctot=0;
+  for(const y of [2023,2024,2025]){ const map={}; C.groups.forEach(g=>g.rows.forEach(r=>map[r.id]=[r.n,r.v[y]])); C.altman.forEach(m=>map[m.id]=[m.n,m.v[y]]);
+    for(const k in EXPECTED.classic[y]){ const [n,a]=map[k]; const av=FD.isNA(a)?null:a, e=EXPECTED.classic[y][k]; const pass=(av==null&&e==null)||(av!=null&&e!=null&&Math.abs(av-e)<=1e-6*Math.max(1,Math.abs(e))); ctot++; if(pass) cok++; rows.push([`Klasični: ${n} ${y}.`,e,av,pass,'x']); } }
+  $('testSum').innerHTML = `<p class="${ok===total?'ok':'bad'}">${ok===total?'✓':'✗'} Prošlo ${ok} od ${total} provjera.${ok===total?' Izračuni se slažu s očekivanim rezultatima.':' Neke vrijednosti se ne slažu, vidi tablicu.'}</p><p class="${cok===ctot?'ok':'bad'}">${cok===ctot?'✓':'✗'} Klasični pokazatelji i Altman: prošlo ${cok} od ${ctot} provjera.</p>`;
   const fv=(v,t)=> t==='s'? v : t==='x'? fN(v,4) : fmtI(v,t);
   $('testTbl').innerHTML = `<tr><th>Provjera</th><th class="n">Očekivano</th><th class="n">Aplikacija</th><th></th></tr>`+rows.map(r=>`<tr><td>${esc(r[0])}</td><td class="n num">${fv(r[1],r[4])}</td><td class="n num">${fv(r[2],r[4])}</td><td class="${r[3]?'ok':'bad'}">${r[3]?'✓':'✗'}</td></tr>`).join('');
 }
@@ -1713,6 +1922,6 @@ window.addEventListener('focusin', (e) => { if (isDemo() && e.target.closest && 
 document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-fd-prijava]'); if (b && window.fdPrijava) window.fdPrijava(); });
 })();
 </script>
-<script src="../zaglavlje.js" data-app="Financijska dijagnoza" data-verzija="2026-11-09"></script>
+<script src="../zaglavlje.js" data-app="Financijska dijagnoza" data-verzija="2026-11-10"></script>
 </body>
 </html>
