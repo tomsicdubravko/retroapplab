@@ -277,6 +277,12 @@ body.zr-licenced #o-aplikaciji{display:none}
 .kref:hover{border-color:var(--in-ink);text-decoration:underline}
 @keyframes flashrow{0%{background:#FFE38A}100%{background:transparent}}
 .flash,.flash td{animation:flashrow 2.4s ease-out}
+.fsnote{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:#0f5132;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:all .25s;z-index:200;max-width:90vw}
+.fsnote.bad{background:#8A5A00}
+.fsnote.show{opacity:1;transform:translate(-50%,0)}
+#btnDir[hidden]{display:none}
+#rucni{scroll-margin-top:230px}
+@media (max-width:640px){#rucni{scroll-margin-top:20px}}
 </style>
 <link rel="stylesheet" href="../zaglavlje.css">
 </head>
@@ -285,6 +291,7 @@ body.zr-licenced #o-aplikaciji{display:none}
   <div class="bar">
     <div class="obr-traka" data-zg-traka><div class="obr-r1"><h1 class="obr-naslov" id="hName">Završni račun – GFI-POD</h1><a class="obr-izbornik" href="/zavrsni/">← Izbornik</a></div><p class="obr-r2"><span class="firm" id="hSub"></span><span class="obr-razd" id="hPeriod"></span></p><p class="lic obr-r3" id="hLic"></p></div>
     <div class="actions obr-gumbi" data-zg-gumbi>
+      <button class="btn" id="btnDir" type="button" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Odaberi mapu</span></button>
       <button class="btn" id="btnSave" type="button" title="Spremi"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3"/><rect x="7" y="13" width="10" height="8" rx="1"/></svg><span>Spremi</span></button>
       <button class="btn" id="btnLoad" type="button" title="Učitaj"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1"/><path d="M3 7v11a2 2 0 0 0 2 2h12.5a2 2 0 0 0 1.9-1.4L22 12H7.5a2 2 0 0 0-1.9 1.4L3 20"/></svg><span>Učitaj</span></button>
       <input type="file" id="loadFile" accept=".json,application/json" hidden>
@@ -1338,7 +1345,60 @@ function buildTzXml() {
   for (const t of ['Podatak14', 'Podatak15']) { const el = doc.getElementsByTagNameNS('*', t)[0]; if (el) el.parentNode.removeChild(el); }
   return { xml: xmlString(doc), missing };
 }
+
+// ---------- Spremanje u odabranu mapu (Chrome / Edge na računalu) ----------
+const FS_OK = typeof window.showDirectoryPicker === 'function' && window.self === window.top;
+let FS_DIR = null;
+function fsIdb() { return new Promise((res, rej) => { const r = indexedDB.open('zavrsni-fs', 1); r.onupgradeneeded = () => r.result.createObjectStore('h'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+async function fsGet(k) { try { const db = await fsIdb(); return await new Promise(res => { const q = db.transaction('h').objectStore('h').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }); } catch (e) { return null; } }
+async function fsSet(k, v) { try { const db = await fsIdb(); await new Promise(res => { const tx = db.transaction('h', 'readwrite'); tx.objectStore('h').put(v, k); tx.oncomplete = res; tx.onerror = res; }); } catch (e) {} }
+const fsSub = () => 'Završni račun ' + (E.inputs['RefStr!F12'] || new Date().getFullYear());
+function fsNote(t, bad) {
+  let n = document.getElementById('fsNote');
+  if (!n) { n = h('div', { id: 'fsNote', class: 'fsnote', role: 'status', 'aria-live': 'polite' }); document.body.append(n); }
+  n.textContent = t; n.classList.toggle('bad', !!bad); n.classList.add('show');
+  clearTimeout(fsNote.t); fsNote.t = setTimeout(() => n.classList.remove('show'), 6000);
+}
+function renderFsBtn() {
+  const b = document.getElementById('btnDir'); if (!b) return;
+  if (!FS_OK) { b.hidden = true; return; }
+  b.hidden = false;
+  b.querySelector('span').textContent = FS_DIR ? 'Mapa: ' + FS_DIR.name : 'Odaberi mapu';
+  b.title = FS_DIR ? `Sve se sprema u ${FS_DIR.name} / ${fsSub()}. Klikni za promjenu mape.` : 'Odaberi mapu u koju će se spremati sve datoteke (JSON, GFI, XML, Word)';
+}
+async function fsPick() {
+  if (!FS_OK) return false;
+  try {
+    const d = await window.showDirectoryPicker({ id: 'zavrsni', mode: 'readwrite' });
+    FS_DIR = d; await fsSet('dir', d); renderFsBtn();
+    fsNote(`✓ Mapa odabrana. Datoteke se spremaju u: ${d.name} / Završni račun (godina)`);
+    return true;
+  } catch (e) { return false; }
+}
+async function fsSave(filename, data, mime) {
+  if (!FS_OK) return false;
+  if (!FS_DIR) FS_DIR = await fsGet('dir');
+  if (!FS_DIR) return false;
+  try {
+    if (FS_DIR.queryPermission) {
+      let perm = await FS_DIR.queryPermission({ mode: 'readwrite' });
+      if (perm !== 'granted') perm = await FS_DIR.requestPermission({ mode: 'readwrite' });
+      if (perm !== 'granted') { fsNote('Pristup mapi nije dopušten, datoteka ide u Preuzimanja.', true); return false; }
+    }
+    const sub = await FS_DIR.getDirectoryHandle(fsSub(), { create: true });
+    const fh = await sub.getFileHandle(filename, { create: true });
+    const w = await fh.createWritable();
+    await w.write(typeof data === 'string' ? new Blob([data], { type: mime || 'text/plain' }) : data);
+    await w.close();
+    renderFsBtn();
+    fsNote(`✓ Spremljeno: ${FS_DIR.name} / ${fsSub()} / ${filename}`);
+    return true;
+  } catch (e) { fsNote('Spremanje u mapu nije uspjelo, datoteka ide u Preuzimanja. (' + e.message + ')', true); return false; }
+}
+fsGet('dir').then(d => { if (d) FS_DIR = d; renderFsBtn(); });
+
 async function saveXml(filename, text) {
+  if (await fsSave(filename, text, 'application/xml')) return;
   try {
     const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
     if (dl) { await dl.save({ filename, data: text, mimeType: 'application/xml' }); return; }
@@ -1710,7 +1770,12 @@ function buildImport() {
       if (!E.inputs['RefStr!C29'] && parsed.firm) { E.setInput('RefStr!C29', parsed.firm); saveState(); renderHeader(); }
       msg.textContent = '';
       render();
-      if (autoXfer) await autoXfer();
+      if (autoXfer && (await autoXfer()) === true) setTimeout(() => {
+        const r = document.getElementById('rucni'); if (!r) return;
+        r.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const miss = [...document.querySelectorAll('#rucni ~ .sheet tbody > tr')].find(tr => tr.querySelector('.pill.bad'));
+        if (miss) { miss.classList.remove('flash'); void miss.offsetWidth; miss.classList.add('flash'); const i = miss.querySelector('input:not([type=checkbox]), select'); if (i) setTimeout(() => i.focus({ preventScroll: true }), 500); }
+      }, 300);
     } catch (e) { msg.textContent = 'Nisam uspio pročitati datoteku: ' + e.message; }
   }
   file.addEventListener('change', () => handle(file.files[0]));
@@ -1747,6 +1812,7 @@ function buildImport() {
       done.textContent = `Preneseno na ${Object.keys(sums).length} pozicija. Prihodi od prodaje u dodatnim podacima raspoređeni su na AOP ${actLbl.aop} (${act.why}). ` + (bal ? 'Aktiva i pasiva se slažu.' : `Aktiva i pasiva se razlikuju za ${fmt(diff)}, provjeri konta bez pozicije.`) + (pdAuto.length ? ` U PD (nepriznati troškovi) preneseno: ${pdAuto.map(([n, v]) => n.toLowerCase() + ' ' + fmt(v) + ' €').join(', ')}.` : '');
       doneTop.className = bal ? 'okline' : 'pill bad';
       doneTop.textContent = bal ? '✓ Preneseno u obrazac, aktiva i pasiva se slažu' : `Preneseno, ali aktiva i pasiva se razlikuju za ${fmt(diff)}`;
+      return bal;
     };
     autoXfer = ok && !unmapped.length ? transfer : null;
     body.append(h('div', { class: 'sheet', style: 'padding:12px 14px' },
@@ -2023,6 +2089,7 @@ function buildKont() {
 
 // ---------- spremanje i učitavanje obrasca ----------
 async function offerFile(filename, text) {
+  if (await fsSave(filename, text, 'application/json')) return true;
   try {
     const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
     if (dl) { await dl.save({ filename, data: text }); return true; }
@@ -2103,6 +2170,7 @@ async function buildFinaFile(file) {
   return { bytes: new Uint8Array(out), ver, warn, report };
 }
 async function saveBytes(filename, bytes) {
+  if (await fsSave(filename, bytes, 'application/vnd.ms-excel')) return 'ok';
   try {
     const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
     if (dl) { await dl.save({ filename, data: bytes, mimeType: 'application/vnd.ms-excel' }); return 'ok'; }
@@ -2282,6 +2350,7 @@ function docxFromEl(el, opts = {}) {
   return zipStore(files);
 }
 async function saveBlob(filename, bytes, mime) {
+  if (await fsSave(filename, bytes, mime)) return;
   try {
     const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
     if (dl) { await dl.save({ filename, data: bytes, mimeType: mime }); return; }
@@ -2890,6 +2959,7 @@ function build() {
   document.getElementById('btnPrint').onclick = () => window.print();
   window.addEventListener('afterprint', () => document.body.classList.remove('print-one'));
   document.getElementById('btnSave').onclick = saveToFile;
+  document.getElementById('btnDir').onclick = fsPick; renderFsBtn();
   document.getElementById('btnFina').onclick = () => { showTab('exp'); const f = document.getElementById('finaFile'); if (f) f.click(); };
   const lf = document.getElementById('loadFile');
   document.getElementById('btnLoad').onclick = () => lf.click();
@@ -3110,6 +3180,6 @@ async function showAdmin() {
 build();
 start();
 </script>
-<script src="../zaglavlje.js" data-app="Završni račun" data-verzija="2026-11-04"></script>
+<script src="../zaglavlje.js" data-app="Završni račun" data-verzija="2026-11-12"></script>
 </body>
 </html>
