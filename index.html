@@ -744,6 +744,12 @@
     .featured-card.fc-zr { grid-template-columns: 1fr; }
     .fc-zr-media { padding: 14px 14px 0; }
   }
+  /* Istaknuti blokovi: Završni račun, SOVA, Pčelica – razmak iznad svake oznake osim prve */
+  .featured-wrap > .featured-label:first-child { margin-top: 0; }
+  .featured-wrap .featured-card + .featured-label { margin-top: 28px; }
+  /* SOVA: isti izgled kao Završni račun (fc-zr); u okviru za medij slika umjesto videa */
+  .fc-sova-media { display: block; }
+  .fc-sova-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 </style>
 </head>
 <body>
@@ -859,21 +865,6 @@
 
 <!-- FEATURED -->
 <div class="wrap featured-wrap">
-  <span class="featured-label">NOW IN THE LAB<span class="fl-cursor">_</span></span>
-  <div class="featured-card">
-    <div class="featured-media"></div>
-    <div class="featured-content">
-      <h3 class="game-title"><img class="game-icon" src="icon-pcelica.jpg" alt="Pčelica – neonska ikona igre" aria-hidden="true">Pčelica</h3>
-      <p>Leti kroz nebo, zaroni u podvodnu medenu špilju kroz vrtlog, ili se popni u oblačno kraljevstvo kroz čudne oblake — svaki svijet ima svoje opasnosti (podmornica, avion). Flappy Bird mehanika, ali s dva skrivena svijeta koja tek trebaš otkriti.</p>
-      <div class="pcelica-video">
-        <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLCUbhPOfgGdg&rel=0&autoplay=1&mute=1&playsinline=1" title="Pčelica – sve epizode" loading="lazy" allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-      <div class="featured-actions">
-        <a href="/pcelica/" class="play-btn">Igraj →</a>
-        <a href="/pcelica/o-igri.html" class="play-btn">O igri</a>
-      </div>
-    </div>
-  </div>
   <span class="featured-label fl-zr">ZA KNJIGOVOĐE<span class="fl-cursor">_</span></span>
   <div class="featured-card fc-zr" role="link" tabindex="0" aria-label="Završni račun — više u Custom Software">
     <div class="fc-zr-media">
@@ -890,6 +881,36 @@
         <a class="ft-zr-btn" href="#kontakt">Zatraži licencu</a>
         <a class="ft-zr-login" href="/zavrsni/">Prijava za korisnike →</a>
         <a class="ft-zr-login" href="/zavrsni/gfi/upute.html">Upute →</a>
+      </div>
+    </div>
+  </div>
+  <span class="featured-label fl-zr">ZA UGOSTITELJE<span class="fl-cursor">_</span></span>
+  <div class="featured-card fc-zr fc-sova" role="link" tabindex="0" aria-label="SOVA — QR naručivanje">
+    <div class="fc-zr-media">
+      <a class="ft-zr-video fc-sova-media" href="/sova/"><img src="/sova/sova-kartica.webp" alt="SOVA — sova kuhar s QR pločicom i jelovnikom" width="960" height="640" loading="lazy"></a>
+    </div>
+    <div class="featured-content">
+      <span class="ft-badge fc-zr-badge">NOVO</span>
+      <h3>SOVA — QR naručivanje</h3>
+      <p>SOVA ne zamjenjuje vašu blagajnu. Ona pojednostavljuje put narudžbe od gosta do konobara, kuhinje i šanka. Gost skenira QR kod na stolu i naručuje bez aplikacije, a narudžba se ispisuje posebno za kuhinju i šank.</p>
+      <div class="ft-zr-actions">
+        <a class="ft-zr-btn" href="/sova/">Pogledaj kako radi →</a>
+        <a class="ft-zr-login" href="mailto:kontakt@retroapplab.com?subject=SOVA%20%E2%80%94%20zahtjev%20za%20demo">Zatraži demo</a>
+      </div>
+    </div>
+  </div>
+  <span class="featured-label">NOW IN THE LAB<span class="fl-cursor">_</span></span>
+  <div class="featured-card">
+    <div class="featured-media"></div>
+    <div class="featured-content">
+      <h3 class="game-title"><img class="game-icon" src="icon-pcelica.jpg" alt="Pčelica – neonska ikona igre" aria-hidden="true">Pčelica</h3>
+      <p>Leti kroz nebo, zaroni u podvodnu medenu špilju kroz vrtlog, ili se popni u oblačno kraljevstvo kroz čudne oblake — svaki svijet ima svoje opasnosti (podmornica, avion). Flappy Bird mehanika, ali s dva skrivena svijeta koja tek trebaš otkriti.</p>
+      <div class="pcelica-video">
+        <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLCUbhPOfgGdg&rel=0&autoplay=1&mute=1&playsinline=1" title="Pčelica – sve epizode" loading="lazy" allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="featured-actions">
+        <a href="/pcelica/" class="play-btn">Igraj →</a>
+        <a href="/pcelica/o-igri.html" class="play-btn">O igri</a>
       </div>
     </div>
   </div>
@@ -1222,6 +1243,9 @@
             <span>🧑‍🍳 Konobar može upisivati narudžbe s mobitela</span>
             <span>🖥️ Admin sustav prima sve narudžbe</span>
           </div>
+          <div class="lab-item-links" style="margin-top:4px;">
+            <a href="/sova/">SOVA — saznaj više →</a>
+          </div>
         </div>
       </div>
 
@@ -1308,7 +1332,7 @@
     if(location.hash !== '#' + id) history.pushState(null, '', url);
   });
   // Kartica Završnog računa na Početnoj vodi na karticu u Software tabu; tipke, poveznice i video rade kao i prije
-  var zrCard = document.querySelector('.featured-card.fc-zr');
+  var zrCard = document.querySelector('.featured-card.fc-zr:not(.fc-sova)');
   if(zrCard){
     var goZr = function(){
       show('zavrsni-racun', true);
@@ -1321,6 +1345,18 @@
     });
     zrCard.addEventListener('keydown', function(e){
       if(e.key === 'Enter' && e.target === zrCard){ e.preventDefault(); goZr(); }
+    });
+  }
+  // Kartica SOVA na Početnoj vodi na /sova/ (kao kartica Završnog računa; tipke i poveznice rade kao i prije)
+  var sovaCard = document.querySelector('.featured-card.fc-sova');
+  if(sovaCard){
+    sovaCard.addEventListener('click', function(e){
+      if(e.target.closest('a, button')) return;
+      if(window.getSelection && String(window.getSelection())) return;
+      location.href = '/sova/';
+    });
+    sovaCard.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && e.target === sovaCard){ e.preventDefault(); location.href = '/sova/'; }
     });
   }
   window.addEventListener('popstate', function(){ show(location.hash.slice(1), true); });
