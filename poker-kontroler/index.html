@@ -14,9 +14,7 @@
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <title>Poker 90s: From Code to Reality — RetroAppLab</title>
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
 <style>
 :root{color-scheme:dark;--gold:#f0c25a;--gold-hi:#ffe7a3;--cream:#fff3cf;--ink:#06090a}
 *{box-sizing:border-box}
@@ -358,8 +356,83 @@ body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-s
 .cta a.alt{background:transparent;color:var(--gold-hi);border:1px solid var(--gold)}
 .cta a:hover,.cta a:focus-visible{background:var(--gold-hi);color:#1a1204;outline:none}
 .fine{font:700 11px "Courier New",monospace;letter-spacing:.14em;color:#7d8f86;text-align:center;margin:26px 0 0}
+
+/* ---------- scene 3 : the idea ---------- */
+.si-stage{--F:clamp(22px,min(5.2vw,6.4vh),52px);padding-top:clamp(40px,6vh,80px);padding-bottom:clamp(24px,4vh,50px)}
+.si-title{margin:10px 0 0}
+.si-laptop{width:max(190px,min(100%,560px,calc((100svh - 520px) * 1.75)));margin-top:clamp(10px,2.4vh,26px)}
+.si-lapwrap{position:relative;width:100%;display:flex;justify-content:center}
+.si-link{position:relative;height:clamp(14px,3vh,28px);width:100%}
+.si-cable{position:absolute;left:50%;top:0;width:4px;height:100%;margin-left:-2px;border-radius:2px;background:linear-gradient(#dfe7ea,#6c797e);box-shadow:0 0 8px rgba(110,170,255,.55);transform:scaleY(0);transform-origin:top}
+.si-link small{position:absolute;left:calc(50% + 12px);top:50%;margin-top:-6px;font:700 10px/12px "Courier New",monospace;letter-spacing:.2em;color:#9db9ff;opacity:0}
+.si-row{position:relative;width:min(100%,460px);aspect-ratio:440/124;display:grid}
+.si-row>*{grid-area:1/1}
+.si-periph,.si-btns,.si-bulbwrap{position:relative;width:100%;height:100%}
+.si-periph{opacity:0}
+.si-periph svg{width:100%;height:100%;display:block}
+.si-lmb{opacity:0}
+.si-btns{pointer-events:none}
+.si-bglow{position:absolute;inset:-18% -4%;background:radial-gradient(ellipse 52% 60% at 50% 50%,rgba(60,140,255,.38),transparent 72%);opacity:0}
+.si-btn{position:absolute;width:11.8%;aspect-ratio:1;border-radius:50%;opacity:0;transform:translate(-50%,-50%) scale(.5);
+  background:radial-gradient(circle at 36% 30%,#e6f2ff 0 7%,#6aa8ff 24%,#1f63e0 58%,#0b2f88 100%);
+  box-shadow:0 0 0 .22em #cdd5da,0 0 0 .38em #566267,0 .5em .7em .3em rgba(0,0,0,.65),0 0 18px rgba(70,150,255,.5)}
+.si-btn::after{content:"";position:absolute;inset:-26%;border-radius:50%;border:2px solid #9ccfff;opacity:0}
+.si-bulbwrap{opacity:0}
+.si-bulbwrap::before{content:"";position:absolute;inset:-30% 10%;background:radial-gradient(ellipse at 50% 50%,rgba(255,214,110,.55),transparent 66%)}
+.si-bulb{position:absolute;left:50%;top:50%;height:96%;width:auto;aspect-ratio:3/4;transform:translate(-50%,-50%);display:block}
+.si-cur{position:absolute;width:clamp(11px,2.1vw,19px);height:auto;opacity:0;z-index:3}
+.si-ring{position:absolute;width:clamp(18px,4vw,34px);aspect-ratio:1;border-radius:50%;border:2px solid #ffe08a;box-shadow:0 0 10px #f5b23c;opacity:0;transform:translate(-50%,-50%) scale(.3);z-index:3}
+.si-p1{left:36.5%;top:61.5%}.si-p2{left:43%;top:61.5%}.si-p3{left:49%;top:88%}
+.si-caps{display:grid;justify-items:center;align-items:center;margin-top:clamp(8px,2vh,18px);width:100%}
+.si-caps>*{grid-area:1/1}
+.si-cap{margin:0;max-width:600px;font:700 clamp(11px,2.1vw,16px)/1.5 "Courier New",monospace;letter-spacing:.14em;color:var(--cream);opacity:0}
+.si-cap b{color:var(--gold-hi)}
+.si-final{margin:0;font-family:"Arial Black","Helvetica Neue",system-ui,sans-serif;font-weight:900;font-size:clamp(17px,min(4.6vw,5.2vh),38px);line-height:1.12;letter-spacing:.05em;white-space:normal;visibility:hidden}
+.si-final .tube{color:#2a2412}
+.si-final .lit{color:var(--gold-hi);text-shadow:0 0 .08em #fff0c0,0 0 .3em #f5b23c,0 0 .8em rgba(240,140,20,.7)}
+.si-f2{opacity:0}
+@media(max-width:600px){.si-p1{left:32.3%}.si-p2{left:40.8%}.si-p3{left:48.7%}.si-laptop{width:max(190px,min(100%,560px,calc((100svh - 500px) * 1.4)))}}
+@keyframes si-pop{to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes si-press{0%,100%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-46%) scale(.88)}}
+@keyframes si-ringb{0%{opacity:0;transform:scale(.5)}35%{opacity:.95}100%{opacity:0;transform:scale(1.7)}}
+@keyframes si-cap{0%{opacity:0;transform:translateY(8px)}14%,84%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
+@keyframes si-cur{0%{opacity:0}18%,72%{opacity:1}100%{opacity:0}}
+@keyframes si-ringp{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+@keyframes si-lmbf{0%,100%{opacity:0}20%,60%{opacity:.95}}
+@keyframes si-shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-7px)}30%{transform:translateX(6px)}45%{transform:translateX(-4px)}60%{transform:translateX(3px)}80%{transform:translateX(-1px)}}
+@keyframes si-bulb{0%{opacity:0}18%{opacity:1}28%{opacity:.25}40%{opacity:1}50%{opacity:.5}60%,78%{opacity:1}100%{opacity:0}}
+@keyframes si-cable{to{transform:scaleY(1)}}
+@keyframes si-show{to{visibility:visible}}
+.go .si-periph{animation:fadeIn .6s ease-out var(--t-periph) forwards,si-shake .45s linear var(--t-hit),si-out .5s ease-in var(--t-swap) forwards}
+@keyframes si-out{to{opacity:0}}
+.go .si-cap1{animation:si-cap 1.9s ease-out var(--t-cap1) forwards}
+.go .si-cap2{animation:si-cap 1.9s ease-out var(--t-cap2) forwards}
+.go .si-cur.a{animation:si-cur .9s linear calc(var(--t-click1) - .3s) forwards}
+.go .si-cur.b{animation:si-cur .9s linear calc(var(--t-click2) - .3s) forwards}
+.go .si-cur.c{animation:si-cur .9s linear calc(var(--t-click3) - .3s) forwards}
+.go .si-ring.a{animation:si-ringp .55s ease-out var(--t-click1) forwards}
+.go .si-ring.b{animation:si-ringp .55s ease-out var(--t-click2) forwards}
+.go .si-ring.c{animation:si-ringp .55s ease-out var(--t-click3) forwards}
+.go .si-lmb.a{animation:si-lmbf .3s linear var(--t-click1)}
+.go .si-lmb.b{animation:si-lmbf .3s linear var(--t-click2)}
+.go .si-lmb.c{animation:si-lmbf .3s linear var(--t-click3)}
+.go .si-bulbwrap{animation:si-bulb 1.0s linear var(--t-bulb) forwards}
+.go .si-bglow{animation:fadeIn 1.2s ease-out var(--t-btns) forwards}
+.go .si-btn{animation:si-pop .35s cubic-bezier(.2,1.4,.4,1) calc(var(--t-btns) + var(--i)*.12s) forwards}
+.go .si-btn.b6{animation:si-pop .35s cubic-bezier(.2,1.4,.4,1) calc(var(--t-btns) + var(--i)*.12s) forwards,si-press .4s ease-out var(--t-press)}
+.go .si-btn.b6::after{animation:si-ringb .7s ease-out var(--t-press)}
+.go .si-cable{animation:si-cable .8s cubic-bezier(.3,.7,.3,1) var(--t-link) forwards}
+.go .si-link small{animation:fadeIn .5s ease-out calc(var(--t-link) + .5s) forwards}
+.go .si-final{animation:si-show .01s linear var(--t-final) forwards}
+.go .si-final .tube{animation:tubeIn .8s ease-out calc(var(--t-final) - .1s) forwards}
+.go .si-final .lit{animation:ignite 1.7s linear var(--t-final) forwards}
+.go .si-f2{animation:fadeIn .35s ease-out var(--t-press) forwards}
+@media(prefers-reduced-motion:reduce){
+  .si-btn{opacity:1;transform:translate(-50%,-50%) scale(1)}.si-bglow{opacity:1}.si-cable{transform:scaleY(1)}.si-link small{opacity:1}
+  .si-final{visibility:visible}.si-periph,.si-cap,.si-bulbwrap{opacity:0}
+}
 </style>
-<noscript><style>.title,.bg,.neon .lit,.ch::after,.card,.hint,.s2-kicker,.s2-subtitle,.s2-laptop,.s2-screen,.s2-note,.s2-f2,.s2-f3,.s2-f4,.s2-f5,.s2-f6,.s2-chip::after,.s5-kicker,.s5-title,.s5-real,.s5-final,.s5-footer,.s4-kicker,.s4-title,.s4-sub,.s4-status,.s4-footer,.s4-power,.s4-plug,.s4-light,.s4-alive,.s3-grid,.s3-kicker,.s3-heading,.s3-desc,.s3-footer,.s3-outline,.s3-side,.s3-hole,.s3-cross,.s3-measure,.s3-note,.s3-photo,.s3-photo-label{opacity:1!important}.s3-outline,.s3-side,.s3-hole,.s3-kicker,.s3-heading,.s3-desc,.s3-footer,.s3-photo{transform:none!important}.rule,.flip{transform:none!important}.s2-laptop,.s2-kicker,.s2-subtitle{transform:none!important}.s2-line{transform:translateX(-50%) scaleY(1)!important}</style></noscript>
+<noscript><style>.title,.bg,.neon .lit,.ch::after,.card,.hint,.s2-kicker,.s2-subtitle,.s2-laptop,.s2-screen,.s2-note,.s2-f2,.s2-f3,.s2-f4,.s2-f5,.s2-f6,.s2-chip::after,.s5-kicker,.s5-title,.s5-real,.s5-final,.s5-footer,.s4-kicker,.s4-title,.s4-sub,.s4-status,.s4-footer,.s4-power,.s4-plug,.s4-light,.s4-alive,.s3-grid,.s3-kicker,.s3-heading,.s3-desc,.s3-footer,.s3-outline,.s3-side,.s3-hole,.s3-cross,.s3-measure,.s3-note,.s3-photo,.s3-photo-label{opacity:1!important}.s3-outline,.s3-side,.s3-hole,.s3-kicker,.s3-heading,.s3-desc,.s3-footer,.s3-photo{transform:none!important}.rule,.flip{transform:none!important}.s2-laptop,.s2-kicker,.s2-subtitle{transform:none!important}.s2-line{transform:translateX(-50%) scaleY(1)!important}.si-btn,.si-bglow,.si-link small{opacity:1!important}.si-btn{transform:translate(-50%,-50%)!important}.si-cable{transform:none!important}.si-final{visibility:visible!important}</style></noscript>
 </head>
 <body>
 <div class="ctl">
@@ -403,11 +476,54 @@ body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-s
   </div>
 </section>
 
-<section class="scene" id="scene3" aria-label="Scena 3: Od ideje do nacrta">
+<section class="scene" id="sceneIdea" aria-label="Scena 3: Ideja">
+  <div class="s2-line" aria-hidden="true"></div>
+  <div class="bg glow"></div>
+  <div class="stage s2-stage si-stage">
+    <div class="s2-kicker">SCENE 03 / THE IDEA</div>
+    <h2 class="neon s2-title si-title" role="img" aria-label="But something was missing…"><span class="tube" aria-hidden="true">BUT SOMETHING<br><b>WAS MISSING…</b></span><span class="lit" aria-hidden="true">BUT SOMETHING<br><b>WAS MISSING…</b></span></h2>
+    <div class="si-lapwrap">
+      <div class="s2-laptop si-laptop" role="img" aria-label="Laptop s pokerom kojim se upravlja mišem i tipkovnicom">
+        <div class="s2-lid"><i class="s2-camera" aria-hidden="true"></i><div class="s2-screen">
+          <img class="s2-f s2-f1" data-from="s2-f3" alt="" decoding="async"><img class="s2-f si-f2" data-from="s2-f2" alt="" decoding="async">
+          <svg class="si-cur a si-p1" viewBox="0 0 16 22" aria-hidden="true"><path d="M1 1v17l4-4 3 7 3-1.5-3-6.5h6z" fill="#fff" stroke="#000" stroke-width="1.2"/></svg>
+          <svg class="si-cur b si-p2" viewBox="0 0 16 22" aria-hidden="true"><path d="M1 1v17l4-4 3 7 3-1.5-3-6.5h6z" fill="#fff" stroke="#000" stroke-width="1.2"/></svg>
+          <svg class="si-cur c si-p3" viewBox="0 0 16 22" aria-hidden="true"><path d="M1 1v17l4-4 3 7 3-1.5-3-6.5h6z" fill="#fff" stroke="#000" stroke-width="1.2"/></svg>
+          <i class="si-ring a si-p1" aria-hidden="true"></i><i class="si-ring b si-p2" aria-hidden="true"></i><i class="si-ring c si-p3" aria-hidden="true"></i>
+        </div></div>
+        <div class="s2-base"></div>
+      </div>
+    </div>
+    <div class="si-link" aria-hidden="true"><i class="si-cable"></i><small>USB</small></div>
+    <div class="si-row">
+      <div class="si-periph" role="img" aria-label="Tipkovnica i miš"><svg viewBox="0 0 440 124" aria-hidden="true">
+<rect x="34" y="28" width="262" height="76" rx="8" fill="#161c1f" stroke="#59646a" stroke-width="2"/><rect x="46" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="68" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="90" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="112" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="134" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="156" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="178" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="200" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="222" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="244" y="40" width="18" height="12" rx="2" fill="#2a3236"/><rect x="46" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="68" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="90" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="112" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="134" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="156" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="178" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="200" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="222" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="244" y="56" width="18" height="12" rx="2" fill="#2a3236"/><rect x="46" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="68" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="90" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="112" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="134" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="156" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="178" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="200" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="222" y="72" width="18" height="12" rx="2" fill="#2a3236"/><rect x="244" y="72" width="18" height="12" rx="2" fill="#2a3236"/>
+<rect x="94" y="88" width="142" height="10" rx="3" fill="#2a3236"/>
+<path d="M338 46a24 24 0 0 1 48 0v36a24 24 0 0 1-48 0z" fill="#232b2e" stroke="#59646a" stroke-width="2"/>
+<path class="si-lmb a" d="M338 70V46a24 24 0 0 1 24-22h0v34h-24z" fill="#ffd25a"/><path class="si-lmb b" d="M338 70V46a24 24 0 0 1 24-22h0v34h-24z" fill="#ffd25a"/><path class="si-lmb c" d="M338 70V46a24 24 0 0 1 24-22h0v34h-24z" fill="#ffd25a"/>
+<path d="M362 24v34M338 58h48" stroke="#59646a" stroke-width="2" fill="none"/>
+</svg></div>
+      <div class="si-bulbwrap" aria-hidden="true"><svg class="si-bulb" viewBox="0 0 60 80" aria-hidden="true">
+<g stroke="#ffd980" stroke-width="3" stroke-linecap="round"><path d="M30 2v7M8 11l5 5M52 11l-5 5M2 30h7M51 30h7"/></g>
+<path d="M30 14a17 17 0 0 0-9 31c2 2 3 4 3 7h12c0-3 1-5 3-7a17 17 0 0 0-9-31z" fill="#ffe28a" stroke="#fff6d0" stroke-width="2"/>
+<path d="M25 46l5-14 5 14" fill="none" stroke="#c9871a" stroke-width="2" stroke-linecap="round"/>
+<rect x="23" y="53" width="14" height="6" rx="2" fill="#9aa7ab"/><rect x="24" y="60" width="12" height="5" rx="2" fill="#6c797e"/><path d="M26 66h8l-2 6h-4z" fill="#4a5559"/>
+</svg></div>
+      <div class="si-btns" role="img" aria-label="Sedam velikih arcade tipki raspoređenih kao na pravom kontroleru"><i class="si-bglow"></i><i class="si-btn" style="--i:0;left:14.1%;top:50%"></i><i class="si-btn" style="--i:1;left:28.6%;top:50%"></i><i class="si-btn" style="--i:2;left:43.2%;top:50%"></i><i class="si-btn" style="--i:3;left:57.7%;top:50%"></i><i class="si-btn" style="--i:4;left:72.3%;top:50%"></i><i class="si-btn b6" style="--i:5;left:87.6%;top:24%;width:10.8%"></i><i class="si-btn" style="--i:6;left:87.6%;top:76%;width:10.8%"></i></div>
+    </div>
+    <div class="si-caps">
+      <p class="si-cap si-cap1">CLICK. CLICK. CLICK.</p>
+      <p class="si-cap si-cap2">HIGHER OR LOWER IS NOT CLICKED.<br><b>IT IS HIT.</b></p>
+      <p class="neon si-final" role="img" aria-label="What if we could feel the game?"><span class="tube" aria-hidden="true">WHAT IF WE COULD<br>FEEL THE GAME?</span><span class="lit" aria-hidden="true">WHAT IF WE COULD<br>FEEL THE GAME?</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="scene3" aria-label="Scena 4: Od ideje do nacrta">
   <div class="s2-line" aria-hidden="true"></div>
   <div class="s3-grid" aria-hidden="true"></div>
   <div class="s3-inner">
-    <div class="s3-kicker">SCENE 03 / THE BLUEPRINT</div>
+    <div class="s3-kicker">SCENE 04 / THE BLUEPRINT</div>
     <h2 class="s3-heading">FROM IDEA<br>TO BLUEPRINT</h2>
     <p class="s3-desc">SEVEN BUTTONS. ONE WOODEN CONTROLLER.</p>
     <div class="s3-board">
@@ -428,11 +544,11 @@ body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-s
   </div>
 </section>
 
-<section class="scene" id="scene4" aria-label="Scena 4: Izrada kontrolera">
+<section class="scene" id="scene4" aria-label="Scena 5: Izrada kontrolera">
   <div class="s2-line" aria-hidden="true"></div>
   <div class="s4-grid" aria-hidden="true"></div>
   <div class="s4-inner">
-    <div class="s4-kicker">SCENE 04 / THE BUILD</div>
+    <div class="s4-kicker">SCENE 05 / THE BUILD</div>
     <h2 class="s4-title">BUILDING<br>THE CONTROLLER</h2>
     <p class="s4-sub">FROM BLUEPRINT TO HARDWARE</p>
     <div class="s4-stage">
@@ -447,10 +563,10 @@ body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-s
   </div>
 </section>
 
-<section class="scene" id="scene5" aria-label="Scena 5: Trenutak istine">
+<section class="scene" id="scene5" aria-label="Scena 6: Trenutak istine">
   <div class="s2-line" aria-hidden="true"></div>
   <div class="s5-inner">
-    <div class="s5-kicker">SCENE 05 / THE FIRST TEST</div>
+    <div class="s5-kicker">SCENE 06 / THE FIRST TEST</div>
     <h2 class="s5-title">THE MOMENT<br>OF TRUTH</h2>
     <div class="s5-stage">
       <div class="s5-real"><div class="s5-pbox"><img src="slike/scena5-kike-poker.webp" loading="lazy" decoding="async" alt="Stvarni RetroAppLab drveni kontroler s osvijetljenim tipkama, laptopom i papigom Kike na ramenu igrača"><div class="s5-press" aria-hidden="true"></div></div></div>
@@ -482,15 +598,15 @@ body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-s
       <tr><th>K6</th><td>DEAL, zatim DRAW, a nakon dobitka GAMBLE</td></tr>
       <tr><th>K7</th><td>uzmi iznos; dok biraš karte poništava odabir; između dvije ruke isplati i završava igru</td></tr>
     </table>
-    <div class="cta"><a href="/poker/">PLAY POKER →</a><a class="alt" href="/#lab">← BACK TO RETROAPPLAB</a></div>
+    <div class="cta"><a href="/poker/">PLAY POKER →</a><a class="alt" href="/">← BACK TO RETROAPPLAB</a></div>
     <p class="fine">FOR ENTERTAINMENT ONLY · NO CASH VALUE</p>
   </div>
 </section>
-<footer style="text-align:center;font:12px/1.6 system-ui,-apple-system,'Segoe UI',sans-serif;color:#b9ab86;padding:18px 16px calc(22px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(240,194,90,.18)"><nav aria-label="O stranici"><a href="/o-nama.html" style="color:inherit">O nama</a> · <a href="/kontakt.html" style="color:inherit">Kontakt</a> · <a href="/privatnost.html" style="color:inherit">Pravila privatnosti</a> · <a href="/uvjeti.html" style="color:inherit">Uvjeti korištenja</a></nav></footer>
 <script>
 (()=>{
   const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   // timelines in seconds: CSS delays and sound read the same numbers
+  const TI={kicker:.1,title:.3,laptop:1.0,screen:1.5,periph:2.3,cap1:2.5,click1:2.8,click2:3.25,click3:3.7,cap2:4.5,hit:5.3,bulb:6.0,swap:6.7,btns:6.9,link:8.2,final:8.7,press:9.5};
   const T1={glow:.45,neon:1.1,title:2.3,deal:3.2,flip:5.0,tag:7.0,hint:7.9};
   const T5={intro:.35,photo:1.2,press:3.2,deal:4.3,hold:5.7,win:7.1,return:9.1,end:10.2};
   const T4={title:.3,build:1.8,button:4.2,photo:7.3,inside:10,wiring:13,power:16.2,end:18.2};
@@ -588,14 +704,28 @@ body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-s
     [0,.16].forEach(d=>{tone(t0+T.end+.9+d,1800,2700,.07,.05); tone(t0+T.end+.9+d+.08,2300,3100,.06,.04);}); // Kike
   }
 
+
+  function audioI(t0,T){
+    [T.click1,T.click2,T.click3].forEach(x=>{noise(t0+x,.03,'highpass',4200,null,.7,.14); tone(t0+x,240,130,.05,.08);});  // mouse clicks
+    tone(t0+T.hit,160,48,.28,.4); noise(t0+T.hit,.2,'lowpass',900,180,.8,.32);                                       // the hit
+    beep(t0+T.bulb,1568,.1,.05); chime(t0+T.bulb+.06);                                                                 // light bulb
+    swish(t0+T.swap);                                                                                                  // swap
+    for(let i=0;i<7;i++){const x=t0+T.btns+i*.12; noise(x,.04,'bandpass',1800,null,1.4,.16); tone(x,180,85,.09,.13);}  // buttons pop in
+    noise(t0+T.link,.8,'bandpass',500,2400,1,.05); noise(t0+T.link+.8,.05,'bandpass',1800,null,1.4,.15); tone(t0+T.link+.8,140,90,.1,.12); // USB plugs in
+    chime(t0+T.final); chime(t0+T.final+.12);                                                                          // WHAT IF
+    noise(t0+T.press,.04,'bandpass',1800,null,1.4,.18); tone(t0+T.press,170,80,.1,.14);                               // real press
+    swish(t0+T.press+.1); for(let i=0;i<5;i++) flick(t0+T.press+.22+i*.1);                                            // DEAL
+  }
+
   // ---------- scene registry ----------
   const scenes=[
     {el:document.getElementById('scene1'),T:T1,audio:audio1},
     {el:document.getElementById('scene2'),T:T2,audio:audio2},
+    {el:document.getElementById('sceneIdea'),T:TI,audio:audioI},
     {el:document.getElementById('scene3'),T:T3,audio:audio3},
     {el:document.getElementById('scene4'),T:T4,audio:audio4},
     {el:document.getElementById('scene5'),T:T5,audio:audio5}
-  ];
+  ].filter(s=>s.el);
   scenes.forEach(s=>{
     for(const k in s.T) s.el.style.setProperty('--t-'+k,s.T[k]+'s');
     s.visible=false; s.vh=0; s.started=false;
@@ -614,6 +744,7 @@ body{margin:0;background:var(--ink);color:#f4ecd8;font-family:system-ui,-apple-s
   if('IntersectionObserver' in window){
     const io=new IntersectionObserver(es=>{
       for(const e of es){ const s=scenes.find(x=>x.el===e.target); s.vh=e.intersectionRect.height; s.visible=s.vh>innerHeight*.5;
+        if(!e.isIntersecting||s.vh<innerHeight*.15) s.started=false; /* re-arm when the scene has left, so it replays on re-entry */
         if(s.visible&&!s.started){s.started=true; play(s);} }
       current=scenes.reduce((a,b)=>b.vh>a.vh?b:a,scenes[0]);
     },{threshold:[0,.1,.25,.5,.75,1]});
