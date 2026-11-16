@@ -283,6 +283,8 @@ body.zr-licenced #o-aplikaciji{display:none}
 #btnDir[hidden]{display:none}
 #rucni{scroll-margin-top:230px}
 @media (max-width:640px){#rucni{scroll-margin-top:20px}}
+.temk.miss{background:#FFF3D6;border-color:#E0B040}
+@media print{.temk{border:0;background:none;padding:0}}
 </style>
 <link rel="stylesheet" href="../zaglavlje.css">
 </head>
@@ -1436,13 +1438,40 @@ function xmlBox(kind) {
 }
 
 // ---------- Temeljnica ----------
-const TEM_INTEGRATOR = { '461300': '461/200', '265200': '265/200', '162600': '162/500', '462000': '462/300', '265500': '265/100', '162500': '162/300', '261000': '261/000', '161400': '161/000' };
+
+// ---------- Konta u temeljnici po programu (PSPnet / Integrator …) ----------
+const TEM_KDEF = [
+  ['461300', 'trošak članarine TZ', /^4/, /turist|\bTZ\b/i],
+  ['265200', 'obveza za članarinu TZ', /^26/, /turist|\bTZ\b/i],
+  ['162600', 'preplaćena članarina TZ', /^16/, /turist|\bTZ\b/i],
+  ['462000', 'trošak naknade za šume', /^4/, /šum/i],
+  ['265500', 'obveza za naknadu za šume', /^26/, /šum/i],
+  ['162500', 'preplaćena naknada za šume', /^16/, /šum/i],
+  ['830000', 'porez na dobit (rashod)', /^8/, /porez/i],
+  ['261000', 'obveza za porez na dobit', /^26/, /dobit/i],
+  ['161400', 'preplaćeni porez na dobit', /^16/, /dobit/i],
+];
+const TEMK_STORE = 'zavrsni-racun:temkonta';
+function temOverrides() { try { return JSON.parse(localStorage.getItem(TEMK_STORE + ':' + PROFILE) || '{}'); } catch (e) { return {}; } }
+function temSetOverride(base, v) { const o = temOverrides(); if (v) o[base] = v; else delete o[base]; try { localStorage.setItem(TEMK_STORE + ':' + PROFILE, JSON.stringify(o)); } catch (e) {} }
+function temKonto(base) {
+  base = String(base || '').trim(); if (!base) return { k: '', src: '' };
+  const o = temOverrides()[base]; if (o) return { k: o, src: 'upisano' };
+  if (PROFILE === 'pspnet') return { k: base, src: '' };
+  const d = TEM_KDEF.find(x => x[0] === base);
+  if (d && BB && BB.leaves) { const l = BB.leaves.find(l => d[2].test(l.k) && d[3].test(l.name)); if (l) return { k: l.k, src: 'iz bilance: ' + l.name }; }
+  return { k: '', src: '' };
+}
 function buildTem() {
   const rows = [];
   for (let r = 3; r <= 14; r++) {
-    const dEl = calcEl('TEM!D' + r, 'text', true);
-    hooks.push(() => { if (PROFILE !== 'integrator') return; const k = dEl.textContent.trim(); if (TEM_INTEGRATOR[k]) dEl.textContent = TEM_INTEGRATOR[k]; });
-    const tr = h('tr', {}, h('td', {}, calcEl('TEM!A' + r, 'text', true)), h('td', { style: 'width:110px' }, dEl),
+    const tr = h('tr', {}, h('td', {}, calcEl('TEM!A' + r, 'text', true)), h('td', { style: 'width:130px' }, (() => {
+      const inp = h('input', { class: 'txt temk', type: 'text', inputmode: 'numeric', style: 'max-width:110px' });
+      inp.addEventListener('change', () => { const base = String(E.get('TEM!D' + r) || '').trim(); temSetOverride(base, inp.value.replace(/\D/g, '')); recalc(); });
+      hooks.push(() => { const base = String(E.get('TEM!D' + r) || '').trim(), m = temKonto(base), d = TEM_KDEF.find(x => x[0] === base);
+        if (document.activeElement !== inp) inp.value = m.k; inp.placeholder = '?'; inp.title = (d ? d[1] : '') + (m.src ? ' · ' + m.src : '') + (PROFILE !== 'pspnet' ? ' · program: ' + PROFILE_NAMES[PROFILE] : '');
+        inp.classList.toggle('miss', !m.k && (Math.abs(E.num('TEM!F' + r) || 0) > 0.004 || Math.abs(E.num('TEM!I' + r) || 0) > 0.004)); });
+      return inp; })()),
       h('td', { class: 'v' }, calcEl('TEM!F' + r, null, true)), h('td', { class: 'v' }, calcEl('TEM!I' + r, null, true)));
     hooks.push(() => { const f = E.num('TEM!F' + r) || 0, i = E.num('TEM!I' + r) || 0; tr.className = Math.abs(f) < 0.005 && Math.abs(i) < 0.005 ? 'dim' : ''; });
     rows.push(tr);
@@ -1454,7 +1483,7 @@ function buildTem() {
     const good = Math.abs(d - p) < 0.005; ok.className = 'pill ' + (good ? 'ok' : 'bad'); ok.textContent = good ? 'Duguje = potražuje' : 'Razlika ' + fmt(d - p);
   });
   return [h('h2', {}, 'Temeljnica zaključnih knjiženja'),
-    h('p', { class: 'lead' }, 'Složi se sama iz obračuna TZ-a, naknade za šume i poreza na dobit. Negativni iznosi na strani duguje su storno knjiženja. Retci bez iznosa su posivljeni.'),
+    h('p', { class: 'lead' }, 'Složi se sama iz obračuna TZ-a, naknade za šume i poreza na dobit. Negativni iznosi na strani duguje su storno knjiženja. Retci bez iznosa su posivljeni. Konta su po kontnom planu programa iz kojeg je bruto bilanca; ako neko konto fali ili nije dobro, upiši ga, i aplikacija ga pamti za taj program.'),
     simpleTable([['Opis knjiženja'], ['Konto'], ['Duguje', 'n'], ['Potražuje', 'n']], rows,
       h('tr', {}, h('td', {}, 'Ukupno ', ok), h('td', {}), h('td', { class: 'v' }, tD), h('td', { class: 'v' }, tP)))];
 }
@@ -3180,6 +3209,6 @@ async function showAdmin() {
 build();
 start();
 </script>
-<script src="../zaglavlje.js" data-app="Završni račun" data-verzija="2026-11-12"></script>
+<script src="../zaglavlje.js" data-app="Završni račun" data-verzija="2026-11-16"></script>
 </body>
 </html>
