@@ -1482,13 +1482,14 @@ const TEM_KDEF = [
   ['161400', 'preplaćeni porez na dobit', /^16/, /dobit/i],
 ];
 const TEMK_STORE = 'zavrsni-racun:temkonta';
-const TEM_PROFILE_DEF = { integrator: { '461300': '461200', '265200': '265200', '462000': '462300', '265500': '265500', '261000': '261000', '161400': '161000' } };
+const TEM_PROFILE_DEF = { integrator: { '461300': '461200', '265200': '265200', '162600': '161250', '462000': '462300', '265500': '265100', '162500': '162300', '830000': '830000', '261000': '261000', '161400': '161000' } };
 function temOverrides() { try { return JSON.parse(localStorage.getItem(TEMK_STORE + ':' + PROFILE) || '{}'); } catch (e) { return {}; } }
 function temSetOverride(base, v) { const o = temOverrides(); if (v) o[base] = v; else delete o[base]; try { localStorage.setItem(TEMK_STORE + ':' + PROFILE, JSON.stringify(o)); } catch (e) {} }
 function temKonto(base) {
   base = String(base || '').trim(); if (!base) return { k: '', src: '' };
   const o = temOverrides()[base]; if (o) return { k: o, src: 'upisano' };
   if (PROFILE === 'pspnet') return { k: base, src: '' };
+  const f0 = (TEM_PROFILE_DEF[PROFILE] || {})[base]; if (f0) return { k: f0, src: 'kontni plan ' + PROFILE_NAMES[PROFILE] };
   const d = TEM_KDEF.find(x => x[0] === base);
   if (d && BB && BB.leaves) { const l = BB.leaves.find(l => d[2].test(l.k) && d[3].test(l.name)); if (l) return { k: l.k, src: 'iz bilance: ' + l.name }; }
   const f = (TEM_PROFILE_DEF[PROFILE] || {})[base]; if (f) return { k: f, src: 'kontni plan ' + PROFILE_NAMES[PROFILE] };
