@@ -973,12 +973,26 @@ function buildPd() {
   const main = simpleTable([['R.br.'], ['Opis'], ['Iznos (EUR)', 'n']], rows);
 
   const goes = { 6: '6.', 17: '24.' };
-  const hRows = M.pdHelper.map(r => h('tr', {},
-    h('td', {}, r.naziv), h('td', { class: 'aop', style: 'width:auto;white-space:nowrap' }, r.konta),
+  const hRows = M.pdHelper.map(r => h('tr', { 'data-pdr': r.r },
+    h('td', {}, r.naziv), h('td', { class: 'aop pdk', style: 'width:auto;white-space:nowrap' }, r.konta),
     h('td', { class: 'v' }, cell('PD!V' + r.r)), ...['W', 'X', 'Y', 'Z'].map(c => h('td', { class: 'v' }, cell('PD!' + c + r.r))),
     h('td', { class: 'aop' }, goes[r.r] || '7.')));
   const helper = simpleTable([['Vrsta troška'], ['Konta'], ['Iznos troška', 'n'], ['Priznati dio', 'n'], ['Nepriznati dio', 'n'], ['PDV 25 %', 'n'], ['Ukupno nepriznato', 'n'], ['→ r.br.']], hRows,
     h('tr', {}, h('td', { colspan: 2 }, 'Ukupno osobni prijevoz (r.br. 7.)'), ...['V', 'W', 'X', 'Y', 'Z'].map(c => h('td', { class: 'v' }, calcEl('PD!' + c + '19'))), h('td', {})));
+  // Integrator: drugi kontni plan, nepriznato je izdvojeno na analitikama s "nepriznat" u nazivu
+  const hLead = h('p', { class: 'lead' }), intBox = h('div');
+  hooks.push(() => {
+    const integ = PROFILE === 'integrator', act = new Map(pdHelperRows().map(r => [r.r, r]));
+    hLead.textContent = integ ? 'Integrator: reprezentacija s konta 442 (50 % nepriznato) ide u r.br. 6. Konta čiji naziv sadrži "nepriznat" prenose se u PD u cijelosti: automobil u r.br. 7, otpis potraživanja (736) u r.br. 20, ostalo u r.br. 24.' : 'Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24.';
+    for (const tr of hRows) { const r = +tr.dataset.pdr, a = act.get(r); tr.hidden = !a; if (a) tr.querySelector('.pdk').textContent = a.konta; }
+    const foot = helper.querySelector('tfoot'); if (foot) foot.style.display = integ ? 'none' : '';
+    if (!integ) { intBox.replaceChildren(); return; }
+    const rows = integratorPdRows();
+    intBox.replaceChildren(h('h3', { style: 'margin:14px 0 6px;font-size:15px' }, 'Nepriznato s posebnih analitika (Integrator)'),
+      simpleTable([['Vrsta'], ['Konto'], ['Naziv konta'], ['Iznos', 'n'], ['Ide u']],
+        rows.length ? rows.map(x => h('tr', {}, h('td', {}, x[0]), h('td', { class: 'aop' }, x[1].k), h('td', {}, x[1].name), h('td', { class: 'v', style: 'text-align:right;padding-right:14px' }, fmt(x[2])), h('td', {}, x[4])))
+          : [h('tr', {}, h('td', { colspan: 5, style: 'color:var(--muted)' }, BB ? 'U bruto bilanci nema konta s "nepriznat" u nazivu.' : 'Bruto bilanca još nije učitana.'))]));
+  });
 
   const pot = simpleTable([['Trošak obrazovanja i izobrazbe'], ['Iznos', 'n']],
     [['Putni nalog', 38], ['Smještaj', 39], ['Literatura', 40], ['Seminar', 41], ['Školarina', 42]].map(([n, r]) => h('tr', {}, h('td', {}, n), h('td', { class: 'v' }, cell('PD!X' + r)))),
@@ -986,7 +1000,7 @@ function buildPd() {
 
   const other = simpleTable([['Ostali podaci za obračun'], ['Iznos', 'n']], [
     h('tr', {}, h('td', {}, 'Priznati preneseni porezni gubitak (r.br. 37. i 40.)'), h('td', { class: 'v' }, cell('PD!U47'))),
-    h('tr', {}, h('td', {}, 'Dodatno knjiženje predujma, konto 161400 (temeljnica)'), h('td', { class: 'v' }, cell('PD!X80'))),
+    h('tr', {}, h('td', {}, (() => { const s = h('span'); hooks.push(() => { s.textContent = 'Dodatno knjiženje predujma, konto ' + (temKonto('161400').k || '161400') + ' (temeljnica)'; }); return s; })()), h('td', { class: 'v' }, cell('PD!X80'))),
   ]);
 
   const y0 = () => +(E.inputs['RefStr!F12'] || 2025);
@@ -1011,7 +1025,7 @@ function buildPd() {
   return [h('h2', {}, 'Prijava poreza na dobit (PD)'),
     h('p', { class: 'lead' }, 'Prihodi i rashodi dolaze iz RDG-a. Nepriznate troškove upisuješ u pomoćne tablice ispod, a porezna obveza se vraća u RDG (AOP 185) i u temeljnicu.'),
     xmlBox('pd'), legend(), printBlock('Prijava poreza na dobit (PD)', main),
-    printBlock('Nepriznati troškovi', h('h2', {}, 'Nepriznati troškovi'), h('p', { class: 'lead' }, 'Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24.'), helper),
+    printBlock('Nepriznati troškovi', h('h2', {}, 'Nepriznati troškovi'), hLead, helper, intBox),
     ...(() => { const s = pdSourceBox(); return [printBlock('Kazne', s[0], s[1], s[2]), printBlock('Povučeno iz bruto bilance u PD', s[3])]; })(),
     h('div', { class: 'grid2' }, printBlock('Državna potpora za obrazovanje', h('h2', {}, 'Državna potpora za obrazovanje'), pot), printBlock('Ostali podaci za obračun PD', h('h2', {}, 'Ostalo'), other)),
     printBlock('Neiskorišteni porezni gubici po godinama', h('h2', {}, 'Neiskorišteni porezni gubici po godinama'), prevPdBox(), ix),
@@ -2809,7 +2823,8 @@ function pdSourceBox() {
     all.replaceChildren(rows.length ? simpleTable([['Vrsta troška'], ['Konto'], ['Naziv konta'], ['Iznos', 'n'], ['Ide u']], rows.map(r => h('tr', {}, h('td', {}, r[0]), h('td', {}, r[1]), h('td', {}, r[2]), h('td', { class: 'v', style: 'text-align:right;padding-right:14px' }, fmt(r[3])), h('td', {}, r[4]))))
       : h('p', { class: 'lead' }, BB ? 'Iz bruto bilance nije povučen nijedan nepriznati trošak.' : 'Bruto bilanca još nije učitana.'));
   });
-  return [h('h2', {}, 'Kazne'), h('p', { class: 'lead' }, 'Konta ' + kazneKonta().replace(' ', ' i ') + ' iz bruto bilance. Zbroj se kod prijenosa bilance upisuje u r.br. 11. (troškovi kazni za prekršaje i prijestupe).'), kz,
+  const kLead = h('p', { class: 'lead' }); hooks.push(() => { kLead.textContent = 'Konta ' + kazneKonta().replace(' ', ' i ') + ' iz bruto bilance. Zbroj se kod prijenosa bilance upisuje u r.br. 11. (troškovi kazni za prekršaje i prijestupe).'; });
+  return [h('h2', {}, 'Kazne'), kLead, kz,
     h('details', { class: 'sheet kdet' }, h('summary', {}, 'Što je povučeno iz bruto bilance u PD'), h('div', { style: 'padding:0 14px 10px' }, all))];
 }
 function pdFromBB() {
