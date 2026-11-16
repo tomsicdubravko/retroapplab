@@ -954,7 +954,7 @@ function simpleTable(head, rows, foot) {
   return h('div', { class: 'sheet' }, h('table', {}, h('thead', {}, h('tr', {}, head.map(([t, c]) => h('th', { class: c || null }, t)))), h('tbody', {}, rows), foot ? h('tfoot', {}, foot) : null));
 }
 function buildPd() {
-  hooks.push(autoU47);
+  hooks.push(autoU47); hooks.push(autoIntPredujmovi);
   const rows = M.pd.map(r => {
     if (r.head) return h('tr', { class: 'sec' }, h('td', { colspan: 3 }, r.head));
     const k = 'PD!Q' + r.r;
@@ -1168,6 +1168,21 @@ function autoU47() {
   const v = Math.round(tot * 100) / 100, cur = Number(E.inputs['PD!U47'] || 0);
   if (Math.abs(v - cur) > 0.004) { _u47busy = true; E.setInput('PD!U47', v || ''); saveState(); setTimeout(() => { recalc(); for (const x of numInputs) x.show(); _u47busy = false; }, 0); }
 }
+
+// Integrator: predujmovi poreza na dobit i članarine TZ knjiže se na potraživanja (16x), pa ih temeljnica zatvara
+let _intPredBusy = false;
+function autoIntPredujmovi() {
+  if (_intPredBusy || PROFILE !== 'integrator') return;
+  const want = { 'PD!X80': Number(E.num('PD!Q81')) || 0, 'ČLANARINE!P76': Number(E.num('ČLANARINE!K76')) || 0 };
+  let ch = false;
+  for (const [k, v] of Object.entries(want)) {
+    const cur = Number(E.inputs[k] || 0), a = E.inputs['_auto:' + k];
+    const manual = cur && !(a !== undefined && a !== '' && Math.abs(Number(a) - cur) < 0.005);
+    if (manual || Math.abs(cur - v) < 0.005) continue;
+    E.setInput(k, v ? Math.round(v * 100) / 100 : ''); E.setInput('_auto:' + k, v ? Math.round(v * 100) / 100 : ''); ch = true;
+  }
+  if (ch) { _intPredBusy = true; saveState(); setTimeout(() => { recalc(); for (const x of numInputs) x.show(); _intPredBusy = false; }, 0); }
+}
 // ---------- TZ i šume ----------
 function buildTz() {
   const rate = new Set(['ČLANARINE!J27', 'ČLANARINE!K68']);
@@ -1195,8 +1210,9 @@ function tzSuggest() {
   const R = M.tzRules, nkd = String(E.inputs['RefStr!C42'] || ''), op = String(E.inputs['RefStr!C39'] || '');
   let best = null;
   if (nkd) for (const [p, g] of R.groups) if (nkd.startsWith(p) && (!best || p.length > best[0].length)) best = [p, g];
-  const group = best ? best[1] : 0;
-  return { nkd, op, group, rate: group ? R.rates[group] : 0, potp: R.potp[op] || 0 };
+  // djelatnosti koje nisu razvrstane u skupine 1.–4. Zakona o članarinama u TZ spadaju u 5. skupinu
+  const group = best ? best[1] : (nkd ? 5 : 0);
+  return { nkd, op, group, residual: !best && !!nkd, rate: group ? R.rates[group] : 0, potp: R.potp[op] || 0 };
 }
 
 // Šifre Porezne uprave po sjedištu (šifra grada/općine iz FINA popisa)
@@ -1229,7 +1245,7 @@ function tzInfoBox() {
     let t = '';
     if (!s.nkd) t = 'Upiši djelatnost (NKD) na kartici Obveznik, pa će se stopa odrediti sama. ';
     else if (!s.group) t = `Djelatnost ${s.nkd}${nk ? ' – ' + nk[1] : ''} nije na popisu djelatnosti za koje se plaća članarina, stopa je 0. `;
-    else t = `Djelatnost ${s.nkd}${nk ? ' – ' + nk[1] : ''} spada u ${s.group}. skupinu, stopa ${rateTxt(s.rate)}. `;
+    else t = `Djelatnost ${s.nkd}${nk ? ' – ' + nk[1] : ''} spada u ${s.group}. skupinu${s.residual ? ' (nije navedena u skupinama 1.–4., pa ide u ostale djelatnosti)' : ''}, stopa ${rateTxt(s.rate)}. `;
     if (o) t += s.potp ? `${o[1]} je potpomognuto područje ${['', 'I.', 'II.', 'III.', 'IV.'][s.potp]} razvojne skupine, članarina se umanjuje za 20 %.` : `${o[1]} nije potpomognuto područje.`;
     else t += 'Upiši grad ili općinu sjedišta za provjeru potpomognutog područja.';
     txt.textContent = t;
@@ -1452,6 +1468,7 @@ const TEM_KDEF = [
   ['161400', 'preplaćeni porez na dobit', /^16/, /dobit/i],
 ];
 const TEMK_STORE = 'zavrsni-racun:temkonta';
+const TEM_PROFILE_DEF = { integrator: { '461300': '461200', '265200': '265200', '462000': '462300', '265500': '265500', '261000': '261000', '161400': '161000' } };
 function temOverrides() { try { return JSON.parse(localStorage.getItem(TEMK_STORE + ':' + PROFILE) || '{}'); } catch (e) { return {}; } }
 function temSetOverride(base, v) { const o = temOverrides(); if (v) o[base] = v; else delete o[base]; try { localStorage.setItem(TEMK_STORE + ':' + PROFILE, JSON.stringify(o)); } catch (e) {} }
 function temKonto(base) {
@@ -1460,6 +1477,7 @@ function temKonto(base) {
   if (PROFILE === 'pspnet') return { k: base, src: '' };
   const d = TEM_KDEF.find(x => x[0] === base);
   if (d && BB && BB.leaves) { const l = BB.leaves.find(l => d[2].test(l.k) && d[3].test(l.name)); if (l) return { k: l.k, src: 'iz bilance: ' + l.name }; }
+  const f = (TEM_PROFILE_DEF[PROFILE] || {})[base]; if (f) return { k: f, src: 'kontni plan ' + PROFILE_NAMES[PROFILE] };
   return { k: '', src: '' };
 }
 function buildTem() {
@@ -1829,6 +1847,11 @@ function buildImport() {
       for (const k of used) E.setInput(k, sums[k] ? sums[k] : '');
       for (const k of used) E.setInput('_auto:' + k, sums[k] ? sums[k] : '');
       const pdAuto = pdFromBB();
+      if (PROFILE === 'integrator') {
+        const pr = BB.leaves.filter(l => /^161/.test(l.k) && /dobit|porez/i.test(l.name)).reduce((s, l) => s + (l.v[4] || 0) - (l.v[5] || 0), 0);
+        const v = Math.round(Math.max(pr, 0) * 100) / 100, a = E.inputs['_auto:PD!Q81'], cur = E.inputs['PD!Q81'];
+        if (cur === undefined || cur === '' || cur === null || (a !== undefined && a !== '' && Math.abs(Number(a) - Number(cur)) < 0.005)) { E.setInput('PD!Q81', v || ''); E.setInput('_auto:PD!Q81', v || ''); }
+      }
       recalc();
       const act = activityRow();
       for (const r of ACT_ROWS) E.setInput('Dodatni!J' + r, '');
