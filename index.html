@@ -34,6 +34,7 @@
     --neon-purple: #9b51e0;
     --neon-gold: #f59e0b;
     --neon-green: #10b981;
+    --neon-sky: #38bdf8;
     --text-light: #f8fafc;
     --text-muted: #94a3b8;
     --border-dim: rgba(255, 255, 255, 0.08);
@@ -291,7 +292,7 @@
   /* TOP QUICK CARDS (OVERVIEW NA VRHU) */
   .top-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     margin-top: 36px;
   }
@@ -307,6 +308,7 @@
   .quick-card.card-chess:hover { border-color: var(--neon-gold); box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); transform: translateY(-4px); }
   .quick-card.card-lab:hover { border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0, 242, 254, 0.3); transform: translateY(-4px); }
   .quick-card.card-software:hover { border-color: var(--neon-green); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); transform: translateY(-4px); }
+  .quick-card.card-web:hover { border-color: var(--neon-sky); box-shadow: 0 0 20px rgba(56, 189, 248, 0.3); transform: translateY(-4px); }
 
   .quick-card h3 { font-size: 1.05rem; margin: 10px 0 6px; }
   .quick-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; }
@@ -466,9 +468,11 @@
   .featured-tool { grid-column: 1 / -1; }
   #lab .section-head h2 { color: var(--neon-cyan); }
   #software .section-head h2 { color: var(--neon-green); }
+  #web .section-head h2 { color: var(--neon-sky); }
   #arkada .section-icon { box-shadow: 0 0 12px rgba(255, 0, 127, 0.35); }
   #lab .section-icon { box-shadow: 0 0 12px rgba(0, 242, 254, 0.35); }
   #software .section-icon { box-shadow: 0 0 12px rgba(16, 185, 129, 0.35); }
+  #web .section-icon { box-shadow: 0 0 12px rgba(56, 189, 248, 0.35); }
   .lab-item {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -676,6 +680,7 @@
     .hero { background-position: 18% center; }
     #sah { background-position: 25% center; }
     .top-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 24px; }
+    .quick-card.card-web { grid-column: 1 / -1; }
     .quick-card { padding: 14px; }
     .quick-card h3 { font-size: 0.9rem; margin: 8px 0 4px; }
     .quick-card p { font-size: 0.75rem; margin-bottom: 8px; }
@@ -707,6 +712,7 @@
   .tab.t-chess.active { border-color: var(--neon-gold); }
   .tab.t-lab.active { border-color: var(--neon-cyan); }
   .tab.t-soft.active { border-color: var(--neon-green); }
+  .tab.t-web.active { border-color: var(--neon-sky); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; animation: tabIn .35s ease; }
   section.tab-panel { border-top: none; }
@@ -808,6 +814,7 @@
       <a href="#sah" class="tab t-chess" data-tab="sah" role="tab"><img src="icon-chess.jpg" alt="" aria-hidden="true">Šah</a>
       <a href="#lab" class="tab t-lab" data-tab="lab" role="tab"><img src="icon-lab.jpg" alt="" aria-hidden="true">Lab</a>
       <a href="#software" class="tab t-soft" data-tab="software" role="tab"><img src="icon-software.jpg" alt="" aria-hidden="true">Software</a>
+      <a href="#web" class="tab t-web" data-tab="web" role="tab"><img src="icon-web.svg" alt="" aria-hidden="true">Web projekti</a>
     </div>
   </div>
 </nav>
@@ -858,6 +865,15 @@
           <p>Svaki posao ima <span class="nowrap">svoje probleme.</span> <span class="nowrap">Neki dobiju i svoj software.</span></p>
         </div>
         <span class="explore-link" style="color: var(--neon-green);">Istraži →</span>
+      </a>
+
+      <a href="#web" class="quick-card card-web">
+        <div>
+          <div><img src="icon-web.svg" alt="Web projekti" style="width:40px;height:40px;object-fit:contain;border-radius:6px;"></div>
+          <h3>WEB PROJEKTI</h3>
+          <p>Web stranice izrađene <span class="nowrap">za stvarne potrebe.</span></p>
+        </div>
+        <span class="explore-link" style="color: var(--neon-sky);">Istraži →</span>
       </a>
     </div>
   </div>
@@ -1249,22 +1265,6 @@
         </div>
       </div>
 
-      <div class="featured-tool ft-rs">
-        <a href="https://radni-sati.com/hr/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="images/radni-sati-preview.webp" alt="Naslovnica stranice radni-sati.com" width="1280" height="800" loading="lazy"></a>
-        <div>
-          <span class="ft-badge">VLASTITA STRANICA</span>
-          <h4>radni-sati.com</h4>
-          <p class="ft-rs-sub">Projekt nastao u RetroAppLabu</p>
-          <p style="font-size:0.85rem;color:var(--text-muted);">Sve o radnim satima na jednom mjestu: fond sati po mjesecima za 2024.–2028., besplatna evidencija radnog vremena, kalendar blagdana s računovodstvenim rokovima, kalkulator sati i planer godišnjeg odmora.</p>
-          <a class="ft-rs-btn" href="https://radni-sati.com/hr/" target="_blank" rel="noopener">Otvori radni-sati.com ↗</a>
-          <div class="lab-item-links" style="margin-top:12px;flex-wrap:wrap;">
-            <a href="https://radni-sati.com/hr/fond-sati-2026/fond-sati-2026.html" target="_blank" rel="noopener">Fond sati 2026</a>
-            <a href="https://radni-sati.com/hr/evidencija-rada/evidencija-rada.html" target="_blank" rel="noopener">Evidencija rada</a>
-            <a href="https://radni-sati.com/hr/kalendar-blagdana/kalendar-blagdana.html" target="_blank" rel="noopener">Kalendar blagdana</a>
-          </div>
-        </div>
-      </div>
-
       <div class="featured-tool">
         <img src="shot-putni-nalog.jpg" alt="Putni nalog">
         <div>
@@ -1290,9 +1290,46 @@
   </div>
 </section>
 
+<section id="web" class="tab-panel" data-tab="web">
+  <div class="wrap">
+    <div class="section-head">
+      <h2><img class="section-icon" src="icon-web.svg" alt="Web projekti – neonska ikona sekcije" aria-hidden="true">WEB PROJEKTI</h2>
+      <p>Web stranice izrađene u RetroAppLabu za stvarne potrebe – od alata za računanje radnih sati do poslovne stranice knjigovodstvenog servisa.</p>
+    </div>
+
+    <div class="lab-items">
+      <div class="featured-tool ft-rs" id="radni-sati">
+        <a href="https://radni-sati.com/hr/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="images/radni-sati-preview.webp" alt="Naslovnica stranice radni-sati.com" width="1280" height="800" loading="lazy"></a>
+        <div>
+          <span class="ft-badge">VLASTITA STRANICA</span>
+          <h4>radni-sati.com</h4>
+          <p class="ft-rs-sub">Projekt nastao u RetroAppLabu</p>
+          <p style="font-size:0.85rem;color:var(--text-muted);">Sve o radnim satima na jednom mjestu: fond sati po mjesecima za 2024.–2028., besplatna evidencija radnog vremena, kalendar blagdana s računovodstvenim rokovima, kalkulator sati i planer godišnjeg odmora.</p>
+          <a class="ft-rs-btn" href="https://radni-sati.com/hr/" target="_blank" rel="noopener">Otvori radni-sati.com ↗</a>
+          <div class="lab-item-links" style="margin-top:12px;flex-wrap:wrap;">
+            <a href="https://radni-sati.com/hr/fond-sati-2026/fond-sati-2026.html" target="_blank" rel="noopener">Fond sati 2026</a>
+            <a href="https://radni-sati.com/hr/evidencija-rada/evidencija-rada.html" target="_blank" rel="noopener">Evidencija rada</a>
+            <a href="https://radni-sati.com/hr/kalendar-blagdana/kalendar-blagdana.html" target="_blank" rel="noopener">Kalendar blagdana</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="featured-tool ft-rs" id="psp-dubrovnik">
+        <a href="https://www.psp-dubrovnik.hr" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img src="images/psp-dubrovnik-preview.webp" alt="Naslovnica stranice psp-dubrovnik.hr" width="1280" height="800" loading="lazy"></a>
+        <div>
+          <span class="ft-badge">REALIZIRANI PROJEKT</span>
+          <h4>PSP Dubrovnik</h4>
+          <p style="font-size:0.85rem;color:var(--text-muted);">Moderna dvojezična web-stranica koja predstavlja računovodstvene usluge, poslovni softver PSPnet i programska rješenja. Izrađena s naglaskom na preglednost, jednostavnu navigaciju i pristupačnost na svim uređajima.</p>
+          <a class="ft-rs-btn" href="https://www.psp-dubrovnik.hr" target="_blank" rel="noopener">Otvori psp-dubrovnik.hr ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
 (function(){
-  var TABS = ['pocetna','arkada','sah','lab','software'];
+  var TABS = ['pocetna','arkada','sah','lab','software','web'];
   var panels = document.querySelectorAll('.tab-panel');
   var tabs = document.querySelectorAll('.tabbar .tab');
   function tabFor(id){
