@@ -528,6 +528,8 @@
     padding: 1px 7px; border-radius: 4px; margin-bottom: 6px;
   }
   .featured-tool h4 { font-size: 1rem; color: #fff; margin-bottom: 6px; }
+  .featured-tool h4.ft-sova-title { display: flex; align-items: center; gap: 8px; }
+  .ft-sova-title img { width: 40px; height: 40px; flex: none; object-fit: contain; }
   .featured-tool .ft-features {
     display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0;
   }
@@ -1251,7 +1253,7 @@
         </div>
         <div>
           <span class="ft-badge">ISTAKNUTO · AKTIVNO</span>
-          <h4>Sustav naručivanja bez konobara</h4>
+          <h4 class="ft-sova-title"><img src="/sova/sova-sletjela-cisto.webp" alt="" width="40" height="40" loading="lazy">SOVA — QR naručivanje bez konobara</h4>
           <p style="font-size:0.85rem;color:var(--text-muted);">Gost skenira QR kod na stolu i naručuje s mobitela, bez aplikacije. Konobar po potrebi upisuje narudžbe sa svog mobitela, a sve narudžbe i pozivi stižu u jedan admin sustav.</p>
           <div class="ft-features">
             <span>📱 Narudžba skeniranjem QR koda</span>
@@ -1259,8 +1261,8 @@
             <span>🧑‍🍳 Konobar može upisivati narudžbe s mobitela</span>
             <span>🖥️ Admin sustav prima sve narudžbe</span>
           </div>
-          <div class="lab-item-links" style="margin-top:4px;">
-            <a href="/sova/">SOVA — saznaj više →</a>
+          <div class="ft-zr-actions">
+            <a class="ft-zr-btn" href="/sova/">Pogledaj kako radi →</a>
           </div>
         </div>
       </div>
