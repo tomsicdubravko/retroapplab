@@ -983,15 +983,15 @@ function buildPd() {
   const hLead = h('p', { class: 'lead' }), intBox = h('div');
   hooks.push(() => {
     const integ = PROFILE === 'integrator', act = new Map(pdHelperRows().map(r => [r.r, r]));
-    hLead.textContent = integ ? 'Integrator: reprezentacija s konta 442 (50 % nepriznato) ide u r.br. 6. Konta čiji naziv sadrži "nepriznat" prenose se u PD u cijelosti: automobil u r.br. 7, otpis potraživanja (736) u r.br. 20, ostalo u r.br. 24.' : 'Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24.';
+    hLead.textContent = integ ? 'Integrator kontni plan. Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24. Kazne (735000) idu u r.br. 11, a troškovi prisilne naplate (735100) u r.br. 9. Konta s "nepriznat" u nazivu koja nisu u tablici prenose se u cijelosti (tablica ispod).' : 'Reprezentacija ide u r.br. 6, osobni prijevoz u r.br. 7, a ostali nepriznati troškovi u r.br. 24.';
     for (const tr of hRows) { const r = +tr.dataset.pdr, a = act.get(r); tr.hidden = !a; if (a) tr.querySelector('.pdk').textContent = a.konta; }
-    const foot = helper.querySelector('tfoot'); if (foot) foot.style.display = integ ? 'none' : '';
+    const foot = helper.querySelector('tfoot'); if (foot) foot.style.display = '';
     if (!integ) { intBox.replaceChildren(); return; }
     const rows = integratorPdRows();
     intBox.replaceChildren(h('h3', { style: 'margin:14px 0 6px;font-size:15px' }, 'Nepriznato s posebnih analitika (Integrator)'),
       simpleTable([['Vrsta'], ['Konto'], ['Naziv konta'], ['Iznos', 'n'], ['Ide u']],
         rows.length ? rows.map(x => h('tr', {}, h('td', {}, x[0]), h('td', { class: 'aop' }, x[1].k), h('td', {}, x[1].name), h('td', { class: 'v', style: 'text-align:right;padding-right:14px' }, fmt(x[2])), h('td', {}, x[4])))
-          : [h('tr', {}, h('td', { colspan: 5, style: 'color:var(--muted)' }, BB ? 'U bruto bilanci nema konta s "nepriznat" u nazivu.' : 'Bruto bilanca još nije učitana.'))]));
+          : [h('tr', {}, h('td', { colspan: 5, style: 'color:var(--muted)' }, BB ? 'Nema drugih konta s "nepriznat" u nazivu ni troškova prisilne naplate (735100).' : 'Bruto bilanca još nije učitana.'))]));
   });
 
   const pot = simpleTable([['Trošak obrazovanja i izobrazbe'], ['Iznos', 'n']],
@@ -1634,7 +1634,9 @@ const INTEGRATOR_NAME_RULES = [[/^029/, /vinogr|nasad/i, 'Bilanca!J23'], [/^25/,
 const INTEGRATOR_MAP2 = [['401', 'Dodatni!J50'], ['418000', 'Dodatni!J51'], ['412200', 'Dodatni!J58'], ['415100', 'Dodatni!J56'], ['415101', 'Dodatni!J56'], ['422200', 'Dodatni!J57'], ['423', 'Dodatni!J60'],
   ['464', 'Dodatni!J62'], ['468', 'Dodatni!J62'], ['449100', 'Dodatni!J62'], ['44', 'Dodatni!J65'], ['442', ''], ['444', ''], ['448', 'Dodatni!J63'], ['449', ''],
   ['763', 'Dodatni!J43'], ['757', 'Dodatni!J45'], ['771', 'Dodatni!J73'], ['721', 'Dodatni!J76'], ['724', 'Dodatni!J76']];
-const INTEGRATOR_PD = [{ r: 6, konta: '442000-999', naziv: 'Reprezentacija' }];
+// Integrator: konta nepriznatih troškova (isti redovi i postoci kao kod PSPnet-a, samo drugi kontni plan)
+const INTEGRATOR_PD_KONTA = { 6: '442000 442100', 7: '430000 430100', 8: '430000', 9: '428100 428101', 10: '428101', 11: '400301', 12: '405100', 13: '401300 401301', 14: '400301', 15: '415200', 16: '415003', 17: '429990' };
+const INTEGRATOR_PD = () => M.pdHelper.map(r => ({ ...r, konta: INTEGRATOR_PD_KONTA[r.r] || r.konta }));
 const INTEGRATOR_MAP_V = 2;
 function defaultMapFor(p) {
   if (p === 'integrator') return INTEGRATOR_MAP.map(x => x.slice());
@@ -2782,7 +2784,7 @@ function kontaMatch(spec, k) {
 }
 const KAZNE_KONTA_PSP = '735000 735100';
 const kazneKonta = () => PROFILE === 'integrator' ? '735000' : KAZNE_KONTA_PSP;
-const pdHelperRows = () => PROFILE !== 'integrator' ? M.pdHelper : integratorPdRows().some(x => x[3] === 'PD!AA11') ? [] : INTEGRATOR_PD;
+const pdHelperRows = () => PROFILE !== 'integrator' ? M.pdHelper : INTEGRATOR_PD();
 // Integrator: nepriznati dio je već izdvojen na analitikama (naziv sadrži "nepriznat"), pa ide u PD u cijelosti
 const INT_PD_KEYS = [['PD!AA11', 'Reprezentacija (r.br. 6.)'], ['PD!AA12', 'Osobni prijevoz (r.br. 7.)'], ['PD!Q14', 'Prisilna naplata (r.br. 9.)'], ['PD!Q25', 'Otpis potraživanja (r.br. 20.)'], ['PD!AA29', 'Ostali nepriznati rashodi (r.br. 24.)']];
 function integratorPdRows() {
@@ -2791,8 +2793,9 @@ function integratorPdRows() {
   for (const l of BB.leaves) {
     const k = l.k, n = String(l.name || ''), s = sal(l);
     if (!s || !/^[47]/.test(k) || k.startsWith('731') || kontaMatch(kazneKonta(), k)) continue; // darovanja idu kroz tablicu darovanja, kazne posebno
+    if (INTEGRATOR_PD().some(r => r.r !== 8 && r.r !== 10 && kontaMatch(r.konta, k))) continue; // već u tablici nepriznatih troškova
     const nep = /nepriznat/i.test(n);
-    if (k.startsWith('735') && /prisiln/i.test(n)) out.push(['Prisilna naplata', l, s, 'PD!Q14', 'r.br. 9']);
+    if (k === '735100' || (k.startsWith('735') && /prisiln/i.test(n))) out.push(['Prisilna naplata', l, s, 'PD!Q14', 'r.br. 9']);
     else if (!nep) continue;
     else if (k.startsWith('442')) out.push(['Reprezentacija', l, s, 'PD!AA11', 'r.br. 6']);
     else if (k.startsWith('736')) out.push(['Otpis potraživanja', l, s, 'PD!Q25', 'r.br. 20']);
@@ -3248,6 +3251,6 @@ async function showAdmin() {
 build();
 start();
 </script>
-<script src="../zaglavlje.js" data-app="Završni račun" data-verzija="2026-11-16"></script>
+<script src="../zaglavlje.js" data-app="Završni račun" data-verzija="2026-11-19"></script>
 </body>
 </html>
