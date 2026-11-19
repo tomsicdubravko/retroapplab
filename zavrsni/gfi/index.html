@@ -285,6 +285,36 @@ body.zr-licenced #o-aplikaciji{display:none}
 @media (max-width:640px){#rucni{scroll-margin-top:20px}}
 .temk.miss{background:#FFF3D6;border-color:#E0B040}
 @media print{.temk{border:0;background:none;padding:0}}
+.wizbtn{border-color:#7a5cff;color:#4b2fd6;font-weight:600}
+.wizbtn:hover{background:#f1edff}
+.wiz{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
+.wiz[hidden]{display:none}
+body.wiz-on{overflow:hidden}
+.wizbox{background:var(--bg,#f4f6f9);width:min(860px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.wizhead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#1f3b63;color:#fff;font-size:16px}
+.wizx{background:none;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;padding:0 4px}
+.wizdots{display:flex;gap:4px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--rule,#e2e6ec);overflow-x:auto}
+.wizdot{flex:1;min-width:90px;display:flex;align-items:center;gap:8px;background:none;border:0;padding:6px 8px;border-radius:8px;cursor:pointer;font:inherit;color:var(--muted,#667)}
+.wizdot span{display:inline-flex;width:24px;height:24px;border-radius:50%;align-items:center;justify-content:center;background:#e5e9f0;font-weight:700;font-size:13px;flex:none}
+.wizdot em{font-style:normal;font-size:13px;white-space:nowrap}
+.wizdot.on{color:#1f3b63;font-weight:600}.wizdot.on span{background:#1f3b63;color:#fff}
+.wizdot.done span{background:#1d7a46;color:#fff}
+.wizbody{padding:18px 22px;overflow-y:auto;flex:1}
+.wizbody h2{margin:0 0 6px;outline:none}
+.wizfoot{display:flex;gap:10px;padding:12px 20px;background:#fff;border-top:1px solid var(--rule,#e2e6ec)}
+.wizdrop{display:block;width:100%;text-align:left;font:inherit;border:2px dashed #9fb3cf;background:#fff;border-radius:12px;padding:20px;margin:12px 0;cursor:pointer}
+.wizdrop b{display:block;font-size:16px;margin-bottom:4px}.wizdrop span{color:var(--muted,#667);font-size:14px}
+.wizdrop:hover,.wizdrop.over{border-color:#1f3b63;background:#f2f6fc}
+.wizcard{background:#fff;border:1px solid var(--rule,#e2e6ec);border-radius:10px;padding:12px 14px;margin:10px 0}
+.wizcard.ok{border-color:#9dd1b0;background:#f0faf3}.wizcard.bad{border-color:#e6a5a5;background:#fdf2f2}
+.wizk{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted,#667);margin-bottom:2px}
+.wizgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.wizgrid .wizcard{margin:0}
+.wizrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.wizlist{margin:6px 0 10px;padding-left:20px;font-size:14px}
+.wizitem{display:flex;gap:12px;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--rule,#e2e6ec);border-radius:10px;padding:10px 14px;margin:8px 0}
+@media (max-width:640px){.wizdot em{display:none}.wizdot{min-width:0;flex:none}.wizbody{padding:14px}}
+@media print{.wiz,.wizbtn{display:none!important}}
 </style>
 <link rel="stylesheet" href="../zaglavlje.css">
 </head>
@@ -1834,7 +1864,7 @@ function buildImport() {
       if (!E.inputs['RefStr!C29'] && parsed.firm) { E.setInput('RefStr!C29', parsed.firm); saveState(); renderHeader(); }
       msg.textContent = '';
       render();
-      if (autoXfer && (await autoXfer()) === true) setTimeout(() => {
+      if (autoXfer && (await autoXfer()) === true && !window.__wiz) setTimeout(() => {
         const r = document.getElementById('rucni'); if (!r) return;
         r.scrollIntoView({ behavior: 'smooth', block: 'start' });
         const miss = [...document.querySelectorAll('#rucni ~ .sheet tbody > tr')].find(tr => tr.querySelector('.pill.bad'));
@@ -3001,6 +3031,200 @@ function buildStatus() {
   });
 }
 
+
+// ---------- Čarobnjak: vodi kroz završni račun u 5 koraka (koristi postojeće funkcije, ništa ne mijenja) ----------
+const WIZ = { el: null, step: 0, steps: [], paint: [] };
+const WIZ_TITLES = ['Klijent', 'Bruto bilanca', 'Ručni unos', 'Provjera', 'Izvoz'];
+function wizOpen() {
+  if (!WIZ.el) wizBuild();
+  window.__wiz = true;
+  WIZ.el.hidden = false; document.body.classList.add('wiz-on');
+  wizGo(WIZ.step || (E.inputs['RefStr!C29'] ? (BB ? 2 : 1) : 0));
+}
+function wizClose() { if (!WIZ.el) return; WIZ.el.hidden = true; window.__wiz = false; document.body.classList.remove('wiz-on'); }
+function wizGo(i) {
+  WIZ.step = Math.max(0, Math.min(WIZ.steps.length - 1, i));
+  WIZ.steps.forEach((s, k) => { s.hidden = k !== WIZ.step; });
+  WIZ.dots.forEach((d, k) => { d.className = 'wizdot' + (k === WIZ.step ? ' on' : k < WIZ.step ? ' done' : ''); });
+  WIZ.back.hidden = WIZ.step === 0;
+  WIZ.next.textContent = WIZ.step === WIZ.steps.length - 1 ? 'Zatvori čarobnjak' : 'Dalje →';
+  wizPaint();
+  const b = WIZ.el.querySelector('.wizbody'); if (b) b.scrollTop = 0;
+  setTimeout(() => { const f = WIZ.steps[WIZ.step].querySelector('h2'); if (f) { f.tabIndex = -1; f.focus({ preventScroll: true }); } }, 30);
+}
+function wizPaint() { if (WIZ.el && !WIZ.el.hidden) for (const p of WIZ.paint) try { p(); } catch (e) {} }
+function wizFilePick(accept, onFile) {
+  const inp = h('input', { type: 'file', accept, style: 'position:absolute;width:1px;height:1px;opacity:0' });
+  inp.addEventListener('change', () => { const f = inp.files[0]; inp.value = ''; if (f) onFile(f); });
+  return inp;
+}
+function wizDrop(title, sub, accept, onFile) {
+  const inp = wizFilePick(accept, onFile);
+  const d = h('button', { class: 'wizdrop', type: 'button', onclick: () => inp.click() }, h('b', {}, title), h('span', {}, sub));
+  d.addEventListener('dragover', (e) => { e.preventDefault(); d.classList.add('over'); });
+  d.addEventListener('dragleave', () => d.classList.remove('over'));
+  d.addEventListener('drop', (e) => { e.preventDefault(); d.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) onFile(f); });
+  return [inp, d];
+}
+const wizOk = (t) => h('p', { class: 'okline' }, '✓ ' + t);
+const wizBad = (t) => h('p', { class: 'pill bad', style: 'display:inline-block' }, t);
+function wizBalance() {
+  const a = E.num('Bilanca!J73') || 0, p = E.num('Bilanca!J135') || 0;
+  return { a, p, none: !a && !p, ok: Math.abs(a - p) < 0.005 };
+}
+function wizClickIn(sec, text) {
+  const s = document.getElementById('sec-' + sec); if (!s) return 0;
+  const bs = [...s.querySelectorAll('button')].filter(b => b.textContent.trim() === text);
+  bs.forEach(b => b.click()); return bs.length;
+}
+
+function wizBuild() {
+  // 1 — klijent
+  const s1out = h('div', { 'aria-live': 'polite' });
+  const [p1, d1] = wizDrop('Ubaci prošlogodišnji GFI-POD (ili Excel s listom PD)', 'Iz njega se prepisuju podaci o firmi, prošla godina i preneseni porezni gubici.', '.xls,.xlsx', async (f) => {
+    if (!(await requireLicence())) return;
+    s1out.replaceChildren(h('p', { class: 'lead' }, 'Čitam ' + f.name + '…'));
+    try {
+      const r = await importPrevGfi(f);
+      const l = [];
+      if (r.newClient) l.push(wizOk('Novi klijent: podaci prethodnog klijenta su obrisani.'));
+      l.push(wizOk(`Učitano: ${E.inputs['RefStr!C29'] || 'firma'}${r.year ? `, završni račun za ${r.year}. godinu` : ''}`));
+      if (r.loss) l.push(wizOk('Preneseni porezni gubici po godinama su učitani.'));
+      if (r.missing && r.missing.length) l.push(wizBad('Nisam našao: ' + r.missing.join(', ')));
+      s1out.replaceChildren(...l); wizPaint();
+    } catch (e) { s1out.replaceChildren(wizBad('Nisam uspio pročitati datoteku: ' + e.message)); }
+  });
+  const firmBox = h('div', { class: 'wizcard' });
+  WIZ.paint.push(() => {
+    const g = (a) => E.inputs['RefStr!' + a] || '';
+    firmBox.hidden = !g('C29');
+    firmBox.replaceChildren(h('div', { class: 'wizk' }, 'Trenutni klijent'), h('b', { style: 'font-size:17px' }, g('C29')),
+      h('div', {}, [g('C27') ? 'OIB ' + g('C27') : '', g('C42') ? 'djelatnost ' + g('C42') : '', g('F12') ? 'godina ' + g('F12') : ''].filter(Boolean).join(' · ')));
+  });
+  const s1 = h('section', { class: 'wizstep' },
+    h('h2', {}, 'Za koju firmu radiš završni račun?'),
+    h('p', { class: 'lead' }, 'Ubaci prošlogodišnji obrazac, ili otvori klijenta kojeg si već spremio.'),
+    p1, d1, s1out,
+    h('div', { class: 'wizrow' }, h('button', { class: 'btn', type: 'button', onclick: () => document.getElementById('btnLoad').click() }, 'Otvori spremljenog klijenta (.json)')),
+    firmBox);
+
+  // 2 — bruto bilanca
+  const s2out = h('div', { 'aria-live': 'polite' });
+  const [p2, d2] = wizDrop('Ubaci bruto bilancu (PDF ili Excel)', 'PSPnet ili Integrator, ispis na 31.12. prije zaključnih knjiženja. Program se prepozna sam.', '.pdf,.xls,.xlsx', async (f) => {
+    if (!(await requireLicence())) return;
+    const bf = document.getElementById('bbFile'); if (!bf) return;
+    s2out.replaceChildren(h('p', { class: 'lead' }, 'Čitam ' + f.name + '…'));
+    const before = BB ? BB.file + '|' + BB.leaves.length : '';
+    try { const dt = new DataTransfer(); dt.items.add(f); bf.files = dt.files; bf.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) { s2out.replaceChildren(wizBad('Preglednik ne dopušta prijenos datoteke: ' + e.message)); return; }
+    for (let t = 0; t < 60; t++) { await new Promise(r => setTimeout(r, 250)); if (BB && BB.file === f.name && (BB.file + '|' + BB.leaves.length) !== before) break; }
+    await new Promise(r => setTimeout(r, 600));
+    wizPaint();
+  });
+  const bbBox = h('div');
+  WIZ.paint.push(() => {
+    if (!BB) { bbBox.replaceChildren(h('p', { class: 'lead' }, 'Bilanca još nije učitana.')); s2out.replaceChildren(); return; }
+    const { unmapped } = computeTransfer(), bal = wizBalance(), l = [];
+    l.push(h('div', { class: 'wizcard' }, h('div', { class: 'wizk' }, 'Učitana bilanca'), h('b', {}, BB.file || 'bruto bilanca'),
+      h('div', {}, `${PROFILE_NAMES[BB.profile || 'pspnet'] || ''} · razdoblje ${BB.od} – ${BB.do} · ${BB.leaves.length} konta`)));
+    if (unmapped.length) {
+      l.push(wizBad(`${unmapped.length} konta nemaju poziciju u obrascu`));
+      l.push(h('ul', { class: 'wizlist' }, unmapped.slice(0, 8).map(u => h('li', {}, `${u.k} ${u.name}`))));
+      l.push(h('button', { class: 'btn', type: 'button', onclick: () => { wizClose(); showTab('bb'); } }, 'Otvori mapiranje konta'));
+    } else if (bal.none) {
+      l.push(h('button', { class: 'btn primary', type: 'button', onclick: () => { wizClickIn('bb', 'Prenesi u obrazac'); setTimeout(wizPaint, 600); } }, 'Prenesi u obrazac'));
+    } else if (bal.ok) l.push(wizOk(`Preneseno u obrazac, aktiva = pasiva (${fmt(bal.a)} €)`));
+    else {
+      l.push(wizBad(`Aktiva i pasiva se razlikuju za ${fmt(bal.a - bal.p)} €`));
+      l.push(h('div', { class: 'wizrow' }, h('button', { class: 'btn', type: 'button', onclick: () => { wizClickIn('bb', 'Prenesi u obrazac'); setTimeout(wizPaint, 600); } }, 'Prenesi ponovno'),
+        h('button', { class: 'btn', type: 'button', onclick: () => { wizClose(); showTab('bil'); } }, 'Otvori Bilancu')));
+    }
+    bbBox.replaceChildren(...l); s2out.replaceChildren();
+  });
+  const s2 = h('section', { class: 'wizstep' },
+    h('h2', {}, 'Bruto bilanca tekuće godine'),
+    h('p', { class: 'lead' }, 'Aplikacija sama prepozna program, rasporedi konta i prenese ih u Bilancu, RDG, Dodatne podatke i PD.'),
+    p2, d2, s2out, bbBox);
+
+  // 3 — ručni unos (iste stavke kao na kartici Uvoz, isti podaci)
+  const lossBox = h('details', { class: 'sheet kdet', style: 'margin-top:14px' }, h('summary', {}, 'Prenosi li se porezni gubitak iz prošlih godina?'),
+    h('div', { style: 'padding:0 14px 12px' }, h('p', { class: 'lead' }, 'Ako je firma imala porezne gubitke, a nisu se učitali s prošlogodišnjim obrascem, ubaci prošlogodišnji PD.'), prevPdBox()));
+  WIZ.paint.push(() => { const u = E.num('PD!U47') || 0; lossBox.querySelector('summary').textContent = 'Prenosi li se porezni gubitak iz prošlih godina?' + (u ? ` (sada: ${fmt(u)} €)` : ''); });
+  const cl = buildChecklist(); if (cl[0]) { cl[0].removeAttribute('id'); cl[0].hidden = true; }
+  const s3head = h('p', { class: 'lead' });
+  WIZ.paint.push(() => { const n = checkMissing(); s3head.textContent = n ? `Još ${n} ${n === 1 ? 'stavka nedostaje' : n < 5 ? 'stavke nedostaju' : 'stavki nedostaje'}. Zelene stavke je aplikacija našla sama, upiši ostale.` : 'Sve je upisano. Možeš dalje.'; });
+  const s3 = h('section', { class: 'wizstep' },
+    h('h2', {}, 'Još samo ovo upiši'),
+    s3head, ...cl.slice(2), lossBox);
+
+  // 4 — provjera
+  const sum = h('div', { class: 'wizgrid' }), errs = h('div');
+  WIZ.paint.push(() => {
+    const bal = wizBalance(), dob = E.num('RDG!J66') || 0, por = E.num('PD!Q80') || 0, up = E.num('PD!Q82') || 0, pov = E.num('PD!Q83') || 0, tz = E.num('ČLANARINE!K75') || 0, c = kontCounts();
+    const card = (k, v, cls) => h('div', { class: 'wizcard ' + (cls || '') }, h('div', { class: 'wizk' }, k), h('b', { style: 'font-size:19px' }, v));
+    sum.replaceChildren(
+      card('Bilanca', bal.none ? 'nema podataka' : bal.ok ? 'aktiva = pasiva' : 'aktiva ≠ pasiva', bal.ok ? 'ok' : 'bad'),
+      card(dob < -0.004 ? 'Gubitak' : 'Dobit', fmt(dob) + ' €'),
+      card('Porez na dobit', fmt(por) + ' €'),
+      card(pov > 0 ? 'Porez za povrat' : 'Porez za uplatu', fmt(pov > 0 ? pov : up) + ' €'),
+      card('Članarina TZ', fmt(tz) + ' €'),
+      card('FINA kontrole', c.e ? `${c.e} pogr. · ${c.w} prov.` : 'sve zadovoljene', c.e ? 'bad' : 'ok'));
+    const bad = M.kont.filter(k => kontStatus(k.r) === 'err');
+    if (!bad.length) { errs.replaceChildren(c.w ? h('p', { class: 'lead' }, `${c.w} ${c.w % 10 >= 2 && c.w % 10 <= 4 && (c.w % 100 < 10 || c.w % 100 >= 20) ? 'provjere' : c.w % 10 === 1 && c.w % 100 !== 11 ? 'provjera' : 'provjera'} za pogledati na kartici Kontrole (nisu pogreške).`) : ''); return; }
+    errs.replaceChildren(h('h3', { style: 'margin:16px 0 8px;font-size:15px' }, 'Pogreške koje treba ispraviti'),
+      h('div', { class: 'sheet' }, h('table', {}, h('tbody', {}, bad.map(k => {
+        const refs = kontRefs(k.r).slice(0, 4);
+        return h('tr', {}, h('td', { class: 'aop' }, String(k.r - 11)), h('td', { style: 'font-size:13px' }, k.text,
+          h('div', { class: 'krefs' }, ...refs.map(y => h('button', { class: 'kref', type: 'button', onclick: () => { wizClose(); goToRef(y); } }, refLabel(y))),
+            h('button', { class: 'kref', type: 'button', onclick: () => { wizClose(); showTab('kont'); } }, 'sve kontrole'))));
+      })))));
+  });
+  const s4 = h('section', { class: 'wizstep' }, h('h2', {}, 'Provjera'), h('p', { class: 'lead' }, 'Ovo su glavni rezultati. Ako ima pogrešaka, klik na poziciju vodi ravno na mjesto u obrascu.'), sum, errs);
+
+  // 5 — izvoz
+  const log = h('div', { 'aria-live': 'polite' });
+  const say = (t, bad) => log.prepend(bad ? wizBad(t) : wizOk(t));
+  const dirNote = h('div');
+  WIZ.paint.push(() => {
+    if (typeof FS_OK === 'undefined' || !FS_OK) { dirNote.replaceChildren(h('p', { class: 'lead' }, 'Datoteke idu u mapu Preuzimanja.')); return; }
+    dirNote.replaceChildren(FS_DIR ? h('p', { class: 'lead' }, `Sve se sprema u mapu ${FS_DIR.name} / ${fsSub()}.`) :
+      h('div', { class: 'wizrow' }, h('span', { class: 'lead', style: 'margin:0' }, 'Najbolje prvo odaberi mapu, pa se sve sprema na jedno mjesto.'), h('button', { class: 'btn', type: 'button', onclick: async () => { await fsPick(); wizPaint(); } }, 'Odaberi mapu')));
+  });
+  const item = (title, sub, fn) => h('div', { class: 'wizitem' }, h('div', {}, h('b', {}, title), h('div', { class: 'lead', style: 'margin:2px 0 0' }, sub)),
+    h('button', { class: 'btn', type: 'button', onclick: fn }, 'Napravi'));
+  const s5 = h('section', { class: 'wizstep' },
+    h('h2', {}, 'Gotovo, napravi datoteke'),
+    dirNote,
+    item('Spremi klijenta (.json)', 'Da se sve može otvoriti kasnije ili iduće godine.', () => { document.getElementById('btnSave').click(); say('Klijent spremljen.'); }),
+    item('FINA GFI-POD (.xls)', 'Odaberi prazan FINA obrazac za ovu godinu, aplikacija ga popuni.', () => { showTab('exp'); const f = document.getElementById('finaFile'); if (f) f.click(); say('Odaberi prazan FINA obrazac. Rezultat se vidi na kartici GFI.'); }),
+    item('PD za ePoreznu (XML)', 'Prijava poreza na dobit.', () => { say(wizClickIn('pd', 'Izradi XML za ePoreznu (PD)') ? 'PD XML je izrađen (poruka na kartici PD).' : 'Nisam našao gumb za PD XML.'); }),
+    item('TZ 1 za ePoreznu (XML)', 'Članarina turističkoj zajednici.', () => { say(wizClickIn('tz', 'Izradi XML za ePoreznu (TZ 1)') ? 'TZ 1 XML je izrađen (poruka na kartici TZ/šume).' : 'Nisam našao gumb za TZ 1 XML.'); }),
+    item('Odluke (Word)', 'Odluka o utvrđivanju i odluka o raspodjeli dobiti ili pokriću gubitka.', () => { const n = wizClickIn('odl', 'Izvezi u Word'); say(n ? `Odluke spremljene (${n}).` : 'Nisam našao odluke.', !n); }),
+    item('Bilješke (Word)', 'Bilješke uz financijske izvještaje.', () => { const n = wizClickIn('bilj', 'Izvezi u Word'); say(n ? 'Bilješke spremljene.' : 'Nisam našao bilješke.', !n); }),
+    item('Temeljnica (PDF / ispis)', 'Temeljnica zaključnih knjiženja.', () => { wizClose(); showTab('tem'); setTimeout(() => wizClickIn('tem', 'PDF / Ispis'), 200); }),
+    log);
+
+  WIZ.steps = [s1, s2, s3, s4, s5];
+  WIZ.dots = WIZ_TITLES.map((t, i) => h('button', { class: 'wizdot', type: 'button', onclick: () => wizGo(i) }, h('span', {}, String(i + 1)), h('em', {}, t)));
+  WIZ.back = h('button', { class: 'btn', type: 'button', onclick: () => wizGo(WIZ.step - 1) }, '← Natrag');
+  WIZ.next = h('button', { class: 'btn primary', type: 'button', onclick: () => WIZ.step === WIZ.steps.length - 1 ? wizClose() : wizGo(WIZ.step + 1) }, 'Dalje →');
+  WIZ.el = h('div', { class: 'wiz', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Čarobnjak za završni račun', hidden: true },
+    h('div', { class: 'wizbox' },
+      h('div', { class: 'wizhead' }, h('b', {}, '✨ Čarobnjak za završni račun'), h('button', { class: 'wizx', type: 'button', 'aria-label': 'Zatvori', onclick: wizClose }, '×')),
+      h('nav', { class: 'wizdots' }, WIZ.dots),
+      h('div', { class: 'wizbody' }, WIZ.steps),
+      h('div', { class: 'wizfoot' }, WIZ.back, h('span', { style: 'flex:1' }), WIZ.next)));
+  WIZ.el.addEventListener('keydown', (e) => { if (e.key === 'Escape') wizClose(); });
+  document.body.append(WIZ.el);
+  hooks.push(wizPaint);
+}
+function wizInit() {
+  const save = document.getElementById('btnSave'); if (!save || document.getElementById('btnWiz')) return;
+  const b = h('button', { class: 'btn wizbtn', id: 'btnWiz', type: 'button', title: 'Čarobnjak: vodi te korak po korak kroz cijeli završni račun', onclick: wizOpen });
+  b.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20 16 8"/><path d="m14 6 2-2 4 4-2 2z"/><path d="M8 3v3M6.5 4.5h3M19 14v3M17.5 15.5h3"/></svg><span>Čarobnjak</span>';
+  const first = document.getElementById('btnDir') || save;
+  first.parentNode.insertBefore(b, first);
+}
+
 // ---------- init ----------
 function build() {
   let fresh = false; try { fresh = !localStorage.getItem(STORE); } catch (e) {}
@@ -3030,6 +3254,7 @@ function build() {
   document.getElementById('btnPrint').onclick = () => window.print();
   window.addEventListener('afterprint', () => document.body.classList.remove('print-one'));
   document.getElementById('btnSave').onclick = saveToFile;
+  wizInit();
   document.getElementById('btnDir').onclick = fsPick; renderFsBtn();
   document.getElementById('btnFina').onclick = () => { showTab('exp'); const f = document.getElementById('finaFile'); if (f) f.click(); };
   const lf = document.getElementById('loadFile');
